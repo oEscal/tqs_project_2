@@ -1,0 +1,15 @@
+on: push
+name: Tests workflow
+jobs:
+  sonarCloudTrigger:
+    name: Junit Tests Trigger
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
+    - name: Run tests
+      run: |
+        % cd api; mvn -B verify 
