@@ -1,1 +1,1 @@
-# tqs_project2
+# Grid Marketplace - TQS Project 2
