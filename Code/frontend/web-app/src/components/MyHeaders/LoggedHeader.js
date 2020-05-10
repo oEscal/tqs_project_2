@@ -21,12 +21,22 @@ import Button from "components/CustomButtons/Button.js";
 import image from "assets/img/bg.jpg";
 import profileImage from "assets/img/faces/avatar.jpg";
 
+
 import styles from "assets/jss/material-kit-react/views/componentsSections/navbarsStyle.js";
 
 const useStyles = makeStyles(styles);
 
-export default function SectionNavbars() {
+export default function SectionNavbars(props) {
   const classes = useStyles();
+
+  const { name, cart } = props;
+
+  var cartIcon
+  if(cart){
+    cartIcon = <i class="fas fa-cart-arrow-down" style={{color:"#fd24ac"}}></i>
+  }else{
+    cartIcon = <i class="fas fa-shopping-cart"></i>
+  }
   return (
     <div id="navbar" className={classes.navbar}>
       <Header
@@ -46,8 +56,9 @@ export default function SectionNavbars() {
                 onClick={e => e.preventDefault()}
                 color="transparent"
               >
-                Discover
-                  </Button>
+                <i class="fas fa-gamepad"></i>
+                Games
+              </Button>
             </ListItem>
             <ListItem className={classes.listItem}>
               <Button
@@ -56,46 +67,44 @@ export default function SectionNavbars() {
                 onClick={e => e.preventDefault()}
                 color="transparent"
               >
-                Wishlist
-                  </Button>
-            </ListItem>
-            <ListItem className={classes.listItem}>
-              <Button
-                justIcon
-                round
-                href="#pablo"
-                className={classes.notificationNavLink}
-                onClick={e => e.preventDefault()}
-                color="rose"
-              >
-                <Email className={classes.icons} />
+                <i class="fas fa-money-bill-wave"></i>
+                Sell
               </Button>
             </ListItem>
             <ListItem className={classes.listItem}>
-              <CustomDropdown
-                left
-                caret={false}
-                hoverColor="black"
-                dropdownHeader="Dropdown Header"
-                buttonText={
-                  <img
-                    src={profileImage}
-                    className={classes.img}
-                    alt="profile"
-                  />
-                }
-                buttonProps={{
-                  className:
-                    classes.navLink + " " + classes.imageDropdownButton,
-                  color: "transparent"
-                }}
-                dropdownList={[
-                  "Me",
-                  "Settings and other stuff",
-                  "Sign out"
-                ]}
-              />
+              <Button
+                href="#pablo"
+                className={classes.navLink}
+                onClick={e => e.preventDefault()}
+                color="transparent"
+              >
+                <i class="fas fa-star"></i>
+                Wishlist
+              </Button>
             </ListItem>
+            <ListItem className={classes.listItem}>
+              <Button
+                href="#pablo"
+                className={classes.navLink}
+                onClick={e => e.preventDefault()}
+                color="transparent"
+              >
+                {cartIcon}
+              </Button>
+            </ListItem>
+
+            <ListItem className={classes.listItem}>
+              <Button
+                href="#pablo"
+                className={classes.navLink}
+                onClick={e => e.preventDefault()}
+                color="transparent"
+              >
+                <i class="fas fa-user-circle"></i>
+                {name}
+              </Button>
+            </ListItem>
+
           </List>
         }
       />
