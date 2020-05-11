@@ -21,9 +21,9 @@ import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 
 
 // Sections for this page
-import ProductSection from "../LandingPage/Sections/ProductSection.js";
-import TeamSection from "../LandingPage/Sections/TeamSection.js";
-import WorkSection from "../LandingPage/Sections/WorkSection.js";
+import ProductSection from "./Sections/ProductSection.js";
+import TeamSection from "./Sections/TeamSection.js";
+import WorkSection from "./Sections/WorkSection.js";
 
 
 class HomePage extends Component {
@@ -40,16 +40,19 @@ class HomePage extends Component {
             <div>
                 <LoggedHeader name="Jonas Pistolas" cart={true}/>
 
-                <Parallax filter image={require("assets/img/landing-bg.jpg")}>
+                <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>
                         <GridContainer>
                             <GridItem xs={12} sm={12} md={6}>
-                                <h1 className={classes.title}>Your Story Starts With Us.</h1>
+                                <h1 style={{
+                                    background:"rgb(253,27,163)",
+                                    background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                    WebkitBackgroundClip: "text",
+                                    WebkitTextFillColor: "transparent",   
+                                    fontWeight:"bolder"                                 
+                                    }}>Grid Marketplace</h1>
                                 <h4>
-                                    Every landing page needs a small description after the big bold
-                                    title, that{"'"}s why we added this text here. Add here all the
-                                    information that can make you or your product create the first
-                                    impression.
+                                    Buy and sell all your favourite games! Participate in auctions and bid for exceptionally cheap prices!
                                 </h4>
                                 <br />
                                 <Button
@@ -71,7 +74,6 @@ class HomePage extends Component {
                     <div className={classes.container}>
                         <ProductSection />
                         <TeamSection />
-                        <WorkSection />
                     </div>
                 </div>
             </div>

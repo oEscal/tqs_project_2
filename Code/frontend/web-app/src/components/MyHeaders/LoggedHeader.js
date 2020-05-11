@@ -18,7 +18,7 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 import Button from "components/CustomButtons/Button.js";
 
-import image from "assets/img/bg.jpg";
+import image from "assets/img/favicon.png";
 import profileImage from "assets/img/faces/avatar.jpg";
 
 
@@ -40,7 +40,7 @@ export default function SectionNavbars(props) {
   return (
     <div id="navbar" className={classes.navbar}>
       <Header
-        brand="Navbar with notifications"
+        brand={<img src={image}></img>}
         fixed
         changeColorOnScroll={{
           height: 400,

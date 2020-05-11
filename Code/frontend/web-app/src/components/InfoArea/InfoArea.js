@@ -22,13 +22,14 @@ export default function InfoArea(props) {
     [classes.icon]: true,
     [classes.iconVertical]: vertical
   });
+
   return (
     <div className={classes.infoArea}>
-      <div className={iconWrapper}>
-        <props.icon className={iconClasses} />
+      <div style={{textAlign:"center"}}>
+        <i style={{color:props.color, fontSize:"130px"}} className={props.icon} />
       </div>
       <div className={classes.descriptionWrapper}>
-        <h4 className={classes.title}>{title}</h4>
+        <h3 style={{color:props.color, fontWeight:"bold"}}>{title}</h3>
         <p className={classes.description}>{description}</p>
       </div>
     </div>
@@ -43,14 +44,6 @@ InfoArea.propTypes = {
   icon: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  iconColor: PropTypes.oneOf([
-    "primary",
-    "warning",
-    "danger",
-    "success",
-    "info",
-    "rose",
-    "gray"
-  ]),
-  vertical: PropTypes.bool
+  vertical: PropTypes.bool,
+  color: PropTypes.string,
 };
