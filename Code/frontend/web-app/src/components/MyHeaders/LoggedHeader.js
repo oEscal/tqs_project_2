@@ -29,7 +29,7 @@ const useStyles = makeStyles(styles);
 export default function SectionNavbars(props) {
   const classes = useStyles();
 
-  const { name, cart } = props;
+  const { name, cart, wallet } = props;
 
   var cartIcon
   if(cart){
@@ -90,6 +90,18 @@ export default function SectionNavbars(props) {
                 color="transparent"
               >
                 {cartIcon}
+              </Button>
+            </ListItem>
+
+            <ListItem className={classes.listItem}>
+              <Button
+                href="#pablo"
+                className={classes.navLink}
+                onClick={e => e.preventDefault()}
+                color="transparent"
+              >
+                <i class="fas fa-wallet"></i>
+                {wallet} €
               </Button>
             </ListItem>
 

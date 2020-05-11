@@ -23,7 +23,7 @@ import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 // Sections for this page
 import ProductSection from "./Sections/ProductSection.js";
 import TeamSection from "./Sections/TeamSection.js";
-import WorkSection from "./Sections/WorkSection.js";
+import GameSection from "./Sections/GameSection.js";
 
 
 class HomePage extends Component {
@@ -38,7 +38,7 @@ class HomePage extends Component {
         const { classes } = this.props;
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true}/>
+                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00}/>
 
                 <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>
@@ -72,6 +72,7 @@ class HomePage extends Component {
 
                 <div className={classNames(classes.main, classes.mainRaised)}>
                     <div className={classes.container}>
+                        <GameSection />
                         <ProductSection />
                         <TeamSection />
                     </div>
