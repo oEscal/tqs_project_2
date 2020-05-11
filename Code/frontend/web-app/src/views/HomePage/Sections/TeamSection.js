@@ -16,9 +16,11 @@ import CardFooter from "components/Card/CardFooter.js";
 
 import styles from "assets/jss/material-kit-react/views/landingPageSections/teamStyle.js";
 
-import team1 from "assets/img/faces/avatar.jpg";
-import team2 from "assets/img/faces/christian.jpg";
-import team3 from "assets/img/faces/kendall.jpg";
+import team1 from "assets/img/faces/team-1.png";
+import team2 from "assets/img/faces/team-2.png";
+import team3 from "assets/img/faces/team-3.png";
+import team4 from "assets/img/faces/team-4.png";
+
 
 const useStyles = makeStyles(styles);
 
@@ -26,7 +28,7 @@ export default function TeamSection() {
   const classes = useStyles();
   const imageClasses = classNames(
     classes.imgRaised,
-    classes.imgRoundedCircle,
+    classes.imgRounded,
     classes.imgFluid
   );
   return (
@@ -42,8 +44,8 @@ export default function TeamSection() {
         <GridContainer>
           <GridItem xs={12} sm={12} md={3}>
             <Card plain>
-              <GridItem xs={12} sm={12} md={6} className={classes.itemGrid}>
-                <img src={team1} alt="..." className={imageClasses} />
+              <GridItem xs={12} sm={12} md={12} className={classes.itemGrid}>
+                <img src={team4} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
                 Pedro Oliveira
@@ -55,23 +57,25 @@ export default function TeamSection() {
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://github.com/DrPunpun"
                 >
-                  <i className={classes.socials + " fab fa-github"} />
+                  <i className={classes.socials + " fab fa-github"} style={{fontSize:"30px"}} />
                 </Button>
                 <Button
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://www.linkedin.com/in/pedromroliveirapt/"
                 >
-                  <i className={classes.socials + " fab fa-linkedin"} />
+                  <i className={classes.socials + " fab fa-linkedin"} style={{fontSize:"30px"}} />
                 </Button>
               </CardFooter>
             </Card>
           </GridItem>
           <GridItem xs={12} sm={12} md={3}>
             <Card plain>
-              <GridItem xs={12} sm={12} md={6} className={classes.itemGrid}>
-                <img src={team2} alt="..." className={imageClasses} />
+              <GridItem xs={12} sm={12} md={12} className={classes.itemGrid}>
+                <img src={team3} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
                 Diogo Silva
@@ -83,22 +87,24 @@ export default function TeamSection() {
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://github.com/HerouFenix"
                 >
-                  <i className={classes.socials + " fab fa-github"} />
+                  <i className={classes.socials + " fab fa-github"} style={{fontSize:"30px"}} />
                 </Button>
                 <Button
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://www.linkedin.com/in/diogosilvads/"
                 >
-                  <i className={classes.socials + " fab fa-linkedin"} />
+                  <i className={classes.socials + " fab fa-linkedin"} style={{fontSize:"30px"}} />
                 </Button>
               </CardFooter>
             </Card>
           </GridItem>
           <GridItem xs={12} sm={12} md={3}>
             <Card plain>
-              <GridItem xs={12} sm={12} md={6} className={classes.itemGrid}>
+              <GridItem xs={12} sm={12} md={12} className={classes.itemGrid}>
                 <img src={team2} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
@@ -111,23 +117,25 @@ export default function TeamSection() {
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://github.com/Rafaelyot"
                 >
-                  <i className={classes.socials + " fab fa-github"} />
+                  <i className={classes.socials + " fab fa-github"} style={{fontSize:"30px"}} />
                 </Button>
                 <Button
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://www.linkedin.com/in/rafael-sim%C3%B5es-60958b173/"
                 >
-                  <i className={classes.socials + " fab fa-linkedin"} />
+                  <i className={classes.socials + " fab fa-linkedin"} style={{fontSize:"30px"}} />
                 </Button>
               </CardFooter>
             </Card>
           </GridItem>
           <GridItem xs={12} sm={12} md={3}>
             <Card plain>
-              <GridItem xs={12} sm={12} md={6} className={classes.itemGrid}>
-                <img src={team3} alt="..." className={imageClasses} />
+              <GridItem xs={12} sm={12} md={12} className={classes.itemGrid}>
+                <img src={team1} alt="..." className={imageClasses} />
               </GridItem>
               <h4 className={classes.cardTitle}>
                 Pedro Escaleira
@@ -139,15 +147,17 @@ export default function TeamSection() {
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://github.com/oEscal"
                 >
-                  <i className={classes.socials + " fab fa-github"} />
+                  <i className={classes.socials + " fab fa-github"} style={{fontSize:"30px"}} />
                 </Button>
                 <Button
                   justIcon
                   color="transparent"
                   className={classes.margin5}
+                  href="https://www.linkedin.com/in/pedro-escaleira-b9b39115b/"
                 >
-                  <i className={classes.socials + " fab fa-linkedin"} />
+                  <i className={classes.socials + " fab fa-linkedin"} style={{fontSize:"30px"}} />
                 </Button>
               </CardFooter>
             </Card>
