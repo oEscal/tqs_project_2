@@ -82,6 +82,6 @@ public class Auction {
     }
 
     public Date getStartDate() {
-        return startDate;
+        return (Date) startDate.clone();
     }
 }
