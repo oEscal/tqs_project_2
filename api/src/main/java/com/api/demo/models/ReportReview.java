@@ -1,7 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 public class ReportReview {
@@ -16,6 +16,7 @@ public class ReportReview {
     @OneToOne
     private Review reported;
 
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     public int getReportId() {
