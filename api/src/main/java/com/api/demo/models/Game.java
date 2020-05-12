@@ -42,7 +42,7 @@ public class Game {
     }
 
     public Date getReleaseDate() {
-        return releaseDate;
+        return (Date) releaseDate.clone();
     }
 
     public void setId(Integer id) {
