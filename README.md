@@ -4,6 +4,9 @@
 ## Install
 ```
 $ npm install
+$ npm i react-select
+$ npm i @material-ui/utils
+$ npm i @material-ui/lab
 ```
 
 ## Start

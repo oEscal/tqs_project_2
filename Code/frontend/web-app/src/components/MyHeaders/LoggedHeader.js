@@ -29,24 +29,34 @@ const useStyles = makeStyles(styles);
 export default function SectionNavbars(props) {
   const classes = useStyles();
 
-  const { name, cart, wallet } = props;
+  const { name, cart, wallet, heightChange } = props;
 
   var cartIcon
-  if(cart){
-    cartIcon = <i class="fas fa-cart-arrow-down" style={{color:"#fd24ac"}}></i>
-  }else{
+  if (cart) {
+    cartIcon = <i class="fas fa-cart-arrow-down" style={{ color: "#fd24ac" }}></i>
+  } else {
     cartIcon = <i class="fas fa-shopping-cart"></i>
   }
+
+  var change = {}
+  var color = "transparent"
+  if (heightChange) {
+    change = {
+      height: 400,
+      color: "dark",
+    }
+  }else{
+    color = "dark"
+  }
+
   return (
     <div id="navbar" className={classes.navbar}>
       <Header
         brand={<img src={image}></img>}
         fixed
-        changeColorOnScroll={{
-          height: 400,
-          color: "dark",
-        }}
-        color="transparent"
+
+        changeColorOnScroll={change}
+        color={color}
         rightLinks={
           <List className={classes.list}>
             <ListItem className={classes.listItem}>
