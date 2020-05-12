@@ -23,7 +23,6 @@ public class Sell {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-
     public int getSellId() {
         return sellId;
     }
@@ -54,5 +53,13 @@ public class Sell {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public Date getDate() {
+        return (Date) date.clone();
+    }
+
+    public void setDate(Date date) {
+        this.date = (Date) date.clone();
     }
 }
