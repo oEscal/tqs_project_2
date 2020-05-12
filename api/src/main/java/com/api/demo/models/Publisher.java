@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 
 @Entity
-public class GameGenre {
+public class Publisher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
