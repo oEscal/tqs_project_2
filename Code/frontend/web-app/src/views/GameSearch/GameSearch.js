@@ -21,6 +21,12 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Radio from "@material-ui/core/Radio";
 import Switch from "@material-ui/core/Switch";
 
+import Typography from '@material-ui/core/Typography';
+
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
+
 // Core Components
 import Header from "components/Header/Header.js";
 import Footer from "components/Footer/Footer.js";
@@ -44,7 +50,7 @@ import GameSection from "./Sections/GameSection.js";
 
 // MaterialUI Icons
 import Check from "@material-ui/icons/Check";
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import image1 from "assets/img/bg.jpg";
 import image4 from "assets/img/NFS-Heat.jpg";
 import CardHeader from 'components/Card/CardHeader.js';
@@ -146,7 +152,7 @@ class GameSearch extends Component {
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
-                                            />        
+                                            />
                                         </div>
 
                                         <div style={{ textAlign: "left", width: "100%", marginTop: "30px" }}>
@@ -379,6 +385,257 @@ class GameSearch extends Component {
                                 </GridItem>
                             </GridContainer>
                         </div>
+
+
+                        <div className={"searchMobile"} style={{ padding: "5px 0", margin:"auto", width:"90%" }}>
+                            <GridContainer xs={12} sm={12} md={12}>
+                                <ExpansionPanel style={{width:"100%"}}>
+                                    <ExpansionPanelSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1a-content"
+                                        id="panel1a-header"
+                                    >
+                                        <Typography className={classes.heading} style={{ width: "100%" }}>Filter Games</Typography>
+                                    </ExpansionPanelSummary>
+                                    <ExpansionPanelDetails>
+                                        <div style={{ textAlign: "left", width: "100%" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
+                                                Search by name
+                                            </h6>
+                                            <CustomInput
+                                                labelText="Name"
+                                                id="name"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                            />
+                                        </div>
+                                    </ExpansionPanelDetails>
+                                    <ExpansionPanelDetails>
+                                        <div style={{ textAlign: "left", width: "100%" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
+                                                Price Range
+                                            </h6>
+                                            <CustomInput
+                                                labelText="From"
+                                                id="from"
+                                                formControlProps={{
+                                                    fullWidth: false
+                                                }}
+                                            />
+                                            <span style={{ marginRight: "5px", marginLeft: "5px" }}></span>
+                                            <CustomInput
+                                                labelText="To"
+                                                id="to"
+                                                formControlProps={{
+                                                    fullWidth: false
+                                                }}
+                                            />
+                                        </div>
+                                    </ExpansionPanelDetails>
+                                    <ExpansionPanelDetails>
+                                        <div style={{ textAlign: "left", width: "100%" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
+                                                Price Range
+                                            </h6>
+                                            <CustomInput
+                                                labelText="From"
+                                                id="from"
+                                                formControlProps={{
+                                                    fullWidth: false
+                                                }}
+                                            />
+                                            <span style={{ marginRight: "5px", marginLeft: "5px" }}></span>
+                                            <CustomInput
+                                                labelText="To"
+                                                id="to"
+                                                formControlProps={{
+                                                    fullWidth: false
+                                                }}
+                                            />
+                                        </div>
+                                    </ExpansionPanelDetails>
+                                    <ExpansionPanelDetails>
+                                        <div style={{ textAlign: "left", width: "100%", marginTop: "30px" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
+                                                Genres
+                                            </h6>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="MMO"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="Point n Click"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="RPG"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="RTS"
+                                                />
+                                            </div>
+                                        </div>
+                                    </ExpansionPanelDetails>
+
+                                    <ExpansionPanelDetails>
+                                        <div style={{ textAlign: "left", width: "100%", marginTop: "30px" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
+                                                Genres
+                                            </h6>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="PC"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="PS4"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="Xbox One"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="Nintendo Switch"
+                                                />
+                                            </div>
+
+                                            <div class="row">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            tabIndex={-1}
+                                                            checkedIcon={<Check className={classes.checkedIcon} />}
+                                                            icon={<Check className={classes.uncheckedIcon} />}
+                                                            classes={{
+                                                                checked: classes.checked,
+                                                                root: classes.checkRoot
+                                                            }}
+                                                        />
+                                                    }
+                                                    classes={{ label: classes.label, root: classes.labelRoot }}
+                                                    label="Other"
+                                                />
+                                            </div>
+                                        </div>
+                                    </ExpansionPanelDetails>
+                                </ExpansionPanel>
+                            </GridContainer>
+                        </div>
+
 
                         <div style={{ padding: "5px 0" }}>
                             <GridContainer xs={12} sm={12} md={10}>
