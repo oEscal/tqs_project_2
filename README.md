@@ -1,5 +1,17 @@
 # Grid Marketplace - TQS Project 2
 
+# Frontend - Web App
+## Install
+```
+$ npm install
+```
+
+## Start
+```
+$ npm start
+```
+
+# Backend
 ## Setup MySQL database in development
 
 ```sql
