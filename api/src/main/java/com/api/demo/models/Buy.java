@@ -1,6 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Buy {
@@ -15,6 +16,8 @@ public class Buy {
 
     @ManyToOne
     private User user;
+
+    private Date date;
 
     public int getBuyId() {
         return buyId;
@@ -38,5 +41,13 @@ public class Buy {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
