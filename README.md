@@ -4,6 +4,10 @@
 ## Install
 ```
 $ npm install
+$ npm i serialize-javascript
+$ npm i react-select
+$ npm i @material-ui/util
+$ npm i @material-ui/lab
 ```
 
 ## Start
