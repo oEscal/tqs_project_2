@@ -1,6 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.sql.Date;
 
 
@@ -13,6 +14,8 @@ public class Review {
 
     private String comment;
 
+    @Min(0)
+    @Min(5)
     private int score;
 
     @Temporal(TemporalType.DATE)

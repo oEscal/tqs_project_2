@@ -1,6 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
@@ -20,6 +21,9 @@ public class User {
     private String password;
 
     private int age;
+
+    @OneToMany
+    private Set<Review> review;
 
 
     public Integer getId() {
