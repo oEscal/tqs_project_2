@@ -1,6 +1,7 @@
 package com.api.demo.models;
+
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 
 @Entity
@@ -10,11 +11,11 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
 
+    @OneToOne
+    private GameKey gameKey;
+
     @ManyToOne
     private User user;
-
-    @Column(unique = true)
-    private String gameKey;
 
     private double price;
 
@@ -33,20 +34,21 @@ public class Sell {
         this.id = sellId;
     }
 
+    public GameKey getGameKey() {
+        return gameKey;
+    }
+
+    public void setGameKey(GameKey gameKey) {
+        this.gameKey = gameKey;
+    }
+
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getGameKey() {
-        return gameKey;
-    }
-
-    public void setGameKey(String gameKey) {
-        this.gameKey = gameKey;
     }
 
     public double getPrice() {

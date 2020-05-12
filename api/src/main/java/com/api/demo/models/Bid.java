@@ -1,6 +1,7 @@
 package com.api.demo.models;
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
+
 
 @Entity
 public class Bid {

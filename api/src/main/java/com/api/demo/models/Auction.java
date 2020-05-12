@@ -1,15 +1,15 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 
 @Entity
 public class Auction {
+
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-
-    private int auctionId;
+    private int id;
 
     @ManyToOne
     private User user;
@@ -17,11 +17,15 @@ public class Auction {
     //@OneToMany
     //private Game game;
 
-    @Column(unique = true)
-    private String gameKey;
+    @OneToOne
+    private GameKey gameKey;
 
     @OneToOne
     private Bid bid;
+
+    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
 
     @Temporal(TemporalType.DATE)
     private Date endDate;
@@ -29,12 +33,12 @@ public class Auction {
     private double price;
 
 
-    public int getAuctionId() {
-        return auctionId;
+    public int getId() {
+        return id;
     }
 
-    public void setAuctionId(int auctionId) {
-        this.auctionId = auctionId;
+    public void setId(int auctionId) {
+        this.id = auctionId;
     }
 
     public User getUser() {
@@ -45,11 +49,11 @@ public class Auction {
         this.user = user;
     }
 
-    public String getGameKey() {
+    public GameKey getGameKey() {
         return gameKey;
     }
 
-    public void setGameKey(String gameKey) {
+    public void setGameKey(GameKey gameKey) {
         this.gameKey = gameKey;
     }
 
@@ -75,5 +79,9 @@ public class Auction {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public Date getStartDate() {
+        return startDate;
     }
 }

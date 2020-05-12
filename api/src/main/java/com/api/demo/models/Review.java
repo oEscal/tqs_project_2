@@ -2,7 +2,8 @@ package com.api.demo.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import java.sql.Date;
+import java.util.Date;
+import java.util.Set;
 
 
 @Entity
@@ -21,6 +22,8 @@ public class Review {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    @OneToMany
+    private Set<ReportReview> reports;
 
     public Integer getId() {
         return id;
