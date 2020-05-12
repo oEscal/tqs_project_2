@@ -14,6 +14,9 @@ public class Sell {
     @OneToOne
     private GameKey gameKey;
 
+    @OneToOne
+    private Buy purchased;
+
     @ManyToOne
     private User user;
 
@@ -42,6 +45,13 @@ public class Sell {
         this.gameKey = gameKey;
     }
 
+    public Buy getPurchased() {
+        return purchased;
+    }
+
+    public void setPurchased(Buy purchased) {
+        this.purchased = purchased;
+    }
 
     public User getUser() {
         return user;

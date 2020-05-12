@@ -21,7 +21,7 @@ public class Auction {
     private GameKey gameKey;
 
     @OneToOne
-    private Bid bid;
+    private Buy purchased;
 
     @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
     @Temporal(TemporalType.DATE)
@@ -65,12 +65,12 @@ public class Auction {
         this.endDate = (Date) endDate.clone();
     }
 
-    public Bid getBid() {
-        return bid;
+    public Buy getPurchased() {
+        return purchased;
     }
 
-    public void setBid(Bid bid) {
-        this.bid = bid;
+    public void setPurchased(Buy purchased) {
+        this.purchased = purchased;
     }
 
     public double getPrice() {

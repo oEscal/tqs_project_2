@@ -9,8 +9,7 @@ public class Buy {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-
-    private int buyId;
+    private int id;
 
     @ManyToOne
     private Sell sell;
@@ -21,12 +20,13 @@ public class Buy {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    public int getBuyId() {
-        return buyId;
+
+    public int getId() {
+        return id;
     }
 
-    public void setBuyId(int buyId) {
-        this.buyId = buyId;
+    public void setId(int buyId) {
+        this.id = buyId;
     }
 
     public Sell getSell() {
