@@ -27,6 +27,7 @@ public class Game {
 
     private String description;
 
+    @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
     public Integer getId() {
@@ -58,6 +59,6 @@ public class Game {
     }
 
     public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+        this.releaseDate = (Date) releaseDate.clone();
     }
 }
