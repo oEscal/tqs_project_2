@@ -3,17 +3,21 @@ package com.api.demo.models;
 import javax.persistence.*;
 import java.sql.Date;
 
+
 @Entity
 public class Review {
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
     private String comment;
+
     private int score;
 
     @Temporal(TemporalType.DATE)
     private Date date;
+
 
     public Integer getId() {
         return id;

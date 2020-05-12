@@ -1,16 +1,34 @@
 package com.api.demo.models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 
 @Entity
 public class User {
+
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Integer id;
+
+    @Column(unique = true)
     private String username;
+
     private String name;
+
     private String email;
+
     private String password;
+
     private int age;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
