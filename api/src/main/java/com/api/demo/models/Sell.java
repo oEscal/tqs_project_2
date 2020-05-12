@@ -1,5 +1,6 @@
 package com.api.demo.models;
 import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
 public class Sell {
@@ -18,6 +19,9 @@ public class Sell {
 
     //@OneToMany
     //private Game game;
+
+    @Temporal(TemporalType.DATE)
+    private Date date;
 
 
     public int getSellId() {

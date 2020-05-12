@@ -1,7 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 public class Buy {
@@ -17,6 +17,7 @@ public class Buy {
     @ManyToOne
     private User user;
 
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     public int getBuyId() {

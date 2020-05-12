@@ -1,7 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
 public class Auction {
@@ -21,6 +21,8 @@ public class Auction {
 
     @OneToOne
     private Bid bid;
+
+    @Temporal(TemporalType.DATE)
     private Date endDate;
 
     public int getAuctionId() {

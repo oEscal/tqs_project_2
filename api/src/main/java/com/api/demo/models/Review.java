@@ -1,10 +1,7 @@
 package com.api.demo.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
 public class Review {
@@ -14,6 +11,8 @@ public class Review {
 
     private String comment;
     private int score;
+
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     public Integer getId() {
