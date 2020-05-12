@@ -12,7 +12,7 @@ jobs:
         java-version: '8'
     - name: SpotBugs Scan
       run: |
-        % cd api; mvn compile spotbugs:check
+        cd api; mvn compile spotbugs:check
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
