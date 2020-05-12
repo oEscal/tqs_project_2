@@ -19,6 +19,12 @@ public class Game {
     @ManyToMany
     private Set<GameGenre> gameGenre;
 
+    @ManyToOne
+    private Publisher publisher;
+
+    @ManyToMany
+    private Set<GameGenre> developer;
+
     private String description;
 
     private Date releaseDate;
