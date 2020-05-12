@@ -3,8 +3,10 @@ package com.api.demo.models;
 import javax.persistence.*;
 import java.sql.Date;
 
+
 @Entity
 public class ReportReview {
+
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
 
@@ -18,6 +20,7 @@ public class ReportReview {
 
     @Temporal(TemporalType.DATE)
     private Date date;
+
 
     public int getReportId() {
         return reportId;

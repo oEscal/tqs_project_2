@@ -3,6 +3,7 @@ package com.api.demo.models;
 import javax.persistence.*;
 import java.sql.Date;
 
+
 @Entity
 public class Auction {
     @Id
@@ -24,6 +25,9 @@ public class Auction {
 
     @Temporal(TemporalType.DATE)
     private Date endDate;
+
+    private double price;
+
 
     public int getAuctionId() {
         return auctionId;
@@ -63,5 +67,13 @@ public class Auction {
 
     public void setBid(Bid bid) {
         this.bid = bid;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

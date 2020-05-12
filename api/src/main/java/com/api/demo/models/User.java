@@ -1,6 +1,7 @@
 package com.api.demo.models;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -23,7 +24,7 @@ public class User {
     private int age;
 
     @OneToMany
-    private Set<Review> review;
+    private Set<Review> reviews;
 
 
     public Integer getId() {
@@ -72,5 +73,9 @@ public class User {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public Set<Review> getReviews() {
+        return new HashSet<>(this.reviews);
     }
 }

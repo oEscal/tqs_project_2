@@ -2,12 +2,13 @@ package com.api.demo.models;
 import javax.persistence.*;
 import java.sql.Date;
 
+
 @Entity
 public class Sell {
-    @Id
-    @GeneratedValue( strategy= GenerationType.AUTO )
 
-    private int sellId;
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private int id;
 
     @ManyToOne
     private User user;
@@ -23,12 +24,13 @@ public class Sell {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    public int getSellId() {
-        return sellId;
+
+    public int getId() {
+        return id;
     }
 
-    public void setSellId(int sellId) {
-        this.sellId = sellId;
+    public void setId(int sellId) {
+        this.id = sellId;
     }
 
     public User getUser() {
