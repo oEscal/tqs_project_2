@@ -26,6 +26,9 @@ public class User {
     @OneToMany
     private Set<Review> reviews;
 
+    @OneToMany
+    private Set<Report> reports;
+
 
     public Integer getId() {
         return id;
@@ -77,5 +80,9 @@ public class User {
 
     public Set<Review> getReviews() {
         return new HashSet<>(this.reviews);
+    }
+
+    public Set<Report> getReports() {
+        return new HashSet<>(this.reports);
     }
 }

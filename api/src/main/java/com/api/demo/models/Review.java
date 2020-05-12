@@ -23,7 +23,8 @@ public class Review {
     private Date date;
 
     @OneToMany
-    private Set<ReportReview> reports;
+    private Set<Report> reports;
+
 
     public Integer getId() {
         return id;

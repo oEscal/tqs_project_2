@@ -5,20 +5,18 @@ import java.util.Date;
 
 
 @Entity
-public class ReportUser {
+public class Report {
+
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-
     private int reportId;
 
     @OneToOne
     private User author;
 
-    @OneToOne
-    private User reported;
-
     @Temporal(TemporalType.DATE)
     private Date date;
+
 
     public int getReportId() {
         return reportId;
@@ -34,14 +32,6 @@ public class ReportUser {
 
     public void setAuthor(User author) {
         this.author = author;
-    }
-
-    public User getReported() {
-        return reported;
-    }
-
-    public void setReported(User reported) {
-        this.reported = reported;
     }
 
     public Date getDate() {
