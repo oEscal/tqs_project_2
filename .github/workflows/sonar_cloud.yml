@@ -14,7 +14,7 @@ jobs:
         java-version: '8'
     - name: SonarCloud Scan
       run: |
-        cd api; maven clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        cd api; mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       env: 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
