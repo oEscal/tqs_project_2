@@ -15,9 +15,6 @@ public class Auction {
     private User user;
 
     @OneToOne
-    private Game game;
-
-    @OneToOne
     private GameKey gameKey;
 
     @OneToOne
@@ -47,14 +44,6 @@ public class Auction {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
     }
 
     public GameKey getGameKey() {

@@ -34,7 +34,6 @@ public class Game {
     @OneToMany
     private Set<Report> reports;
 
-
     public Integer getId() {
         return id;
     }
