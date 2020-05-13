@@ -11,7 +11,7 @@ jobs:
     - name: Set JDK
       uses: actions/setup-java@v1
       with:
-        java-version: '8'
+        java-version: '8.0.252'
     - name: Compile api
       run: cd api; mvn clean package
     - name: SonarCloud Scan
