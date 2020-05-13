@@ -29,6 +29,10 @@ public class User {
     @OneToMany
     private Set<Report> reports;
 
+    private String photoUrl;
+
+    @OneToMany
+    private Set<Game> wishlist;
 
     public Integer getId() {
         return id;
@@ -85,4 +89,9 @@ public class User {
     public Set<Report> getReports() {
         return new HashSet<>(this.reports);
     }
+
+    public String getPhotoUrl() { return photoUrl; }
+
+    public void setPhotoUrl(String photo) { this.photoUrl = photo; }
+
 }
