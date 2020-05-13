@@ -311,7 +311,7 @@ export default function NewGame(props) {
                     }}
                 />
                 <FormControl className={classes.formControl}>
-                    <FormLabel style={{color: "gray"}}>Assign responsibility</FormLabel>
+                    <FormLabel style={{color: "gray"}}>Genres</FormLabel>
                     <FormGroup row style={{padding: "5px 0"}}>
 
                         <FormControlLabel
@@ -359,18 +359,19 @@ export default function NewGame(props) {
                     </FormGroup>
 
 
-                    <FormLabel style={{color: "gray"}}>Assign responsibility</FormLabel>
+                    <FormLabel style={{color: "gray"}}>Consoles</FormLabel>
                     <FormGroup row style={{padding: "5px 0"}}>
                         <FormControlLabel
                             control={
                                 <MyCheckbox
                                     // checked={state.checkedB}
                                     // onChange={handleChange}
-                                    name="checkedB"
+                                    name="PS4"
+                                    id="PS4"
 
                                 />
                             }
-                            label={<span style={{color: "#495057"}}>Primary</span>}
+                            label={<span style={{color: "#495057"}}>PS4</span>}
                         />
 
                         <FormControlLabel
@@ -378,13 +379,13 @@ export default function NewGame(props) {
                                 <MyCheckbox
                                     // checked={state.checkedB}
                                     // onChange={handleChange}
-                                    name="checkedB"
-
+                                    id="XBOX-ONE"
+                                    name="XBOX-ONE"
 
                                 />
                             }
 
-                            label={<span style={{color: "#495057"}}>Primary</span>}
+                            label={<span style={{color: "#495057"}}>XBOX-ONE</span>}
                         />
 
                     </FormGroup>
