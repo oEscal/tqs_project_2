@@ -24,7 +24,7 @@ class SellGame extends Component {
             <div>
                 <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false}/>
 
-                <div className={classNames(classes.main)} style={{marginTop: "60px"}}>
+                <div className={classNames(classes.main)} style={{marginTop: "60px","background-size":"cover"}}>
 
                     <div className={classes.container}>
                         <div style={{padding: "70px 0"}}>
@@ -54,7 +54,6 @@ class SellGame extends Component {
                             </GridContainer>
                         </div>
                     </div>
-
 
 
                 </div>

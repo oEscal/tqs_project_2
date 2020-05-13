@@ -20,6 +20,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from "@material-ui/core/Typography";
+import Check from "@material-ui/icons/Check";
+import styles2 from "assets/jss/material-kit-react/views/componentsSections/basicsStyle.js";
 
 export const colourOptions = [
     {value: 'ocean', label: 'Ocean', color: '#00B8D9', isFixed: true},
@@ -203,6 +205,9 @@ const MyCheckbox = withStyles({
 
 const useStyles = makeStyles(styles);
 
+const useStyles2 = makeStyles(styles2);
+
+
 export default function NewGame(props) {
 
     const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
@@ -210,7 +215,7 @@ export default function NewGame(props) {
         setCardAnimation("");
     }, 700);
     const classes = useStyles();
-
+    const classes2 = useStyles2();
     const [checked, setChecked] = React.useState(false);
 
     return (
@@ -387,15 +392,21 @@ export default function NewGame(props) {
 
                             label={<span style={{color: "#495057"}}>XBOX-ONE</span>}
                         />
+                    
 
                     </FormGroup>
                 </FormControl>
 
 
                 <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg" type="submit">
-                        Submit request
-                    </Button>
+                    <Button
+                        round
+                        color="primary"
+                        size="lg"
+                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >Submit request </Button>
                 </CardFooter>
             </form>
         </div>

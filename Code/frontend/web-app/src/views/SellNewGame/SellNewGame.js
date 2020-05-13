@@ -6,7 +6,7 @@ import {withStyles} from '@material-ui/styles';
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
-import ExistingGame from "./Sections/NewGame";
+import NewGame from "./Sections/NewGame";
 
 
 class SellNewGame extends Component {
@@ -45,7 +45,7 @@ class SellNewGame extends Component {
 
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={12}>
-                                                <ExistingGame/>
+                                                <NewGame/>
                                             </GridItem>
                                         </GridContainer>
 

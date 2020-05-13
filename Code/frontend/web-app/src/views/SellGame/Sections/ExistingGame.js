@@ -118,10 +118,6 @@ export const dogOptions = [
     {id: 4, label: 'Akita'},
 ];
 
-// let bigOptions = [];
-// for (let i = 0; i < 10000; i++) {
-// 	bigOptions = bigOptions.concat(colourOptions);
-// }
 
 export const groupedOptions = [
     {
@@ -182,7 +178,6 @@ const handleInputChange = (newValue) => {
 };
 
 
-
 const useStyles = makeStyles(styles);
 
 export default function ExistingGame(props) {
@@ -208,7 +203,12 @@ export default function ExistingGame(props) {
                         placeholder="Select a game..."
                         styles={colourStyles}
                         components={{DropdownIndicator}}
-                        noOptionsMessage={() => <a href="/sell-new-game">New Game? Request a adding operation to our admins</a>}
+                        noOptionsMessage={() =>
+                            <span>Cant find the game you want to sell?
+                                &nbsp; &nbsp;<Button color="primary" size="sm"
+                                                     round><a href="/sell-new-game" style={{color: "white"}}>Click here to request to add it</a></Button>
+                            </span>
+                        }
                     />
                 </div>
 
@@ -223,17 +223,19 @@ export default function ExistingGame(props) {
                     />
                 </div>
 
-                <label htmlFor="normal-switch" className="switchClass" style={{"padding-top": "20px"}}>
-                    <span>Auction</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <Switch
-                        checked={checked}
-                        onChange={setChecked}
-                        id="normal-switch"
-                        className="react-switch"
-                        onColor="#9c27b0"
-                    />
-                </label>
 
+                {
+                    <label htmlFor="normal-switch" className="switchClass" style={{"padding-top": "20px"}}>
+                        <span>Auction</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <Switch
+                            checked={checked}
+                            onChange={setChecked}
+                            id="normal-switch"
+                            className="react-switch"
+                            onColor="#9c27b0"
+                        />
+                    </label>
+                }
 
                 <CustomInput
 
@@ -246,8 +248,6 @@ export default function ExistingGame(props) {
                     }}
                     inputProps={{
                         type: "number",
-                        min: '0',
-
                         endAdornment: (
                             <InputAdornment position="end">
                                 <EuroSymbolIcon className={classes.inputIconsColor}/>
@@ -258,6 +258,7 @@ export default function ExistingGame(props) {
 
                 />
 
+                {checked &&
                 <CustomInput
                     labelText="End Date"
                     id="date"
@@ -278,6 +279,7 @@ export default function ExistingGame(props) {
                         autoComplete: "off"
                     }}
                 />
+                }
                 <CustomInput
                     labelText="Key"
                     id="key"
@@ -296,9 +298,14 @@ export default function ExistingGame(props) {
                     }}
                 />
                 <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg" type="submit">
-                        Confirm
-                    </Button>
+                    <Button
+                        round
+                        color="primary"
+                        size="lg"
+                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >Confirm </Button>
                 </CardFooter>
             </form>
         </div>
