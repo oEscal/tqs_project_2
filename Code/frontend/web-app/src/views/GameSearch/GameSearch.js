@@ -413,6 +413,7 @@ class GameSearch extends Component {
                                                     <div style={{ color: "#000", padding: "12px 0" }}>
                                                         <Select
                                                             className="basic-single"
+                                                            isSearchable={false}
                                                             classNamePrefix="select"
                                                             name="color"
                                                             defaultValue={{ "value": "DATE", "label": "Newer First" }}
@@ -421,7 +422,6 @@ class GameSearch extends Component {
                                                     </div>
                                                 </GridItem>
                                             </GridContainer>
-
                                             <hr style={{ color: "#999", opacity: "0.4" }}></hr>
                                         </div>
                                     </GridItem>
