@@ -14,7 +14,11 @@ jobs:
         java-version: '8'
     - name: SonarCloud Scan
       run: |
-        cd api; mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        cd api; \
+        mvn clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        -Dsonar.projectKey=oEscal_tqs_project_2 -Dsonar.organization=tqs \
+        -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN \
+        -Dsonar.qualitygate.wait=true
       env: 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
