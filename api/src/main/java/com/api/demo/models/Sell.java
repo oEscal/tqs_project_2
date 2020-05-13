@@ -22,9 +22,6 @@ public class Sell {
 
     private double price;
 
-    //@OneToMany
-    //private Game game;
-
     @Temporal(TemporalType.DATE)
     private Date date;
 

@@ -14,9 +14,6 @@ public class Auction {
     @ManyToOne
     private User user;
 
-    //@OneToMany
-    //private Game game;
-
     @OneToOne
     private GameKey gameKey;
 
