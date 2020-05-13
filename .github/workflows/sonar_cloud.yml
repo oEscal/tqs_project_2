@@ -4,6 +4,9 @@ jobs:
   sonarCloudTrigger:
     name: SonarCloud Trigger
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
     steps:
     - uses: actions/checkout@v2
       with:
@@ -11,7 +14,7 @@ jobs:
     - name: SonarCloud Scan
       uses: xlui/action-maven-cli/jdk8@master
       with:
-        args: api clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        args: clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       env: 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
