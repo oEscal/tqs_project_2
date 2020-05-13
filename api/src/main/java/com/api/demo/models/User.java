@@ -23,12 +23,38 @@ public class User {
 
     private int age;
 
-    @OneToMany
-    private Set<Review> reviews;
+    //The games he reviewed
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewGame> reviewGames;
 
-    @OneToMany
-    private Set<Report> reports;
+    //The users he reviewed
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewUser> reviewUsers;
 
+    //The reviews directed to the users
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewUser> reviews;
+
+    //The reports this user has issued on game reviews
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReportReviewGame> reportsOnGameReview;
+
+    //The reports this user has issued on user reviews
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReportReviewUser> reportsOnUserReview;
+
+    //The reports this user has issued on users
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReportUser> reportsOnUser;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Buy> buys;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Auction> auctions;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Sell> sells;
 
     public Integer getId() {
         return id;
@@ -78,11 +104,11 @@ public class User {
         this.age = age;
     }
 
-    public Set<Review> getReviews() {
+    public Set<ReviewUser> getReviewGames() {
         return new HashSet<>(this.reviews);
     }
 
-    public Set<Report> getReports() {
-        return new HashSet<>(this.reports);
+    public Set<ReportUser> getReports() {
+        return new HashSet<>(this.reportsOnUser);
     }
 }

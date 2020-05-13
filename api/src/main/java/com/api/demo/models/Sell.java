@@ -12,19 +12,21 @@ public class Sell {
     private int id;
 
     @OneToOne
+    @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
     @OneToOne
+    @JoinColumn(name = "buy_id")
     private Buy purchased;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     private double price;
 
     @Temporal(TemporalType.DATE)
     private Date date;
-
 
     public int getId() {
         return id;

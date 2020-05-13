@@ -11,13 +11,16 @@ public class Auction {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToOne
+    @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
     @OneToOne
+    @JoinColumn(name = "buy_id")
     private Buy purchased;
 
     @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
@@ -28,7 +31,6 @@ public class Auction {
     private Date endDate;
 
     private double price;
-
 
     public int getId() {
         return id;

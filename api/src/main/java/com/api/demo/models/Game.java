@@ -19,20 +19,26 @@ public class Game {
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_genre_id")
     private Set<GameGenre> gameGenres;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "developer_id")
     private Set<Developer> developers;
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
     @OneToMany
-    private Set<Report> reports;
+    private Set<ReviewGame> reviews;
+
+    @OneToMany
+    private Set<GameKey> gamekeys;
 
     public Integer getId() {
         return id;
@@ -61,11 +67,7 @@ public class Game {
     public Set<Developer> getDeveloper() {
         return new HashSet<>(developers);
     }
-
-    public Set<Report> getReports() {
-        return new HashSet<>(reports);
-    }
-
+    
     public void setId(Integer id) {
         this.id = id;
     }

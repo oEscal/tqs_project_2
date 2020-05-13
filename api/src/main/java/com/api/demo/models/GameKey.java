@@ -13,12 +13,13 @@ public class GameKey {
     @Column(unique = true)
     private String gameKey;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
     private Game game;
 
-    public int getId() {
-        return id;
-    }
+    private String retailer;
+
+    public int getId() { return id; }
 
     public String getGameKey() {
         return gameKey;
@@ -39,4 +40,8 @@ public class GameKey {
     public void setGame(Game game) {
         this.game = game;
     }
+
+    public String getRetailer() { return this.retailer; }
+
+    public void setRetailer(String retailer) { this.retailer = retailer; }
 }
