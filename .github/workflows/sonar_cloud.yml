@@ -11,10 +11,13 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: SonarCloud Scan
-      uses: xlui/action-maven-cli/jdk8@master
+    - name: Set up JDK
+      uses: actions/setup-java@v1
       with:
-        args: clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        java-version: '8'
+    - name: SonarCloud Scan
+      run: |
+        cd api; maven clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       env: 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
