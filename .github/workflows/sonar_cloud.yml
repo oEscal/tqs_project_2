@@ -9,9 +9,9 @@ jobs:
       with:
         fetch-depth: 0
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: xlui/action-maven-cli/jdk8@master
       with:
-        projectBaseDir: api
+        args: api clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       env: 
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
