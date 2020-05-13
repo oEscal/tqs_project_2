@@ -16,6 +16,7 @@ public class Publisher {
 
     private String description;
 
+
     public Integer getId() {
         return id;
     }
