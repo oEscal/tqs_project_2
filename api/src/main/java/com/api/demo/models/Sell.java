@@ -15,15 +15,15 @@ public class Sell {
     private GameKey gameKey;
 
     @OneToOne
+    private Game game;
+
+    @OneToOne
     private Buy purchased;
 
     @ManyToOne
     private User user;
 
     private double price;
-
-    //@OneToMany
-    //private Game game;
 
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -43,6 +43,14 @@ public class Sell {
 
     public void setGameKey(GameKey gameKey) {
         this.gameKey = gameKey;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public Buy getPurchased() {

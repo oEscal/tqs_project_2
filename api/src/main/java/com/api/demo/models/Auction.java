@@ -14,8 +14,8 @@ public class Auction {
     @ManyToOne
     private User user;
 
-    //@OneToMany
-    //private Game game;
+    @OneToOne
+    private Game game;
 
     @OneToOne
     private GameKey gameKey;
@@ -47,6 +47,14 @@ public class Auction {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public GameKey getGameKey() {
