@@ -34,6 +34,10 @@ import image4 from "assets/img/NFS-Heat.jpg";
 
 import styles from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
 
+import {
+  Link
+} from "react-router-dom";
+
 const useStyles = makeStyles(styles);
 
 export default function GameSection() {
@@ -102,7 +106,7 @@ export default function GameSection() {
               image={image4}
             />
             <CardContent>
-              <div style={{textAlign:"left"}}>
+              <div style={{ textAlign: "left" }}>
                 <h3 style={{ fontWeight: "bold", color: "#3b3e48" }}>
                   NFS: Heat
                     <br />
@@ -116,15 +120,17 @@ export default function GameSection() {
 
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
-          <Button
-            color="danger"
-            size="lg"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <i className="fas fa-search" />
-            Search the market
-          </Button>
+          <Link to="/games">
+            <Button
+              color="danger"
+              size="lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fas fa-search" />
+              Search the market
+            </Button>
+          </Link>
         </GridItem>
       </GridContainer>
     </div >

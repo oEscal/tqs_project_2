@@ -55,6 +55,9 @@ import FadeIn from "react-fade-in";
 import Lottie from "react-lottie";
 import * as loadingAnim from "assets/animations/loading_anim.json";
 
+import {
+    Link
+} from "react-router-dom";
 
 class GameSearch extends Component {
     constructor() {
@@ -108,32 +111,36 @@ class GameSearch extends Component {
                 }
                 items.push(
                     <GridItem xs={12} sm={12} md={4} style={style}>
-                        <Card style={{ height: "375px", width: "100%" }}>
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    height="185px"
-                                    image={image}
-                                />
-                                <CardContent >
-                                    <div style={{ textAlign: "left", height: "105px" }}>
-                                        <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            {text}
-                                        </h6>
-                                    </div>
-                                    <div style={{ textAlign: "left" }}>
-                                        <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            Launch Date: <span style={{ fontWeight: "bold" }}>05-03-2020</span>
-                                        </h6>
-                                    </div>
-                                    <div style={{ textAlign: "left" }}>
-                                        <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
-                                        </h6>
-                                    </div>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
+                        <Link to={"/games/info/" + text.replace(" ", "")}>
+
+                            <Card style={{ height: "375px", width: "100%" }}>
+                                <CardActionArea>
+                                    <CardMedia
+                                        component="img"
+                                        height="185px"
+                                        image={image}
+                                    />
+                                    <CardContent >
+                                        <div style={{ textAlign: "left", height: "105px" }}>
+                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                {text}
+                                            </h6>
+                                        </div>
+                                        <div style={{ textAlign: "left" }}>
+                                            <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                Launch Date: <span style={{ fontWeight: "bold" }}>05-03-2020</span>
+                                            </h6>
+                                        </div>
+                                        <div style={{ textAlign: "left" }}>
+                                            <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
+                                            </h6>
+                                        </div>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Link >
+
                     </GridItem>
                 )
             }
@@ -162,7 +169,7 @@ class GameSearch extends Component {
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
-                        <div className={"search"} style={{ position: "absolute", top: "8%", right: "5%" }}>
+                        <div className={"search"} style={{ position: "absolute", top: "8%", right: "5%", zIndex:"10" }}>
                             <GridContainer xs={12} sm={12} md={12}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Card style={{ height: "100%", width: "400px", float: "right" }}>

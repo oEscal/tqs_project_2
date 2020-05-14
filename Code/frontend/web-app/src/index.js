@@ -25,9 +25,9 @@ ReactDOM.render(
       <Route path="/login-page" component={LoginPage} />
       <Route path="/components" component={Components} />
 
-      <Route path="/games/info" component={Game} />
-      <Route path="/games" component={GameSearch} />
-      <Route path="/" component={HomePage} />
+      <Route exact path="/games/info/:game" component={Game} />
+      <Route exact path="/games" component={GameSearch} />
+      <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
   document.getElementById("root")
