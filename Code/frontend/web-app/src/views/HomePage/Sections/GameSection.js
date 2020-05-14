@@ -58,16 +58,19 @@ export default function GameSection() {
           <h5 style={{ color: "#ff1cb7", float: "left" }}><b>Featured</b></h5>
           <Card carousel style={{ height: "80%" }}>
             <Carousel {...settings}>
-              <div>
-                <img src={image1} alt="First slide" className="slick-image" />
-                <div className="slick-caption">
-                  <h3 style={{ fontWeight: "bold", textShadow: "2px 2px #fc3b98" }}>
-                    No Man's Sky
+              <Link to="/games/info/NoMansSky">
+                <div>
+                  <img src={image1} alt="First slide" className="slick-image" />
+                  <div className="slick-caption">
+                    <h3 style={{ fontWeight: "bold", textShadow: "2px 2px #fc3b98" }}>
+                      No Man's Sky
                     <br />
-                    <span style={{ fontSize: "20px" }}>as low as 15,99€</span>
-                  </h3>
+                      <span style={{ fontSize: "20px" }}>as low as 15,99€</span>
+                    </h3>
+                  </div>
                 </div>
-              </div>
+              </Link>
+              <Link to="/games/info/NoMansSky">
               <div>
                 <img
                   src={image2}
@@ -82,6 +85,8 @@ export default function GameSection() {
                   </h3>
                 </div>
               </div>
+              </Link>
+              <Link to="/games/info/NoMansSky">
               <div>
                 <img src={image3} alt="Third slide" className="slick-image" />
                 <div className="slick-caption">
@@ -92,6 +97,7 @@ export default function GameSection() {
                   </h3>
                 </div>
               </div>
+              </Link>
             </Carousel>
           </Card>
         </GridItem>
@@ -99,22 +105,24 @@ export default function GameSection() {
 
         <GridItem xs={12} sm={12} md={4}>
           <h5 style={{ color: "#ff1cb7", float: "left" }}><b>Highlight</b></h5>
-          <Card style={{ height: "80%", width: "100%" }}>
-            <CardMedia
-              component="img"
-              height="275px"
-              image={image4}
-            />
-            <CardContent>
-              <div style={{ textAlign: "left" }}>
-                <h3 style={{ fontWeight: "bold", color: "#3b3e48" }}>
-                  NFS: Heat
+          <Link to="/games/info/NFS:Heat">
+            <Card style={{ height: "80%", width: "100%" }}>
+              <CardMedia
+                component="img"
+                height="275px"
+                image={image4}
+              />
+              <CardContent>
+                <div style={{ textAlign: "left" }}>
+                  <h3 style={{ fontWeight: "bold", color: "#3b3e48" }}>
+                    NFS: Heat
                     <br />
-                  <span style={{ fontSize: "20px" }}>as low as 1,50€</span>
-                </h3>
-              </div>
-            </CardContent>
-          </Card>
+                    <span style={{ fontSize: "20px" }}>as low as 1,50€</span>
+                  </h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </GridItem>
       </GridContainer>
 
