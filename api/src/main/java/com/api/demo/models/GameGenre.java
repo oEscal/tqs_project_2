@@ -16,6 +16,7 @@ public class GameGenre {
 
     private String description;
 
+
     public Integer getId() {
         return id;
     }
