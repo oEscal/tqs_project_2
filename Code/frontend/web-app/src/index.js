@@ -14,6 +14,10 @@ import LoginPage from "views/LoginPage/LoginPage.js";
 import Game from "views/GameInfo/Game.js";
 import GameSearch from "views/GameSearch/GameSearch.js";
 import HomePage from "views/HomePage/HomePage.js";
+import SellNewGame from "views/SellNewGame/SellNewGame.js";
+import SellGame from "views/SellGame/SellGame.js";
+
+import Cart from "views/Cart/Cart.js";
 
 var hist = createBrowserHistory();
 
@@ -25,8 +29,12 @@ ReactDOM.render(
       <Route path="/login-page" component={LoginPage} />
       <Route path="/components" component={Components} />
 
+      <Route exact path="/cart" component={Cart} />
       <Route exact path="/games/info/:game" component={Game} />
       <Route exact path="/games" component={GameSearch} />
+      <Route exact path="/" component={HomePage} />
+      <Route exact path="/sell-game" component={SellGame} />
+      <Route exact path="/sell-new-game" component={SellNewGame} />
       <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
