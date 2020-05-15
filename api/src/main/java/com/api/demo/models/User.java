@@ -31,10 +31,12 @@ public class User {
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "review_from_user_id")
     private Set<ReviewUser> reviewUsers;
 
     //The users that reviewd him
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "review_to_user_id")
     private Set<ReviewUser> reviewedUsers;
 
     //The reviews directed to the users
@@ -49,8 +51,14 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReportReviewUser> reportsOnUserReview;
 
+    //The reports this user has received
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "report_from_user_id")
+    private Set<ReportUser> reportsThisUser;
+
     //The reports this user has issued on users
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "report_to_user_id")
     private Set<ReportUser> reportsOnUser;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -126,4 +134,25 @@ public class User {
 
     public void setPhotoUrl(String photo) { this.photoUrl = photo; }
 
+    public Set<ReviewUser> getReviewUsers() { return reviewUsers; }
+
+    public Set<ReviewUser> getReviewedUsers() { return reviewedUsers; }
+
+    public Set<ReviewUser> getReviews() { return reviews; }
+
+    public Set<ReportReviewGame> getReportsOnGameReview() { return reportsOnGameReview; }
+
+    public Set<ReportReviewUser> getReportsOnUserReview() { return reportsOnUserReview; }
+
+    public Set<ReportUser> getReportsThisUser() { return reportsThisUser; }
+
+    public Set<ReportUser> getReportsOnUser() { return reportsOnUser; }
+
+    public Set<Buy> getBuys() { return buys; }
+
+    public Set<Auction> getAuctions() { return auctions; }
+
+    public Set<Sell> getSells() { return sells; }
+
+    public Set<Game> getWishlist() { return wishlist; }
 }

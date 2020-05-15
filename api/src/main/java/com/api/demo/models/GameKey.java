@@ -50,4 +50,8 @@ public class GameKey {
     public String getRetailer() { return this.retailer; }
 
     public void setRetailer(String retailer) { this.retailer = retailer; }
+
+    public Sell getSell() { return sell; }
+
+    public Auction getAuction() { return auction; }
 }

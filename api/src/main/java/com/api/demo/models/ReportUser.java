@@ -12,14 +12,14 @@ public class ReportUser {
     private int reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_user_id")
+    @JoinColumn(name = "report_from_user_id")
     private User author;
 
     @Temporal(TemporalType.DATE)
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_user_id")
+    @JoinColumn(name = "report_to_user_id")
     private User reported;
 
 

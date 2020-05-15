@@ -23,7 +23,7 @@ public class ReviewGame {
     private Date date;
 
     @OneToMany
-    private Set<ReportUser> reports;
+    private Set<ReportReviewGame> reports;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -65,4 +65,10 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public Set<ReportReviewGame> getReports() { return reports; }
+
+    public User getAuthor() { return author; }
+
+    public Game getGame() { return game; }
 }

@@ -20,6 +20,7 @@ public class GameGenre {
     @ManyToMany
     private Set<Game> games;
 
+    public Set<Game> getGames() { return games; }
 
     public Integer getId() {
         return id;

@@ -44,4 +44,6 @@ public class Publisher {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Set<Game> getGames() { return games; }
 }

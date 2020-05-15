@@ -26,11 +26,11 @@ public class ReviewUser {
     private Set<ReportUser> reports;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_user_id")
+    @JoinColumn(name = "review_from_user_id")
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_user_id")
+    @JoinColumn(name = "review_to_user_id")
     private User target;
 
 
@@ -65,4 +65,10 @@ public class ReviewUser {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public Set<ReportUser> getReports() { return reports; }
+
+    public User getAuthor() { return author; }
+
+    public User getTarget() { return target; }
 }

@@ -46,4 +46,6 @@ public class ReportReviewUser {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public ReviewUser getReported() { return reported; }
 }
