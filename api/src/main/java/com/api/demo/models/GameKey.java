@@ -17,8 +17,13 @@ public class GameKey {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    private String retailer;
+    @OneToOne
+    private Sell sell;
 
+    @OneToOne
+    private Auction auction;
+
+    private String retailer;
 
     public int getId() { return id; }
 

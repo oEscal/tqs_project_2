@@ -27,7 +27,6 @@ public class Sell {
 
     @Temporal(TemporalType.DATE)
     private Date date;
-
     
     public int getId() {
         return id;

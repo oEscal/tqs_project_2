@@ -15,6 +15,9 @@ public class Buy {
     @JoinColumn(name = "sell_id")
     private Sell sell;
 
+    @OneToOne
+    private Auction auction;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

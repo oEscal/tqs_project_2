@@ -40,6 +40,8 @@ public class Game {
     @OneToMany
     private Set<GameKey> gameKeys;
 
+    @ManyToMany
+    private Set<User> userWish;
 
     private String coverUrl;
 

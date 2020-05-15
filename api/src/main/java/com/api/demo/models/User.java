@@ -33,6 +33,10 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewUser> reviewUsers;
 
+    //The users that reviewd him
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewUser> reviewedUsers;
+
     //The reviews directed to the users
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewUser> reviews;
@@ -58,6 +62,9 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Sell> sells;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id")
+    private Set<Game> wishlist;
 
     public Integer getId() {
         return id;
