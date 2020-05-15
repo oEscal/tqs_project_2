@@ -1,0 +1,10 @@
+.switchClass {
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+}
+
+select.form-control {
+    box-shadow: none!important;
+}
+
