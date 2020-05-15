@@ -22,6 +22,7 @@ public class ReportReviewGame {
     @JoinColumn(name = "review_game_id")
     private ReviewGame reported;
 
+
     public int getReportId() {
         return reportId;
     }

@@ -38,7 +38,8 @@ public class Game {
     private Set<ReviewGame> reviews;
 
     @OneToMany
-    private Set<GameKey> gamekeys;
+    private Set<GameKey> gameKeys;
+
 
     private String coverUrl;
 

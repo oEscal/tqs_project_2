@@ -58,6 +58,7 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Sell> sells;
 
+
     public Integer getId() {
         return id;
     }

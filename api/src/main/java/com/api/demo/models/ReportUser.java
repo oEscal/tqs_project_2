@@ -22,6 +22,7 @@ public class ReportUser {
     @JoinColumn(name = "to_user_id")
     private User reported;
 
+
     public int getReportId() {
         return reportId;
     }

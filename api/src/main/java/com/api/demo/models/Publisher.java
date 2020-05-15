@@ -20,6 +20,7 @@ public class Publisher {
     @OneToMany
     private Set<Game> games;
 
+
     public Integer getId() {
         return id;
     }

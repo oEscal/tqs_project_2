@@ -22,6 +22,7 @@ public class Buy {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+
     public int getId() {
         return id;
     }

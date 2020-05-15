@@ -33,6 +33,7 @@ public class ReviewUser {
     @JoinColumn(name = "to_user_id")
     private User target;
 
+
     public Integer getId() {
         return id;
     }

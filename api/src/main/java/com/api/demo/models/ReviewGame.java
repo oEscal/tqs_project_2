@@ -33,6 +33,7 @@ public class ReviewGame {
     @JoinColumn(name = "game_id")
     private Game game;
 
+
     public Integer getId() {
         return id;
     }

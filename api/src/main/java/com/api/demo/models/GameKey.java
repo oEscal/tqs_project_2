@@ -19,6 +19,7 @@ public class GameKey {
 
     private String retailer;
 
+
     public int getId() { return id; }
 
     public String getGameKey() {

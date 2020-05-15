@@ -19,6 +19,7 @@ public class Developer {
     @JoinColumn(name = "game_id")
     private Set<Game> games;
 
+
     public Integer getId() {
         return id;
     }
