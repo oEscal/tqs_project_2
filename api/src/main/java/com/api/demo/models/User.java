@@ -23,6 +23,8 @@ public class User {
 
     private int age;
 
+    private String photoUrl;
+
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewGame> reviewGames;
@@ -111,4 +113,9 @@ public class User {
     public Set<ReportUser> getReports() {
         return new HashSet<>(this.reportsOnUser);
     }
+
+    public String getPhotoUrl() { return photoUrl; }
+
+    public void setPhotoUrl(String photo) { this.photoUrl = photo; }
+
 }
