@@ -16,6 +16,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<sonar.projectKey>oEscal_tqs_project_2</sonar.projectKey>
+		<sonar.organization>tqs</sonar.organization>
+		<sonar.cpd.exclusions>**/models/*.java</sonar.cpd.exclusions>
 	</properties>
 
 	<dependencies>
