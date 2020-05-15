@@ -34,6 +34,8 @@ public class Game {
     @OneToMany
     private Set<Report> reports;
 
+    private String coverUrl;
+
     public Integer getId() {
         return id;
     }
@@ -85,4 +87,9 @@ public class Game {
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = (Date) releaseDate.clone();
     }
+
+    public String getCoverUrl() { return coverUrl; }
+
+    public void setCoverUrl(String cover) { this.coverUrl = cover; }
+
 }
