@@ -2,6 +2,7 @@ package com.api.demo.models;
 
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
@@ -13,6 +14,11 @@ public class Developer {
 
     @Column(unique=true)
     private String name;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Set<Game> games;
+
 
     public Integer getId() {
         return id;
@@ -29,4 +35,6 @@ public class Developer {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Set<Game> getGames() { return games; }
 }

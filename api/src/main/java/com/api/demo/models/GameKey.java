@@ -11,17 +11,24 @@ public class GameKey {
     private int id;
 
     @Column(unique = true)
-    private String key;
+    private String gameKey;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
     private Game game;
 
-    public int getId() {
-        return id;
-    }
+    @OneToOne
+    private Sell sell;
 
-    public String getKey() {
-        return key;
+    @OneToOne
+    private Auction auction;
+
+    private String retailer;
+
+    public int getId() { return id; }
+
+    public String getGameKey() {
+        return gameKey;
     }
 
     public Game getGame() {
@@ -32,11 +39,19 @@ public class GameKey {
         this.id = id;
     }
 
-    public void setKey(String gameKey) {
-        this.key = gameKey;
+    public void setGameKey(String gameKey) {
+        this.gameKey = gameKey;
     }
 
     public void setGame(Game game) {
         this.game = game;
     }
+
+    public String getRetailer() { return this.retailer; }
+
+    public void setRetailer(String retailer) { this.retailer = retailer; }
+
+    public Sell getSell() { return sell; }
+
+    public Auction getAuction() { return auction; }
 }

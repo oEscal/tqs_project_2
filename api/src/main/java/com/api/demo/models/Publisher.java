@@ -2,6 +2,7 @@ package com.api.demo.models;
 
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
@@ -15,6 +16,9 @@ public class Publisher {
     private String name;
 
     private String description;
+
+    @OneToMany
+    private Set<Game> games;
 
 
     public Integer getId() {
@@ -40,4 +44,6 @@ public class Publisher {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Set<Game> getGames() { return games; }
 }

@@ -7,7 +7,7 @@ import java.util.Set;
 
 
 @Entity
-public class Review {
+public class ReviewUser {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -23,7 +23,15 @@ public class Review {
     private Date date;
 
     @OneToMany
-    private Set<Report> reports;
+    private Set<ReportUser> reports;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_from_user_id")
+    private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_to_user_id")
+    private User target;
 
 
     public Integer getId() {
@@ -57,4 +65,10 @@ public class Review {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public Set<ReportUser> getReports() { return reports; }
+
+    public User getAuthor() { return author; }
+
+    public User getTarget() { return target; }
 }

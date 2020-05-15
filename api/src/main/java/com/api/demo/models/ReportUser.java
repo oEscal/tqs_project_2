@@ -5,17 +5,22 @@ import java.util.Date;
 
 
 @Entity
-public class Report {
+public class ReportUser {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
     private int reportId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_from_user_id")
     private User author;
 
     @Temporal(TemporalType.DATE)
     private Date date;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_to_user_id")
+    private User reported;
 
 
     public int getReportId() {

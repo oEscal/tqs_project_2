@@ -2,6 +2,7 @@ package com.api.demo.models;
 
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
@@ -16,6 +17,10 @@ public class GameGenre {
 
     private String description;
 
+    @ManyToMany
+    private Set<Game> games;
+
+    public Set<Game> getGames() { return games; }
 
     public Integer getId() {
         return id;

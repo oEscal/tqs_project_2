@@ -11,10 +11,15 @@ public class Buy {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private int id;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "sell_id")
     private Sell sell;
 
-    @ManyToOne
+    @OneToOne
+    private Auction auction;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Temporal(TemporalType.DATE)

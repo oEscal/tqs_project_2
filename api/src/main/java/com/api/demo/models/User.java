@@ -23,15 +23,55 @@ public class User {
 
     private int age;
 
-    @OneToMany
-    private Set<Review> reviews;
-
-    @OneToMany
-    private Set<Report> reports;
-
     private String photoUrl;
 
-    @OneToMany
+    //The games he reviewed
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewGame> reviewGames;
+
+    //The users he reviewed
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "review_from_user_id")
+    private Set<ReviewUser> reviewUsers;
+
+    //The users that reviewd him
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "review_to_user_id")
+    private Set<ReviewUser> reviewedUsers;
+
+    //The reviews directed to the users
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReviewUser> reviews;
+
+    //The reports this user has issued on game reviews
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReportReviewGame> reportsOnGameReview;
+
+    //The reports this user has issued on user reviews
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<ReportReviewUser> reportsOnUserReview;
+
+    //The reports this user has received
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "report_from_user_id")
+    private Set<ReportUser> reportsThisUser;
+
+    //The reports this user has issued on users
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "report_to_user_id")
+    private Set<ReportUser> reportsOnUser;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Buy> buys;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Auction> auctions;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Sell> sells;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id")
     private Set<Game> wishlist;
 
     public Integer getId() {
@@ -82,16 +122,37 @@ public class User {
         this.age = age;
     }
 
-    public Set<Review> getReviews() {
+    public Set<ReviewUser> getReviewGames() {
         return new HashSet<>(this.reviews);
     }
 
-    public Set<Report> getReports() {
-        return new HashSet<>(this.reports);
+    public Set<ReportUser> getReports() {
+        return new HashSet<>(this.reportsOnUser);
     }
 
     public String getPhotoUrl() { return photoUrl; }
 
     public void setPhotoUrl(String photo) { this.photoUrl = photo; }
 
+    public Set<ReviewUser> getReviewUsers() { return reviewUsers; }
+
+    public Set<ReviewUser> getReviewedUsers() { return reviewedUsers; }
+
+    public Set<ReviewUser> getReviews() { return reviews; }
+
+    public Set<ReportReviewGame> getReportsOnGameReview() { return reportsOnGameReview; }
+
+    public Set<ReportReviewUser> getReportsOnUserReview() { return reportsOnUserReview; }
+
+    public Set<ReportUser> getReportsThisUser() { return reportsThisUser; }
+
+    public Set<ReportUser> getReportsOnUser() { return reportsOnUser; }
+
+    public Set<Buy> getBuys() { return buys; }
+
+    public Set<Auction> getAuctions() { return auctions; }
+
+    public Set<Sell> getSells() { return sells; }
+
+    public Set<Game> getWishlist() { return wishlist; }
 }
