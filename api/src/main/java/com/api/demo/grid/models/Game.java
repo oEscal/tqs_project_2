@@ -2,9 +2,7 @@ package com.api.demo.grid.models;
 
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -45,6 +43,21 @@ public class Game {
 
     private String coverUrl;
 
+    private String platform;
+
+    public Game(){ }
+
+    public Game(String name, String description, Set<GameGenre> gameGenres, Publisher publisher, Date releaseDate,
+                String coverUrl, String platform) {
+        this.name = name;
+        this.description = description;
+        this.gameGenres = gameGenres;
+        this.publisher = publisher;
+        this.releaseDate = releaseDate;
+        this.coverUrl = coverUrl;
+        this.platform = platform;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -61,20 +74,16 @@ public class Game {
         return (Date) releaseDate.clone();
     }
 
-    public Set<GameGenre> getGameGenres() {
-        return new HashSet<>(gameGenres);
+    public List<GameGenre> getGameGenres() {
+        return new ArrayList<>(gameGenres);
     }
 
     public Publisher getPublisher() {
         return publisher;
     }
 
-    public Set<Developer> getDeveloper() {
-        return new HashSet<>(developers);
-    }
-    
-    public void setId(Integer id) {
-        this.id = id;
+    public List<Developer> getDeveloper() {
+        return new ArrayList<>(developers);
     }
 
     public void setName(String name) {
@@ -97,4 +106,11 @@ public class Game {
 
     public void setCoverUrl(String cover) { this.coverUrl = cover; }
 
+    public String getPlatform() { return this.platform; }
+
+    public void setPlatform(String platform) { this.platform = platform; }
+
+    public void setGameGenres(Set<GameGenre> gameGenres) { this.gameGenres = gameGenres; }
+
+    public void setDevelopers(Set<Developer> developers) { this.developers = developers; }
 }
