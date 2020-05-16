@@ -74,9 +74,9 @@ public class User {
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
-    private Set<UserRole> roles;
+    private UserRole role;
 
 
     public Integer getId() {
@@ -161,7 +161,11 @@ public class User {
 
     public Set<Game> getWishList() { return wishList; }
 
-    public Set<UserRole> getRoles() {
-        return roles;
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }
