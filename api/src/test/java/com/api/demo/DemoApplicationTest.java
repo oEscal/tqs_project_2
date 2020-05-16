@@ -1,6 +1,6 @@
 package com.api.demo;
 
-import com.api.demo.grid.GridRestController;
+import com.api.demo.grid.controller.GridRestController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

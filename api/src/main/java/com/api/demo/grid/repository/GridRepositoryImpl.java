@@ -1,4 +1,4 @@
-package com.api.demo.grid;
+package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -20,12 +20,12 @@ public class GridRepositoryImpl implements GridRepository{
     }
 
     @Override
-    public Optional<Game> findById(Long aLong) {
+    public Optional<Game> findById(Integer integer) {
         return Optional.empty();
     }
 
     @Override
-    public boolean existsById(Long aLong) {
+    public boolean existsById(Integer integer) {
         return false;
     }
 
@@ -35,7 +35,7 @@ public class GridRepositoryImpl implements GridRepository{
     }
 
     @Override
-    public Iterable<Game> findAllById(Iterable<Long> iterable) {
+    public Iterable<Game> findAllById(Iterable<Integer> iterable) {
         return null;
     }
 
@@ -45,7 +45,7 @@ public class GridRepositoryImpl implements GridRepository{
     }
 
     @Override
-    public void deleteById(Long aLong) {
+    public void deleteById(Integer integer) {
 
     }
 
@@ -66,11 +66,6 @@ public class GridRepositoryImpl implements GridRepository{
 
     @Override
     public List<Game> findAllByGameGenres(Set<GameGenre> genres) {
-        return null;
-    }
-
-    @Override
-    public List<Game> findAllByPriceRange(double initialPrice, double finalPrice) {
         return null;
     }
 

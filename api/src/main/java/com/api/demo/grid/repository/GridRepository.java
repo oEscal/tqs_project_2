@@ -1,4 +1,4 @@
-package com.api.demo.grid;
+package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface GridRepository extends CrudRepository<Game, Long>{
+public interface GridRepository extends CrudRepository<Game, Integer>{
     List<Game> findAll();
     List<Game> findAllByGameGenres(Set<GameGenre> genres);
-    List<Game> findAllByPriceRange(double initialPrice, double finalPrice);
     List<Game> findAllByPlatform(String platform);
     List<Game> findAllById(int id);
 }
