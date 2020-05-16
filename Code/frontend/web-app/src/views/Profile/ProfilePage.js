@@ -216,7 +216,7 @@ class ProfilePage extends Component {
 
                                         <div style={{ textAlign: "left", marginTop: "15px" }}>
                                             <span style={{ color: "#999", fontSize: "12px" }}>
-                                                Has been in the grid since...
+                                                Has been in the Grid since...
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
