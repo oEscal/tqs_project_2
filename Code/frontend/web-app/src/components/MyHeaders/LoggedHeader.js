@@ -24,6 +24,11 @@ import profileImage from "assets/img/faces/avatar.jpg";
 
 import styles from "assets/jss/material-kit-react/views/componentsSections/navbarsStyle.js";
 
+// Router
+import {
+  Link
+} from "react-router-dom";
+
 const useStyles = makeStyles(styles);
 
 export default function SectionNavbars(props) {
@@ -45,14 +50,14 @@ export default function SectionNavbars(props) {
       height: 400,
       color: "dark",
     }
-  }else{
+  } else {
     color = "dark"
   }
 
   return (
     <div id="navbar" className={classes.navbar}>
       <Header
-        brand={<img src={image}></img>}
+        brand={<Link to="/"><img src={image}></img></Link>}
         fixed
 
         changeColorOnScroll={change}
@@ -60,73 +65,79 @@ export default function SectionNavbars(props) {
         rightLinks={
           <List className={classes.list}>
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                <i class="fas fa-gamepad"></i>
-                Games
-              </Button>
+              <Link to="/games">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  <i class="fas fa-gamepad"></i>
+                  Games
+                </Button>
+              </Link>
+
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                <i class="fas fa-money-bill-wave"></i>
+              <Link to="/sell-game">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  <i class="fas fa-money-bill-wave"></i>
                 Sell
               </Button>
+              </Link>
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                <i class="fas fa-star"></i>
+              <Link to="/wishlist">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  <i class="fas fa-star"></i>
                 Wishlist
               </Button>
+              </Link>
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                {cartIcon}
-              </Button>
+              <Link to="/cart">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  {cartIcon}
+                </Button>
+              </Link>
             </ListItem>
 
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                <i class="fas fa-wallet"></i>
-                {wallet} €
+              <Link to="/wallet">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  <i class="fas fa-wallet"></i>
+                  {wallet} €
               </Button>
+              </Link>
             </ListItem>
 
             <ListItem className={classes.listItem}>
-              <Button
-                href="#pablo"
-                className={classes.navLink}
-                onClick={e => e.preventDefault()}
-                color="transparent"
-              >
-                <i class="fas fa-user-circle"></i>
-                {name}
-              </Button>
+              <Link to="/profile">
+                <Button
+                  className={classes.navLink}
+                  color="transparent"
+                  style={{ color: "white" }}
+                >
+                  <i class="fas fa-user-circle"></i>
+                  {name}
+                </Button>
+              </Link>
             </ListItem>
-
           </List>
         }
       />

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {createBrowserHistory} from "history";
-import {Router, Route, Switch} from "react-router-dom";
+import { createBrowserHistory } from "history";
+import { Router, Route, Switch } from "react-router-dom";
 
 import "assets/scss/material-kit-react.scss?v=1.8.0";
 
@@ -24,17 +24,18 @@ var hist = createBrowserHistory();
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
-        <Route path="/landing-page" component={LandingPage}/>
-        <Route path="/profile-page" component={ProfilePage}/>
-        <Route path="/login-page" component={LoginPage}/>
-        <Route path="/components" component={Components}/>
+      <Route path="/landing-page" component={LandingPage} />
+      <Route path="/profile-page" component={ProfilePage} />
+      <Route path="/login-page" component={LoginPage} />
+      <Route path="/components" component={Components} />
 
-        <Route path="/cart" component={Cart}/>
-        <Route path="/games/info" component={Game} />
-        <Route path="/games" component={GameSearch} />
-        <Route path="/sell-game" component={SellGame} />
-        <Route path="/sell-new-game" component={SellNewGame} />
-        <Route path="/" component={HomePage} />
+      <Route exact path="/cart" component={Cart} />
+      <Route exact path="/games/info/:game" component={Game} />
+      <Route exact path="/games" component={GameSearch} />
+      <Route exact path="/" component={HomePage} />
+      <Route exact path="/sell-game" component={SellGame} />
+      <Route exact path="/sell-new-game" component={SellNewGame} />
+      <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
   document.getElementById("root")
