@@ -5,6 +5,8 @@ import classNames from "classnames";
 // Styles
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import "./edit.css";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 // react plugin for creating date-time-picker
 import Datetime from "react-datetime";
@@ -57,6 +59,12 @@ import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 // React Select
 import Select from 'react-select';
 
+
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
+
+
 // MaterialUI Icons
 import Check from "@material-ui/icons/Check";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -73,7 +81,10 @@ import FadeIn from "react-fade-in";
 import Lottie from "react-lottie";
 import * as loadingAnim from "assets/animations/loading_anim.json";
 
-
+// Router
+import {
+    Redirect
+} from "react-router-dom";
 
 class ProfilePage extends Component {
     constructor() {
@@ -87,14 +98,37 @@ class ProfilePage extends Component {
                 preserveAspectRatio: "xMidYMid slice"
             }
         },
+        confirmed: false,
     }
 
     componentDidMount() {
         this.setState({ doneLoading: true })
     }
 
+    //METHODS////////////////////////////////////
+    confirm() {
+        if (false) {
+            toast.error('Oops, an error', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        } else {
+            this.setState({ confirmed: true })
+        }
+    }
+
+    ////////////////////////////////////////////
+
     render() {
         const { classes } = this.props;
+
+        if (this.state.confirmed) {
+            return <Redirect to={"/user/" + "Jonas_PP"} />
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -368,6 +402,19 @@ class ProfilePage extends Component {
 
             return (
                 <div style={{ backgroundColor: "#fff" }}>
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={2500}
+                        hideProgressBar={false}
+                        transition={Flip}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnVisibilityChange
+                        draggable
+                        pauseOnHover
+                    />
+
                     <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
@@ -455,14 +502,14 @@ class ProfilePage extends Component {
                                     </GridItem>
 
                                     <GridItem xs={12} sm={12} md={12}>
-                                        <div style={{ marginTop: "45px", float:"right" }}>
+                                        <div style={{ marginTop: "45px", float: "right" }}>
                                             <Button
                                                 color="success"
                                                 size="md"
                                                 style={{ backgroundColor: "#ff3ea0" }}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                onClick={() => this.goToEdit()}
+                                                onClick={() => this.confirm()}
                                             >
                                                 <i class="fas fa-pencil-alt"></i> Confirm Edit
                                             </Button>

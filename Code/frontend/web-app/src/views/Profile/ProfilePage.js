@@ -69,7 +69,10 @@ import FadeIn from "react-fade-in";
 import Lottie from "react-lottie";
 import * as loadingAnim from "assets/animations/loading_anim.json";
 
-
+// Router
+import {
+    Link
+  } from "react-router-dom";
 
 class ProfilePage extends Component {
     constructor() {
@@ -92,21 +95,13 @@ class ProfilePage extends Component {
 
 
     //METHODS////////////////////////////////////
-    goToEdit() {
-        this.setState({ edit: true })
-    }
+
 
     ////////////////////////////////////////////
 
 
     render() {
         const { classes } = this.props;
-
-        if(this.state.edit){
-            return(
-                <EditProfile></EditProfile>
-            )
-        }
 
         if (!this.state.doneLoading) {
             return (
@@ -240,16 +235,17 @@ class ProfilePage extends Component {
                                         </div>
 
                                         <div style={{ marginTop: "20px" }}>
-                                            <Button
-                                                color="danger"
-                                                size="md"
-                                                style={{ backgroundColor: "#ff3ea0" }}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={() => this.goToEdit()}
-                                            >
-                                                <i class="fas fa-pencil-alt"></i> Edit Profile
-                                            </Button>
+                                            <Link to={"/user/"+"Jonas_PP"+"/edit"} style={{color:"inherit"}}>
+                                                <Button
+                                                    color="danger"
+                                                    size="md"
+                                                    style={{ backgroundColor: "#ff3ea0" }}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <i class="fas fa-pencil-alt"></i> Edit Profile
+                                                </Button>
+                                            </Link>
                                         </div>
 
                                     </GridItem>
