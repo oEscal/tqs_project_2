@@ -11,7 +11,7 @@ public class GameKey {
     private int id;
 
     @Column(unique = true)
-    private String gameKey;
+    private String key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -25,10 +25,11 @@ public class GameKey {
 
     private String retailer;
 
+
     public int getId() { return id; }
 
-    public String getGameKey() {
-        return gameKey;
+    public String getKey() {
+        return key;
     }
 
     public Game getGame() {
@@ -39,8 +40,8 @@ public class GameKey {
         this.id = id;
     }
 
-    public void setGameKey(String gameKey) {
-        this.gameKey = gameKey;
+    public void setKey(String gameKey) {
+        this.key = gameKey;
     }
 
     public void setGame(Game game) {
