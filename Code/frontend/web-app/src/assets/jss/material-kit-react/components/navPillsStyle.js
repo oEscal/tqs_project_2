@@ -45,7 +45,10 @@ const navPillsStyle = theme => ({
     textAlign: "center",
     transition: "all .3s",
     padding: "10px 15px",
-    color: "#555555",
+    background: "rgb(253,27,163)",
+    background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     height: "auto",
     opacity: "1",
     maxWidth: "100%",
@@ -116,7 +119,10 @@ const navPillsStyle = theme => ({
   rose: {
     "&,&:hover": {
       color: "#FFFFFF",
-      backgroundColor: roseColor,
+      WebkitBackgroundClip: "initial",
+      WebkitTextFillColor: "#FFFFFF",
+      background: "rgb(253,27,163)",
+      background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
       boxShadow:
         "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)"
     }

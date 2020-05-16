@@ -47,7 +47,7 @@ export default function NavPills(props) {
       {tabs.map((prop, key) => {
         var icon = {};
         if (prop.tabIcon !== undefined) {
-          icon["icon"] = <prop.tabIcon className={classes.tabIcon} />;
+          icon["icon"] = <i class={prop.tabIcon + " fa-2x"}></i>;
         }
         const pillsClasses = classNames({
           [classes.pills]: true,
