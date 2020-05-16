@@ -1,4 +1,4 @@
-package com.api.demo.models;
+package com.api.demo.grid.models;
 
 import javax.persistence.*;
 import java.util.HashSet;

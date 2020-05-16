@@ -1,11 +1,11 @@
-package com.api.demo.models;
+package com.api.demo.grid.models;
 
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
-public class ReportReviewUser {
+public class ReportReviewGame {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
@@ -19,8 +19,8 @@ public class ReportReviewUser {
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_user_id")
-    private ReviewUser reported;
+    @JoinColumn(name = "review_game_id")
+    private ReviewGame reported;
 
 
     public int getReportId() {
@@ -46,6 +46,4 @@ public class ReportReviewUser {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
-
-    public ReviewUser getReported() { return reported; }
 }

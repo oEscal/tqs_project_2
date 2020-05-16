@@ -1,4 +1,4 @@
-package com.api.demo.models;
+package com.api.demo.grid.models;
 
 
 import javax.persistence.*;
@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 @Entity
-public class Developer {
+public class GameGenre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,10 +15,12 @@ public class Developer {
     @Column(unique=true)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
+    private String description;
+
+    @ManyToMany
     private Set<Game> games;
 
+    public Set<Game> getGames() { return games; }
 
     public Integer getId() {
         return id;
@@ -26,6 +28,10 @@ public class Developer {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setId(Integer id) {
@@ -36,5 +42,7 @@ public class Developer {
         this.name = name;
     }
 
-    public Set<Game> getGames() { return games; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
