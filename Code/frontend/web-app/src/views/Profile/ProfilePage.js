@@ -46,7 +46,7 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import CardHeader from 'components/Card/CardHeader.js';
 import NavPills from "components/NavPills/NavPills.js";
 
-
+import EditProfile from "./EditProfile.js";
 import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 
 // React Select
@@ -83,21 +83,35 @@ class ProfilePage extends Component {
                 preserveAspectRatio: "xMidYMid slice"
             }
         },
+        edit: true
     }
 
     componentDidMount() {
         this.setState({ doneLoading: true })
     }
 
+
+    //METHODS////////////////////////////////////
+    goToEdit() {
+        this.setState({ edit: true })
+    }
+
+    ////////////////////////////////////////////
+
+
     render() {
         const { classes } = this.props;
 
-
+        if(this.state.edit){
+            return(
+                <EditProfile></EditProfile>
+            )
+        }
 
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -155,7 +169,7 @@ class ProfilePage extends Component {
 
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
@@ -176,7 +190,7 @@ class ProfilePage extends Component {
 
                                     <GridItem xs={12} sm={12} md={6}>
                                         <div style={{ textAlign: "left" }}>
-                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>Jonas Pistolas</b></h3>
+                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>Jonas_PP</b> <span style={{color:"#999"}}>(Jonas Pistolas)</span></h3>
                                             <hr style={{ color: "#999" }}></hr>
                                         </div>
                                         <div style={{ textAlign: "left", marginTop: "30px", minHeight: "110px" }}>
@@ -230,9 +244,9 @@ class ProfilePage extends Component {
                                                 color="danger"
                                                 size="md"
                                                 style={{ backgroundColor: "#ff3ea0" }}
-                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                onClick={() => this.goToEdit()}
                                             >
                                                 <i class="fas fa-pencil-alt"></i> Edit Profile
                                             </Button>

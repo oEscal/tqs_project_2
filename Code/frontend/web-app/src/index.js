@@ -17,8 +17,13 @@ import HomePage from "views/HomePage/HomePage.js";
 import SellNewGame from "views/SellNewGame/SellNewGame.js";
 import SellGame from "views/SellGame/SellGame.js";
 import ProfilePage from "views/Profile/ProfilePage.js";
+import EditProfile from "views/Profile/EditProfile.js";
+
 
 import Cart from "views/Cart/Cart.js";
+
+import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
+
 
 var hist = createBrowserHistory();
 
@@ -33,7 +38,8 @@ ReactDOM.render(
       <Route exact path="/cart" component={Cart} />
       <Route exact path="/games/info/:game" component={Game} />
       <Route exact path="/games" component={GameSearch} />
-      <Route path="/user/:user" component={ProfilePage}/>
+      <Route exact path="/user/:user" component={ProfilePage}/>
+      <Route exact path="/user/:user/edit" component={EditProfile}/>
       <Route exact path="/sell-game" component={SellGame} />
       <Route exact path="/sell-new-game" component={SellNewGame} />
       <Route exact path="/" component={HomePage} />
