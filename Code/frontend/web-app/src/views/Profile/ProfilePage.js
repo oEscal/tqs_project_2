@@ -59,9 +59,9 @@ import Dashboard from "@material-ui/icons/Dashboard";
 import Schedule from "@material-ui/icons/Schedule";
 
 // Images
-import image1 from "assets/img/bg.jpg";
-import image4 from "assets/img/NFS-Heat.jpg";
+import image1 from "assets/img/default_user.png";
 import image from "assets/img/favicon.png";
+
 
 
 // Loading Animation
@@ -170,11 +170,11 @@ class ProfilePage extends Component {
                         <div className={classes.container}>
                             <div style={{ padding: "70px 0" }}>
                                 <GridContainer>
-                                    <GridItem xs={12} sm={12} md={4}>
+                                    <GridItem xs={12} sm={12} md={3}>
                                         <img
                                             src={image1}
                                             alt="..."
-                                            style={{ width: "90%", marginTop: "28px" }}
+                                            style={{ width: "85%", marginTop: "22px" }}
                                             className={
                                                 classes.imgRaised +
                                                 " " +
@@ -183,7 +183,7 @@ class ProfilePage extends Component {
                                         />
                                     </GridItem>
 
-                                    <GridItem xs={12} sm={12} md={6}>
+                                    <GridItem xs={12} sm={12} md={7}>
                                         <div style={{ textAlign: "left" }}>
                                             <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>Jonas_PP</b> <span style={{color:"#999"}}>(Jonas Pistolas)</span></h3>
                                             <hr style={{ color: "#999" }}></hr>
