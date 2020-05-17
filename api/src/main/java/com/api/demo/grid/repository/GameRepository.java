@@ -4,16 +4,18 @@ import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface GameRepository extends CrudRepository<Game, Integer>{
+@Transactional
+public interface GameRepository extends CrudRepository<Game, Long>{
     List<Game> findAll();
     List<Game> findAllByGameGenres(Set<GameGenre> genres);
     List<Game> findAllByPlatform(String platform);
-    List<Game> findAllById(int id);
+    List<Game> findAllById(Long id);
 
     List<Game> findAllByName(String name);
 }

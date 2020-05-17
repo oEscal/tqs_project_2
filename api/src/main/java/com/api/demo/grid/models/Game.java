@@ -10,7 +10,7 @@ public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     @Column(unique=true)
     private String name;
@@ -58,7 +58,7 @@ public class Game {
         this.platform = platform;
     }
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 

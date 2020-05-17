@@ -8,14 +8,19 @@ import com.api.demo.grid.models.Publisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class GridRepositoryImplTest {
+class GameRepositoryTest {
     @Autowired
-    private GameRepositoryImpl repository;
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private GameRepository repository;
 
     private Game game;
 
@@ -26,9 +31,11 @@ class GridRepositoryImplTest {
 
     @Test
     public void saveGameAndFindById(){
-        repository.saveAndFlush(game);
-        System.out.println(game.getId());
-        assertNotNull(repository.findAllById(game.getId()));
+        game.setName("Name");
+        repository.save(game);
+        Game game2 = new Game();
+        repository.save(game2);
+        assertNotNull(game.getId());
     }
 
 }
