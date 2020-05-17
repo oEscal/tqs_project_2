@@ -22,7 +22,7 @@ class SellGame extends Component {
 
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false}/>
+                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                 <div className={classNames(classes.main)} style={{marginTop: "60px","background-size":"cover"}}>
 

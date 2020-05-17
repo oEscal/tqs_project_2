@@ -10,6 +10,7 @@ $ npm i @material-ui/util
 $ npm i @material-ui/lab
 $ npm i react-lottie
 $ npm i react-fade-in
+$ npm i react-toastify
 ```
 
 ## Start
