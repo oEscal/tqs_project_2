@@ -13,7 +13,7 @@ import java.util.Set;
 @Transactional
 public interface GameRepository extends CrudRepository<Game, Long>{
     List<Game> findAll();
-    List<Game> findAllByGameGenres(Set<GameGenre> genres);
+    List<Game> findAllByGameGenres(Long gameGenre);
     List<Game> findAllByPlatform(String platform);
     List<Game> findAllById(Long id);
 

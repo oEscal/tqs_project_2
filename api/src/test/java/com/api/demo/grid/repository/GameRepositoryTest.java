@@ -31,10 +31,7 @@ class GameRepositoryTest {
 
     @Test
     public void saveGameAndFindById(){
-        game.setName("Name");
         repository.save(game);
-        Game game2 = new Game();
-        repository.save(game2);
         assertNotNull(game.getId());
     }
 

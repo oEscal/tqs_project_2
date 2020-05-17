@@ -10,7 +10,7 @@ public class GameGenre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     @Column(unique=true)
     private String name;
@@ -22,7 +22,7 @@ public class GameGenre {
 
     public Set<Game> getGames() { return games; }
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
@@ -32,10 +32,6 @@ public class GameGenre {
 
     public String getDescription() {
         return description;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public void setName(String name) {
