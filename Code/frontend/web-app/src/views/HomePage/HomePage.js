@@ -77,6 +77,8 @@ class HomePage extends Component {
                         <TeamSection />
                     </div>
                 </div>
+                <Footer />
+
             </div>
         )
     }

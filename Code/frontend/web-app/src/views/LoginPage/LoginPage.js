@@ -55,7 +55,7 @@ class LoginPage extends Component {
             backgroundPosition: "top center",
           }}
         >
-          <div className={classes.container} style={{ minHeight: "900px" }}>
+          <div className={classes.container} style={{ minHeight: "900px", maxHeight: "100%" }}>
             <GridContainer justify="center" style={{ marginTop: "60px" }}>
               <GridItem xs={12} sm={12} md={4} >
                 <Card>
@@ -80,7 +80,7 @@ class LoginPage extends Component {
                           type: "text",
                           endAdornment: (
                             <InputAdornment position="end">
-                              <People className={classes.inputIconsColor} />
+                              <i class="far fa-user"></i>
                             </InputAdornment>
                           )
                         }}
@@ -95,9 +95,7 @@ class LoginPage extends Component {
                           type: "password",
                           endAdornment: (
                             <InputAdornment position="end">
-                              <Icon className={classes.inputIconsColor}>
-                                lock_outline
-                            </Icon>
+                              <i class="fas fa-lock"></i>
                             </InputAdornment>
                           ),
                           autoComplete: "off"
@@ -113,15 +111,15 @@ class LoginPage extends Component {
                             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ width: "100%", backgroundColor:"#fc3196" }}
+                            style={{ width: "100%", backgroundColor: "#fc3196" }}
                           >
                             Login
                           </Button>
                         </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{marginTop:"20px"}}>
+                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                           <span >
-                            Don't have an account? <Link style={{color:"#fc3196"}}><b>Join the Grid!</b></Link>
+                            Don't have an account? <Link style={{ color: "#fc3196" }}><b>Join the Grid!</b></Link>
                           </span>
                         </GridItem>
                       </GridContainer>
@@ -131,9 +129,7 @@ class LoginPage extends Component {
               </GridItem>
             </GridContainer>
           </div>
-          <div>
-            <Footer whiteFont />
-          </div>
+          <Footer whiteFont />
         </div>
       </div>
     )

@@ -83,6 +83,7 @@ class Game extends Component {
     }
 
     componentDidMount() {
+        window.scrollTo(0, 0)
         this.setState({ doneLoading: true })
     }
 
@@ -456,6 +457,9 @@ class Game extends Component {
                             </div>
 
                         </div>
+                        
+                        <Footer />
+
                     </div>
                 </div>
             )
