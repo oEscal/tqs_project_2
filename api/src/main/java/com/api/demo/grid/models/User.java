@@ -93,13 +93,22 @@ public class User {
     private UserRole role;
 
 
+    // because lombok doesnt support get and set params of Date type with security (clone)
+    public Date getBirthDate() {
+        return (Date) birthDate.clone();
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = (Date) birthDate.clone();
+    }
+
     public User(String name, String email, String password, String username, Date birthDate, UserRole role) {
 
         this.name = name;
         this.email = email;
         this.password = password;
         this.username = username;
-        this.birthDate = birthDate;
+        this.birthDate = (Date) birthDate.clone();
         this.role = role;
     }
 }
