@@ -463,7 +463,72 @@ class ProfilePage extends Component {
                                     </GridItem>
 
                                     <GridItem xs={12} sm={12} md={12}>
-                                        <div style={{ color: "black", marginTop: "45px" }}>
+                                        <div>
+                                            <GridContainer>
+                                                <GridItem xs={12} sm={12} md={12}>
+                                                    <CustomInput
+                                                        labelText="Email"
+                                                        id="email"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="far fa-envelope" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                            </GridContainer>
+                                        </div>
+                                    </GridItem>
+
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <div>
+                                            <GridContainer>
+                                                <GridItem xs={12} sm={12} md={6}>
+                                                    <CustomInput
+                                                        labelText="Password"
+                                                        id="password"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            type: "password",
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="fas fa-lock" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                                <GridItem xs={12} sm={12} md={6}>
+                                                    <CustomInput
+                                                        labelText="Confirm Password"
+                                                        id="password"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            type: "password",
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="fas fa-lock" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                            </GridContainer>
+                                        </div>
+                                    </GridItem>
+
+
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <div style={{ color: "black", marginTop: "25px" }}>
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={12}>
                                                     <InputLabel className={classes.label}>
@@ -496,6 +561,58 @@ class ProfilePage extends Component {
                                                             inputProps={{ placeholder: "Birthday" }}
                                                         />
                                                     </FormControl>
+                                                </GridItem>
+                                            </GridContainer>
+                                        </div>
+                                    </GridItem>
+
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <div style={{marginTop: "45px" }}>
+                                            <GridContainer>
+                                                <GridItem xs={12} sm={12} md={8}>
+                                                    <CustomInput
+                                                        labelText="Credit Card Number"
+                                                        id="cardNumber"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="fas fa-credit-card" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                                <GridItem xs={12} sm={12} md={2}>
+                                                    <CustomInput
+                                                        labelText="CVC"
+                                                        id="cardCVC"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                                <GridItem xs={12} sm={12} md={2}>
+                                                    <div style={{ color: "black" }}>
+                                                        <GridContainer>
+                                                            <GridItem xs={12} sm={12} md={12}>
+                                                                <InputLabel className={classes.label}>
+                                                                    Expiration Date
+                                                                </InputLabel>
+                                                                <br />
+                                                                <FormControl fullWidth>
+                                                                    <Datetime
+                                                                        timeFormat={false}
+                                                                        inputProps={{ placeholder: "Expiration" }}
+                                                                    />
+                                                                </FormControl>
+                                                            </GridItem>
+                                                        </GridContainer>
+                                                    </div>
                                                 </GridItem>
                                             </GridContainer>
                                         </div>

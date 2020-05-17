@@ -415,6 +415,26 @@ class ProfilePage extends Component {
                                                         </div>
                                                     )
                                                 },
+                                                {
+                                                    tabButton: "Payment Info",
+                                                    tabIcon: "fas fa-credit-card",
+                                                    tabContent: (
+                                                        <div>
+                                                            <div>
+                                                                <span>
+                                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Keys
+                                                                    </h2>
+                                                                </span>
+                                                            </div>
+                                                            {sellListings}
+                                                            <div style={{ marginTop: "20px" }}>
+                                                                <div style={{ margin: "auto", width: "40%" }}>
+                                                                    <Pagination count={1} variant="outlined" shape="rounded" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                },
                                             ]}
                                         />
                                     </GridItem>
