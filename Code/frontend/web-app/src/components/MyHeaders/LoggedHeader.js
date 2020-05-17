@@ -34,7 +34,7 @@ const useStyles = makeStyles(styles);
 export default function SectionNavbars(props) {
   const classes = useStyles();
 
-  const { name, cart, wallet, heightChange } = props;
+  const { name, cart, wallet, heightChange, username } = props;
 
   var cartIcon
   if (cart) {
@@ -42,6 +42,7 @@ export default function SectionNavbars(props) {
   } else {
     cartIcon = <i class="fas fa-shopping-cart"></i>
   }
+
 
   var change = {}
   var color = "transparent"
@@ -65,11 +66,10 @@ export default function SectionNavbars(props) {
         rightLinks={
           <List className={classes.list}>
             <ListItem className={classes.listItem}>
-              <Link to="/games">
+              <Link to="/games" style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   <i class="fas fa-gamepad"></i>
                   Games
@@ -78,11 +78,10 @@ export default function SectionNavbars(props) {
 
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Link to="/sell-game">
+              <Link to="/sell-game" style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   <i class="fas fa-money-bill-wave"></i>
                 Sell
@@ -90,11 +89,10 @@ export default function SectionNavbars(props) {
               </Link>
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Link to="/wishlist">
+              <Link to="/wishlist" style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   <i class="fas fa-star"></i>
                 Wishlist
@@ -102,11 +100,10 @@ export default function SectionNavbars(props) {
               </Link>
             </ListItem>
             <ListItem className={classes.listItem}>
-              <Link to="/cart">
+              <Link to="/cart" style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   {cartIcon}
                 </Button>
@@ -114,11 +111,10 @@ export default function SectionNavbars(props) {
             </ListItem>
 
             <ListItem className={classes.listItem}>
-              <Link to="/wallet">
+              <Link to="/wallet" style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   <i class="fas fa-wallet"></i>
                   {wallet} €
@@ -126,12 +122,11 @@ export default function SectionNavbars(props) {
               </Link>
             </ListItem>
 
-            <ListItem className={classes.listItem}>
-              <Link to="/profile">
+            <ListItem className={classes.listItem} >
+              <Link to={"/user/" + username} style={{color:"inherit"}}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
-                  style={{ color: "white" }}
                 >
                   <i class="fas fa-user-circle"></i>
                   {name}
