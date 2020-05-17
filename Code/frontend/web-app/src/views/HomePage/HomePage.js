@@ -38,7 +38,7 @@ class HomePage extends Component {
         const { classes } = this.props;
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true}/>
+                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} username={"Jonas_PP"} height={600} />
 
                 <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>

@@ -83,7 +83,7 @@ class GameSearch extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -165,7 +165,7 @@ class GameSearch extends Component {
 
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 

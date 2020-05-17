@@ -45,7 +45,7 @@ class LoginPage extends Component {
 
     return (
       <div>
-        <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} />
+        <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} height={100} />
 
         <div
           className={classes.pageHeader}
