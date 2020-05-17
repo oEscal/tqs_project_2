@@ -1,17 +1,23 @@
 package com.api.demo.grid.models;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
 
-@Data
 @Entity
+@Table
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -84,10 +90,6 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole role;
 
-
-    public User() {
-
-    }
 
     public User(String name, String email, String password, String username, Date birth_data, UserRole role) {
 
