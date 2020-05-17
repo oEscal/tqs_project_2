@@ -28,6 +28,10 @@ import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "assets/img/bg.png";
 
+import {
+  Link
+} from "react-router-dom";
+
 class LoginPage extends Component {
   constructor() {
     super();
@@ -48,16 +52,22 @@ class LoginPage extends Component {
           style={{
             backgroundImage: "url(" + image + ")",
             backgroundSize: "cover",
-            backgroundPosition: "top center"
+            backgroundPosition: "top center",
           }}
         >
-          <div className={classes.container}>
-            <GridContainer justify="center">
-              <GridItem xs={12} sm={12} md={4}>
+          <div className={classes.container} style={{ minHeight: "900px" }}>
+            <GridContainer justify="center" style={{ marginTop: "60px" }}>
+              <GridItem xs={12} sm={12} md={4} >
                 <Card>
                   <form className={classes.form}>
-                    <CardHeader color="primary" className={classes.cardHeader}>
-                      <h3 style={{fontWeight:"bolder"}}>Login</h3>
+                    <CardHeader className={classes.cardHeader} style={{
+                      color: "#FFFFFF",
+                      WebkitBackgroundClip: "initial",
+                      WebkitTextFillColor: "#FFFFFF",
+                      background: "rgb(253,27,163)",
+                      background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                    }}>
+                      <h3 style={{ fontWeight: "bolder" }}><b>Login</b></h3>
                     </CardHeader>
                     <CardBody>
                       <CustomInput
@@ -95,16 +105,35 @@ class LoginPage extends Component {
                       />
                     </CardBody>
                     <CardFooter className={classes.cardFooter}>
-                      <Button simple color="primary" size="lg">
-                        Get started
-                    </Button>
+                      <GridContainer xs={12} sm={12} md={12}>
+                        <GridItem xs={12} sm={12} md={12}>
+                          <Button
+                            color="rose"
+                            size="md"
+                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ width: "100%", backgroundColor:"#fc3196" }}
+                          >
+                            Login
+                          </Button>
+                        </GridItem>
+
+                        <GridItem xs={12} sm={12} md={12} style={{marginTop:"20px"}}>
+                          <span >
+                            Don't have an account? <Link style={{color:"#fc3196"}}><b>Join the Grid!</b></Link>
+                          </span>
+                        </GridItem>
+                      </GridContainer>
                     </CardFooter>
                   </form>
                 </Card>
               </GridItem>
             </GridContainer>
           </div>
-          <Footer whiteFont />
+          <div>
+            <Footer whiteFont />
+          </div>
         </div>
       </div>
     )

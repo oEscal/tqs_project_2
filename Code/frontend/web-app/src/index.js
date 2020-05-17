@@ -10,6 +10,8 @@ import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
 import ProfilePage from "views/ProfilePage/ProfilePage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
+import OldieLoginPage from "views/LoginPage/OldieLoginPage.js";
+
 
 import Game from "views/GameInfo/Game.js";
 import GameSearch from "views/GameSearch/GameSearch.js";
