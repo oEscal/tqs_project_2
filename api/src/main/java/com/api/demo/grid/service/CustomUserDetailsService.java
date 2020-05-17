@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUser(user);
     }
 
-    private final static class CustomUser extends User implements UserDetails {
+    private static final class CustomUser extends User implements UserDetails {
 
         private User user;
 
