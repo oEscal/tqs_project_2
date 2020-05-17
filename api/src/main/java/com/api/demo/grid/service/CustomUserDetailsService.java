@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
 
         User user = userRepository.findByUsername(username);
 
@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUser(user);
     }
 
-    public final static class CustomUser extends User implements UserDetails {
+    private final static class CustomUser extends User implements UserDetails {
 
         private User user;
 
@@ -43,7 +43,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return new HashSet<GrantedAuthority>();
+            return new HashSet<>();
         }
 
         @Override

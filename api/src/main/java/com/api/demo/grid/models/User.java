@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonDeserialize
 public class User {
 
     @Id
@@ -33,7 +35,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Date birth_date;
+    private Date birthDate;
 
     private String photoUrl;
 
@@ -91,13 +93,13 @@ public class User {
     private UserRole role;
 
 
-    public User(String name, String email, String password, String username, Date birth_data, UserRole role) {
+    public User(String name, String email, String password, String username, Date birthDate, UserRole role) {
 
         this.name = name;
         this.email = email;
         this.password = password;
         this.username = username;
-        this.birth_date = birth_data;
+        this.birthDate = birthDate;
         this.role = role;
     }
 }
