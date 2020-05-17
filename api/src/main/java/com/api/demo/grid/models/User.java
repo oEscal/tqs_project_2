@@ -1,27 +1,33 @@
 package com.api.demo.grid.models;
 
+import lombok.Data;
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Set;
 
 
+@Data
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
-    private int age;
+    @Column(nullable = false)
+    private Date birth_date;
 
     private String photoUrl;
 
@@ -75,97 +81,21 @@ public class User {
     private Set<Game> wishList;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private UserRole role;
 
 
-    public Integer getId() {
-        return id;
+    public User() {
+
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public User(String name, String email, String password, String username, Date birth_data, UserRole role) {
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Set<ReviewUser> getReviewGames() {
-        return new HashSet<>(this.reviews);
-    }
-
-    public Set<ReportUser> getReports() {
-        return new HashSet<>(this.reportsOnUser);
-    }
-
-    public String getPhotoUrl() { return photoUrl; }
-
-    public void setPhotoUrl(String photo) { this.photoUrl = photo; }
-
-    public Set<ReviewUser> getReviewUsers() { return reviewUsers; }
-
-    public Set<ReviewUser> getReviewedUsers() { return reviewedUsers; }
-
-    public Set<ReviewUser> getReviews() { return reviews; }
-
-    public Set<ReportReviewGame> getReportsOnGameReview() { return reportsOnGameReview; }
-
-    public Set<ReportReviewUser> getReportsOnUserReview() { return reportsOnUserReview; }
-
-    public Set<ReportUser> getReportsThisUser() { return reportsThisUser; }
-
-    public Set<ReportUser> getReportsOnUser() { return reportsOnUser; }
-
-    public Set<Buy> getBuys() { return buys; }
-
-    public Set<Auction> getAuctions() { return auctions; }
-
-    public Set<Sell> getSells() { return sells; }
-
-    public Set<Game> getWishList() { return wishList; }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
+        this.username = username;
+        this.birth_date = birth_data;
         this.role = role;
     }
 }
