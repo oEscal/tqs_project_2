@@ -32,7 +32,7 @@ import {
   Link
 } from "react-router-dom";
 
-class LoginPage extends Component {
+class Signup extends Component {
   constructor() {
     super();
   }
@@ -67,9 +67,25 @@ class LoginPage extends Component {
                       background: "rgb(253,27,163)",
                       background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
                     }}>
-                      <h3 style={{ fontWeight: "bolder" }}><b>Login</b></h3>
+                      <h3 style={{ fontWeight: "bolder" }}><b>Sign Up</b></h3>
                     </CardHeader>
                     <CardBody>
+                      <CustomInput
+                        labelText="Full Name..."
+                        id="first"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="fas fa-signature"></i>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+
                       <CustomInput
                         labelText="Username..."
                         id="first"
@@ -85,8 +101,27 @@ class LoginPage extends Component {
                           )
                         }}
                       />
+
+                      <hr style={{opacity:0.2, color:"#fc3196", marginTop:"25px"}}/>
+
                       <CustomInput
-                        labelText="Password"
+                        labelText="Password..."
+                        id="pass"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "password",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="fas fa-lock"></i>
+                            </InputAdornment>
+                          ),
+                          autoComplete: "off"
+                        }}
+                      />
+                      <CustomInput
+                        labelText="Confirm Password..."
                         id="pass"
                         formControlProps={{
                           fullWidth: true
@@ -119,7 +154,7 @@ class LoginPage extends Component {
 
                         <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                           <span >
-                            Don't have an account? <Link to="/signup-page" style={{ color: "#fc3196" }}><b>Join the Grid!</b></Link>
+                            Already have an account? <Link to="/login-page" style={{ color: "#fc3196" }}><b>Login the Grid!</b></Link>
                           </span>
                         </GridItem>
                       </GridContainer>
@@ -136,4 +171,4 @@ class LoginPage extends Component {
   }
 }
 
-export default withStyles(styles)(LoginPage);
+export default withStyles(styles)(Signup);

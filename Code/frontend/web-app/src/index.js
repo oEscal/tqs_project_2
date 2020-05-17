@@ -10,6 +10,8 @@ import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
 import ProfilePage from "views/ProfilePage/ProfilePage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
+import Signup from "views/LoginPage/Signup.js";
+
 import OldieLoginPage from "views/LoginPage/OldieLoginPage.js";
 
 
@@ -28,9 +30,10 @@ ReactDOM.render(
     <Switch>
       <Route path="/landing-page" component={LandingPage} />
       <Route path="/profile-page" component={ProfilePage} />
-      <Route path="/login-page" component={LoginPage} />
       <Route path="/components" component={Components} />
 
+      <Route exact path="/login-page" component={LoginPage} />
+      <Route exact path="/signup-page" component={Signup} />
       <Route exact path="/cart" component={Cart} />
       <Route exact path="/games/info/:game" component={Game} />
       <Route exact path="/games" component={GameSearch} />
