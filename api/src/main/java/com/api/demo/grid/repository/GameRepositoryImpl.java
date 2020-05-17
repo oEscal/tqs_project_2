@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class GridRepositoryImpl implements GridRepository{
+public class GameRepositoryImpl implements GameRepository {
 
     @Override
     public <S extends Game> S save(S s) {
@@ -76,6 +76,11 @@ public class GridRepositoryImpl implements GridRepository{
 
     @Override
     public List<Game> findAllById(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Game> findAllByName(String name) {
         return null;
     }
 }

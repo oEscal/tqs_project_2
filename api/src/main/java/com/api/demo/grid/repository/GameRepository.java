@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface GridRepository extends CrudRepository<Game, Integer>{
+public interface GameRepository extends CrudRepository<Game, Integer>{
     List<Game> findAll();
     List<Game> findAllByGameGenres(Set<GameGenre> genres);
     List<Game> findAllByPlatform(String platform);
     List<Game> findAllById(int id);
+
+    List<Game> findAllByName(String name);
 }
