@@ -127,16 +127,22 @@ export default function SectionNavbars(props) {
             </ListItem>
 
             <ListItem className={classes.listItem}>
-              <Link to="/profile">
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                  style={{ color: "white" }}
-                >
-                  <i class="fas fa-user-circle"></i>
-                  {name}
-                </Button>
-              </Link>
+              <CustomDropdown
+                noLiPadding
+                buttonText={name}
+                buttonProps={{
+                  className: classes.navLink,
+                  color: "transparent"
+                }}
+                dropdownList={[
+                  <Link to="/profile" className={classes.dropdownLink}>
+                    <i class="far fa-address-card"></i> My Profile
+                  </Link>,
+                  <Link to="/profile" className={classes.dropdownLink}>
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                  </Link>,
+                ]}
+              />
             </ListItem>
           </List>
         }

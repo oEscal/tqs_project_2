@@ -32,7 +32,6 @@ ReactDOM.render(
       <Route exact path="/cart" component={Cart} />
       <Route exact path="/games/info/:game" component={Game} />
       <Route exact path="/games" component={GameSearch} />
-      <Route exact path="/" component={HomePage} />
       <Route exact path="/sell-game" component={SellGame} />
       <Route exact path="/sell-new-game" component={SellNewGame} />
       <Route exact path="/" component={HomePage} />
