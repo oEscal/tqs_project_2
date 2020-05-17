@@ -1,11 +1,18 @@
 package com.api.demo.grid.models;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.*;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Game {
 
     @Id
@@ -45,72 +52,4 @@ public class Game {
 
     private String platform;
 
-    public Game(){ }
-
-    public Game(String name, String description, Set<GameGenre> gameGenres, Publisher publisher, Date releaseDate,
-                String coverUrl, String platform) {
-        this.name = name;
-        this.description = description;
-        this.gameGenres = gameGenres;
-        this.publisher = publisher;
-        this.releaseDate = releaseDate;
-        this.coverUrl = coverUrl;
-        this.platform = platform;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Date getReleaseDate() {
-        return (Date) releaseDate.clone();
-    }
-
-    public List<GameGenre> getGameGenres() {
-        return new ArrayList<>(gameGenres);
-    }
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public List<Developer> getDeveloper() {
-        return new ArrayList<>(developers);
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = (Date) releaseDate.clone();
-    }
-
-    public String getCoverUrl() { return coverUrl; }
-
-    public void setCoverUrl(String cover) { this.coverUrl = cover; }
-
-    public String getPlatform() { return this.platform; }
-
-    public void setPlatform(String platform) { this.platform = platform; }
-
-    public void setGameGenres(Set<GameGenre> gameGenres) { this.gameGenres = gameGenres; }
-
-    public void setDevelopers(Set<Developer> developers) { this.developers = developers; }
 }

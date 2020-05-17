@@ -1,11 +1,18 @@
 package com.api.demo.grid.models;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Set;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class GameGenre {
 
     @Id
@@ -20,25 +27,4 @@ public class GameGenre {
     @ManyToMany
     private Set<Game> games;
 
-    public Set<Game> getGames() { return games; }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
