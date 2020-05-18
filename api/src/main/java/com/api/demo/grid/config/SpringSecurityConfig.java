@@ -20,17 +20,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
-            "/v2/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**",
-            "/companies-reg",
-            "/registration",
-            "/internal_registration",
-            "/logs"
+            "/sign-up",
     };
 
     @Autowired

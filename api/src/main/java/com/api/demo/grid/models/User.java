@@ -88,7 +88,7 @@ public class User {
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole role;
 
