@@ -95,6 +95,28 @@
 			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Selenium -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.2-jre</version>
+		</dependency>
+
+
+		<!-- Selenium / Junit integration -->
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>selenium-jupiter</artifactId>
+			<version>3.3.4</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
