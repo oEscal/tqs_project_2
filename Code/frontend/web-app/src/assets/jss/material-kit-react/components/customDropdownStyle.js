@@ -76,8 +76,11 @@ const customDropdownStyle = theme => ({
   },
   primaryHover: {
     "&:hover": {
-      backgroundColor: primaryColor,
       color: "#FFFFFF",
+      WebkitBackgroundClip: "initial",
+      WebkitTextFillColor: "#FFFFFF",
+      background: "rgb(253,27,163)",
+      background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
       ...primaryBoxShadow
     }
   },

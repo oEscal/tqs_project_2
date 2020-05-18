@@ -1,11 +1,14 @@
-import React from "react";
+import React, { Component } from 'react';
+
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from '@material-ui/styles';
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
+
 // @material-ui/icons
 import Email from "@material-ui/icons/Email";
 import People from "@material-ui/icons/People";
+
 // core components
 import Header from "components/Header/Header.js";
 import HeaderLinks from "components/Header/HeaderLinks.js";
@@ -19,136 +22,118 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardFooter from "components/Card/CardFooter.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
+import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
+
 import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
-import image from "assets/img/bg7.jpg";
+import image from "assets/img/bg.png";
 
-const useStyles = makeStyles(styles);
+import {
+  Link
+} from "react-router-dom";
 
-export default function LoginPage(props) {
-  const [cardAnimaton, setCardAnimation] = React.useState("cardHidden");
-  setTimeout(function() {
-    setCardAnimation("");
-  }, 700);
-  const classes = useStyles();
-  const { ...rest } = props;
-  return (
-    <div>
-      <Header
-        absolute
-        color="transparent"
-        brand="Material Kit React"
-        rightLinks={<HeaderLinks />}
-        {...rest}
-      />
-      <div
-        className={classes.pageHeader}
-        style={{
-          backgroundImage: "url(" + image + ")",
-          backgroundSize: "cover",
-          backgroundPosition: "top center"
-        }}
-      >
-        <div className={classes.container}>
-          <GridContainer justify="center">
-            <GridItem xs={12} sm={12} md={4}>
-              <Card className={classes[cardAnimaton]}>
-                <form className={classes.form}>
-                  <CardHeader color="primary" className={classes.cardHeader}>
-                    <h4>Login</h4>
-                    <div className={classes.socialLine}>
-                      <Button
-                        justIcon
-                        href="#pablo"
-                        target="_blank"
-                        color="transparent"
-                        onClick={e => e.preventDefault()}
-                      >
-                        <i className={"fab fa-twitter"} />
-                      </Button>
-                      <Button
-                        justIcon
-                        href="#pablo"
-                        target="_blank"
-                        color="transparent"
-                        onClick={e => e.preventDefault()}
-                      >
-                        <i className={"fab fa-facebook"} />
-                      </Button>
-                      <Button
-                        justIcon
-                        href="#pablo"
-                        target="_blank"
-                        color="transparent"
-                        onClick={e => e.preventDefault()}
-                      >
-                        <i className={"fab fa-google-plus-g"} />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <p className={classes.divider}>Or Be Classical</p>
-                  <CardBody>
-                    <CustomInput
-                      labelText="First Name..."
-                      id="first"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "text",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <People className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Email..."
-                      id="email"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "email",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Email className={classes.inputIconsColor} />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                    <CustomInput
-                      labelText="Password"
-                      id="pass"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "password",
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Icon className={classes.inputIconsColor}>
-                              lock_outline
-                            </Icon>
-                          </InputAdornment>
-                        ),
-                        autoComplete: "off"
-                      }}
-                    />
-                  </CardBody>
-                  <CardFooter className={classes.cardFooter}>
-                    <Button simple color="primary" size="lg">
-                      Get started
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-            </GridItem>
-          </GridContainer>
+class LoginPage extends Component {
+  constructor() {
+    super();
+  }
+
+  state = {
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div>
+        <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} height={100} />
+
+        <div
+          className={classes.pageHeader}
+          style={{
+            backgroundImage: "url(" + image + ")",
+            backgroundSize: "cover",
+            backgroundPosition: "top center",
+          }}
+        >
+          <div className={classes.container} style={{ minHeight: "900px", maxHeight: "100%" }}>
+            <GridContainer justify="center" style={{ marginTop: "60px" }}>
+              <GridItem xs={12} sm={12} md={4} >
+                <Card>
+                  <form className={classes.form}>
+                    <CardHeader className={classes.cardHeader} style={{
+                      color: "#FFFFFF",
+                      WebkitBackgroundClip: "initial",
+                      WebkitTextFillColor: "#FFFFFF",
+                      background: "rgb(253,27,163)",
+                      background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                    }}>
+                      <h3 style={{ fontWeight: "bolder" }}><b>Login</b></h3>
+                    </CardHeader>
+                    <CardBody>
+                      <CustomInput
+                        labelText="Username..."
+                        id="first"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="far fa-user"></i>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                      <CustomInput
+                        labelText="Password"
+                        id="pass"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "password",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="fas fa-lock"></i>
+                            </InputAdornment>
+                          ),
+                          autoComplete: "off"
+                        }}
+                      />
+                    </CardBody>
+                    <CardFooter className={classes.cardFooter}>
+                      <GridContainer xs={12} sm={12} md={12}>
+                        <GridItem xs={12} sm={12} md={12}>
+                          <Button
+                            color="rose"
+                            size="md"
+                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ width: "100%", backgroundColor: "#fc3196" }}
+                          >
+                            Login
+                          </Button>
+                        </GridItem>
+
+                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
+                          <span >
+                            Don't have an account? <Link to="/signup-page" style={{ color: "#fc3196" }}><b>Join the Grid!</b></Link>
+                          </span>
+                        </GridItem>
+                      </GridContainer>
+                    </CardFooter>
+                  </form>
+                </Card>
+              </GridItem>
+            </GridContainer>
+          </div>
+          <Footer whiteFont />
         </div>
-        <Footer whiteFont />
       </div>
-    </div>
-  );
+    )
+  }
 }
+
+export default withStyles(styles)(LoginPage);

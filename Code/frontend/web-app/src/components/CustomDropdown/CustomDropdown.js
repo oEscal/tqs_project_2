@@ -80,6 +80,12 @@ export default function CustomDropdown(props) {
       icon = null;
       break;
   }
+
+  var text = ""
+  if(buttonText !== undefined && buttonText !== null){
+    text = <span><i class="fas fa-user-circle"></i> {buttonText}</span>
+  }
+
   return (
     <div>
       <div>
@@ -90,8 +96,7 @@ export default function CustomDropdown(props) {
           {...buttonProps}
           onClick={handleClick}
         >
-          {icon}
-          {buttonText !== undefined ? buttonText : null}
+          {text}          
           {caret ? <b className={caretClasses} /> : null}
         </Button>
       </div>
