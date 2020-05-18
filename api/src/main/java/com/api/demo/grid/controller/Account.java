@@ -1,6 +1,7 @@
 package com.api.demo.grid.controller;
 
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,10 @@ public class Account {
     private UserRepository userRepository;
 
     @PostMapping("/sign-up")
-    public User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) throws ExceptionDetails {
 
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            // throw new ErrorDetails("There is already a user with that email");
-            System.out.println("Ola");
+            throw new ExceptionDetails("There is already a user with that name");
         }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
