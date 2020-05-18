@@ -1,6 +1,7 @@
 package com.api.demo.grid.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,12 +21,14 @@ public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Integer id;
 
     @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<User> users;
 
 
