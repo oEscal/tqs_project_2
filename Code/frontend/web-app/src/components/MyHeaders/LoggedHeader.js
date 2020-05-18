@@ -34,7 +34,7 @@ const useStyles = makeStyles(styles);
 export default function SectionNavbars(props) {
   const classes = useStyles();
 
-  const { name, cart, wallet, heightChange, username } = props;
+  const { name, cart, wallet, heightChange, height } = props;
 
   var cartIcon
   if (cart) {
@@ -48,7 +48,7 @@ export default function SectionNavbars(props) {
   var color = "transparent"
   if (heightChange) {
     change = {
-      height: 400,
+      height: height,
       color: "dark",
     }
   } else {
@@ -122,16 +122,23 @@ export default function SectionNavbars(props) {
               </Link>
             </ListItem>
 
-            <ListItem className={classes.listItem} >
-              <Link to={"/user/" + username} style={{color:"inherit"}}>
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                >
-                  <i class="fas fa-user-circle"></i>
-                  {name}
-                </Button>
-              </Link>
+            <ListItem className={classes.listItem}>
+              <CustomDropdown
+                noLiPadding
+                buttonText={name}
+                buttonProps={{
+                  className: classes.navLink,
+                  color: "transparent"
+                }}
+                dropdownList={[
+                  <Link to={"/user/" + name} style={{color:"inherit"}} className={classes.dropdownLink}>
+                    <i class="far fa-address-card"></i> My Profile
+                  </Link>,
+                  <Link to="/profile" className={classes.dropdownLink}>
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                  </Link>,
+                ]}
+              />
             </ListItem>
           </List>
         }
