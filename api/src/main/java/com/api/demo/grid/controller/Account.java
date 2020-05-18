@@ -7,22 +7,20 @@ import com.api.demo.grid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Base64;
 
 
 @RestController
+@CrossOrigin
 public class Account {
 
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/grid/sign-up")
     public User createUser(@Valid @RequestBody User user) throws ExceptionDetails {
 
         if (userRepository.findByUsername(user.getUsername()) != null) {
@@ -35,7 +33,7 @@ public class Account {
         return userRepository.save(user);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/grid/login")
     public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) {
 
         String base64Credentials = auth.substring("Basic".length()).trim();

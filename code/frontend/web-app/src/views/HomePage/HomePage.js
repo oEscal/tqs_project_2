@@ -4,8 +4,7 @@ import classNames from "classnames";
 
 // Global Variables
 import baseURL from '../../variables/baseURL'
-import cart from '../../variables/cart'
-import loggedUser from '../../variables/loggedUser'
+import global from "../../variables/global";
 
 
 // Styles
@@ -49,7 +48,7 @@ class HomePage extends Component {
         const { classes } = this.props;
         return (
             <div>
-                <LoggedHeader user={loggedUser} cart={cart} heightChange={true} height={600} />
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={600} />
 
                 <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>

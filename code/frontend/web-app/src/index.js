@@ -24,8 +24,6 @@ import EditProfile from "views/Profile/EditProfile.js";
 
 import Cart from "views/Cart/Cart.js";
 
-import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
-
 
 var hist = createBrowserHistory();
 

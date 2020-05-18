@@ -24,6 +24,8 @@ import profileImage from "assets/img/faces/avatar.jpg";
 
 import styles from "assets/jss/material-kit-react/views/componentsSections/navbarsStyle.js";
 
+import global from "../../variables/global";
+
 // Router
 import {
   Link
@@ -53,6 +55,12 @@ export default function SectionNavbars(props) {
     }
   } else {
     color = "dark"
+  }
+
+  const logout = () => {
+    console.log("OOOOOF")
+    localStorage.setItem('loggedUser', null);
+    global.user = JSON.parse(localStorage.getItem('loggedUser'))
   }
 
   var content = null
@@ -117,9 +125,9 @@ export default function SectionNavbars(props) {
             <Link to={"/user/" + user.username} style={{ color: "inherit" }} className={classes.dropdownLink}>
               <i class="far fa-address-card"></i> My Profile
                   </Link>,
-            <Link to="/profile" className={classes.dropdownLink}>
+            <Link to="/login-page" className={classes.dropdownLink} onClick={logout}>
               <i class="fas fa-sign-out-alt"></i> Logout
-                  </Link>,
+            </Link>,
           ]}
         />
       </ListItem>
@@ -150,15 +158,15 @@ export default function SectionNavbars(props) {
       </ListItem>,
       <ListItem className={classes.listItem}>
 
-      <Link to="/signup-page" style={{ color: "inherit" }}>
-        <Button
-          className={classes.navLink}
-          color="transparent"
-        >
-          Sign up
+        <Link to="/signup-page" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            Sign up
         </Button>
-      </Link>
-    </ListItem>,
+        </Link>
+      </ListItem>,
     ]
   }
 

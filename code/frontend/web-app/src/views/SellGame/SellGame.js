@@ -10,8 +10,7 @@ import ExistingGame from "./Sections/ExistingGame";
 
 // Global Variables
 import baseURL from '../../variables/baseURL'
-import cart from '../../variables/cart'
-import loggedUser from '../../variables/loggedUser'
+import global from "../../variables/global";
 
 
 class SellGame extends Component {
@@ -27,7 +26,7 @@ class SellGame extends Component {
 
         return (
             <div>
-                <LoggedHeader user={loggedUser} cart={cart} heightChange={false} height={600} />
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                 <div className={classNames(classes.main)} style={{ marginTop: "60px", "background-size": "cover" }}>
 

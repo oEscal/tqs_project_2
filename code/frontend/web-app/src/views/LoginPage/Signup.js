@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 // Global Variables
 import baseURL from '../../variables/baseURL'
-import cart from '../../variables/cart'
-import loggedUser from '../../variables/loggedUser'
+import global from "../../variables/global";
 
 
 // @material-ui/core components
@@ -404,7 +403,7 @@ class Signup extends Component {
 
     return (
       <div>
-        <LoggedHeader user={loggedUser} cart={cart} heightChange={true} height={200} />
+        <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={200} />
         <ToastContainer
           position="top-center"
           autoClose={2500}

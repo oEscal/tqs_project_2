@@ -4,8 +4,7 @@ import classNames from "classnames";
 
 // Global Variables
 import baseURL from '../../variables/baseURL'
-import cart from '../../variables/cart'
-import loggedUser from '../../variables/loggedUser'
+import global from "../../variables/global";
 
 // Styles
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
@@ -88,7 +87,7 @@ class GameSearch extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader user={loggedUser} cart={cart} heightChange={false} height={600} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -170,7 +169,7 @@ class GameSearch extends Component {
 
             return (
                 <div>
-                    <LoggedHeader user={loggedUser} cart={cart} heightChange={false} height={600} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
