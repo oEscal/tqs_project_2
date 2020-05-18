@@ -18,6 +18,7 @@ import SellNewGame from "views/SellNewGame/SellNewGame.js";
 import SellGame from "views/SellGame/SellGame.js";
 
 import Cart from "views/Cart/Cart.js";
+import WishList from "views/WishList/WishList.js";
 
 var hist = createBrowserHistory();
 
@@ -35,6 +36,7 @@ ReactDOM.render(
       <Route exact path="/" component={HomePage} />
       <Route exact path="/sell-game" component={SellGame} />
       <Route exact path="/sell-new-game" component={SellNewGame} />
+      <Route exact path="/wishlist" component={WishList} />
       <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
