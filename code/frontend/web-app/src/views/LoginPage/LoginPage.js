@@ -92,6 +92,7 @@ class LoginPage extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId: "errorOneToast"
       });
 
       document.getElementById("errorOne").style.display = ""
@@ -131,6 +132,7 @@ class LoginPage extends Component {
               closeOnClick: true,
               pauseOnHover: true,
               draggable: true,
+              toastId: "errorTwoToast"
             });
 
             document.getElementById("errorTwo").style.display = ""
@@ -149,6 +151,7 @@ class LoginPage extends Component {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
+            toastId: "errorThreeToast"
           });
 
           document.getElementById("errorThree").style.display = ""
@@ -177,7 +180,7 @@ class LoginPage extends Component {
     //Overlay for when processing a login request
     if (this.state.processing) {
       processing = [
-        <div style={{ position: "absolute", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }}>
+        <div style={{ position: "absolute", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
         </div>,
 
         <div style={{ zIndex: 11, position: "absolute", top: "0", left: "0", height: "100%", width: "100%" }}>
@@ -291,6 +294,7 @@ class LoginPage extends Component {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ width: "100%", backgroundColor: "#fc3196" }}
+                            id="confirm"
                           >
                             Login
                           </Button>
