@@ -25,6 +25,7 @@ public class GameKey {
 
     private String retailer;
 
+    private String platform;
 
     public int getId() { return id; }
 
