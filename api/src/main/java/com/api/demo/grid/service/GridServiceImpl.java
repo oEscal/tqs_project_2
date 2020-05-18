@@ -31,9 +31,9 @@ public class GridServiceImpl implements GridService{
     public Game getGameById(long id) {
         Optional<Game> gameResponse = gameRepository.findById(id);
 
-        if (!gameResponse.isEmpty()) return gameResponse.get();
+        if (gameResponse.isEmpty()) return null;
 
-        return null;
+        return gameResponse.get();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class GridServiceImpl implements GridService{
     public List<Game> getAllGamesWithGenre(String genre) {
         Optional<GameGenre> gameGenre = gameGenreRepository.findByName(genre);
 
-        if (gameGenre.isEmpty()) return new ArrayList<>();
+        if (gameGenre.isEmpty()) return null;
 
         return gameRepository.findAllByGameGenresContains(gameGenre.get());
     }
@@ -59,7 +59,7 @@ public class GridServiceImpl implements GridService{
     public List<Game> getAllGamesByDev(String developer) {
         Optional<Developer> dev = developerRepository.findByName(developer);
 
-        if (dev.isEmpty()) return new ArrayList<>();
+        if (dev.isEmpty()) return null;
 
         return gameRepository.findAllByDevelopersContaining(dev.get());
     }
@@ -68,7 +68,7 @@ public class GridServiceImpl implements GridService{
     public List<Game> getAllGamesByPublisher(String publisher) {
         Optional<Publisher> pub = publisherRepository.findByName(publisher);
 
-        if (pub.isEmpty()) return new ArrayList<>();
+        if (pub.isEmpty()) return null;
 
         return gameRepository.findAllByPublisher(pub.get());
     }
