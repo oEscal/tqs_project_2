@@ -23,6 +23,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/sign-up",
     };
 
+    private static final String[] ADMIN_WHITELIST = {
+    };
+
+    private static final String[] USER_WHITELIST = {
+    };
+
     @Autowired
     private AuthenticationEntryPoint authEntryPoint;
 
@@ -37,8 +43,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
+        // TODO -> verify roles here
+        http.cors()
+                .and().authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers(USER_WHITELIST).hasRole("USER")
+                .antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .authenticationEntryPoint(authEntryPoint);
