@@ -50,6 +50,4 @@ public class Game {
 
     private String coverUrl;
 
-    private String platform;
-
 }
