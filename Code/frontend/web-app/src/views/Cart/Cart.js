@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import classNames from "classnames";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import 'assets/css/hide.css'
-import {withStyles} from '@material-ui/styles';
+import { withStyles } from '@material-ui/styles';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Card from '@material-ui/core/Card';
@@ -19,7 +19,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomInput from "components/CustomInput/CustomInput";
 import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
-import {StickyContainer, Sticky} from "components/Sticky/index.js";
+import { StickyContainer, Sticky } from "components/Sticky/index.js";
 import Button from "components/CustomButtons/Button.js";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -101,18 +101,18 @@ class Cart extends Component {
                         aria-label="Close"
                         color="inherit"
                         onClick={() => this.setClassicModal(false)}
-                        style={{"float": "right"}}
+                        style={{ "float": "right" }}
                     >
-                        <Close className={classes.modalClose}/>
+                        <Close className={classes.modalClose} />
                     </IconButton>
-                    <h3 style={{color: 'black'}} className={classes.modalTitle}>Price: xxxx</h3>
+                    <h3 style={{ color: 'black' }} className={classes.modalTitle}>Price: xxxx</h3>
                 </DialogTitle>
 
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
                 >
-                    <hr style={{color: "#999", opacity: "0.4"}}></hr>
+                    <hr style={{ color: "#999", opacity: "0.4" }}></hr>
 
                     <GridContainer xs={12} sm={12} md={12}>
                         <GridItem xs={4} sm={4} md={4}>
@@ -156,7 +156,7 @@ class Cart extends Component {
                                             width: "auto"
                                         }}
 
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal"/>
+                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
                                 </div>
                                 <h4 style={{
                                     color: "#444",
@@ -209,7 +209,7 @@ class Cart extends Component {
                                             width: "auto"
                                         }}
 
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal"/>
+                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
                                 </div>
                                 <h4 style={{
                                     color: "#444",
@@ -262,7 +262,7 @@ class Cart extends Component {
                                             width: "auto"
                                         }}
 
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal"/>
+                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
                                 </div>
                                 <h4 style={{
                                     color: "#444",
@@ -315,7 +315,7 @@ class Cart extends Component {
                                             width: "auto"
                                         }}
 
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal"/>
+                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
                                 </div>
                                 <h4 style={{
                                     color: "#444",
@@ -344,11 +344,11 @@ class Cart extends Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
 
         var items = [];
         for (var i = 0; i < 6; i++) {
-            var style = {margin: "12px 0", float: 'left'};
+            var style = { margin: "12px 0", float: 'left' };
             var text = "";
             var image = null;
 
@@ -365,11 +365,11 @@ class Cart extends Component {
 
             items.push(
                 <GridItem xs={12} sm={12} md={12} style={style}>
-                    <Card style={{width: "100%"}}>
+                    <Card style={{ width: "100%" }}>
                         <CardHeader
                             title={
-                                <h6 style={{color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px"}}>
-                                    From seller <span style={{color: 'black', fontWeight: "bold"}}>Jonas Pistolas</span>
+                                <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                    From seller <span style={{ color: 'black', fontWeight: "bold" }}>Jonas Pistolas</span>
                                 </h6>
                             }
                             avatar={
@@ -379,7 +379,7 @@ class Cart extends Component {
                             }
                             action={
                                 <IconButton aria-label="settings">
-                                    <CloseIcon/>
+                                    <CloseIcon />
                                 </IconButton>
                             }
                         >
@@ -391,7 +391,7 @@ class Cart extends Component {
                                 image={image}
                             />
                             <CardContent>
-                                <div style={{textAlign: "left", height: "30px"}}>
+                                <div style={{ textAlign: "left", height: "30px" }}>
                                     <h6 style={{
                                         fontWeight: "bold",
                                         color: "#3b3e48",
@@ -402,7 +402,7 @@ class Cart extends Component {
                                         {text}
                                     </h6>
                                 </div>
-                                <div style={{textAlign: "left"}}>
+                                <div style={{ textAlign: "left" }}>
 
                                     <CustomInput
 
@@ -416,7 +416,7 @@ class Cart extends Component {
                                             min: 0,
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <VideogameAssetIcon className={classes.inputIconsColor}/>
+                                                    <VideogameAssetIcon className={classes.inputIconsColor} />
                                                 </InputAdornment>
                                             ),
                                             onChange: this.updateQuantity,
@@ -425,12 +425,12 @@ class Cart extends Component {
 
 
                                 </div>
-                                <div style={{textAlign: "left"}}>
-                                    <h6 style={{color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px"}}>
-                                        Delivery: <span style={{fontWeight: "bold"}}>Instant access</span>
+                                <div style={{ textAlign: "left" }}>
+                                    <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                        Delivery: <span style={{ fontWeight: "bold" }}>Instant access</span>
                                     </h6>
                                 </div>
-                                <div style={{textAlign: "left"}}>
+                                <div style={{ textAlign: "left" }}>
                                     <h6 style={{
                                         color: "#3b3e48",
                                         fontSize: "15px",
@@ -438,11 +438,11 @@ class Cart extends Component {
                                         marginTop: "0px"
                                     }}>
                                         Price <span
-                                        style={{
-                                            fontWeight: "bolder",
-                                            color: "#f44336",
-                                            fontSize: "17px"
-                                        }}> {this.getPrice()} €</span>
+                                            style={{
+                                                fontWeight: "bolder",
+                                                color: "#f44336",
+                                                fontSize: "17px"
+                                            }}> {this.getPrice()} €</span>
                                     </h6>
                                 </div>
                             </CardContent>
@@ -453,49 +453,48 @@ class Cart extends Component {
         }
         return (
             <div>
+                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false}/>
-
-                <div className={classNames(classes.main)} style={{marginTop: "60px"}}>
+                <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
                     <div className={classes.container}>
-                        <div style={{padding: "70px 0"}}>
+                        <div style={{ padding: "70px 0" }}>
                             <GridContainer>
                                 <GridItem xs={12} sm={12} md={12}>
-                                    <div style={{textAlign: "left"}}>
+                                    <div style={{ textAlign: "left" }}>
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={9}>
-        <span>
-        <h2 style={{
-            color: "#999",
-            fontWeight: "bolder",
-            marginTop: "0px",
-            padding: "0 0"
-        }}>Cart <span
-            style={{color: "#999", fontSize: "15px", fontWeight: "normal"}}>(xxxxx products)</span>
-        </h2>
-        </span>
+                                                <span>
+                                                    <h2 style={{
+                                                        color: "#999",
+                                                        fontWeight: "bolder",
+                                                        marginTop: "0px",
+                                                        padding: "0 0"
+                                                    }}>Cart <span
+                                                        style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>(xxxxx products)</span>
+                                                    </h2>
+                                                </span>
                                             </GridItem>
 
                                         </GridContainer>
 
-                                        <hr style={{color: "#999", opacity: "0.4"}}></hr>
+                                        <hr style={{ color: "#999", opacity: "0.4" }}></hr>
                                     </div>
                                 </GridItem>
                             </GridContainer>
                         </div>
 
                         <StickyContainer
-                            style={{padding: "5px 0", "vertical-align": "top", display: "flex", height: "100%"}}>
-                            <GridContainer xs={12} sm={12} md={8} style={{flex: "1"}}>
+                            style={{ padding: "5px 0", "vertical-align": "top", display: "flex", height: "100%" }}>
+                            <GridContainer xs={12} sm={12} md={8} style={{ flex: "1" }}>
                                 {items}
 
                             </GridContainer>
                             <GridContainer xs={12} sm={12} md={4}
-                                           style={{flex: "1", float: "right", "padding-left": "30px"}}>
+                                style={{ flex: "1", float: "right", "padding-left": "30px" }}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Sticky>
-                                        {({style}) => (
+                                        {({ style }) => (
                                             <Card>
                                                 <CardHeader
                                                     title="Total Price: xxxx"
@@ -504,9 +503,9 @@ class Cart extends Component {
 
                                                 </CardHeader>
                                                 <CardContent>
-                                                    <div style={{"textAlign": "center"}}>
+                                                    <div style={{ "textAlign": "center" }}>
                                                         <Button color="primary" round
-                                                                onClick={() => this.setClassicModal(true)}>Continue to
+                                                            onClick={() => this.setClassicModal(true)}>Continue to
                                                             payment</Button>
                                                     </div>
                                                 </CardContent>
@@ -516,8 +515,6 @@ class Cart extends Component {
 
                             </GridContainer>
                         </StickyContainer>
-
-
                     </div>
                 </div>
                 {this.renderModal()}

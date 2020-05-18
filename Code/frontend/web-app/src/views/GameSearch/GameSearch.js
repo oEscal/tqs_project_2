@@ -83,7 +83,7 @@ class GameSearch extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -165,11 +165,11 @@ class GameSearch extends Component {
 
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
-                        <div className={"search"} style={{ position: "absolute", top: "8%", right: "5%", zIndex:"10" }}>
+                        <div className={"search"} style={{ position: "absolute", top: "8%", right: "5%", zIndex:"1" }}>
                             <GridContainer xs={12} sm={12} md={12}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Card style={{ height: "100%", width: "400px", float: "right" }}>
@@ -405,7 +405,7 @@ class GameSearch extends Component {
                         </div>
 
                         <div className={classes.container}>
-                            <div style={{ padding: "70px 0" }}>
+                            <div style={{ padding: "70px 0"}}>
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <div style={{ textAlign: "left" }}>
@@ -417,7 +417,7 @@ class GameSearch extends Component {
                                                     </span>
                                                 </GridItem>
                                                 <GridItem xs={12} sm={12} md={3}>
-                                                    <div style={{ color: "#000", padding: "12px 0" }}>
+                                                    <div style={{ color: "#000", padding: "12px 0"}}>
                                                         <Select
                                                             className="basic-single"
                                                             isSearchable={false}
@@ -702,6 +702,8 @@ class GameSearch extends Component {
                                 </GridContainer>
                             </div>
                         </div>
+                        <Footer />
+
                     </div>
                 </div >
             )

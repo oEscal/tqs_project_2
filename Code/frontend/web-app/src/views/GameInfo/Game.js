@@ -83,6 +83,7 @@ class Game extends Component {
     }
 
     componentDidMount() {
+        window.scrollTo(0, 0)
         this.setState({ doneLoading: true })
     }
 
@@ -94,7 +95,7 @@ class Game extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -271,8 +272,7 @@ class Game extends Component {
 
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} />
-
+                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
                             <div style={{ padding: "70px 0" }}>
@@ -456,6 +456,9 @@ class Game extends Component {
                             </div>
 
                         </div>
+                        
+                        <Footer />
+
                     </div>
                 </div>
             )
