@@ -184,11 +184,19 @@ class UserRepositoryTest {
     @Test
     void whenSetCardNumberWithAlphanumericChars_setIsUnsuccessful() {
 
-        mUser1.setCreditCardCSC(RandomStringUtils.randomAlphanumeric(CREDIT_CARD_CSC_MIN_LENGTH));
+        mUser1.setCreditCardNumber(RandomStringUtils.randomAlphanumeric(CREDIT_CARD_NUMBER_MAX_LENGTH));
 
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
     }
+
+    @Test
+    void whenSetCSCNumberWithAlphanumericChars_setIsUnsuccessful() {
+
+        mUser1.setCreditCardNumber(RandomStringUtils.randomAlphanumeric(CREDIT_CARD_CSC_MAX_LENGTH));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
     // TODO -> verify unique params
-    // TODO -> verify if csc and card number are all numbers
     // TODO -> tests for the credit card expiration date limit
 }
