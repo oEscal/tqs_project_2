@@ -3,9 +3,7 @@ package com.api.demo.grid.repository;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,12 +45,12 @@ class GameRepositoryTest {
 
         entityManager.persistAndFlush(example);
 
-        assertEquals(Arrays.asList(example), repository.findAllByName("Exemplo"));
+        assertEquals(Arrays.asList(example), repository.findAllByNameContains("Exemplo"));
     }
 
     @Test
     public void whenInvalidName_ReceiveEmpty(){
-        assertEquals(Arrays.asList(), repository.findAllByName("Not exemplo"));
+        assertEquals(Arrays.asList(), repository.findAllByNameContains("Not exemplo"));
     }
 
     @Test

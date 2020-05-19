@@ -1,5 +1,12 @@
 package com.api.demo.grid.controller;
+import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,5 +71,30 @@ public class GridRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Game found with Id " + pub);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
+    }
+
+    @PostMapping("/game")
+    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
+        Game game = gridService.saveGame(gamePOJO);
+        if (game == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
+        }
+        return new ResponseEntity<>(game, HttpStatus.OK);
+    }
+
+    @PostMapping("/genre")
+    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
+        GameGenre gameGenre = gridService.saveGameGenre(gameGenrePOJO);
+        return new ResponseEntity<>(gameGenre, HttpStatus.OK);
+    }
+
+    @PostMapping("/publisher")
+    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
+        return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
+    }
+
+    @PostMapping("/developer")
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
+        return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 }

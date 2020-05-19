@@ -1,7 +1,15 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
 import com.api.demo.grid.service.GridService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -9,16 +17,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @WebMvcTest
@@ -30,11 +40,32 @@ class GridRestControllerTest {
     private GridService gridService;
 
     private Game game;
+    private GameGenre gameGenre;
+    private Publisher publisher;
+    private Developer developer;
+    private GameGenrePOJO gameGenrePOJO;
+    private GamePOJO gamePOJO;
+    private PublisherPOJO publisherPOJO;
+    private DeveloperPOJO developerPOJO;
 
     @BeforeEach
     public void setUp(){
         game = new Game();
         game.setId(1L);
+
+        gameGenre = new GameGenre();
+        gameGenre.setName("genre");
+
+        publisher = new Publisher();
+        publisher.setName("publisher");
+
+        developer = new Developer();
+        developer.setName("developer");
+
+        gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
+        gameGenrePOJO = new GameGenrePOJO("genre", "");
+        publisherPOJO = new PublisherPOJO("publisher", "");
+        developerPOJO = new DeveloperPOJO("developer");
     }
 
     @Test
@@ -148,7 +179,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestDev_Return404Exception() throws Exception {
+    public void whenInvalidDev_Return404Exception() throws Exception {
         Mockito.when(gridService.getAllGamesByDev("dev")).thenReturn(null);
 
         mockMvc.perform(get("/grid/developer")
@@ -161,7 +192,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestPub_Return404Exception() throws Exception {
+    public void whenInvalidPub_Return404Exception() throws Exception {
         Mockito.when(gridService.getAllGamesByPublisher("pub")).thenReturn(null);
 
         mockMvc.perform(get("/grid/publisher")
@@ -171,6 +202,55 @@ class GridRestControllerTest {
                 .andExpect(status().reason("No Game found with Id pub"));
 
         Mockito.verify(gridService, Mockito.times(1)).getAllGamesByPublisher(Mockito.anyString());
+    }
+
+    @Test
+    public void whenPostingValidGenre_ReturnValidResponse() throws Exception{
+        Mockito.when(gridService.saveGameGenre(gameGenrePOJO)).thenReturn(gameGenre);
+        MvcResult result = mockMvc.perform(post("/grid/genre")
+                .content(asJsonString(gameGenrePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(gameGenrePOJO.getName()))).andReturn();
+
+    }
+
+    @Test
+    public void whenPostingValidPub_ReturnValidResponse() throws Exception{
+        Mockito.when(gridService.savePublisher(publisherPOJO)).thenReturn(publisher);
+        mockMvc.perform(post("/grid/publisher")
+                .content(asJsonString(publisherPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(publisherPOJO.getName())));
+    }
+
+    @Test
+    public void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
+        Mockito.when(gridService.saveDeveloper(developerPOJO)).thenReturn(developer);
+        mockMvc.perform(post("/grid/developer")
+                .content(asJsonString(developerPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(developerPOJO.getName())));
+    }
+
+    @Test
+    public void whenPostingValidGame_ReturnValidResponse() throws Exception{
+        Mockito.when(gridService.saveGame(gamePOJO)).thenReturn(game);
+        mockMvc.perform(post("/grid/game")
+                .content(asJsonString(gamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(gamePOJO.getName())));
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
