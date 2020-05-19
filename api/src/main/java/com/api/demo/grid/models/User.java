@@ -25,6 +25,9 @@ public class User {
 
     private String password;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean admin;
+
     private int age;
 
     private String photoUrl;
@@ -52,7 +55,7 @@ public class User {
     @JoinColumn(name = "review_from_user_id")
     private Set<ReviewUser> reviewUsers;
 
-    //The users that reviewd him
+    //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_to_user_id")
     private Set<ReviewUser> reviewedUsers;
@@ -91,10 +94,6 @@ public class User {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    private UserRole role;
 
 
     public Integer getId() {
@@ -157,6 +156,14 @@ public class User {
 
     public void setPhotoUrl(String photo) { this.photoUrl = photo; }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     public Set<ReviewUser> getReviewUsers() { return reviewUsers; }
 
     public Set<ReviewUser> getReviewedUsers() { return reviewedUsers; }
@@ -178,15 +185,7 @@ public class User {
     public Set<Sell> getSells() { return sells; }
 
     public Set<Game> getWishList() { return wishList; }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
+    
     public Date getCreditCardExpirationDate() {
         return (Date) creditCardExpirationDate.clone();
     }
