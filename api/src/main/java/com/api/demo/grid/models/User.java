@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -32,6 +34,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
@@ -41,54 +44,66 @@ public class User {
 
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_from_user_id")
+    @JsonIgnore
     private Set<ReviewUser> reviewUsers;
 
     //The users that reviewd him
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_to_user_id")
+    @JsonIgnore
     private Set<ReviewUser> reviewedUsers;
 
     //The reviews directed to the users
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ReportReviewGame> reportsOnGameReview;
 
     //The reports this user has issued on user reviews
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<ReportReviewUser> reportsOnUserReview;
 
     //The reports this user has received
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "report_from_user_id")
+    @JsonIgnore
     private Set<ReportUser> reportsThisUser;
 
     //The reports this user has issued on users
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "report_to_user_id")
+    @JsonIgnore
     private Set<ReportUser> reportsOnUser;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Buy> buys;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Auction> auctions;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Sell> sells;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Set<Game> wishList;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private UserRole role;
 

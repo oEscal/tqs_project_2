@@ -1,16 +1,23 @@
 package com.api.demo.grid.models;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Set;
 
 
 @Entity
+@NoArgsConstructor
+@Setter
+@Getter
 public class Publisher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Column(unique=true)
     private String name;
@@ -19,31 +26,4 @@ public class Publisher {
 
     @OneToMany
     private Set<Game> games;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<Game> getGames() { return games; }
 }

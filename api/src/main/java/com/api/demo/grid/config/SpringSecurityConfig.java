@@ -21,6 +21,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
             "/sign-up",
+            "/login"
     };
 
     private static final String[] ADMIN_WHITELIST = {
