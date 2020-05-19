@@ -59,9 +59,9 @@ public class GridRestControllerIT {
         publisherPOJO = new PublisherPOJO("publisher", "");
         developerPOJO = new DeveloperPOJO("developer");
         gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
-        gamePOJO.setDevelopers(new HashSet<DeveloperPOJO>(Arrays.asList(developerPOJO)));
-        gamePOJO.setGameGenres(new HashSet<GameGenrePOJO>(Arrays.asList(gameGenrePOJO)));
-        gamePOJO.setPublisher(publisherPOJO);
+        gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
+        gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("publisher")));
+        gamePOJO.setPublisher("publisher");
     }
 
     @Test
@@ -106,6 +106,17 @@ public class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(gamePOJO.getName())));
         assertFalse(gameRepository.findAllByNameContains(gamePOJO.getName()).isEmpty());
+    }
+
+    @Test
+    public void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
+        gamePOJO.setPublisher(null);
+        mockMvc.perform(post("/grid/game")
+                .content(asJsonString(gamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game"));
+        assertTrue(gameRepository.findAllByNameContains(gamePOJO.getName()).isEmpty());
     }
 
     public static String asJsonString(final Object obj) {

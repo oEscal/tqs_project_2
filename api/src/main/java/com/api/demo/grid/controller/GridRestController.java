@@ -84,17 +84,16 @@ public class GridRestController {
 
     @PostMapping("/genre")
     public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
-        GameGenre gameGenre = gridService.saveGameGenre(gameGenrePOJO);
-        return new ResponseEntity<>(gameGenre, HttpStatus.OK);
-    }
-
-    @PostMapping("/developer")
-    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
-        return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
+        return new ResponseEntity<>(gridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
 
     @PostMapping("/publisher")
     public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
         return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
+    }
+
+    @PostMapping("/developer")
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
+        return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 }

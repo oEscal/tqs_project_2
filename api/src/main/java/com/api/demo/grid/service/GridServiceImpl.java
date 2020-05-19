@@ -91,23 +91,23 @@ public class GridServiceImpl implements GridService{
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
-        for (GameGenrePOJO gameGenrePOJO: gamePOJO.getGameGenres()) {
-            gameGenre = gameGenreRepository.findByName(gameGenrePOJO.getName());
+        for (String gameGenrePOJO: gamePOJO.getGameGenres()) {
+            gameGenre = gameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
             gameGenreSet.add(gameGenre.get());
         }
         game.setGameGenres(gameGenreSet);
 
         // Get Publisher
-        Optional<Publisher> publisher = publisherRepository.findByName(gamePOJO.getPublisher().getName());
+        Optional<Publisher> publisher = publisherRepository.findByName(gamePOJO.getPublisher());
         if (publisher.isEmpty()) return null;
         game.setPublisher(publisher.get());
 
         //Get Game Developers
         Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
-        for (DeveloperPOJO developerPOJO: gamePOJO.getDevelopers()) {
-            developer = developerRepository.findByName(developerPOJO.getName());
+        for (String developerPOJO: gamePOJO.getDevelopers()) {
+            developer = developerRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
             developerSet.add(developer.get());
         }

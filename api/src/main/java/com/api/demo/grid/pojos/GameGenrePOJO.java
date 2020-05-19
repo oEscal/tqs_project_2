@@ -1,12 +1,14 @@
 package com.api.demo.grid.pojos;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class GameGenrePOJO {
     private String name;
     private String description;

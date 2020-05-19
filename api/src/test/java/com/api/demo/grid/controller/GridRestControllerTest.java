@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,14 +53,16 @@ class GridRestControllerTest {
     @BeforeEach
     public void setUp(){
         game = new Game();
+        game.setName("game");
         game.setId(1L);
 
         gameGenre = new GameGenre();
         gameGenre.setName("genre");
+        gameGenre.setDescription("");
 
         publisher = new Publisher();
         publisher.setName("publisher");
-
+        gameGenre.setDescription("");
         developer = new Developer();
         developer.setName("developer");
 
@@ -67,9 +70,9 @@ class GridRestControllerTest {
         publisherPOJO = new PublisherPOJO("publisher", "");
         developerPOJO = new DeveloperPOJO("developer");
         gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
-        gamePOJO.setDevelopers(new HashSet<DeveloperPOJO>(Arrays.asList(developerPOJO)));
-        gamePOJO.setGameGenres(new HashSet<GameGenrePOJO>(Arrays.asList(gameGenrePOJO)));
-        gamePOJO.setPublisher(publisherPOJO);
+        gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
+        gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
+        gamePOJO.setPublisher("publisher");
     }
 
     @Test
@@ -210,7 +213,7 @@ class GridRestControllerTest {
 
     @Test
     public void whenPostingValidGenre_ReturnValidResponse() throws Exception{
-        Mockito.when(gridService.saveGameGenre(gameGenrePOJO)).thenReturn(gameGenre);
+        Mockito.when(gridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(gameGenre);
         MvcResult result = mockMvc.perform(post("/grid/genre")
                 .content(asJsonString(gameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -221,7 +224,7 @@ class GridRestControllerTest {
 
     @Test
     public void whenPostingValidPub_ReturnValidResponse() throws Exception{
-        Mockito.when(gridService.savePublisher(publisherPOJO)).thenReturn(publisher);
+        Mockito.when(gridService.savePublisher(Mockito.any(PublisherPOJO.class))).thenReturn(publisher);
         mockMvc.perform(post("/grid/publisher")
                 .content(asJsonString(publisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -231,7 +234,7 @@ class GridRestControllerTest {
 
     @Test
     public void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
-        Mockito.when(gridService.saveDeveloper(developerPOJO)).thenReturn(developer);
+        Mockito.when(gridService.saveDeveloper(Mockito.any(DeveloperPOJO.class))).thenReturn(developer);
         mockMvc.perform(post("/grid/developer")
                 .content(asJsonString(developerPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -241,12 +244,22 @@ class GridRestControllerTest {
 
     @Test
     public void whenPostingValidGame_ReturnValidResponse() throws Exception{
-        Mockito.when(gridService.saveGame(gamePOJO)).thenReturn(game);
+        Mockito.when(gridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(game);
         mockMvc.perform(post("/grid/game")
                 .content(asJsonString(gamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(gamePOJO.getName())));
+    }
+
+    @Test
+    public void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
+        Mockito.when(gridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
+        mockMvc.perform(post("/grid/game")
+                .content(asJsonString(gamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game"));
     }
 
     public static String asJsonString(final Object obj) {
