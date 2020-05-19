@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -234,5 +235,34 @@ class UserRepositoryTest {
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
     }
 
-    // TODO -> verify unique params
+    /***
+     *  User's username and email params are in fact unique
+     ***/
+    @Test
+    @SneakyThrows
+    void whenSetTwoUsersWithSameUsername_setIsUnsuccessful() {
+
+        User userInsert = new User();
+        userInsert.setUsername(mUsername1);
+        userInsert.setName(mName1);
+        userInsert.setEmail("email_test");
+        userInsert.setPassword(mPassword1);
+        userInsert.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        assertThrows(PersistenceException.class, () -> mEntityManager.persistAndFlush(userInsert));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetTwoUsersWithSameEmail_setIsUnsuccessful() {
+
+        User userInsert = new User();
+        userInsert.setUsername("username_test");
+        userInsert.setName(mName1);
+        userInsert.setEmail(mEmail1);
+        userInsert.setPassword(mPassword1);
+        userInsert.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        assertThrows(PersistenceException.class, () -> mEntityManager.persistAndFlush(userInsert));
+    }
 }
