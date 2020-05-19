@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 @WebMvcTest
 class GridRestControllerTest {
@@ -62,10 +63,13 @@ class GridRestControllerTest {
         developer = new Developer();
         developer.setName("developer");
 
-        gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
         gameGenrePOJO = new GameGenrePOJO("genre", "");
         publisherPOJO = new PublisherPOJO("publisher", "");
         developerPOJO = new DeveloperPOJO("developer");
+        gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
+        gamePOJO.setDevelopers(new HashSet<DeveloperPOJO>(Arrays.asList(developerPOJO)));
+        gamePOJO.setGameGenres(new HashSet<GameGenrePOJO>(Arrays.asList(gameGenrePOJO)));
+        gamePOJO.setPublisher(publisherPOJO);
     }
 
     @Test

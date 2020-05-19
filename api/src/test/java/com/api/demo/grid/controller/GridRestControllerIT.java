@@ -19,8 +19,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,10 +55,13 @@ public class GridRestControllerIT {
 
     @BeforeEach
     public void setUp(){
-        gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
         gameGenrePOJO = new GameGenrePOJO("genre", "");
         publisherPOJO = new PublisherPOJO("publisher", "");
         developerPOJO = new DeveloperPOJO("developer");
+        gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
+        gamePOJO.setDevelopers(new HashSet<DeveloperPOJO>(Arrays.asList(developerPOJO)));
+        gamePOJO.setGameGenres(new HashSet<GameGenrePOJO>(Arrays.asList(gameGenrePOJO)));
+        gamePOJO.setPublisher(publisherPOJO);
     }
 
     @Test
