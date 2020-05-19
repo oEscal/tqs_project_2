@@ -2,6 +2,7 @@ package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.User;
 import lombok.SneakyThrows;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.text.SimpleDateFormat;
 
+import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +33,12 @@ class UserRepositoryTest {
             mEmail1 = "email1",
             mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
+
+    // credit card details limits
+    private static final int CREDIT_CARD_NUMBER_MAX_LENGTH = 19;
+    private static final int CREDIT_CARD_NUMBER_MIN_LENGTH = 8;
+    private static final int CREDIT_CARD_CSC_MAX_LENGTH = 4;
+    private static final int CREDIT_CARD_CSC_MIN_LENGTH = 3;
 
 
     @SneakyThrows
@@ -86,6 +94,16 @@ class UserRepositoryTest {
         mEntityManager.persistAndFlush(mUser1);
 
         assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
+    }
+
+    @Test
+    void whenSetCreditCardNumberMaxLength_setIsSuccessful() {
+
+        mUser1.setCreditCardNumber(RandomStringUtils.randomNumeric(CREDIT_CARD_NUMBER_MAX_LENGTH));
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(CREDIT_CARD_NUMBER_MAX_LENGTH,
+                mUserRepository.findByUsername(mUsername1).getCreditCardNumber().length());
     }
 
     // TODO -> testar também inserção de roles que não são permitidas
