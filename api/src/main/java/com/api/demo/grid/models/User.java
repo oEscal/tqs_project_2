@@ -1,6 +1,7 @@
 package com.api.demo.grid.models;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,9 @@ public class User {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
+    /***
+     *  User basic info
+     ***/
     @Column(unique = true)
     private String username;
 
@@ -25,6 +29,20 @@ public class User {
 
     private String photoUrl;
 
+    /***
+     *  User's credit card info
+     ***/
+    private String creditCardNumber;
+
+    private String creditCardCSC;
+
+    private String creditCardOwner;
+
+    private Date creditCardExpirationDate;
+
+    /***
+     *  User's relations with other entities
+     ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewGame> reviewGames;
@@ -167,5 +185,13 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public Date getCreditCardExpirationDate() {
+        return (Date) creditCardExpirationDate.clone();
+    }
+
+    public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
+        this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 }
