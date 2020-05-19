@@ -50,21 +50,26 @@ class UserRepositoryTest {
         mEntityManager.persistAndFlush(mUser1);
     }
 
-    @SneakyThrows
     @Test
-    void whenUserExists_receiveCorrectUser() {
+    void whenUserNameExists_receiveCorrectUser() {
 
-        User userExpected = new User();
-        userExpected.setUsername(mUsername1);
-        userExpected.setName(mName1);
-        userExpected.setEmail(mEmail1);
-        userExpected.setPassword(mPassword1);
-        UserRole userRole = new UserRole();
-        userRole.setName(mRole1);
-        userExpected.setRole(userRole);
-        userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        assertEquals(mUser1, mUserRepository.findByUsername(mUser1.getName()));
+    }
 
-        assertEquals(userExpected, mEntityManager.persistAndFlush(mUser1));
+    @Test
+    void whenUserNameNotExists_receiveNothing() {
+
+        // User userExpected = new User();
+        // userExpected.setUsername(mUsername1);
+        // userExpected.setName(mName1);
+        // userExpected.setEmail(mEmail1);
+        // userExpected.setPassword(mPassword1);
+        // UserRole userRole = new UserRole();
+        // userRole.setName(mRole1);
+        // userExpected.setRole(userRole);
+        // userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        assertNull(mUserRepository.findByUsername(mUser1.getName()));
     }
 
     // TODO -> testar também inserção de roles que não são permitidas
