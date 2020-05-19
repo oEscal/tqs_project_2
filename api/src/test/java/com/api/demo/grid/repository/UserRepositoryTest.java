@@ -48,8 +48,8 @@ class UserRepositoryTest {
                                 PAST_DATE = "17/10/1900";
 
 
-    @SneakyThrows
     @BeforeEach
+    @SneakyThrows
     void setup() {
 
         mUser1 = new User();
@@ -107,6 +107,15 @@ class UserRepositoryTest {
         assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
     }
 
+    @Test
+    @SneakyThrows
+    void whenSetUserFutureBirthDate_setIsUnsuccessful() {
+
+        mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(FUTURE_DATE));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
 
     /***
      *  User card's number, csc and expiration date limits tests
@@ -151,8 +160,8 @@ class UserRepositoryTest {
                 mUserRepository.findByUsername(mUsername1).getCreditCardCSC().length());
     }
 
-    @SneakyThrows
     @Test
+    @SneakyThrows
     void whenSetNonExpiredCardExpirationDate_setIsSuccessful() {
 
         Date expectedExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse(FUTURE_DATE);
@@ -196,8 +205,8 @@ class UserRepositoryTest {
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
     }
 
-    @SneakyThrows
     @Test
+    @SneakyThrows
     void whenSetExpiredCardExpirationDate_setIsUnsuccessful() {
 
         mUser1.setCreditCardExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse(PAST_DATE));
@@ -226,5 +235,4 @@ class UserRepositoryTest {
     }
 
     // TODO -> verify unique params
-    // TODO -> user cant be born in the future
 }
