@@ -37,7 +37,7 @@ public class User {
     @JoinColumn(name = "review_from_user_id")
     private Set<ReviewUser> reviewUsers;
 
-    //The users that reviewd him
+    //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_to_user_id")
     private Set<ReviewUser> reviewedUsers;
