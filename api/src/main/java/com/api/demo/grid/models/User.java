@@ -41,6 +41,7 @@ public class User {
 
     private String creditCardOwner;
 
+    @Temporal(TemporalType.DATE)
     private Date creditCardExpirationDate;
 
     /***
@@ -185,7 +186,31 @@ public class User {
     public Set<Sell> getSells() { return sells; }
 
     public Set<Game> getWishList() { return wishList; }
-    
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public String getCreditCardCSC() {
+        return creditCardCSC;
+    }
+
+    public String getCreditCardOwner() {
+        return creditCardOwner;
+    }
+
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public void setCreditCardCSC(String creditCardCSC) {
+        this.creditCardCSC = creditCardCSC;
+    }
+
+    public void setCreditCardOwner(String creditCardOwner) {
+        this.creditCardOwner = creditCardOwner;
+    }
+
     public Date getCreditCardExpirationDate() {
         return (Date) creditCardExpirationDate.clone();
     }
