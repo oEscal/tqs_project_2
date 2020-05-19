@@ -11,12 +11,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -40,6 +42,10 @@ class UserRepositoryTest {
     private static final int CREDIT_CARD_NUMBER_MIN_LENGTH = 8;
     private static final int CREDIT_CARD_CSC_MAX_LENGTH = 4;
     private static final int CREDIT_CARD_CSC_MIN_LENGTH = 3;
+
+    // for credit card and user
+    private static final String FUTURE_DATE = "17/10/2100",
+                                PAST_DATE = "17/10/1900";
 
 
     @SneakyThrows
@@ -103,7 +109,7 @@ class UserRepositoryTest {
 
 
     /***
-     *  User's card number and csc limits tests
+     *  User card's number, csc and expiration date limits tests
      ***/
     @Test
     void whenSetCreditCardNumberMaxLength_setIsSuccessful() {
@@ -145,6 +151,19 @@ class UserRepositoryTest {
                 mUserRepository.findByUsername(mUsername1).getCreditCardCSC().length());
     }
 
+    @SneakyThrows
+    @Test
+    void whenSetNonExpiredCardExpirationDate_setIsSuccessful() {
+
+        Date expectedExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse(FUTURE_DATE);
+
+        mUser1.setCreditCardExpirationDate(expectedExpirationDate);
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(expectedExpirationDate.clone(),
+                mUserRepository.findByUsername(mUsername1).getCreditCardExpirationDate());
+    }
+
     @Test
     void whenSetCreditCardNumberMoreMaxLength_setIsUnsuccessful() {
 
@@ -177,6 +196,15 @@ class UserRepositoryTest {
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
     }
 
+    @SneakyThrows
+    @Test
+    void whenSetExpiredCardExpirationDate_setIsUnsuccessful() {
+
+        mUser1.setCreditCardExpirationDate(new SimpleDateFormat("dd/MM/yyyy").parse(PAST_DATE));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
 
     /***
      *  User's card number and csc are just numbers numbers (non alphabetic chars allowed) tests
@@ -198,5 +226,5 @@ class UserRepositoryTest {
     }
 
     // TODO -> verify unique params
-    // TODO -> tests for the credit card expiration date limit
+    // TODO -> user cant be born in the future
 }
