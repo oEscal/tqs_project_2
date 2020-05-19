@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes= DemoApplication.class)
@@ -28,6 +29,31 @@ public class LoginPageTest {
     @Test
     //Check that when no input is fed, an error is displayed
     public void whenNoInput_thenErrorMessage() {
+        // No Input
+        controller.clickButton("confirm");
+
+        assertTrue(controller.checkVisibility("errorOne"));
+        assertTrue(controller.checkText("errorOne","Please fill both fields before submitting!"));
+
+        assertTrue(controller.checkVisibility("errorOneToast"));
+        assertTrue(controller.checkText("errorOneToast","Please fill both fields!"));
+
+        // Only Password
+        controller.writeInput("","username");
+        controller.writeInput("jonas","password");
+
+        controller.clickButton("confirm");
+
+        assertTrue(controller.checkVisibility("errorOne"));
+        assertTrue(controller.checkText("errorOne","Please fill both fields before submitting!"));
+
+        assertTrue(controller.checkVisibility("errorOneToast"));
+        assertTrue(controller.checkText("errorOneToast","Please fill both fields!"));
+
+        // Only Username
+        controller.writeInput("jonas","username");
+        controller.writeInput("","password");
+
         controller.clickButton("confirm");
 
         assertTrue(controller.checkVisibility("errorOne"));
@@ -44,6 +70,12 @@ public class LoginPageTest {
         controller.writeInput("jonas","password");
 
         controller.clickButton("confirm");
+
+        assertFalse(controller.checkVisibility("errorOne"));
+        assertFalse(controller.checkText("errorOne","Please fill both fields before submitting!"));
+
+        assertFalse(controller.checkVisibility("errorOneToast"));
+        assertFalse(controller.checkText("errorOneToast","Please fill both fields!"));
 
         controller.waitForLoad("processing");
 

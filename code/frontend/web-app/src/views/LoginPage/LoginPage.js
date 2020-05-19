@@ -120,7 +120,7 @@ class LoginPage extends Component {
       })
         .then(response => {
           if (response.status === 401 || response.status === 200) {
-            return response.json()
+            return response
           }
           else throw new Error(response.status);
         })
@@ -138,6 +138,7 @@ class LoginPage extends Component {
             document.getElementById("errorTwo").style.display = ""
 
           } else { // Successful Login
+            data = data.json()
             localStorage.setItem('loggedUser', JSON.stringify(data));
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
             success = true

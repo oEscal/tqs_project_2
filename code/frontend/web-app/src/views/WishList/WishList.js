@@ -25,6 +25,9 @@ import Popover from "@material-ui/core/Popover";
 
 import javascriptStyles from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
 
 class WishList extends Component {
     constructor(props) {
