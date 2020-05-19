@@ -106,5 +106,6 @@ class UserRepositoryTest {
                 mUserRepository.findByUsername(mUsername1).getCreditCardNumber().length());
     }
 
-    // TODO -> testar também inserção de roles que não são permitidas
+    // TODO -> tests for the limits on the csc and credit card numbers
+    // TODO -> tests for the credit card expiration date limit
 }
