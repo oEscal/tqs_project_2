@@ -1,6 +1,10 @@
 package com.api.demo.grid.models;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +16,9 @@ public class User {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
+    /***
+     *  User basic info
+     ***/
     @Column(unique = true)
     private String username;
 
@@ -21,13 +28,32 @@ public class User {
 
     private String password;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean admin;
+
     private int age;
 
     private String photoUrl;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean admin;
+    /***
+     *  User's credit card info
+     ***/
+    @Length(min = 8, max = 19)
+    @Pattern(regexp="^([0-9]*)$")
+    private String creditCardNumber;
 
+    @Length(min = 3, max = 4)
+    @Pattern(regexp="^([0-9]*)$")
+    private String creditCardCSC;
+
+    private String creditCardOwner;
+
+    @Temporal(TemporalType.DATE)
+    private Date creditCardExpirationDate;
+
+    /***
+     *  User's relations with other entities
+     ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewGame> reviewGames;
@@ -167,4 +193,36 @@ public class User {
     public Set<Sell> getSells() { return sells; }
 
     public Set<Game> getWishList() { return wishList; }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public String getCreditCardCSC() {
+        return creditCardCSC;
+    }
+
+    public String getCreditCardOwner() {
+        return creditCardOwner;
+    }
+
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public void setCreditCardCSC(String creditCardCSC) {
+        this.creditCardCSC = creditCardCSC;
+    }
+
+    public void setCreditCardOwner(String creditCardOwner) {
+        this.creditCardOwner = creditCardOwner;
+    }
+
+    public Date getCreditCardExpirationDate() {
+        return (Date) creditCardExpirationDate.clone();
+    }
+
+    public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
+        this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+    }
 }
