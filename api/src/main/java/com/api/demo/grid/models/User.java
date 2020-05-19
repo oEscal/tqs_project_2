@@ -1,6 +1,9 @@
 package com.api.demo.grid.models;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,8 +38,12 @@ public class User {
     /***
      *  User's credit card info
      ***/
+    @Length(min = 8, max = 19)
+    @Pattern(regexp="^([0-9]*)$")
     private String creditCardNumber;
 
+    @Length(min = 3, max = 4)
+    @Pattern(regexp="^([0-9]*)$")
     private String creditCardCSC;
 
     private String creditCardOwner;
