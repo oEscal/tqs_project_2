@@ -12,7 +12,8 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -28,7 +29,7 @@ class UserRepositoryTest {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
-            mPassword1 = "password_test1",
+            mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
 
 
@@ -70,6 +71,21 @@ class UserRepositoryTest {
     void whenUserNameNotExists_receiveNothing() {
 
         assertNull(mUserRepository.findByUsername("non_exist_user"));
+    }
+
+    @Test
+    void whenGetDefaultUser_receiveUserNotAdmin() {
+
+        assertFalse(mUserRepository.findByUsername(mUsername1).isAdmin());
+    }
+
+    @Test
+    void whenSetUserAdmin_receiveUserAdmin() {
+
+        mUser1.setAdmin(true);
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
     }
 
     // TODO -> testar também inserção de roles que não são permitidas
