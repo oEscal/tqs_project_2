@@ -23,9 +23,8 @@ public class Account {
     @PostMapping("/grid/sign-up")
     public User createUser(@Valid @RequestBody User user) throws ExceptionDetails {
 
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        if (userRepository.findByUsername(user.getUsername()) != null)
             throw new ExceptionDetails("There is already a user with that name");
-        }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
