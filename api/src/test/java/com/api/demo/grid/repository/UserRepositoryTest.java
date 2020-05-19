@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @DataJpaTest
@@ -53,23 +54,30 @@ class UserRepositoryTest {
     @Test
     void whenUserNameExists_receiveCorrectUser() {
 
-        assertEquals(mUser1, mUserRepository.findByUsername(mUser1.getName()));
+        assertEquals(mUser1, mUserRepository.findByUsername(mUsername1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUserNameExists_receiveUserWithSameName() {
+
+        User userExpected = new User();
+        userExpected.setUsername(mUsername1);
+        userExpected.setName(mName1);
+        userExpected.setEmail(mEmail1);
+        userExpected.setPassword(mPassword1);
+        UserRole userRole = new UserRole();
+        userRole.setName(mRole1);
+        userExpected.setRole(userRole);
+        userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        assertEquals(userExpected, mUserRepository.findByUsername(mUsername1));
     }
 
     @Test
     void whenUserNameNotExists_receiveNothing() {
 
-        // User userExpected = new User();
-        // userExpected.setUsername(mUsername1);
-        // userExpected.setName(mName1);
-        // userExpected.setEmail(mEmail1);
-        // userExpected.setPassword(mPassword1);
-        // UserRole userRole = new UserRole();
-        // userRole.setName(mRole1);
-        // userExpected.setRole(userRole);
-        // userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-
-        assertNull(mUserRepository.findByUsername(mUser1.getName()));
+        assertNull(mUserRepository.findByUsername("non_exist_user"));
     }
 
     // TODO -> testar também inserção de roles que não são permitidas
