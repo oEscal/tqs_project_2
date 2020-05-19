@@ -2,12 +2,16 @@ package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 
@@ -16,6 +20,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonSerialize
 public class User {
 
@@ -24,6 +29,9 @@ public class User {
     @JsonIgnore
     private Long id;
 
+    /***
+     *  User basic info
+     ***/
     @Column(unique = true, nullable = false)
     private String username;
 
@@ -39,9 +47,31 @@ public class User {
 
     @Column(nullable = false)
     private Date birthDate;
+    
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean admin;
 
     private String photoUrl;
 
+    /***
+     *  User's credit card info
+     ***/
+    @Length(min = 8, max = 19)
+    @Pattern(regexp="^([0-9]*)$")
+    private String creditCardNumber;
+
+    @Length(min = 3, max = 4)
+    @Pattern(regexp="^([0-9]*)$")
+    private String creditCardCSC;
+
+    private String creditCardOwner;
+
+    @Temporal(TemporalType.DATE)
+    private Date creditCardExpirationDate;
+
+    /***
+     *  User's relations with other entities
+     ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL)
     @JsonIgnore
@@ -53,7 +83,7 @@ public class User {
     @JsonIgnore
     private Set<ReviewUser> reviewUsers;
 
-    //The users that reviewd him
+    //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "review_to_user_id")
     @JsonIgnore
@@ -103,10 +133,6 @@ public class User {
     @JsonIgnore
     private Set<Game> wishList;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "role_id", nullable = false)
-    private UserRole role;
-
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
@@ -117,13 +143,11 @@ public class User {
         this.birthDate = (Date) birthDate.clone();
     }
 
-    public User(String name, String email, String password, String username, Date birthDate, UserRole role) {
+    public Date getCreditCardExpirationDate() {
+        return (Date) creditCardExpirationDate.clone();
+    }
 
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.birthDate = (Date) birthDate.clone();
-        this.role = role;
+    public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
+        this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 }

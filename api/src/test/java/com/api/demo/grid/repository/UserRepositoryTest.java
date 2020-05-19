@@ -1,7 +1,6 @@
 package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.User;
-import com.api.demo.grid.models.UserRole;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,7 @@ class UserRepositoryTest {
             mName1 = "name1",
             mEmail1 = "email1",
             mPassword1 = "password_test1",
-            mBirthDateStr = "17/10/2010",
-            mRole1 = "USER";
+            mBirthDateStr = "17/10/2010";
 
 
     @SneakyThrows
@@ -43,9 +41,6 @@ class UserRepositoryTest {
         mUser1.setName(mName1);
         mUser1.setEmail(mEmail1);
         mUser1.setPassword(mPassword1);
-        UserRole userRole = new UserRole();
-        userRole.setName(mRole1);
-        mUser1.setRole(userRole);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         mEntityManager.persistAndFlush(mUser1);
@@ -66,9 +61,6 @@ class UserRepositoryTest {
         userExpected.setName(mName1);
         userExpected.setEmail(mEmail1);
         userExpected.setPassword(mPassword1);
-        UserRole userRole = new UserRole();
-        userRole.setName(mRole1);
-        userExpected.setRole(userRole);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         assertEquals(userExpected, mUserRepository.findByUsername(mUsername1));
