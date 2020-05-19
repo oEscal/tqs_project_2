@@ -56,6 +56,10 @@ class UserRepositoryTest {
         mEntityManager.persistAndFlush(mUser1);
     }
 
+
+    /***
+     *  Required User info get and set tests
+     ***/
     @Test
     void whenUserNameExists_receiveCorrectUser() {
 
@@ -97,6 +101,10 @@ class UserRepositoryTest {
         assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
     }
 
+
+    /***
+     *  User's card number and csc limits tests
+     ***/
     @Test
     void whenSetCreditCardNumberMaxLength_setIsSuccessful() {
 
@@ -169,8 +177,18 @@ class UserRepositoryTest {
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
     }
 
+
+    /***
+     *  User's card number and csc are just numbers numbers (non alphabetic chars allowed) tests
+     ***/
+    @Test
+    void whenSetCardNumberWithAlphanumericChars_setIsUnsuccessful() {
+
+        mUser1.setCreditCardCSC(RandomStringUtils.randomAlphanumeric(CREDIT_CARD_CSC_MIN_LENGTH));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
     // TODO -> verify unique params
     // TODO -> verify if csc and card number are all numbers
-    // TODO -> 
     // TODO -> tests for the credit card expiration date limit
 }
