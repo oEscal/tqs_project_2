@@ -66,6 +66,7 @@ export default function CustomInput(props) {
           {labelText}
         </InputLabel>
       ) : null}
+
       <Input
         classes={{
           input: inputClasses,

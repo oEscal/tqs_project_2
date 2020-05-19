@@ -329,7 +329,6 @@ class Cart extends Component {
                         </GridItem>
 
 
-
                     </GridContainer>
 
 

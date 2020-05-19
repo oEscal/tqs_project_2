@@ -25,6 +25,7 @@ import EditProfile from "views/Profile/EditProfile.js";
 
 
 import Cart from "views/Cart/Cart.js";
+import WishList from "views/WishList/WishList.js";
 
 import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 
@@ -47,6 +48,7 @@ ReactDOM.render(
       <Route exact path="/user/:user/edit" component={EditProfile}/>
       <Route exact path="/sell-game" component={SellGame} />
       <Route exact path="/sell-new-game" component={SellNewGame} />
+      <Route exact path="/wishlist" component={WishList} />
       <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
