@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
 
-import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -106,6 +107,70 @@ class UserRepositoryTest {
                 mUserRepository.findByUsername(mUsername1).getCreditCardNumber().length());
     }
 
-    // TODO -> tests for the limits on the csc and credit card numbers
+    @Test
+    void whenSetCreditCardNumberMinLength_setIsSuccessful() {
+
+        mUser1.setCreditCardNumber(RandomStringUtils.randomNumeric(CREDIT_CARD_NUMBER_MIN_LENGTH));
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(CREDIT_CARD_NUMBER_MIN_LENGTH,
+                mUserRepository.findByUsername(mUsername1).getCreditCardNumber().length());
+    }
+
+    @Test
+    void whenSetCSCMaxLength_setIsSuccessful() {
+
+        mUser1.setCreditCardCSC(RandomStringUtils.randomNumeric(CREDIT_CARD_CSC_MAX_LENGTH));
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(CREDIT_CARD_CSC_MAX_LENGTH,
+                mUserRepository.findByUsername(mUsername1).getCreditCardCSC().length());
+    }
+
+    @Test
+    void whenSetCSCMinLength_setIsSuccessful() {
+
+        mUser1.setCreditCardCSC(RandomStringUtils.randomNumeric(CREDIT_CARD_CSC_MIN_LENGTH));
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(CREDIT_CARD_CSC_MIN_LENGTH,
+                mUserRepository.findByUsername(mUsername1).getCreditCardCSC().length());
+    }
+
+    @Test
+    void whenSetCreditCardNumberMoreMaxLength_setIsUnsuccessful() {
+
+        mUser1.setCreditCardNumber(RandomStringUtils.randomNumeric(CREDIT_CARD_NUMBER_MAX_LENGTH + 1));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
+    @Test
+    void whenSetCreditCardNumberLessMinLength_setIsUnsuccessful() {
+
+        mUser1.setCreditCardNumber(RandomStringUtils.randomNumeric(CREDIT_CARD_NUMBER_MIN_LENGTH - 1));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
+    @Test
+    void whenSetCSCMoreMaxLength_setIsUnsuccessful() {
+
+        mUser1.setCreditCardCSC(RandomStringUtils.randomNumeric(CREDIT_CARD_CSC_MAX_LENGTH + 1));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
+    @Test
+    void whenSetCSCLessMinLength_setIsUnsuccessful() {
+
+        mUser1.setCreditCardCSC(RandomStringUtils.randomNumeric(CREDIT_CARD_CSC_MIN_LENGTH - 1));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
+    }
+
+    // TODO -> verify unique params
+    // TODO -> verify if csc and card number are all numbers
+    // TODO -> 
     // TODO -> tests for the credit card expiration date limit
 }
