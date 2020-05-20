@@ -71,6 +71,7 @@ class AccountIT {
     /***
      * Create simple User (with the required params)
      ***/
+    /*
     @Test
     @SneakyThrows
     void whenCreateUserWithDefaultParams_thenReturnSuccessAndCreatedUser() {
@@ -79,18 +80,10 @@ class AccountIT {
                 .content(asJsonString(mSimpleUserDTO));
         System.out.println(asJsonString(mSimpleUserDTO));
 
-        /*
-        "{\n" +
-                "        \"username\": \"" + mUsername1 + "\",\n" +
-                "        \"password\": \"" + mPassword1 + "\",\n" +
-                "        \"birthDate\": \"" + mBirthDateStr + "\",\n" +
-                "        \"email\": \"" + mEmail1 + "\",\n" +
-                "        \"name\": \"" + mName1 + "\"\n" +
-                "}"
-                */
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is(mUsername1)));
     }
+    */
 
     // TODO -> this method can be shared between classes (create an utils class)
     private static String asJsonString(final Object obj) {

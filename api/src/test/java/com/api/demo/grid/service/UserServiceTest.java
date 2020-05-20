@@ -5,6 +5,7 @@ import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -142,7 +144,7 @@ class UserServiceTest {
      ***/
     @Test
     @SneakyThrows
-    void whenSaveUserWithPhoto_ReturnUserWithPhoto() {
+    void whenSaveUserWithPhoto_returnUserWithPhoto() {
 
         String photo_url = "photo_test";
         mUser1.setPhotoUrl(photo_url);
@@ -157,7 +159,7 @@ class UserServiceTest {
 
     @Test
     @SneakyThrows
-    void whenSaveUserWithAdminTrue_ReturnUserWithAdminTrue() {
+    void whenSaveUserWithAdminTrue_returnUserWithAdminTrue() {
 
         mUser1.setAdmin(true);
         mSimpleUserDTO.setAdmin(true);
@@ -171,11 +173,103 @@ class UserServiceTest {
 
     @Test
     @SneakyThrows
-    void whenNormalUser_ReturnUserWithAdminFalse() {
+    void whenNormalUser_returnUserWithAdminFalse() {
 
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         User savedUser = mUserService.saveUser(mSimpleUserDTO);
         assertFalse(savedUser.isAdmin());
+    }
+
+
+    /***
+     *  Save User with card details
+     ***/
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithAllCardInfo_returnUserWithAllCardInfo() {
+
+        String creditCardNumber = RandomStringUtils.randomNumeric(10);
+        String creditCardCSC = RandomStringUtils.randomNumeric(3);
+        String creditCardOwner = "Test user";
+        Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2030");
+
+        // set card info for User entity
+        mUser1.setCreditCardNumber(creditCardNumber);
+        mUser1.setCreditCardCSC(creditCardCSC);
+        mUser1.setCreditCardOwner(creditCardOwner);
+        mUser1.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        // set card info for the DTO User
+        mSimpleUserDTO.setCreditCardNumber(creditCardNumber);
+        mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
+        mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
+        mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        User savedUser = mUserService.saveUser(mSimpleUserDTO);
+        assertEquals(mUser1, savedUser);
+        assertEquals(creditCardNumber, savedUser.getCreditCardNumber());
+        assertEquals(creditCardCSC, savedUser.getCreditCardCSC());
+        assertEquals(creditCardOwner, savedUser.getCreditCardOwner());
+        assertEquals(creditCardExpirationDate, savedUser.getCreditCardExpirationDate());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithJustOneCardInfo_saveIsUnsuccessful() {
+
+        String creditCardCSC = RandomStringUtils.randomNumeric(3);
+
+        mUser1.setCreditCardCSC(creditCardCSC);
+        mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithJustTwoCardInfo_saveIsUnsuccessful() {
+
+        String creditCardOwner = "Test user";
+        Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2030");
+
+        // set card info for User entity
+        mUser1.setCreditCardOwner(creditCardOwner);
+        mUser1.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        // set card info for the DTO User
+        mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
+        mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithJustThreeCardInfo_saveIsUnsuccessful() {
+
+        String creditCardNumber = RandomStringUtils.randomNumeric(10);
+        String creditCardCSC = RandomStringUtils.randomNumeric(3);
+        Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2030");
+
+        // set card info for User entity
+        mUser1.setCreditCardNumber(creditCardNumber);
+        mUser1.setCreditCardCSC(creditCardCSC);
+        mUser1.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        // set card info for the DTO User
+        mSimpleUserDTO.setCreditCardNumber(creditCardNumber);
+        mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
+        mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
 }
