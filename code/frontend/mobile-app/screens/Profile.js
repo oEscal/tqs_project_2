@@ -16,7 +16,7 @@ export default class Profile extends React.Component {
       <Block flex style={styles.profile}>
         <Block flex>
           <ImageBackground
-            source={{uri: Images.Profile}}
+            source={require("../assets/img/default_user.png")}
             style={styles.profileContainer}
             imageStyle={styles.profileImage}>
             <Block flex style={styles.profileDetails}>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: -HeaderHeight * 2,
   },
   profileImage: {
-    width: width * 1.1,
+    width: width,
     height: 'auto',
   },
   profileContainer: {
