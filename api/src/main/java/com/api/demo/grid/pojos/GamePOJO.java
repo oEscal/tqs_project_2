@@ -19,6 +19,17 @@ public class GamePOJO {
     private Date releaseDate = new Date();
     private String coverUrl;
 
+    public GamePOJO(String name, String description, Set<String> gameGenres, String publisher,
+                    Set<String> developers, Date releaseDate, String coverUrl) {
+        this.name = name;
+        this.description = description;
+        this.gameGenres = gameGenres;
+        this.publisher = publisher;
+        this.developers = developers;
+        if (releaseDate != null) this.releaseDate = (Date) releaseDate.clone();
+        this.coverUrl = coverUrl;
+    }
+
     public Date getReleaseDate(){
         return (Date) releaseDate.clone();
     }

@@ -51,10 +51,11 @@ public class Game {
     private String coverUrl;
 
     public Date getReleaseDate(){
-        return (Date) releaseDate.clone();
+        return (releaseDate == null)? null:(Date) releaseDate.clone();
     }
 
     public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = (Date) releaseDate.clone();
+        if (releaseDate != null) this.releaseDate = (Date) releaseDate.clone();
+        else this.releaseDate = null;
     }
 }

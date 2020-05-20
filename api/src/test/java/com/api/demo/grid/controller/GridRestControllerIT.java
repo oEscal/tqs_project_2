@@ -60,7 +60,7 @@ public class GridRestControllerIT {
         developerPOJO = new DeveloperPOJO("developer");
         gamePOJO = new GamePOJO("game", "", null, null, null, null, "");
         gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
-        gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("publisher")));
+        gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         gamePOJO.setPublisher("publisher");
     }
 

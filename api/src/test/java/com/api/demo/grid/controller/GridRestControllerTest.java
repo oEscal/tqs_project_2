@@ -51,18 +51,24 @@ class GridRestControllerTest {
     @BeforeEach
     void setUp(){
         game = new Game();
+        game.setDescription("");
         game.setName("game");
         game.setId(1L);
+        game.setCoverUrl("");
 
         gameGenre = new GameGenre();
         gameGenre.setName("genre");
         gameGenre.setDescription("");
+        game.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
 
         publisher = new Publisher();
         publisher.setName("publisher");
-        gameGenre.setDescription("");
+        publisher.setDescription("");
+        game.setPublisher(publisher);
+
         developer = new Developer();
         developer.setName("developer");
+        game.setDevelopers(new HashSet<>(Arrays.asList(developer)));
 
         gameGenrePOJO = new GameGenrePOJO("genre", "");
         publisherPOJO = new PublisherPOJO("publisher", "");
@@ -106,7 +112,7 @@ class GridRestControllerTest {
         mockMvc.perform(get("/grid/genre")
                 .param("genre", "genre")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                    .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
