@@ -130,6 +130,9 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
+					<excludes>
+						<exclude>**/DemoApplicationTest.java</exclude>
+					</excludes>
                 </configuration>
             </plugin>
         </plugins>
