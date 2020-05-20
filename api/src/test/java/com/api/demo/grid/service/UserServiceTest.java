@@ -1,6 +1,7 @@
 package com.api.demo.grid.service;
 
 import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
@@ -124,6 +125,26 @@ class UserServiceTest {
         assertEquals(mUser1, mUserService.saveUser(simpleUserDTO));
     }
 
+    @Test
+    @SneakyThrows
+    void whenSaveExistentUser_saveIsUnsuccessful() {
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        UserDTO simpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        // first insertion
+        mUserService.saveUser(simpleUserDTO);
+
+        // second insertion
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(simpleUserDTO));
+    }
+
+
+    /***
+     *  Save User with photo or with admin
+     ***/
     // @Test
     // @SneakyThrows
     // void whenSaveUserDontExists_ReturnUser() {
