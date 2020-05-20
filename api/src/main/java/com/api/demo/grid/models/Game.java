@@ -50,4 +50,11 @@ public class Game {
 
     private String coverUrl;
 
+    public Date getReleaseDate(){
+        return (Date) releaseDate.clone();
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = (Date) releaseDate.clone();
+    }
 }

@@ -1,6 +1,5 @@
 package com.api.demo.grid.pojos;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +9,6 @@ import java.util.Set;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class GamePOJO {
     private String name;
@@ -18,6 +16,14 @@ public class GamePOJO {
     private Set<String> gameGenres;
     private String publisher;
     private Set<String> developers;
-    private Date releaseDate;
+    private Date releaseDate = new Date();
     private String coverUrl;
+
+    public Date getReleaseDate(){
+        return (Date) releaseDate.clone();
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = (Date) releaseDate.clone();
+    }
 }

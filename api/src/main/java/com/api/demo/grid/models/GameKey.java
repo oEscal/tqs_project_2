@@ -1,9 +1,14 @@
 package com.api.demo.grid.models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 
 @Entity
+@Getter
+@Setter
 public class GameKey {
 
     @Id
@@ -27,33 +32,4 @@ public class GameKey {
 
     private String platform;
 
-    public int getId() { return id; }
-
-    public String getKey() {
-        return key;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setKey(String gameKey) {
-        this.key = gameKey;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public String getRetailer() { return this.retailer; }
-
-    public void setRetailer(String retailer) { this.retailer = retailer; }
-
-    public Sell getSell() { return sell; }
-
-    public Auction getAuction() { return auction; }
 }
