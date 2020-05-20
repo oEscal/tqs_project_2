@@ -9,11 +9,12 @@ import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class GridServiceImpl implements GridService{
     @Autowired
     private DeveloperRepository developerRepository;
@@ -52,7 +53,7 @@ public class GridServiceImpl implements GridService{
 
     @Override
     public List<Game> getAllGamesByName(String name) {
-        return gameRepository.findAllByName(name);
+        return gameRepository.findAllByNameContaining(name);
     }
 
     @Override

@@ -99,18 +99,18 @@ class GridServiceTest {
     @Test
     public void whenSearchingName_ReturnRightGame(){
         List<Game> games = Arrays.asList(game);
-        Mockito.when(mockGameRepo.findAllByName("Game")).thenReturn(games);
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game")).thenReturn(games);
 
         assertEquals(games, gridService.getAllGamesByName("Game"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByName(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
     public void whenSearchingInvalidName_ReturnNull(){
-        Mockito.when(mockGameRepo.findAllByName("Game2")).thenReturn(new ArrayList<Game>());
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game2")).thenReturn(new ArrayList<Game>());
 
         assertEquals(new ArrayList<Game>(), gridService.getAllGamesByName("Game2"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByName(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test

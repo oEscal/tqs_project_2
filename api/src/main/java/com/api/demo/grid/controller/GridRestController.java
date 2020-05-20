@@ -31,7 +31,6 @@ public class GridRestController {
 
     @GetMapping("/genre")
     public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre){
-        System.out.println(genre);
         List<Game> gameList = gridService.getAllGamesWithGenre(genre);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Game found with Id " + genre);
