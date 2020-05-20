@@ -34,6 +34,7 @@ class UserServiceTest {
 
     // specifications for user1
     private User mUser1;
+    private UserDTO mSimpleUserDTO;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
@@ -52,6 +53,9 @@ class UserServiceTest {
         mUser1.setEmail(mEmail1);
         mUser1.setPassword(mPasswordEncrypted1);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         // mock password encryption
         given(passwordEncoder.encode(mPassword1)).willReturn(mPasswordEncrypted1);
@@ -106,10 +110,7 @@ class UserServiceTest {
 
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
-        UserDTO simpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
-                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-
-        assertDoesNotThrow(() -> mUserService.saveUser(simpleUserDTO));
+        assertDoesNotThrow(() -> mUserService.saveUser(mSimpleUserDTO));
         assertEquals(mUser1, mUserRepository.findByUsername(mUsername1));
     }
 
@@ -119,10 +120,7 @@ class UserServiceTest {
 
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
-        UserDTO simpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
-                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-
-        assertEquals(mUser1, mUserService.saveUser(simpleUserDTO));
+        assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
     }
 
     @Test
@@ -131,26 +129,53 @@ class UserServiceTest {
 
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
-        UserDTO simpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
-                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-
         // first insertion
-        mUserService.saveUser(simpleUserDTO);
+        mUserService.saveUser(mSimpleUserDTO);
 
         // second insertion
-        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(simpleUserDTO));
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
 
 
     /***
      *  Save User with photo or with admin
      ***/
-    // @Test
-    // @SneakyThrows
-    // void whenSaveUserDontExists_ReturnUser() {
-//
-    //     given(mUserRepository.save(mUser1)).willReturn(mUser1);
-//
-    //     assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
-    // }
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithPhoto_ReturnUserWithPhoto() {
+
+        String photo_url = "photo_test";
+        mUser1.setPhotoUrl(photo_url);
+        mSimpleUserDTO.setPhotoUrl(photo_url);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        User savedUser = mUserService.saveUser(mSimpleUserDTO);
+        assertEquals(mUser1, savedUser);
+        assertEquals(photo_url, savedUser.getPhotoUrl());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithAdminTrue_ReturnUserWithAdminTrue() {
+
+        mUser1.setAdmin(true);
+        mSimpleUserDTO.setAdmin(true);
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        User savedUser = mUserService.saveUser(mSimpleUserDTO);
+        assertEquals(mUser1, savedUser);
+        assertTrue(savedUser.isAdmin());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenNormalUser_ReturnUserWithAdminFalse() {
+
+        given(mUserRepository.save(mUser1)).willReturn(mUser1);
+
+        User savedUser = mUserService.saveUser(mSimpleUserDTO);
+        assertFalse(savedUser.isAdmin());
+    }
 }
