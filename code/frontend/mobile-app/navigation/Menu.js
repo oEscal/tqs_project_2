@@ -1,11 +1,12 @@
 import React from "react";
-import { TouchableWithoutFeedback, ScrollView, StyleSheet, Image } from "react-native";
+import { TouchableWithoutFeedback, ScrollView, StyleSheet, Image, View } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 import { useSafeArea } from "react-native-safe-area-context";
 
 import { Icon, Drawer as DrawerCustomItem } from '../components/';
 import { Images, materialTheme } from "../constants/";
 
+import { FontAwesome5 } from '@expo/vector-icons';
 
 function CustomDrawerContent({
   drawerPosition,
@@ -17,13 +18,11 @@ function CustomDrawerContent({
 }) {
   const insets = useSafeArea();
   const screens = [
-    "Home",
-    "Woman",
-    "Man",
-    "Kids",
-    "New Collection",
+    "Games",
+    "Wishlist",
+    "Sell",
+    "Wallet",
     "Profile",
-    "Settings",
     "Components"
   ];
   return (
@@ -36,29 +35,32 @@ function CustomDrawerContent({
           onPress={() => navigation.navigate("Profile")}
         >
           <Block style={styles.profile}>
-            <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+            <Image source={require("../assets/img/default_user.png")} style={styles.avatar} />
             <Text h5 color={"white"}>
               {profile.name}
             </Text>
           </Block>
         </TouchableWithoutFeedback>
         <Block row>
-          <Block middle style={styles.pro}>
+          <Block middle style={styles.pro2}>
             <Text size={16} color="white">
-              {profile.plan}
+              {"0.0"}{" "}
+              <FontAwesome5 name="wallet" size={14} color="white" />
             </Text>
           </Block>
-          <Text size={16} muted style={styles.seller}>
-            {profile.type}
-          </Text>
-          <Text size={16} color={materialTheme.COLORS.WARNING}>
-            {profile.rating}{" "}
-            <Icon name="shape-star" family="GalioExtra" size={14} />
-          </Text>
+          <Block middle style={styles.pro2}>
+            <Text size={16} color={"#ffec4f"}>
+              {profile.rating}{" "}
+              <Icon name="shape-star" family="GalioExtra" size={14} />
+            </Text>
+          </Block>
+
+
         </Block>
       </Block>
-      <Block flex style={{ paddingLeft: 7, paddingRight: 14 }}>
-        <ScrollView
+
+      <Block flex style={{ paddingLeft: 7, paddingRight: 14, paddingTop: 15 }}>
+        <View
           contentContainerStyle={[
             {
               paddingTop: insets.top * 0.4,
@@ -78,20 +80,15 @@ function CustomDrawerContent({
               />
             );
           })}
-        </ScrollView>
+
+          <DrawerCustomItem
+            title="Logout"
+            navigation={navigation}
+            focused={state.index === 6 ? true : false}
+          />
+        </View>
       </Block>
-      <Block flex={0.3} style={{ paddingLeft: 7, paddingRight: 14 }}>
-        <DrawerCustomItem
-          title="Sign In"
-          navigation={navigation}
-          focused={state.index === 8 ? true : false}
-        />
-        <DrawerCustomItem
-          title="Sign Up"
-          navigation={navigation}
-          focused={state.index === 9 ? true : false}
-        />
-      </Block>
+
     </Block>
   );
 }
@@ -102,7 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: '#4B1958',
+    backgroundColor: '#430b43',
     paddingHorizontal: 28,
     paddingBottom: theme.SIZES.BASE,
     paddingTop: theme.SIZES.BASE * 2,
@@ -128,6 +125,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     height: 19,
     width: 38,
+  },
+  pro2: {
+    paddingHorizontal: 6,
+    marginRight: 8,
+    borderRadius: 4,
+    height: 19,
   },
   seller: {
     marginRight: 16,

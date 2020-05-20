@@ -5,6 +5,8 @@ import { Block, Text, theme } from "galio-framework";
 import Icon from "./Icon";
 import materialTheme from "../constants/Theme";
 
+import { FontAwesome5 } from '@expo/vector-icons';
+
 const proScreens = [
   "Woman",
   "Man",
@@ -19,60 +21,31 @@ class DrawerItem extends React.Component {
     const { title, focused } = this.props;
 
     switch (title) {
-      case "Home":
+      case "Games":
         return (
-          <Icon
-            size={16}
-            name="shop"
-            family="GalioExtra"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
+          <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
         );
-      case "Woman":
+      case "Wallet":
         return (
-          <Icon
-            size={16}
-            name="md-woman"
-            family="ionicon"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
-        );
-      case "Man":
-        return (
-          <Icon
-            size={16}
-            name="man"
-            family="entypo"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
-        );
-      case "Kids":
-        return (
-          <Icon
-            size={16}
-            name="baby"
-            family="GalioExtra"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
-        );
-      case "New Collection":
-        return (
-          <Icon
-            size={16}
-            name="grid-on"
-            family="material"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
+          <FontAwesome5 name="wallet" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
         );
       case "Profile":
         return (
-          <Icon
-            size={16}
-            name="circle-10"
-            family="GalioExtra"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
+          <FontAwesome5 name="user" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
         );
+      case "Sell":
+        return (
+          <FontAwesome5 name="money-bill-wave" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+        );
+      case "Wishlist":
+        return (
+          <FontAwesome5 name="heart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+        );
+      case "Logout":
+        return (
+          <FontAwesome5 name="door-open" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+        );
+
       case "Settings":
         return (
           <Icon
@@ -134,7 +107,7 @@ class DrawerItem extends React.Component {
     const { focused, title, navigation } = this.props;
     const proScreen = proScreens.includes(title);
     return (
-      <TouchableOpacity style={{ height: 55 }} onPress={() => {navigation.navigate(title)}}>
+      <TouchableOpacity style={{ height: 55 }} onPress={() => { navigation.navigate(title) }}>
         <Block
           flex
           row
@@ -153,8 +126,8 @@ class DrawerItem extends React.Component {
                 focused
                   ? "white"
                   : proScreen
-                  ? materialTheme.COLORS.MUTED
-                  : "black"
+                    ? materialTheme.COLORS.MUTED
+                    : "black"
               }
             >
               {title}
@@ -175,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16
   },
   activeStyle: {
-    backgroundColor: materialTheme.COLORS.ACTIVE,
+    backgroundColor: "#832485",
     borderRadius: 4
   },
   shadow: {
