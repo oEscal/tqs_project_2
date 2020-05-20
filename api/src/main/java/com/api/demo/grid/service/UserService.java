@@ -20,6 +20,8 @@ public class UserService {
     @Autowired
     private ModelMapper mModelMapper;
 
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();;
+
 
     public User getUser(String username) {
         return mRepository.findByUsername(username);
@@ -32,7 +34,6 @@ public class UserService {
         if (this.getUser(userSave.getUsername()) != null)
             throw new ExceptionDetails("There is already a user with that name");
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         userSave.setPassword(passwordEncoder.encode(userSave.getPassword()));
         return mRepository.save(userSave);
     }

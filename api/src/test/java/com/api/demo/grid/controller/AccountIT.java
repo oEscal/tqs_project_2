@@ -63,6 +63,7 @@ class AccountIT {
         this.mSimpleUser.setEmail(mEmail1);
         this.mSimpleUser.setPassword(mPassword1);
         this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
         this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
