@@ -25,6 +25,7 @@ import javax.persistence.GenerationType;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.util.Set;
@@ -64,6 +65,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date", nullable = false)
+    @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
     
@@ -86,6 +88,7 @@ public class User {
     private String creditCardOwner;
 
     @Temporal(TemporalType.DATE)
+    @Future
     private Date creditCardExpirationDate;
 
     /***
