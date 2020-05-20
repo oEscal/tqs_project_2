@@ -1,9 +1,11 @@
 package com.api.demo.grid.controller;
 
 
+import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,16 +22,27 @@ public class Account {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/grid/sign-up")
-    public User createUser(@Valid @RequestBody User user) throws ExceptionDetails {
+    @Autowired
+    private ModelMapper modelMapper;
 
-        if (userRepository.findByUsername(user.getUsername()) != null)
+
+    @PostMapping("/grid/sign-up")
+    public User createUser(@Valid @RequestBody UserDTO user) throws ExceptionDetails {
+
+        System.out.println("OLA\n\n\n\n\n");
+
+        User userSave = convertToEntity(user);
+
+        System.out.println(userSave.toString());
+        if (userRepository.findByUsername(userSave.getUsername()) != null)
             throw new ExceptionDetails("There is already a user with that name");
 
+        System.out.println(userSave.toString());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userSave.setPassword(passwordEncoder.encode(userSave.getPassword()));
 
-        return userRepository.save(user);
+        System.out.println(userSave.toString());
+        return userRepository.save(userSave);
     }
 
     @PostMapping("/grid/login")
@@ -40,5 +53,10 @@ public class Account {
         User user = userRepository.findByUsername(username);
 
         return ResponseEntity.ok().body(user);
+    }
+
+    private User convertToEntity(UserDTO postDto) {
+
+        return modelMapper.map(postDto, User.class);
     }
 }

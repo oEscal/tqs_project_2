@@ -171,6 +171,7 @@ public class User {
     }
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
-        this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+        if (creditCardExpirationDate != null)
+            this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 }
