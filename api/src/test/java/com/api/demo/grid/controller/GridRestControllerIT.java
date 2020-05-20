@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-public class GridRestControllerIT {
+class GridRestControllerIT {
     @Autowired
     private GameRepository gameRepository;
 
