@@ -141,7 +141,7 @@ class Admin extends Component {
 
         }
 
-        
+
         this.setState({
             [`${type}`]: newData
         });
@@ -890,6 +890,26 @@ class Admin extends Component {
         );
     }
 
+    renderAddGame() {
+        return (
+            <div>
+                <span>
+                    <h2 style={{
+                        color: "#999",
+                        fontWeight: "bolder",
+                        marginTop: "10px",
+                        padding: "0 0"
+                    }}>Add Game
+                    </h2>
+                </span>
+                <div>
+                    <Button color="primary" round size="lg" onClick={window.open("/sell-new-game", "newTab")}>Add Game</Button>
+                </div>
+
+            </div>
+        )
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -930,9 +950,14 @@ class Admin extends Component {
                                                             tabContent: this.renderReviews()
                                                         },
                                                         {
-                                                            tabButton: "Games",
+                                                            tabButton: "Games Request",
                                                             tabIcon: "fas fa-gamepad",
                                                             tabContent: this.renderGames()
+                                                        },
+                                                        {
+                                                            tabButton: "Add Game",
+                                                            tabIcon: "fas fa-gamepad",
+                                                            tabContent: this.renderAddGame()
                                                         },
                                                         {
                                                             tabButton: "Users",
