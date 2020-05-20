@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -30,13 +32,16 @@ import java.util.Set;
 @Table
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @JsonSerialize
 public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     private Long id;
 
@@ -155,7 +160,9 @@ public class User {
     }
 
     public Date getCreditCardExpirationDate() {
-        return (Date) creditCardExpirationDate.clone();
+        if (creditCardExpirationDate != null)
+            return (Date) creditCardExpirationDate.clone();
+        return null;
     }
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
