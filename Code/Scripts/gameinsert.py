@@ -24,7 +24,7 @@ while count < 50 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		genre_info = requests.get(base_url + "genres/" + str(genre["id"])).json()
-		requests.post(grid_url + "genre", data=json.dumps({"name": genre_info["name"], "description": genre_info["description"]}), headers=headers)
+		requests.post(grid_url + "genre", data=json.dumps({"name": genre_info["name"], "description": genre_info["description"][:100]}), headers=headers)
 		count += 1
 	url = response["next"]
 
@@ -36,7 +36,7 @@ while count < 100 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		pub_info = requests.get(base_url + "publishers/" + str(genre["id"])).json()
-		requests.post(grid_url + "publisher", data=json.dumps({"name": pub_info["name"], "description": pub_info["description"]}), headers=headers)
+		requests.post(grid_url + "publisher", data=json.dumps({"name": pub_info["name"], "description": pub_info["description"][:100]}), headers=headers)
 		count += 1
 	url = response["next"]
 
@@ -51,7 +51,7 @@ while count < 300:
 		try:
 			requests.post(grid_url + "game", data=json.dumps({
 				"name": game_info["name"],
-				"description": game_info["description"],
+				"description": game_info["description"][:100],
 				"releaseDate": game_info["released"],
 				"coverUrl": game_info["background_image"],
 				"developers": [dev["name"] for dev in game_info["developers"]],
