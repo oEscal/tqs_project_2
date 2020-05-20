@@ -1,7 +1,9 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,15 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-@WebMvcTest
-// @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 class AccountIT {
 
     @Autowired
     private MockMvc mMvc;
 
-    @MockBean
-    private UserRepository userRepository;
+    // @Autowired
+    // private UserService mUserService;
 
     // specifications for user1
     private User mSimpleUser;
@@ -72,8 +73,6 @@ class AccountIT {
     @Test
     @SneakyThrows
     void whenCreateUserWithDefaultParams_thenReturnSuccessAndCreatedUser() {
-
-        when(userRepository.save(mSimpleUser)).thenReturn(mSimpleUser);
 
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(mSimpleUserDTO));

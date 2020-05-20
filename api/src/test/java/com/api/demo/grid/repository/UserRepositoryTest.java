@@ -84,7 +84,6 @@ class UserRepositoryTest {
         userExpected.setPassword(mPassword1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        System.out.println(userExpected);
         assertEquals(userExpected, mUserRepository.findByUsername(mUsername1));
     }
 
