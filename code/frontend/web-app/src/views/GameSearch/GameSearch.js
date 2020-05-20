@@ -708,7 +708,6 @@ class GameSearch extends Component {
                 </div >
             )
         }
-
     }
 }
 
