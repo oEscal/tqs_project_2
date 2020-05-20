@@ -65,7 +65,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenPostingValidGenre_ReturnValidResponse() throws Exception{
+    void whenPostingValidGenre_ReturnValidResponse() throws Exception{
 
         mockMvc.perform(post("/grid/genre")
                 .content(asJsonString(gameGenrePOJO))
@@ -78,7 +78,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenPostingValidPub_ReturnValidResponse() throws Exception{
+    void whenPostingValidPub_ReturnValidResponse() throws Exception{
         mockMvc.perform(post("/grid/publisher")
                 .content(asJsonString(publisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -89,7 +89,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
+    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
         mockMvc.perform(post("/grid/developer")
                 .content(asJsonString(developerPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -99,7 +99,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenPostingValidGame_ReturnValidResponse() throws Exception{
+    void whenPostingValidGame_ReturnValidResponse() throws Exception{
         mockMvc.perform(post("/grid/game")
                 .content(asJsonString(gamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -109,7 +109,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
+    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
         gamePOJO.setPublisher(null);
         mockMvc.perform(post("/grid/game")
                 .content(asJsonString(gamePOJO))

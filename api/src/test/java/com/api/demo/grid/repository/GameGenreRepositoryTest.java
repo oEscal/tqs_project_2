@@ -19,7 +19,7 @@ class GameGenreRepositoryTest {
     private GameGenreRepository repository;
 
     @Test
-    public void whenFindByName_getDeveloper(){
+    void whenFindByName_getDeveloper(){
         GameGenre example = new GameGenre();
         example.setName("Exemplo");
 
@@ -29,7 +29,7 @@ class GameGenreRepositoryTest {
     }
 
     @Test
-    public void whenInvalidName_ReceiveEmpty(){
+    void whenInvalidName_ReceiveEmpty(){
         assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
     }
 }

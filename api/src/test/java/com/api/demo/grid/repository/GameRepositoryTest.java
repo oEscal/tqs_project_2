@@ -26,7 +26,7 @@ class GameRepositoryTest {
     private GameRepository repository;
 
     @Test
-    public void whenFindById_getGame(){
+    void whenFindById_getGame(){
         Game example = new Game();
         entityManager.persistAndFlush(example);
         assertNotNull(example.getId());
@@ -34,12 +34,12 @@ class GameRepositoryTest {
     }
 
     @Test
-    public void whenInvalidId_getNull(){
+    void whenInvalidId_getNull(){
         assertThat(repository.findById((long) 0)).isEmpty();
     }
 
     @Test
-    public void whenFindByName_getGame(){
+    void whenFindByName_getGame(){
         Game example = new Game();
         example.setName("Exemplo");
 
@@ -49,12 +49,12 @@ class GameRepositoryTest {
     }
 
     @Test
-    public void whenInvalidName_ReceiveEmpty(){
+    void whenInvalidName_ReceiveEmpty(){
         assertEquals(Arrays.asList(), repository.findAllByNameContains("Not exemplo"));
     }
 
     @Test
-    public void whenFindAll_ReceiveAll(){
+    void whenFindAll_ReceiveAll(){
         Game example = new Game();
         entityManager.persistAndFlush(example);
 
@@ -65,7 +65,7 @@ class GameRepositoryTest {
     }
 
     @Test
-    public void whenFindByGenre_ReceiveAllWithGenre(){
+    void whenFindByGenre_ReceiveAllWithGenre(){
         GameGenre genre = new GameGenre();
         genre.setName("Action");
 
@@ -85,7 +85,7 @@ class GameRepositoryTest {
     }
 
     @Test
-    public void whenFindByPublisher_ReceiveAllWithGenre(){
+    void whenFindByPublisher_ReceiveAllWithGenre(){
         Publisher publisher = new Publisher();
         publisher.setName("Publisher");
 
@@ -102,7 +102,7 @@ class GameRepositoryTest {
     }
 
     @Test
-    public void whenFindByDeveloper_ReceiveAllWithGenre(){
+    void whenFindByDeveloper_ReceiveAllWithGenre(){
         Developer developer = new Developer();
         developer.setName("Action");
 
