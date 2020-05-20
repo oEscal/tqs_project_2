@@ -6,14 +6,20 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Block, Text, theme } from "galio-framework";
 
 import ComponentsScreen from '../screens/Components';
-import HomeScreen from '../screens/Home';
-import OnboardingScreen from '../screens/Onboarding';
+import GamesScreen from '../screens/Games';
 import ProfileScreen from '../screens/Profile';
+import WishlistScreen from '../screens/Wishlist';
+import SellScreen from '../screens/Sell';
+import WalletScreen from '../screens/Wallet';
+
+
+import OnboardingScreen from '../screens/Onboarding';
 import ProScreen from '../screens/Pro';
 import SettingsScreen from '../screens/Settings';
 
 import CustomDrawerContent from './Menu';
 import { Icon, Header } from '../components';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Images, materialTheme } from "../constants/";
 
 const { width } = Dimensions.get("screen");
@@ -52,19 +58,59 @@ function ProfileStack(props) {
   );
 }
 
-function SettingsStack(props) {
+function WishlistStack(props) {
   return (
     <Stack.Navigator
-      initialRouteName="Settings"
+      initialRouteName="Wishlist"
       mode="card"
       headerMode="screen"
     >
       <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
+        name="Wishlist"
+        component={WishlistScreen}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Settings" scene={scene} navigation={navigation} />
+            <Header title="Wishlist" scene={scene} navigation={navigation} />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function SellStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Sell"
+      mode="card"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name="Sell"
+        component={SellScreen}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Sell" scene={scene} navigation={navigation} />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function WalletStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Wallet"
+      mode="card"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name="Wallet"
+        component={WalletScreen}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Wallet" scene={scene} navigation={navigation} />
           )
         }}
       />
@@ -88,32 +134,22 @@ function ComponentsStack(props) {
   );
 }
 
-function HomeStack(props) {
+function GamesStack(props) {
   return (
     <Stack.Navigator mode="card" headerMode="screen">
-      <Stack.Screen 
-        name="Home"
-        component={HomeScreen}
+      <Stack.Screen
+        name="Games"
+        component={GamesScreen}
         options={{
           header: ({ navigation, scene }) => (
-            <Header 
+            <Header
               search
               tabs
-              title="Home"
+              title="Games"
               navigation={navigation}
               scene={scene}
             />
           )
-        }}
-      />
-      <Stack.Screen 
-        name="Pro"
-        component={ProScreen}
-        options={{
-          header: ({ navigation, scene }) => (
-            <Header back white transparent title="" navigation={navigation} scene={scene} />
-          ),
-          headerTransparent: true
         }}
       />
     </Stack.Navigator>
@@ -150,105 +186,53 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="Home"
+      initialRouteName="Games"
     >
       <Drawer.Screen
-        name="Home"
-        component={HomeStack}
+        name="Games"
+        component={GamesStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="shop"
-              family="GalioExtra"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
+            <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
       <Drawer.Screen
-        name="Woman"
-        component={ProScreen}
+        name="Wishlist"
+        component={WishlistStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="md-woman"
-              family="ionicon"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-              style={{ marginLeft: 4, marginRight: 4 }}
-            />
+            <FontAwesome5 name="heart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
+
       <Drawer.Screen
-        name="Man"
-        component={ProScreen}
+        name="Sell"
+        component={SellStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="man"
-              family="entypo"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
+            <FontAwesome5 name="money-bill-wave" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
+
       <Drawer.Screen
-        name="Kids"
-        component={ProScreen}
+        name="Wallet"
+        component={WalletStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="baby"
-              family="GalioExtra"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
+            <FontAwesome5 name="wallet" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
-      <Drawer.Screen
-        name="New Collection"
-        component={ProScreen}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="grid-on"
-              family="material"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
-          )
-        }}
-      />
+
       <Drawer.Screen
         name="Profile"
         component={ProfileStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="circle-10"
-              family="GalioExtra"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Settings"
-        component={SettingsStack}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="gears"
-              family="font-awesome"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-              style={{ marginRight: -3 }}
-            />
+            <FontAwesome5 name="user" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
@@ -263,34 +247,6 @@ function AppStack(props) {
               family="ionicon"
               color={focused ? "white" : materialTheme.COLORS.MUTED}
               style={{ marginRight: 2, marginLeft: 2 }}
-            />
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Sign In"
-        component={ProScreen}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="ios-log-in"
-              family="ionicon"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-            />
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="Sign Up"
-        component={ProScreen}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="md-person-add"
-              family="ionicon"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
             />
           )
         }}
@@ -369,7 +325,7 @@ const HomeStack = createStackNavigator({
   },
 },
 {
-  cardStyle: { 
+  cardStyle: {
     backgroundColor: '#EEEEEE', //this is the backgroundColor for the app
   },
   transitionConfig,
