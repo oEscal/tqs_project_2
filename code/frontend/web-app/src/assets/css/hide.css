@@ -1,0 +1,17 @@
+.search {
+    display: none
+}
+
+.searchMobile {
+    display: block
+}
+
+
+@media screen and (min-width: 1920px) {
+    .search {
+        display: block
+    }
+    .searchMobile {
+        display: none
+    }
+}
