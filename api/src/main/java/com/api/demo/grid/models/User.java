@@ -19,11 +19,13 @@ import javax.persistence.TemporalType;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToMany;
 import javax.persistence.JoinColumn;
+
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.util.Set;
 
@@ -61,7 +63,8 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "birth_date", nullable = false)
+    @Past
     private Date birthDate;
     
     @Column(nullable = false, columnDefinition = "boolean default false")
