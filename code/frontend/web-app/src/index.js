@@ -22,6 +22,7 @@ import SellNewGame from "views/SellNewGame/SellNewGame.js";
 import SellGame from "views/SellGame/SellGame.js";
 import ProfilePage from "views/Profile/ProfilePage.js";
 import EditProfile from "views/Profile/EditProfile.js";
+import Admin from "views/Admin/Admin.js"
 
 
 import Cart from "views/Cart/Cart.js";
@@ -49,6 +50,7 @@ ReactDOM.render(
       <Route exact path="/sell-game" component={SellGame} />
       <Route exact path="/sell-new-game" component={SellNewGame} />
       <Route exact path="/wishlist" component={WishList} />
+      <Route exact path="/admin" component={Admin} />
       <Route exact path="/" component={HomePage} />
     </Switch>
   </Router>,
