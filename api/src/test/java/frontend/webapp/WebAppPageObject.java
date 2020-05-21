@@ -2,6 +2,7 @@ package frontend.webapp;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -44,6 +45,11 @@ public class WebAppPageObject {
         return driver.findElement(By.id(id)).isEnabled();
     }
 
+    // Check if the current URL is the expected one
+    public boolean checkURL(String url) {
+        return driver.getCurrentUrl().equals(url);
+    }
+
     // Return the number of options of a select dropdown
     public int getNumberOfSelectOptions(String id) {
         Select se = new Select(driver.findElement(By.id(id)));
@@ -53,6 +59,7 @@ public class WebAppPageObject {
 
     // Check if element by id has the specified text
     public boolean checkText(String id, String text) {
+        System.out.println(driver.findElement(By.id(id)).getText());
         return driver.findElement(By.id(id)).getText().equals(text);
     }
 
@@ -70,17 +77,22 @@ public class WebAppPageObject {
     }
 
     // Pick the selected value from a select box
-    public void pickSelect(@Nullable String val, String id) {
-        if (val != null) {
-            Select select = new Select(driver.findElement(By.id(id)));
-            select.selectByVisibleText(val);
-        }
+    public void pickSelect(int val, String id) {
+        driver.findElement(By.id(id)).click();
+        driver.findElement(By.id("react-select-2-option-"+val)).click();
     }
 
     // Click button given by id
-    public void clickButton(String id){
+    public void clickButton(String id) {
         driver.findElement(By.id(id)).sendKeys(Keys.SPACE);
     }
+
+    // Scroll to element
+    public void scrollToTop(){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.scrollTo(0,0)");
+    }
+
 
     // Wait for an element to disappear
     public void waitForLoad(String id) {
@@ -92,7 +104,7 @@ public class WebAppPageObject {
             }
         } catch (StaleElementReferenceException e) {
             return;
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return;
         }
     }

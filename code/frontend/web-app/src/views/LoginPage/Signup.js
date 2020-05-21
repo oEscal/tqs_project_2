@@ -49,8 +49,14 @@ import image from "assets/img/bg.png";
 import Select from 'react-select';
 
 import {
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
+
+// Loading Animation
+import FadeIn from "react-fade-in";
+import Lottie from "react-lottie";
+import * as loadingAnim from "assets/animations/loading_anim.json";
 
 class Signup extends Component {
   constructor() {
@@ -58,6 +64,14 @@ class Signup extends Component {
   }
 
   state = {
+    processing: false,
+    animationOptions: {
+      loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+      }
+    },
+
+    redirect: false
   }
 
   componentDidMount() {
@@ -65,11 +79,18 @@ class Signup extends Component {
   }
 
   //METHODS////////////////////////////////////
-  confirm() {
+  validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  async confirm() {
     var name = document.getElementById("name").value
     var username = document.getElementById("username").value
     var country = document.getElementById("country").textContent
     var birthday = document.getElementById("birthday").value
+
+    var email = document.getElementById("email").value
 
 
     var pass = document.getElementById("pass").value
@@ -82,17 +103,49 @@ class Signup extends Component {
 
     var error = false
 
-    if (name == "" || username == "" || birthday == "" || pass == "") {
-      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday and password!', {
+    if (name == "" || username == "" || birthday == "" || pass == "" || email == "") {
+      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday, email and password!', {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorMinimum"
       });
       error = true
     }
+
+    var tempBirth = birthday.split("/")
+    if (tempBirth.length != 3) {
+      toast.error('Please use a valid birthday...', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId:"errorBirthday"
+      });
+      error = true
+    } else {
+      birthday = tempBirth[2] + "-" + tempBirth[0] + "-" + tempBirth[1]
+    }
+
+    if (!this.validateEmail(email)) {
+      toast.error('Please use a valid email...', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId:"errorEmail"
+      });
+      error = true
+    }
+
+    email = email.toLowerCase()
 
     if (pass != passConfirm) {
       toast.error('Oops, your passwords don\'t match!', {
@@ -102,12 +155,14 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorPass"
       });
       error = true
     }
 
+
     if (cardNumber != '' || cardCVC != '' || expiration != '' || cardName != '') {
-      if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName != '') {
+      if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '') {
         toast.error('Oops, if you want to add your payment info, you\'ve got to specify all four card information fields!', {
           position: "top-center",
           autoClose: 5000,
@@ -118,9 +173,31 @@ class Signup extends Component {
         });
         error = true
       }
+    } else {
+      cardNumber = null
+      cardCVC = null
+      expiration = null
+      cardName = null
     }
 
-    if (cardCVC != "" && (/^\d+$/.test(cardCVC) || cardCVC.length != 3)) {
+    if (expiration != null) {
+      var tempExpiration = expiration.split("/")
+      if (tempExpiration.length != 3) {
+        toast.error('Please use a valid expiration date...', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        error = true
+      } else {
+        expiration = tempExpiration[2] + "-" + tempExpiration[0] + "-" + tempExpiration[1]
+      }
+    }
+
+    if (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
       toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
         position: "top-center",
         autoClose: 5000,
@@ -136,7 +213,89 @@ class Signup extends Component {
       country = null
     }
 
+    if (!error) {
+      await this.setState({
+        processing: true
+      })
 
+      var success = false
+
+      var body = {
+        username: username,
+        birthDate: birthday,
+        email: email,
+        name: name,
+        country: country,
+
+        password: pass,
+      }
+
+      if (cardNumber != null) {
+        body["creditCardNumber"] = cardNumber
+        body["creditCardCSC"] = cardCVC
+        body["creditCardOwner"] = cardName
+        body["creditCardExpirationDate"] = expiration
+      }
+
+      // Proceed to login
+      await fetch(baseURL + "grid/sign-up", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+        .then(response => {
+          if (response.status === 400 || response.status === 200) {
+            return response.json()
+          }
+          else throw new Error(response.status);
+        })
+        .then(data => {
+          if (data.status === 400) { // Wrong Credentials
+            toast.error(data.message, {
+              position: "top-center",
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              toastId: "errorTwoToast"
+            });
+
+
+          } else { // Successful Login
+            const token = "Basic " + btoa(username + ":" + pass);
+
+            data["token"] = token
+            localStorage.setItem('loggedUser', JSON.stringify(data));
+            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+            success = true
+          }
+        })
+        .catch(error => {
+          toast.error('Sorry, an unexpected error has occurred!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "errorThreeToast"
+          });
+        });
+
+      await this.setState({
+        processing: false,
+        redirect: success
+      })
+
+    }
+  }
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to='/' />
+    }
   }
 
   ////////////////////////////////////////////
@@ -401,6 +560,29 @@ class Signup extends Component {
       countryList.push({ "value": country, "label": country })
     })
 
+    var processing = null
+    //Overlay for when processing a login request
+    if (this.state.processing) {
+      processing = [
+        <div style={{ position: "fixed", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
+        </div>,
+
+        <div style={{ zIndex: 11, position: "absolute", top: "0", left: "0", height: "100%", width: "100%" }}>
+          <div style={{ zIndex: 11, position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+            <FadeIn>
+              <Lottie options={this.state.animationOptions} width={"200px"} />
+            </FadeIn>
+          </div>
+        </div>
+      ]
+    }
+
+
+    var today = Datetime.moment()
+    var valid = function (current) {
+      return current.isAfter(today);
+    };
+
     return (
       <div>
         <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={200} />
@@ -416,6 +598,9 @@ class Signup extends Component {
           draggable
           pauseOnHover
         />
+
+        {processing}
+        {this.renderRedirect()}
 
         <div
           className={classes.pageHeader}
@@ -451,6 +636,22 @@ class Signup extends Component {
                           endAdornment: (
                             <InputAdornment position="end">
                               <i class="fas fa-signature"></i>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+
+                      <CustomInput
+                        labelText="Email*"
+                        id="email"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="fas fa-envelope"></i>
                             </InputAdornment>
                           )
                         }}
@@ -578,6 +779,7 @@ class Signup extends Component {
                           <Datetime
                             timeFormat={false}
                             inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
+                            isValidDate={valid}
                           />
                         </FormControl>
                       </div>
@@ -593,6 +795,7 @@ class Signup extends Component {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ width: "100%", backgroundColor: "#fc3196" }}
+                            id="confirm"
                           >
                             Login
                           </Button>
