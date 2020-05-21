@@ -136,6 +136,7 @@ class LoginPage extends Component {
             document.getElementById("errorTwo").style.display = ""
 
           } else { // Successful Login
+            data["token"] = login_info
             localStorage.setItem('loggedUser', JSON.stringify(data));
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
             success = true

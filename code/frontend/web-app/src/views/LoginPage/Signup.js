@@ -49,7 +49,8 @@ import image from "assets/img/bg.png";
 import Select from 'react-select';
 
 import {
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
 
 // Loading Animation
@@ -89,6 +90,8 @@ class Signup extends Component {
     var country = document.getElementById("country").textContent
     var birthday = document.getElementById("birthday").value
 
+    var email = document.getElementById("email").value
+
 
     var pass = document.getElementById("pass").value
     var passConfirm = document.getElementById("passConfirm").value
@@ -100,8 +103,8 @@ class Signup extends Component {
 
     var error = false
 
-    if (name == "" || username == "" || birthday == "" || pass == "") {
-      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday and password!', {
+    if (name == "" || username == "" || birthday == "" || pass == "" || email == "") {
+      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday, email and password!', {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -111,6 +114,35 @@ class Signup extends Component {
       });
       error = true
     }
+
+    var tempBirth = birthday.split("/")
+    if (tempBirth.length == 0) {
+      toast.error('Please use a valid birthday...', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      error = true
+    } else {
+      birthday = tempBirth[2] + "-" + tempBirth[0] + "-" + tempBirth[1]
+    }
+
+    if (!this.validateEmail(email)) {
+      toast.error('Please use a valid email...', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      error = true
+    }
+
+    email = email.toLowerCase()
 
     if (pass != passConfirm) {
       toast.error('Oops, your passwords don\'t match!', {
@@ -137,10 +169,27 @@ class Signup extends Component {
         error = true
       }
     } else {
-      cardName = null
+      cardNumber = null
       cardCVC = null
       expiration = null
       cardName = null
+    }
+
+    if (expiration != null) {
+      var tempExpiration = expiration.split("/")
+      if (tempExpiration.length == 0) {
+        toast.error('Please use a valid expiration date...', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        error = true
+      } else {
+        expiration = tempExpiration[2] + "-" + tempExpiration[0] + "-" + tempExpiration[1]
+      }
     }
 
     if (cardCVC != "" && cardCVC != null && (/^\d+$/.test(cardCVC) || cardCVC.length != 3)) {
@@ -159,38 +208,38 @@ class Signup extends Component {
       country = null
     }
 
-    /*
     if (!error) {
-      const token = "Basic " + btoa(username + ":" + pass);
-
       await this.setState({
         processing: true
       })
 
       var success = false
 
+      var body = {
+        username: username,
+        birthDate: birthday,
+        email: email,
+        name: name,
+        country: country,
+
+        password: pass,
+      }
+
+      if (cardNumber != null) {
+        body["creditCardNumber"] = cardNumber
+        body["creditCardCSC"] = cardCVC
+        body["creditCardOwner"] = cardName
+        body["creditCardExpirationDate"] = expiration
+      }
+
       // Proceed to login
-      await fetch(baseURL + "grid/signup", {
+      await fetch(baseURL + "grid/sign-up", {
         method: "POST",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          username:username,
-          birthDate:birthday,
-          email:email,
-          name:name,
-          country:country,
-
-          password:pass,
-
-          creditCardNumber: cardNumber,
-          creditCardCSC: cardCVC,
-          creditCardOwner: cardName,
-          creditCardExpirationDate: expiration
-
-        })
+        body: JSON.stringify(body)
       })
         .then(response => {
           if (response.status === 400 || response.status === 200) {
@@ -209,16 +258,17 @@ class Signup extends Component {
               toastId: "errorTwoToast"
             });
 
-            document.getElementById("errorTwo").style.display = ""
 
           } else { // Successful Login
+            const token = "Basic " + btoa(username + ":" + pass);
+
+            data["token"] = token
             localStorage.setItem('loggedUser', JSON.stringify(data));
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
             success = true
           }
         })
         .catch(error => {
-          console.log(error)
           toast.error('Sorry, an unexpected error has occurred!', {
             position: "top-center",
             hideProgressBar: false,
@@ -227,20 +277,20 @@ class Signup extends Component {
             draggable: true,
             toastId: "errorThreeToast"
           });
-
-          document.getElementById("errorThree").style.display = ""
         });
-        
-         await this.setState({
-      processing: false,
-      redirect: success
-    })
-     
+
+      await this.setState({
+        processing: false,
+        redirect: success
+      })
+
     }
-    */
+  }
 
-
-
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to='/' />
+    }
   }
 
   ////////////////////////////////////////////
@@ -522,6 +572,12 @@ class Signup extends Component {
       ]
     }
 
+
+    var today = Datetime.moment()
+    var valid = function (current) {
+      return current.isAfter(today);
+    };
+
     return (
       <div>
         <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={200} />
@@ -539,6 +595,7 @@ class Signup extends Component {
         />
 
         {processing}
+        {this.renderRedirect()}
 
         <div
           className={classes.pageHeader}
@@ -717,6 +774,7 @@ class Signup extends Component {
                           <Datetime
                             timeFormat={false}
                             inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
+                            isValidDate={valid}
                           />
                         </FormControl>
                       </div>
