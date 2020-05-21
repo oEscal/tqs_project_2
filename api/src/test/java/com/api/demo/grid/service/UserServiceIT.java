@@ -61,6 +61,20 @@ class UserServiceIT {
         mUserService.saveUser(mSimpleUserDTO);
 
         // second insertion
+        mSimpleUserDTO.setEmail("test_email");
+        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
+        assertEquals(1, mUserRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUserWithExistentEmail_saveIsUnsuccessful() {
+
+        // first insertion
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // second insertion
+        mSimpleUserDTO.setUsername("test_username");
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
         assertEquals(1, mUserRepository.findAll().size());
     }

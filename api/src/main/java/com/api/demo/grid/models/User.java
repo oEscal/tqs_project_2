@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -67,6 +68,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date", nullable = false)
+    @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
@@ -91,6 +93,7 @@ public class User {
 
     @Temporal(TemporalType.DATE)
     @Future
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date creditCardExpirationDate;
 
     /***
@@ -160,24 +163,28 @@ public class User {
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
-        if (birthDate != null)
+        if (birthDate != null) {
             return (Date) birthDate.clone();
+        }
         return null;
     }
 
     public void setBirthDate(Date birthDate) {
-        if (birthDate != null)
+        if (birthDate != null) {
             this.birthDate = (Date) birthDate.clone();
+        }
     }
 
     public Date getCreditCardExpirationDate() {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             return (Date) creditCardExpirationDate.clone();
+        }
         return null;
     }
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+        }
     }
 }

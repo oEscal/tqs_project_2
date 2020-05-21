@@ -34,9 +34,13 @@ public class UserService {
 
     public User saveUser(UserDTO user) throws ExceptionDetails {
 
-        // verify if the there are already an user with that name in the database
+        // verify if there are already an user with that username in the database
         if (this.getUser(user.getUsername()) != null)
-            throw new ExceptionDetails("There is already a user with that name");
+            throw new ExceptionDetails("There is already a user with that username");
+
+        // verify if there are already some user with that email in the database
+        if (mRepository.findByEmail(user.getEmail()) != null)
+            throw new ExceptionDetails("There is already a user with that email");
 
         // verify if the all credit card info was added at the same time
         String creditCardNumber = user.getCreditCardNumber();
