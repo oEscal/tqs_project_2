@@ -52,12 +52,25 @@ import {
   Link
 } from "react-router-dom";
 
+// Loading Animation
+import FadeIn from "react-fade-in";
+import Lottie from "react-lottie";
+import * as loadingAnim from "assets/animations/loading_anim.json";
+
 class Signup extends Component {
   constructor() {
     super();
   }
 
   state = {
+    processing: false,
+    animationOptions: {
+      loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+      }
+    },
+
+    redirect: false
   }
 
   componentDidMount() {
@@ -65,7 +78,12 @@ class Signup extends Component {
   }
 
   //METHODS////////////////////////////////////
-  confirm() {
+  validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  async confirm() {
     var name = document.getElementById("name").value
     var username = document.getElementById("username").value
     var country = document.getElementById("country").textContent
@@ -118,9 +136,14 @@ class Signup extends Component {
         });
         error = true
       }
+    } else {
+      cardName = null
+      cardCVC = null
+      expiration = null
+      cardName = null
     }
 
-    if (cardCVC != "" && (/^\d+$/.test(cardCVC) || cardCVC.length != 3)) {
+    if (cardCVC != "" && cardCVC != null && (/^\d+$/.test(cardCVC) || cardCVC.length != 3)) {
       toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
         position: "top-center",
         autoClose: 5000,
@@ -135,6 +158,87 @@ class Signup extends Component {
     if (country == "Country*") {
       country = null
     }
+
+    /*
+    if (!error) {
+      const token = "Basic " + btoa(username + ":" + pass);
+
+      await this.setState({
+        processing: true
+      })
+
+      var success = false
+
+      // Proceed to login
+      await fetch(baseURL + "grid/signup", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username:username,
+          birthDate:birthday,
+          email:email,
+          name:name,
+          country:country,
+
+          password:pass,
+
+          creditCardNumber: cardNumber,
+          creditCardCSC: cardCVC,
+          creditCardOwner: cardName,
+          creditCardExpirationDate: expiration
+
+        })
+      })
+        .then(response => {
+          if (response.status === 400 || response.status === 200) {
+            return response.json()
+          }
+          else throw new Error(response.status);
+        })
+        .then(data => {
+          if (data.status === 400) { // Wrong Credentials
+            toast.error(data.message, {
+              position: "top-center",
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              toastId: "errorTwoToast"
+            });
+
+            document.getElementById("errorTwo").style.display = ""
+
+          } else { // Successful Login
+            localStorage.setItem('loggedUser', JSON.stringify(data));
+            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+            success = true
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          toast.error('Sorry, an unexpected error has occurred!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "errorThreeToast"
+          });
+
+          document.getElementById("errorThree").style.display = ""
+        });
+        
+         await this.setState({
+      processing: false,
+      redirect: success
+    })
+     
+    }
+    */
+
 
 
   }
@@ -401,6 +505,23 @@ class Signup extends Component {
       countryList.push({ "value": country, "label": country })
     })
 
+    var processing = null
+    //Overlay for when processing a login request
+    if (this.state.processing) {
+      processing = [
+        <div style={{ position: "absolute", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
+        </div>,
+
+        <div style={{ zIndex: 11, position: "absolute", top: "0", left: "0", height: "100%", width: "100%" }}>
+          <div style={{ zIndex: 11, position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+            <FadeIn>
+              <Lottie options={this.state.animationOptions} width={"200px"} />
+            </FadeIn>
+          </div>
+        </div>
+      ]
+    }
+
     return (
       <div>
         <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={200} />
@@ -416,6 +537,8 @@ class Signup extends Component {
           draggable
           pauseOnHover
         />
+
+        {processing}
 
         <div
           className={classes.pageHeader}
@@ -451,6 +574,22 @@ class Signup extends Component {
                           endAdornment: (
                             <InputAdornment position="end">
                               <i class="fas fa-signature"></i>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+
+                      <CustomInput
+                        labelText="Email*"
+                        id="email"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <i class="fas fa-envelope"></i>
                             </InputAdornment>
                           )
                         }}

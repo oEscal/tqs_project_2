@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/*
 @SpringBootTest(classes= DemoApplication.class)
 public class LoginPageTest {
     WebAppPageObject controller;
@@ -86,3 +87,5 @@ public class LoginPageTest {
         assertTrue(controller.checkText("errorTwoToast","Sorry, those credentials seem to be incorrect!"));
     }
 }
+
+ */

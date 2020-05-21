@@ -4,6 +4,7 @@ package com.api.demo.grid.service;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -78,6 +81,20 @@ public class CustomUserDetailsService implements UserDetailsService {
         @Override
         public boolean isEnabled() {
             return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof CustomUser)) return false;
+            if (!super.equals(o)) return false;
+            CustomUser that = (CustomUser) o;
+            return Objects.equals(user, that.user);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), user);
         }
     }
 }

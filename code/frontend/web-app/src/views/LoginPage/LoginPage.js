@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 // @material-ui/core components
 import { withStyles } from '@material-ui/styles';
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -28,8 +32,19 @@ import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "assets/img/bg.png";
 
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
+
+// Loading Animation
+import FadeIn from "react-fade-in";
+import Lottie from "react-lottie";
+import * as loadingAnim from "assets/animations/loading_anim.json";
+
+
 import {
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
 
 class LoginPage extends Component {
@@ -38,15 +53,163 @@ class LoginPage extends Component {
   }
 
   state = {
+    processing: false,
+    animationOptions: {
+      loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+      }
+    },
+
+    redirect: false
   }
+
+  componentDidMount(){
+    //Reset prior info
+    localStorage.setItem('loggedUser', null);
+    global.user = null;
+  }
+
+  // Methods ///////////////////////////////
+  async login() {
+    // Clear prior errors
+    document.getElementById("errorTwo").style.display = "none"
+    document.getElementById("errorThree").style.display = "none"
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const login_info = "Basic " + btoa(username + ":" + password);
+
+    var error = false
+
+    // Check if fields were filled
+    if (username == "" || password == "") {
+      toast.error('Please fill both fields!', {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorOneToast"
+      });
+
+      document.getElementById("errorOne").style.display = ""
+
+      error = true
+    } else {
+      document.getElementById("errorOne").style.display = "none"
+    }
+
+
+    if (!error) {
+      await this.setState({
+        processing: true
+      })
+
+      var success = false
+
+      // Proceed to login
+      await fetch(baseURL + "grid/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: login_info
+        }
+      })
+        .then(response => {
+          if (response.status === 401 || response.status === 200) {
+            return response.json()
+          }
+          else throw new Error(response.status);
+        })
+        .then(data => {
+          if (data.status === 401) { // Wrong Credentials
+            toast.error('Sorry, those credentials seem to be incorrect!', {
+              position: "top-center",
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              toastId: "errorTwoToast"
+            });
+
+            document.getElementById("errorTwo").style.display = ""
+
+          } else { // Successful Login
+            localStorage.setItem('loggedUser', JSON.stringify(data));
+            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+            success = true
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          toast.error('Sorry, an unexpected error has occurred!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "errorThreeToast"
+          });
+
+          document.getElementById("errorThree").style.display = ""
+        });
+
+      await this.setState({
+        processing: false,
+        redirect: success
+      })
+    }
+  }
+
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to='/' />
+    }
+  }
+  //////////////////////////////////////////
+
 
   render() {
     const { classes } = this.props;
 
+    var processing = null
+    //Overlay for when processing a login request
+    if (this.state.processing) {
+      processing = [
+        <div style={{ position: "absolute", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
+        </div>,
+
+        <div style={{ zIndex: 11, position: "absolute", top: "0", left: "0", height: "100%", width: "100%" }}>
+          <div style={{ zIndex: 11, position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+            <FadeIn>
+              <Lottie options={this.state.animationOptions} width={"200px"} />
+            </FadeIn>
+          </div>
+        </div>
+      ]
+    }
+
     return (
       <div>
-        <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} height={100} />
+        <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={600} />
 
+        <ToastContainer
+          position="top-center"
+          autoClose={2500}
+          hideProgressBar={false}
+          transition={Flip}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnVisibilityChange
+          draggable
+          pauseOnHover
+        />
+
+        {processing}
+        {this.renderRedirect()}
         <div
           className={classes.pageHeader}
           style={{
@@ -72,7 +235,7 @@ class LoginPage extends Component {
                     <CardBody>
                       <CustomInput
                         labelText="Username..."
-                        id="first"
+                        id="username"
                         formControlProps={{
                           fullWidth: true
                         }}
@@ -87,7 +250,7 @@ class LoginPage extends Component {
                       />
                       <CustomInput
                         labelText="Password"
-                        id="pass"
+                        id="password"
                         formControlProps={{
                           fullWidth: true
                         }}
@@ -101,6 +264,23 @@ class LoginPage extends Component {
                           autoComplete: "off"
                         }}
                       />
+
+                      <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px", display: "none" }} id="errorOne">
+                        <span style={{ color: "#f50b0a", fontWeight: "bolder" }}>
+                          Please fill both fields before submitting!
+                          </span>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px", display: "none" }} id="errorTwo">
+                        <span style={{ color: "#f50b0a", fontWeight: "bolder" }}>
+                          Oops, wrong credentials!
+                          </span>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px", display: "none" }} id="errorThree">
+                        <span style={{ color: "#f50b0a", fontWeight: "bolder" }}>
+                          Sorry, an unexpected error has occurred, please try again!
+                          </span>
+                      </GridItem>
+
                     </CardBody>
                     <CardFooter className={classes.cardFooter}>
                       <GridContainer xs={12} sm={12} md={12}>
@@ -108,10 +288,11 @@ class LoginPage extends Component {
                           <Button
                             color="rose"
                             size="md"
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            onClick={() => this.login()}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ width: "100%", backgroundColor: "#fc3196" }}
+                            id="confirm"
                           >
                             Login
                           </Button>
