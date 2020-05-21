@@ -92,7 +92,7 @@ class AccountIT {
 
     @Test
     @SneakyThrows
-    void whenCreateUserWithSameExistentUserName_thenReturnError() {
+    void whenCreateUserWithExistentUserName_thenReturnError() {
 
         // first save user
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +101,26 @@ class AccountIT {
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
-                .content(simplesUserJson(mUsername1, "password_test", mBirthDateStr, mEmail1, mCountry,
+                .content(simplesUserJson(mUsername1, "password_test", mBirthDateStr, "test_email", mCountry,
+                        "name_test"));
+
+        mMvc.perform(request).andExpect(status().isBadRequest());
+        assertEquals(1, mUserRepository.findAll().size());
+        assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenCreateUserWithExistentEmail_thenReturnError() {
+
+        // first save user
+        RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
+                .content(mSimpleUserJson);
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // second save user
+        request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
+                .content(simplesUserJson("test_username", "password_test", mBirthDateStr, mEmail1, mCountry,
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
