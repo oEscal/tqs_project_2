@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -108,5 +109,10 @@ public class GridRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }
         return new ResponseEntity<>(sell, HttpStatus.OK);
+    }
+
+    @PostMapping("/buy-listing")
+    public ResponseEntity<List<Buy>> saveBuy(@RequestBody @Valid BuyListingsPOJO buyListingsPOJO){
+        return null;
     }
 }

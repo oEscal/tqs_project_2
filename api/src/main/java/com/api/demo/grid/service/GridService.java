@@ -20,4 +20,5 @@ public interface GridService {
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
+    List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo);
 }

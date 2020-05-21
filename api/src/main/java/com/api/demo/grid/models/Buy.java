@@ -1,5 +1,7 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -9,7 +11,7 @@ public class Buy {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-    private int id;
+    private long id;
 
     @OneToOne
     @JoinColumn(name = "sell_id")
@@ -20,17 +22,18 @@ public class Buy {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Temporal(TemporalType.DATE)
     private Date date;
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int buyId) {
+    public void setId(long buyId) {
         this.id = buyId;
     }
 
@@ -47,7 +50,17 @@ public class Buy {
     }
 
     public void setUser(User user) {
+        //prevent endless loop
+        if (sameAsFormer(user)) return ;
+        //set new user
         this.user = user;
+
+        //set myself into new owner
+        if (user!=null) user.addBuy(this);
+    }
+
+    private boolean sameAsFormer(User newUser) {
+        return user==null? newUser == null : newUser.equals(user);
     }
 
     public Date getDate() {
@@ -56,5 +69,10 @@ public class Buy {
 
     public void setDate(Date date) {
         this.date = (Date) date.clone();
+    }
+
+    public long getUserId() {
+        if (user == null) return -1L;
+        return this.user.getId();
     }
 }

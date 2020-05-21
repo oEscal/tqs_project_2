@@ -91,7 +91,7 @@ public class User {
     private Set<ReportUser> reportsOnUser;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Buy> buys;
+    private Set<Buy> buys = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Auction> auctions;
@@ -102,6 +102,8 @@ public class User {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
+
+    private double funds;
 
     public Long getId() {
         return id;
@@ -225,11 +227,23 @@ public class User {
         this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 
+    private double getFunds() { return this.funds; }
+
+    private void setFunds(double funds) { this.funds = funds; }
+
+    private void payWithFunds(double bill) { this.funds -= bill; }
+
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 
         this.sells.add(sell);
 
         sell.setUser(this);
+    }
+
+    public void addBuy(Buy buy) {
+        if (this.buys.contains(buy)) return;
+        this.buys.add(buy);
+        buy.setUser(this);
     }
 }

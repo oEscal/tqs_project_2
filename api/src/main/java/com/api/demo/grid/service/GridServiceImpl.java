@@ -34,6 +34,9 @@ public class GridServiceImpl implements GridService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BuyRepository buyRepository;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = gameRepository.findById(id);
@@ -174,6 +177,11 @@ public class GridServiceImpl implements GridService{
         sell.setDate(sellPOJO.getDate());
         this.sellRepository.save(sell);
         return sell;
+    }
+
+    @Override
+    public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO){
+        return null;
     }
 
 }
