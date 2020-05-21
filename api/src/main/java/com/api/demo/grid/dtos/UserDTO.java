@@ -1,6 +1,8 @@
 package com.api.demo.grid.dtos;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +15,8 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@JsonDeserialize
+@JsonSerialize
 public class UserDTO {
 
     /***
