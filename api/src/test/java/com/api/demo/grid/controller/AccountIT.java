@@ -6,6 +6,7 @@ import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.text.SimpleDateFormat;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,8 +82,14 @@ class AccountIT {
     void whenCreateUserWithDefaultParams_thenReturnSuccessAndCreatedUser() {
 
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(mSimpleUserDTO));
-        System.out.println(asJsonString(mSimpleUserDTO));
+                .content("{\n" +
+                                "\"username\": \"" + mUsername1 + "\",\n" +
+                                "\"password\": \"" + mPassword1 + "\",\n" +
+                                "\"birthDate\": \"" + mBirthDateStr + "\",\n" +
+                                "\"email\": \"" + mEmail1 + "\",\n" +
+                                "\"country\": \"" + mCountry + "\",\n" +
+                                "\"name\": \"" + mName1 + "\"\n" +
+                        "}");
 
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is(mUsername1)))
@@ -89,15 +97,6 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(null)));
-    }
-
-    // TODO -> this method can be shared between classes (create an utils class)
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                .andExpect(jsonPath("$.password", is(nullValue())));
     }
 }
