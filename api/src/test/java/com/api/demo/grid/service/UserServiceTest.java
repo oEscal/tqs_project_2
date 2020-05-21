@@ -136,6 +136,8 @@ class UserServiceTest {
         assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
     }
 
+    // TODO -> this test is for integration test
+    /*
     @Test
     @SneakyThrows
     void whenSaveExistentUser_saveIsUnsuccessful() {
@@ -154,6 +156,7 @@ class UserServiceTest {
         // second insertion
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
+    */
 
 
     /***
