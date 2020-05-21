@@ -33,6 +33,7 @@ import Avatar from "@material-ui/core/Avatar";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import CustomInput from "components/CustomInput/CustomInput";
+import DashBoard from "./DashBoard";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
@@ -903,11 +904,32 @@ class Admin extends Component {
                     </h2>
                 </span>
                 <div>
-                    <Button color="primary" round size="lg" onClick={window.open("/sell-new-game", "newTab")}>Add Game</Button>
+                    <Button color="primary" round size="lg" onClick={window.open("/sell-new-game", "newTab")}>Add
+                        Game</Button>
                 </div>
 
             </div>
         )
+    }
+
+
+    renderDashBoard() {
+
+        return (
+            <div>
+                <span>
+                    <h2 style={{
+                        color: "#999",
+                        fontWeight: "bolder",
+                        marginTop: "10px",
+                        padding: "0 0"
+                    }}>Dashboard
+                    </h2>
+                </span>
+
+                <DashBoard/>
+            </div>
+        );
     }
 
     render() {
@@ -963,6 +985,12 @@ class Admin extends Component {
                                                             tabButton: "Users",
                                                             tabIcon: "fas fa-users",
                                                             tabContent: this.renderUsers()
+                                                        },
+                                                        {
+                                                            tabButton: "DashBoard",
+                                                            tabIcon: "fas fa-chart-line",
+                                                            tabContent: this.renderDashBoard()
+
                                                         }
                                                     ]}
                                                 />
