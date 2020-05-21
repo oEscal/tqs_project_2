@@ -52,6 +52,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint);
+                .authenticationEntryPoint(authEntryPoint)
+                .and().logout().logoutUrl("/grid/logout");
     }
 }
