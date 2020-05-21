@@ -97,6 +97,8 @@ class UserServiceTest {
         userExpected.setPassword(mPasswordEncrypted1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
+        userExpected.setPassword(null);
+
         assertEquals(userExpected, mUserService.getUser(mUsername1));
     }
 
