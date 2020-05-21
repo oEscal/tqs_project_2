@@ -32,7 +32,7 @@ public class Account {
     }
 
     @PostMapping("/grid/login")
-    public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) throws ExceptionDetails {
+    public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) {
 
         String base64Credentials = auth.substring("Basic".length()).trim();
         String username = new String(Base64.getDecoder().decode(base64Credentials)).split(":", 2)[0];
