@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface GameKeyRepository extends JpaRepository<GameKey, Long> {
-    Optional<GameKey> getByKey(String key);
+    Optional<GameKey> findByKey(String key);
 }

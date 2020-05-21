@@ -90,7 +90,7 @@ class GridRestControllerTest {
         sell.setUser(user);
         sell.setDate(new Date());
 
-        sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
+        sellPOJO = new SellPOJO(2L, 6L, 2.3, null);
     }
 
     @Test

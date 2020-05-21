@@ -18,5 +18,6 @@ public interface GridService {
     Publisher savePublisher(PublisherPOJO publisherPOJO);
     Developer saveDeveloper(DeveloperPOJO developerPOJO);
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
+    GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
 }

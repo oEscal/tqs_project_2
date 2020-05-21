@@ -13,7 +13,8 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -47,6 +48,7 @@ class GridServiceTest {
     private Developer developer;
     private Publisher publisher;
     private User user;
+    private GameKey gameKey;
 
     @BeforeEach
     public void setUp(){
@@ -76,6 +78,9 @@ class GridServiceTest {
 
         user = new User();
         user.setId(6L);
+
+        gameKey = new GameKey();
+        gameKey.setId(7L);
 
     }
 
@@ -296,20 +301,68 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingValidSellPOJO_ReturnValidSell_AndSaveValidGameKey(){
-        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
+    void whenSavingValidGameKeyPOJO_ReturnValidGameKey(){
         Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.ofNullable(game2));
 
-        SellPOJO sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
+        GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
+
+        GameKey savedGameKey = gridService.saveGameKey(gameKeyPOJO);
+
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(2L);
+        assertEquals("key", savedGameKey.getKey());
+        assertEquals("s", savedGameKey.getPlatform());
+        assertEquals("steam", savedGameKey.getRetailer());
+        assertEquals(game2.getName(), savedGameKey.getGame().getName());
+    }
+
+    @Test
+    void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey(){
+        Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.empty());
+
+        GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
+
+        GameKey savedGameKey = gridService.saveGameKey(gameKeyPOJO);
+
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(2L);
+        assertNull(savedGameKey);
+    }
+
+    @Test
+    void whenSavingValidSellPOJO_ReturnValidSell(){
+        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameKeyRepo.findBy).thenReturn(Optional.ofNullable(gameKey));
+
+        SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = gridService.saveSell(sellPOJO);
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(2L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).save(Mockito.any(GameKey.class));
-        assertEquals("key", savedSell.getGameKey().getKey());
-        assertEquals("s", savedSell.getGameKey().getPlatform());
-        assertEquals("steam", savedSell.getGameKey().getRetailer());
-        assertEquals(game2.getName(), savedSell.getGameKey().getGame().getName());
+        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findById(7L);
         assertEquals(2.3, savedSell.getPrice());
+    }
+
+    @Test
+    void whenSavingInvalidUser_ReturnNullSell(){
+        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.empty());
+        Mockito.when(mockGameKeyRepo.findById(7L)).thenReturn(Optional.ofNullable(gameKey));
+
+        SellPOJO sellPOJO = new SellPOJO(7L, 6L, 2.3, null);
+
+        Sell savedSell = gridService.saveSell(sellPOJO);
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mockGameKeyRepo, Mockito.times(0)).findById(7L);
+        assertNull(savedSell);
+    }
+
+    @Test
+    void whenSavingInvalidGameKey_ReturnNullSell(){
+        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameKeyRepo.findById(7L)).thenReturn(Optional.empty());
+
+        SellPOJO sellPOJO = new SellPOJO(7L, 6L, 2.3, null);
+
+        Sell savedSell = gridService.saveSell(sellPOJO);
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findById(7L);
+        assertNull(savedSell);
     }
 }

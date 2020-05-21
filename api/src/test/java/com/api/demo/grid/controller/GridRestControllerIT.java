@@ -67,7 +67,7 @@ class GridRestControllerIT {
         gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
         gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         gamePOJO.setPublisher("publisher");
-        sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
+        sellPOJO = new SellPOJO(2L, 6L, 2.3, null);
     }
 
     @Test
@@ -131,7 +131,6 @@ class GridRestControllerIT {
         Game game = new Game();
         gameRepository.save(game);
         userRepository.save(user);
-        sellPOJO.setGameId(game.getId());
         sellPOJO.setUserId(user.getId());
 
         mockMvc.perform(post("/grid/sell-listing")

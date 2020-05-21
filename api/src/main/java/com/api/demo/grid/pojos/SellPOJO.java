@@ -11,20 +11,13 @@ import java.util.Date;
 @Getter
 @Setter
 public class SellPOJO {
-    private String gameKey;
-    private String platform;
-    private String retailer;
-    private long gameId;
     private long userId;
     private double price;
     private Date date;
+    private String gameKey;
 
-    public SellPOJO(String gameKey, String platform, String retailer,
-                    long gameId, long userId, double price, Date date) {
+    public SellPOJO(String gameKey, long userId, double price, Date date) {
         this.gameKey = gameKey;
-        this.platform = platform;
-        this.retailer = retailer;
-        this.gameId = gameId;
         this.userId = userId;
         this.price = price;
         this.date = (date==null)? new Date():date;
