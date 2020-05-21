@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-public class GridRestControllerIT {
+class GridRestControllerIT {
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,7 +52,7 @@ public class GridRestControllerIT {
     private Game game;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         game = new Game();
         game.setName("DS");
         game.setDescription("");
@@ -64,7 +64,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestAll_ReturnAll() throws Exception {
+    void whenRequestAll_ReturnAll() throws Exception {
         gameRepository.save(game);
 
         mockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +75,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestGameInfo_ReturnGame() throws Exception {
+    void whenRequestGameInfo_ReturnGame() throws Exception {
         gameRepository.save(game);
 
         mockMvc.perform(
@@ -88,7 +88,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestGenre_ReturnValidGames() throws Exception {
+    void whenRequestGenre_ReturnValidGames() throws Exception {
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName("genre");
         gameGenreRepository.save(gameGenre);
@@ -105,7 +105,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestName_ReturnValidGames() throws Exception {
+    void whenRequestName_ReturnValidGames() throws Exception {
         gameRepository.save(game);
 
         mockMvc.perform(get("/grid/name")
@@ -118,7 +118,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestDev_ReturnValidGames() throws Exception {
+    void whenRequestDev_ReturnValidGames() throws Exception {
         Developer developer = new Developer();
         developer.setName("Dev");
         developerRepository.save(developer);
@@ -135,7 +135,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestPub_ReturnValidGames() throws Exception {
+    void whenRequestPub_ReturnValidGames() throws Exception {
         Publisher publisher = new Publisher();
         publisher.setName("Pub");
         publisherRepository.save(publisher);
@@ -151,7 +151,7 @@ public class GridRestControllerIT {
 
     }
     @Test
-    public void whenInvalidGameId_Return404Exception() throws Exception {
+    void whenInvalidGameId_Return404Exception() throws Exception {
 
         mockMvc.perform(
                 get("/grid/game")
@@ -163,7 +163,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenInvalidGameGenre_Return404Exception() throws Exception {
+    void whenInvalidGameGenre_Return404Exception() throws Exception {
 
         mockMvc.perform(
                 get("/grid/genre")
@@ -175,7 +175,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestDev_Return404Exception() throws Exception {
+    void whenRequestDev_Return404Exception() throws Exception {
 
         mockMvc.perform(get("/grid/developer")
                 .param("dev", "dev")
@@ -186,7 +186,7 @@ public class GridRestControllerIT {
     }
 
     @Test
-    public void whenRequestPub_Return404Exception() throws Exception {
+    void whenRequestPub_Return404Exception() throws Exception {
 
         mockMvc.perform(get("/grid/publisher")
                 .param("pub", "pub")

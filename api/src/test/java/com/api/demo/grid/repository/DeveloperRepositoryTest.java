@@ -20,7 +20,7 @@ class DeveloperRepositoryTest {
     private DeveloperRepository repository;
 
     @Test
-    public void whenFindByName_getDeveloper(){
+    void whenFindByName_getDeveloper(){
         Developer example = new Developer();
         example.setName("Exemplo");
 
@@ -30,7 +30,7 @@ class DeveloperRepositoryTest {
     }
 
     @Test
-    public void whenInvalidName_ReceiveEmpty(){
+    void whenInvalidName_ReceiveEmpty(){
         assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
     }
 }

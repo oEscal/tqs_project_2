@@ -19,7 +19,7 @@ class PublisherRepositoryTest {
     private PublisherRepository repository;
 
     @Test
-    public void whenFindByName_getDeveloper(){
+    void whenFindByName_getDeveloper(){
         Publisher example = new Publisher();
         example.setName("Exemplo");
 
@@ -29,7 +29,7 @@ class PublisherRepositoryTest {
     }
 
     @Test
-    public void whenInvalidName_ReceiveEmpty(){
+    void whenInvalidName_ReceiveEmpty(){
         assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
     }
 }

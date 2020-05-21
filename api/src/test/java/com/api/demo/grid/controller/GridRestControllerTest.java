@@ -32,13 +32,13 @@ class GridRestControllerTest {
     private Game game;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         game = new Game();
         game.setId(1L);
     }
 
     @Test
-    public void whenRequestAll_ReturnAll() throws Exception {
+    void whenRequestAll_ReturnAll() throws Exception {
         Mockito.when(gridService.getAllGames()).thenReturn(Arrays.asList(game));
 
         mockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
@@ -50,7 +50,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestGameInfo_ReturnGame() throws Exception {
+    void whenRequestGameInfo_ReturnGame() throws Exception {
         Mockito.when(gridService.getGameById(1L)).thenReturn(game);
 
         mockMvc.perform(
@@ -64,7 +64,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestGenre_ReturnValidGames() throws Exception {
+    void whenRequestGenre_ReturnValidGames() throws Exception {
         Mockito.when(gridService.getAllGamesWithGenre("genre")).thenReturn(Arrays.asList(game));
 
         mockMvc.perform(get("/grid/genre")
@@ -78,7 +78,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestName_ReturnValidGames() throws Exception {
+    void whenRequestName_ReturnValidGames() throws Exception {
         Mockito.when(gridService.getAllGamesByName("game")).thenReturn(Arrays.asList(game));
 
         mockMvc.perform(get("/grid/name")
@@ -92,7 +92,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestDev_ReturnValidGames() throws Exception {
+    void whenRequestDev_ReturnValidGames() throws Exception {
         Mockito.when(gridService.getAllGamesByDev("dev")).thenReturn(Arrays.asList(game));
 
         mockMvc.perform(get("/grid/developer")
@@ -106,7 +106,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestPub_ReturnValidGames() throws Exception {
+    void whenRequestPub_ReturnValidGames() throws Exception {
         Mockito.when(gridService.getAllGamesByPublisher("pub")).thenReturn(Arrays.asList(game));
 
         mockMvc.perform(get("/grid/publisher")
@@ -120,7 +120,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenInvalidGameId_Return404Exception() throws Exception {
+    void whenInvalidGameId_Return404Exception() throws Exception {
         Mockito.when(gridService.getGameById(1L)).thenReturn(null);
 
         mockMvc.perform(
@@ -134,7 +134,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenInvalidGameGenre_Return404Exception() throws Exception {
+    void whenInvalidGameGenre_Return404Exception() throws Exception {
         Mockito.when(gridService.getAllGamesWithGenre("no")).thenReturn(null);
 
         mockMvc.perform(
@@ -148,7 +148,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestDev_Return404Exception() throws Exception {
+    void whenRequestDev_Return404Exception() throws Exception {
         Mockito.when(gridService.getAllGamesByDev("dev")).thenReturn(null);
 
         mockMvc.perform(get("/grid/developer")
@@ -161,7 +161,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    public void whenRequestPub_Return404Exception() throws Exception {
+    void whenRequestPub_Return404Exception() throws Exception {
         Mockito.when(gridService.getAllGamesByPublisher("pub")).thenReturn(null);
 
         mockMvc.perform(get("/grid/publisher")
