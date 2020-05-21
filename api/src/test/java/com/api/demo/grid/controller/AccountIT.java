@@ -53,10 +53,11 @@ class AccountIT {
         this.mSimpleUser.setUsername(mUsername1);
         this.mSimpleUser.setName(mName1);
         this.mSimpleUser.setEmail(mEmail1);
+        this.mSimpleUser.setCountry(mCountry);
         this.mSimpleUser.setPassword(mPassword1);
         this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry,
+        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 
@@ -76,7 +77,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.name", is(mName1)))
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry)))
-                .andExpect(jsonPath("$.birth", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.password", is(null)));
     }
 
