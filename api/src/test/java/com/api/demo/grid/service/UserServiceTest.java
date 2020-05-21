@@ -321,5 +321,5 @@ class UserServiceTest {
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
 
-    // TODO -> test if the encrypted password is returned
+    // TODO -> test if the encrypted password is returned -> on integration tests
 }

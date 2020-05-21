@@ -45,8 +45,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // TODO -> verify roles here
-        http.cors().and().csrf().disable()
-                .authorizeRequests()
+        http.cors()
+                .and().authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 //.antMatchers(USER_WHITELIST).hasRole("USER")
                 //.antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")

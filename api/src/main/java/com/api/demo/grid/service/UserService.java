@@ -37,7 +37,6 @@ public class UserService {
             throw new ExceptionDetails("There is already a user with that name");
 
         // verify if the all credit card info was added at the same time
-        System.out.println(user);
         String creditCardNumber = user.getCreditCardNumber();
         String creditCardCSC = user.getCreditCardCSC();
         String creditCardOwner = user.getCreditCardOwner();
