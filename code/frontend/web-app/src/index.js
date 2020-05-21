@@ -49,7 +49,6 @@ ReactDOM.render(
             <Route exact path="/sell-new-game" component={SellNewGame}/>
             <Route exact path="/wishlist" component={WishList}/>
             <Route exact path="/admin" component={Admin}/>
-            <Route exact path="/admin2" component={DashBoard}/>
             <Route exact path="/" component={HomePage}/>
         </Switch>
     </Router>,
