@@ -31,26 +31,17 @@ class UserServiceIT {
     private UserService mUserService;
 
     // specifications for user1
-    private User mUser1;
     private UserDTO mSimpleUserDTO;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
             mPassword1 = "password1",
-            mPasswordEncrypted1 = "password_encrypted1",
             mBirthDateStr = "17/10/2010";
 
 
     @BeforeEach
     @SneakyThrows
     void setup() {
-
-        mUser1 = new User();
-        mUser1.setUsername(mUsername1);
-        mUser1.setName(mName1);
-        mUser1.setEmail(mEmail1);
-        mUser1.setPassword(mPasswordEncrypted1);
-        mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
@@ -80,7 +71,6 @@ class UserServiceIT {
 
         assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
         assertEquals(1, mUserRepository.findAll().size());
+        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
     }
-
-    // TODO -> test if the encrypted password is returned -> on integration tests
 }

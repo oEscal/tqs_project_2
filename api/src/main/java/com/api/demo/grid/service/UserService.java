@@ -50,7 +50,9 @@ public class UserService {
         User userSave = convertToEntity(user);
 
         userSave.setPassword(passwordEncoder.encode(userSave.getPassword()));
-        return mRepository.save(userSave);
+        User userSaved = mRepository.save(userSave);
+        userSaved.setPassword(null);
+        return userSaved;
     }
 
     private User convertToEntity(UserDTO userDto) {
