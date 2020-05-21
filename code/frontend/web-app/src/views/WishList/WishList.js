@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {withStyles} from "@material-ui/styles";
+import React, { Component } from 'react';
+import { withStyles } from "@material-ui/styles";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import classNames from "classnames";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -26,6 +26,9 @@ import Popover from "@material-ui/core/Popover";
 
 import javascriptStyles from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
 
 class WishList extends Component {
     constructor(props) {
@@ -46,18 +49,18 @@ class WishList extends Component {
 
     renderFavoriteIcon = (status, index) => {
         let html = (
-            <div style={{color: "#9c27b0"}}>
-                <FavoriteIcon/>
+            <div style={{ color: "#9c27b0" }}>
+                <FavoriteIcon />
             </div>
         );
 
         if (!status) {
             html = (
                 <div>
-                    <FavoriteBorderIcon/>
+                    <FavoriteBorderIcon />
                 </div>
             )
-            const {data, size} = this.state;
+            const { data, size } = this.state;
 
             data.splice(index, 1);
             this.setState({
@@ -77,7 +80,7 @@ class WishList extends Component {
 
         const id = this.state.currentGame.id;
 
-        let {data} = this.state;
+        let { data } = this.state;
         let status = data[id].favorite;
         data[id].favorite = !status;
 
@@ -143,7 +146,7 @@ class WishList extends Component {
 
         this.setState({
             anchorElLeft: v,
-            currentGame: v === null ? v : {id: parseInt(v.id.replace('icon', '')), text: v.name}
+            currentGame: v === null ? v : { id: parseInt(v.id.replace('icon', '')), text: v.name }
         });
 
 
@@ -169,11 +172,11 @@ class WishList extends Component {
 
     renderNoResults = () => {
         return (
-            <GridItem xs={12} sm={12} md={12} style={{margin: "12px 0"}} id="cardEmpty">
-                <div style={{"text-align": "center"}}>
-                    <FavoriteBorderIcon fontSize="large"/>
+            <GridItem xs={12} sm={12} md={12} style={{ margin: "12px 0" }} id="cardEmpty">
+                <div style={{ "text-align": "center" }}>
+                    <FavoriteBorderIcon fontSize="large" />
                     <div
-                        style={{textAlign: "center", height: "30px"}}>
+                        style={{ textAlign: "center", height: "30px" }}>
                         <h6 style={{
                             fontWeight: "bold",
                             color: "#3b3e48",
@@ -184,11 +187,11 @@ class WishList extends Component {
                             0 results
                         </h6>
                     </div>
-                    <div style={{textAlign: "center"}}>
+                    <div style={{ textAlign: "center" }}>
                         <Button color="primary" size="sm" round onClick={() => {
                             window.location.href = "/"
                         }}>
-                            Explore &nbsp;<img src={logoImage}/>
+                            Explore &nbsp;<img src={logoImage} />
                         </Button>
 
                     </div>
@@ -201,20 +204,20 @@ class WishList extends Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
 
 
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false}/>
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                <div className={classNames(classes.main)} style={{marginTop: "60px"}}>
+                <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
                     <div className={classes.container}>
-                        <div style={{padding: "70px 0"}}>
+                        <div style={{ padding: "70px 0" }}>
                             <GridContainer>
                                 <GridItem xs={12} sm={12} md={12}>
-                                    <div style={{textAlign: "left"}}>
+                                    <div style={{ textAlign: "left" }}>
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={9}>
                                                 <h2 style={{
@@ -225,7 +228,7 @@ class WishList extends Component {
                                                 }}>Wishlist</h2>
                                             </GridItem>
                                         </GridContainer>
-                                        <hr style={{color: "#999", opacity: "0.4"}}></hr>
+                                        <hr style={{ color: "#999", opacity: "0.4" }}></hr>
 
                                         <GridContainer justify="center">
                                             <GridItem xs={12} sm={12} md={8}>
@@ -239,7 +242,7 @@ class WishList extends Component {
                                                         type: "text",
                                                         endAdornment: (
                                                             <InputAdornment position="end">
-                                                                <SearchIcon className={classes.inputIconsColor}/>
+                                                                <SearchIcon className={classes.inputIconsColor} />
                                                             </InputAdornment>
                                                         ),
                                                         onInput: (e) => {
@@ -253,116 +256,116 @@ class WishList extends Component {
 
                                         <GridContainer>
                                             {this.state.data.length > 0 && this.state.data.map((v, i) => {
-                                                    let text = v.text;
-                                                    let image = v.image;
-                                                    let status = v.favorite;
-                                                    let price = v.price;
+                                                let text = v.text;
+                                                let image = v.image;
+                                                let status = v.favorite;
+                                                let price = v.price;
 
-                                                    return (
-                                                        <>
-                                                            <GridItem xs={12} sm={12} md={6} style={{margin: "12px 0"}}
-                                                                      id={"card" + i}>
-                                                                <Card style={{width: "100%"}}>
-                                                                    <CardHeader
-                                                                        title={
+                                                return (
+                                                    <>
+                                                        <GridItem xs={12} sm={12} md={6} style={{ margin: "12px 0" }}
+                                                            id={"card" + i}>
+                                                            <Card style={{ width: "100%" }}>
+                                                                <CardHeader
+                                                                    title={
+                                                                        <h6 style={{
+                                                                            color: "#999",
+                                                                            fontSize: "11px",
+                                                                            paddingTop: "0 0",
+                                                                            marginTop: "0px"
+                                                                        }}>
+                                                                            From seller <span
+                                                                                style={{
+                                                                                    color: 'black',
+                                                                                    fontWeight: "bold"
+                                                                                }}>Jonas Pistolas</span>
+                                                                        </h6>
+                                                                    }
+                                                                    avatar={
+                                                                        <Avatar aria-label="recipe"
+                                                                            className={classes.avatar}>
+                                                                            R
+                                                                            </Avatar>
+                                                                    }
+                                                                    action={
+
+                                                                        <IconButton aria-label="settings"
+                                                                            id={"icon" + i}
+                                                                            name={text}
+                                                                            onClick={(e) => {
+                                                                                this.setAnchorElLeft(e.currentTarget)
+                                                                            }}>
+                                                                            {this.renderFavoriteIcon(status, i)}
+
+
+                                                                        </IconButton>
+
+                                                                    }
+                                                                >
+                                                                </CardHeader>
+                                                                <CardActionArea>
+                                                                    <CardMedia
+                                                                        component="img"
+                                                                        height="185px"
+                                                                        image={image}
+                                                                    />
+
+                                                                    <CardContent>
+                                                                        <div
+                                                                            style={{ textAlign: "left", height: "30px" }}>
+                                                                            <h6 style={{
+                                                                                fontWeight: "bold",
+                                                                                color: "#3b3e48",
+                                                                                fontSize: "15px",
+                                                                                paddingTop: "0 0",
+                                                                                marginTop: "0px"
+                                                                            }}>
+                                                                                {text}
+                                                                            </h6>
+                                                                        </div>
+                                                                        <div style={{ textAlign: "left" }}>
                                                                             <h6 style={{
                                                                                 color: "#999",
                                                                                 fontSize: "11px",
                                                                                 paddingTop: "0 0",
                                                                                 marginTop: "0px"
                                                                             }}>
-                                                                                From seller <span
-                                                                                style={{
-                                                                                    color: 'black',
-                                                                                    fontWeight: "bold"
-                                                                                }}>Jonas Pistolas</span>
+                                                                                Delivery: <span
+                                                                                    style={{ fontWeight: "bold" }}>Instant access</span>
                                                                             </h6>
-                                                                        }
-                                                                        avatar={
-                                                                            <Avatar aria-label="recipe"
-                                                                                    className={classes.avatar}>
-                                                                                R
-                                                                            </Avatar>
-                                                                        }
-                                                                        action={
-
-                                                                            <IconButton aria-label="settings"
-                                                                                        id={"icon" + i}
-                                                                                        name={text}
-                                                                                        onClick={(e) => {
-                                                                                            this.setAnchorElLeft(e.currentTarget)
-                                                                                        }}>
-                                                                                {this.renderFavoriteIcon(status, i)}
-
-
-                                                                            </IconButton>
-
-                                                                        }
-                                                                    >
-                                                                    </CardHeader>
-                                                                    <CardActionArea>
-                                                                        <CardMedia
-                                                                            component="img"
-                                                                            height="185px"
-                                                                            image={image}
-                                                                        />
-
-                                                                        <CardContent>
-                                                                            <div
-                                                                                style={{textAlign: "left", height: "30px"}}>
-                                                                                <h6 style={{
-                                                                                    fontWeight: "bold",
-                                                                                    color: "#3b3e48",
-                                                                                    fontSize: "15px",
-                                                                                    paddingTop: "0 0",
-                                                                                    marginTop: "0px"
-                                                                                }}>
-                                                                                    {text}
-                                                                                </h6>
-                                                                            </div>
-                                                                            <div style={{textAlign: "left"}}>
-                                                                                <h6 style={{
-                                                                                    color: "#999",
-                                                                                    fontSize: "11px",
-                                                                                    paddingTop: "0 0",
-                                                                                    marginTop: "0px"
-                                                                                }}>
-                                                                                    Delivery: <span
-                                                                                    style={{fontWeight: "bold"}}>Instant access</span>
-                                                                                </h6>
-                                                                            </div>
-                                                                            <div style={{textAlign: "left"}}>
-                                                                                <h6 style={{
-                                                                                    color: "#3b3e48",
-                                                                                    fontSize: "15px",
-                                                                                    paddingTop: "0 0",
-                                                                                    marginTop: "0px"
-                                                                                }}>
-                                                                                    Price: <span
+                                                                        </div>
+                                                                        <div style={{ textAlign: "left" }}>
+                                                                            <h6 style={{
+                                                                                color: "#3b3e48",
+                                                                                fontSize: "15px",
+                                                                                paddingTop: "0 0",
+                                                                                marginTop: "0px"
+                                                                            }}>
+                                                                                Price: <span
                                                                                     style={{
                                                                                         fontWeight: "bolder",
                                                                                         color: "#f44336",
                                                                                         fontSize: "17px"
                                                                                     }}> {price} €</span>
-                                                                                </h6>
-                                                                            </div>
-                                                                            <div style={{textAlign: "center"}}>
-                                                                                <Button color="primary" size="sm" round>
-                                                                                    View on &nbsp;<img src={logoImage}/>
-                                                                                </Button>
+                                                                            </h6>
+                                                                        </div>
+                                                                        <div style={{ textAlign: "center" }}>
+                                                                            <Button color="primary" size="sm" round>
+                                                                                View on &nbsp;<img src={logoImage} />
+                                                                            </Button>
 
-                                                                            </div>
-                                                                        </CardContent>
-                                                                    </CardActionArea>
-                                                                </Card>
+                                                                        </div>
+                                                                    </CardContent>
+                                                                </CardActionArea>
+                                                            </Card>
 
-                                                            </GridItem>
+                                                        </GridItem>
 
-                                                        </>
+                                                    </>
 
 
-                                                    )
-                                                }
+                                                )
+                                            }
                                             )
                                             }
                                             {this.state.data.length == 0 && this.renderNoResults()}
@@ -396,11 +399,11 @@ class WishList extends Component {
                         </h3>
 
                         <div className={classes.popoverBody}
-                             style={{"text-align": "center"}}>
+                            style={{ "text-align": "center" }}>
                             <Button color="success" round size="sm"
-                                    onClick={this.confirmRemoval}>Yes</Button>
+                                onClick={this.confirmRemoval}>Yes</Button>
                             <Button color="danger" round size="sm"
-                                    onClick={() => this.setAnchorElLeft(null)}>No</Button>
+                                onClick={() => this.setAnchorElLeft(null)}>No</Button>
                         </div>
 
                     </Popover>

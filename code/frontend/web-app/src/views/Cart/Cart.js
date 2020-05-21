@@ -31,6 +31,10 @@ import Close from "@material-ui/icons/Close";
 import stylesjs from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
 import "./cart.css";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 class Cart extends Component {
     constructor(props) {
         super(props);
@@ -453,7 +457,7 @@ class Cart extends Component {
         }
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                 <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 

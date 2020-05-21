@@ -2,6 +2,10 @@
 import React, { Component } from 'react';
 import classNames from "classnames";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 // Styles
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import 'assets/css/hide.css'
@@ -95,7 +99,7 @@ class Game extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -272,7 +276,7 @@ class Game extends Component {
 
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
                             <div style={{ padding: "70px 0" }}>
@@ -456,7 +460,7 @@ class Game extends Component {
                             </div>
 
                         </div>
-                        
+
                         <Footer />
 
                     </div>
