@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static com.api.demo.grid.utils.UserJson.simpleUserJson;
 import static com.api.demo.grid.utils.UserJson.userCreditCardJson;
@@ -99,7 +98,13 @@ class AccountIT {
         // first save user
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
                 .content(mSimpleUserJson);
-        mMvc.perform(request).andExpect(status().isOk());
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.email", is(mEmail1)))
+                .andExpect(jsonPath("$.country", is(mCountry)))
+                .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.password", is(nullValue())));
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
