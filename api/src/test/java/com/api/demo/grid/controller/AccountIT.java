@@ -4,6 +4,7 @@ import com.api.demo.DemoApplication;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import static com.api.demo.grid.utils.UserJson.simplesUserJson;
+import static com.api.demo.grid.utils.UserJson.simpleUserJson;
+import static com.api.demo.grid.utils.UserJson.userCreditCardJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,8 +64,7 @@ class AccountIT {
         this.mSimpleUser.setPassword(mPassword1);
         this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        this.mSimpleUserJson = simplesUserJson(mUsername1, mPassword1, mBirthDateStr, mEmail1, mCountry, mName1);
-
+        this.mSimpleUserJson = simpleUserJson(mUsername1, mPassword1, mBirthDateStr, mEmail1, mCountry, mName1);
     }
 
     @AfterEach
@@ -75,7 +77,7 @@ class AccountIT {
      ***/
     @Test
     @SneakyThrows
-    void whenCreateUserWithDefaultParams_thenReturnSuccessAndCreatedUser() {
+    void whenCreateUserWithDefaultParams_returnSuccessAndCreatedUser() {
 
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
                 .content(mSimpleUserJson);
@@ -92,7 +94,7 @@ class AccountIT {
 
     @Test
     @SneakyThrows
-    void whenCreateUserWithExistentUserName_thenReturnError() {
+    void whenCreateUserWithExistentUserName_returnError() {
 
         // first save user
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +103,7 @@ class AccountIT {
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
-                .content(simplesUserJson(mUsername1, "password_test", mBirthDateStr, "test_email", mCountry,
+                .content(simpleUserJson(mUsername1, "password_test", mBirthDateStr, "test_email", mCountry,
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
@@ -111,7 +113,7 @@ class AccountIT {
 
     @Test
     @SneakyThrows
-    void whenCreateUserWithExistentEmail_thenReturnError() {
+    void whenCreateUserWithExistentEmail_returnError() {
 
         // first save user
         RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
@@ -120,11 +122,42 @@ class AccountIT {
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
-                .content(simplesUserJson("test_username", "password_test", mBirthDateStr, mEmail1, mCountry,
+                .content(simpleUserJson("test_username", "password_test", mBirthDateStr, mEmail1, mCountry,
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
         assertEquals(1, mUserRepository.findAll().size());
         assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+    }
+
+    /***
+     * Create User with all credit card details
+     ***/
+    @Test
+    @SneakyThrows
+    void whenCreateUserWithCardDetails_returnAllCreditCardDetails() {
+
+        String creditCardNumber = RandomStringUtils.randomNumeric(10);
+        String creditCardCSC = RandomStringUtils.randomNumeric(3);
+        String creditCardOwner = "Test user";
+        String creditCardExpirationDate = "10/10/2030";
+
+        // first save user
+        RequestBuilder request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
+                .content(userCreditCardJson(mUsername1, mPassword1, mBirthDateStr, mEmail1, mCountry, mName1,
+                        creditCardNumber, creditCardCSC, creditCardOwner, creditCardExpirationDate));
+
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.email", is(mEmail1)))
+                .andExpect(jsonPath("$.country", is(mCountry)))
+                .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
+                .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
+                .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
+                .andExpect(jsonPath("$.creditCardExpirationDate", is(creditCardExpirationDate)));
+        assertEquals(1, mUserRepository.findAll().size());
     }
 }
