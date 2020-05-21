@@ -44,6 +44,7 @@ class UserServiceTest {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
+            mCountry1 = "country1",
             mPassword1 = "password1",
             mPasswordEncrypted1 = "password_encrypted1",
             mBirthDateStr = "17/10/2010";
@@ -57,10 +58,11 @@ class UserServiceTest {
         mUser1.setUsername(mUsername1);
         mUser1.setName(mName1);
         mUser1.setEmail(mEmail1);
+        mUser1.setEmail(mCountry1);
         mUser1.setPassword(mPasswordEncrypted1);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         // mock password encryption
@@ -94,8 +96,11 @@ class UserServiceTest {
         userExpected.setUsername(mUsername1);
         userExpected.setName(mName1);
         userExpected.setEmail(mEmail1);
+        userExpected.setEmail(mCountry1);
         userExpected.setPassword(mPasswordEncrypted1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        userExpected.setPassword(null);
 
         assertEquals(userExpected, mUserService.getUser(mUsername1));
     }
@@ -135,28 +140,6 @@ class UserServiceTest {
 
         assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
     }
-
-    // TODO -> this test is for integration test
-    /*
-    @Test
-    @SneakyThrows
-    void whenSaveExistentUser_saveIsUnsuccessful() {
-
-        // mock model mapper
-        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
-
-        // mock user repository
-        given(mUserRepository.save(mUser1)).willReturn(mUser1);
-
-        // first insertion
-        mUserService.saveUser(mSimpleUserDTO);
-
-        System.out.println(mUserRepository.findAll().toString());
-
-        // second insertion
-        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
-    }
-    */
 
 
     /***
@@ -320,6 +303,4 @@ class UserServiceTest {
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
-
-    // TODO -> test if the encrypted password is returned -> on integration tests
 }
