@@ -58,7 +58,6 @@ export default function SectionNavbars(props) {
   }
 
   const logout = () => {
-    console.log("OOOOOF")
     localStorage.setItem('loggedUser', null);
     global.user = JSON.parse(localStorage.getItem('loggedUser'))
   }
