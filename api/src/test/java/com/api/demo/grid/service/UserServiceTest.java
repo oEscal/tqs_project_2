@@ -114,10 +114,13 @@ class UserServiceTest {
     @SneakyThrows
     void whenSaveUserDontExists_saveIsSuccessful() {
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertDoesNotThrow(() -> mUserService.saveUser(mSimpleUserDTO));
-        assertEquals(mUser1, mUserRepository.findByUsername(mUsername1));
     }
 
     @Test
@@ -145,6 +148,8 @@ class UserServiceTest {
 
         // first insertion
         mUserService.saveUser(mSimpleUserDTO);
+
+        System.out.println(mUserRepository.findAll().toString());
 
         // second insertion
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
@@ -253,6 +258,10 @@ class UserServiceTest {
         mUser1.setCreditCardCSC(creditCardCSC);
         mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
@@ -273,6 +282,10 @@ class UserServiceTest {
         mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
         mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
@@ -296,6 +309,10 @@ class UserServiceTest {
         mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
         mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
