@@ -1,6 +1,8 @@
 package com.api.demo.grid.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -14,9 +16,9 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@JsonSerialize
-@JsonDeserialize
 @NoArgsConstructor
+@JsonDeserialize
+@JsonSerialize
 public class UserDTO {
 
     /***
@@ -32,6 +34,7 @@ public class UserDTO {
 
     private String password;
 
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date birthDate;
 
     private boolean admin;
@@ -47,6 +50,8 @@ public class UserDTO {
 
     private String creditCardOwner;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date creditCardExpirationDate;
 
 
@@ -60,8 +65,9 @@ public class UserDTO {
     }
 
     public Date getCreditCardExpirationDate() {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             return (Date) creditCardExpirationDate.clone();
+        }
         return null;
     }
 
