@@ -1,15 +1,22 @@
 package com.api.demo.grid.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
+@Setter
+@Getter
+@NoArgsConstructor
 public class Sell {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private long id;
 
     @OneToOne
     @JoinColumn(name = "game_key_id")
@@ -27,45 +34,21 @@ public class Sell {
 
     @Temporal(TemporalType.DATE)
     private Date date;
-    
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int sellId) {
-        this.id = sellId;
-    }
-
-    public GameKey getGameKey() {
-        return gameKey;
-    }
-
-    public void setGameKey(GameKey gameKey) {
-        this.gameKey = gameKey;
-    }
-
-    public Buy getPurchased() {
-        return purchased;
-    }
-
-    public void setPurchased(Buy purchased) {
-        this.purchased = purchased;
-    }
-
-    public User getUser() {
-        return user;
-    }
 
     public void setUser(User user) {
+        //prevent endless loop
+        if (sameAsFormer(user))
+            return ;
+        //set new user
         this.user = user;
+
+        //set myself into new owner
+        if (user!=null)
+            user.addSell(this);
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
+    private boolean sameAsFormer(User newUser) {
+        return user==null? newUser == null : newUser.equals(user);
     }
 
     public Date getDate() {

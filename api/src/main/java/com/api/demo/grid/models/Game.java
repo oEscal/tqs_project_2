@@ -58,4 +58,11 @@ public class Game {
         if (releaseDate != null) this.releaseDate = (Date) releaseDate.clone();
         else this.releaseDate = null;
     }
+
+    public void addGameKey(GameKey gameKey) {
+        if (gameKeys == null) gameKeys = new HashSet<>();
+        else if (gameKeys.contains(gameKey)) return;
+        gameKeys.add(gameKey);
+        gameKey.setGame(this);
+    }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Entity
@@ -13,7 +14,7 @@ public class GameKey {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private long id;
 
     @Column(unique = true)
     private String key;
@@ -32,4 +33,17 @@ public class GameKey {
 
     private String platform;
 
+    public void setGame(Game game) {
+        //prevent endless loop
+        if (sameAsFormer(game)) return ;
+        //set new user
+        this.game = game;
+
+        //set myself into new owner
+        if (game!=null) game.addGameKey(this);
+    }
+
+    private boolean sameAsFormer(Game newGame) {
+        return Objects.equals(game, newGame);
+    }
 }

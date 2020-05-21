@@ -96,13 +96,12 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Auction> auctions;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<Sell> sells;
+    @OneToMany
+    private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
-
 
     public Integer getId() {
         return id;
@@ -224,5 +223,13 @@ public class User {
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
         this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+    }
+
+    public void addSell(Sell sell) {
+        if (this.sells.contains(sell)) return;
+
+        this.sells.add(sell);
+
+        sell.setUser(this);
     }
 }
