@@ -1,17 +1,8 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +24,12 @@ public class GridServiceImpl implements GridService{
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private GameKeyRepository gameKeyRepository;
+
+    @Autowired
+    private SellRepository sellRepository;
 
     @Override
     public Game getGameById(long id) {
@@ -140,6 +137,11 @@ public class GridServiceImpl implements GridService{
         gameGenre.setName(gameGenrePOJO.getName());
         this.gameGenreRepository.save(gameGenre);
         return gameGenre;
+    }
+
+    @Override
+    public Sell saveSell(SellPOJO sellPOJO) {
+        return null;
     }
 
 }

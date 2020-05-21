@@ -26,12 +26,11 @@ class SellRepositoryTest {
         pEntityManager.persistAndFlush(user);
 
         Sell sell = new Sell();
-        sell.setId(1L);
         sell.setUser(user);
 
         pEntityManager.persistAndFlush(sell);
 
-        assertEquals(sell, pRepository.findById(1L).get());
+        assertEquals(sell, pRepository.findById(2L).get());
     }
 
     @Test

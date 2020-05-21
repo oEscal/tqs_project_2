@@ -21,7 +21,6 @@ class GameKeyRepositoryTest {
     @Test
     void whenFindById_getGameKey(){
         GameKey key = new GameKey();
-        key.setId(1L);
 
         pEntityManager.persistAndFlush(key);
 

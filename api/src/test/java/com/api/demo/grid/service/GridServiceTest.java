@@ -1,17 +1,8 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +29,12 @@ class GridServiceTest {
     @Mock(lenient = true)
     private PublisherRepository mockPubRepo;
 
+    @Mock(lenient = true)
+    private GameKeyRepository mockGameKeyRepo;
+
+    @Mock(lenient = true)
+    private SellRepository mockSellRepo;
+
     @InjectMocks
     private GridServiceImpl gridService;
 
@@ -46,6 +43,7 @@ class GridServiceTest {
     private GameGenre gameGenre;
     private Developer developer;
     private Publisher publisher;
+    private User user;
 
     @BeforeEach
     public void setUp(){
@@ -72,6 +70,9 @@ class GridServiceTest {
         game.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
         game.setDevelopers(new HashSet<>(Arrays.asList(developer)));
         game.setPublisher(publisher);
+
+        user = new User();
+        user.setId(6L);
 
     }
 
@@ -289,5 +290,11 @@ class GridServiceTest {
         Mockito.verify(mockDevRepo, Mockito.times(1)).findByName("Dev");
         Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName("Genre");
         assertNull(savedGame);
+    }
+
+    @Test
+    void whenSavingValidSellPOJO_ReturnValidSell_AndSaveValidGameKey(){
+        SellPOJO sellPOJO = new SellPOJO("key", "s", "s", 1L, 2.3, null);
+
     }
 }

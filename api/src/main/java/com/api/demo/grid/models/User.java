@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     /***
      *  User basic info
@@ -96,18 +96,18 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Auction> auctions;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     private Set<Game> wishList;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
