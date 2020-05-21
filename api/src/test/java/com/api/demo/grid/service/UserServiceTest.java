@@ -136,28 +136,6 @@ class UserServiceTest {
         assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
     }
 
-    // TODO -> this test is for integration test
-    /*
-    @Test
-    @SneakyThrows
-    void whenSaveExistentUser_saveIsUnsuccessful() {
-
-        // mock model mapper
-        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
-
-        // mock user repository
-        given(mUserRepository.save(mUser1)).willReturn(mUser1);
-
-        // first insertion
-        mUserService.saveUser(mSimpleUserDTO);
-
-        System.out.println(mUserRepository.findAll().toString());
-
-        // second insertion
-        assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
-    }
-    */
-
 
     /***
      *  Save User with photo or with admin
@@ -320,6 +298,4 @@ class UserServiceTest {
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
-
-    // TODO -> test if the encrypted password is returned -> on integration tests
 }

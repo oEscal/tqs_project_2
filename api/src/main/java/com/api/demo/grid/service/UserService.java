@@ -26,7 +26,10 @@ public class UserService {
 
 
     public User getUser(String username) {
-        return mRepository.findByUsername(username);
+        User user = mRepository.findByUsername(username);
+        if (user != null)
+            user.setPassword(null);
+        return user;
     }
 
     public User saveUser(UserDTO user) throws ExceptionDetails {

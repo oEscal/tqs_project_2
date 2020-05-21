@@ -80,5 +80,6 @@ class UserServiceIT {
 
         mUserService.saveUser(mSimpleUserDTO);
         assertNull(mUserService.getUser(mUsername1).getPassword());
+        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
     }
 }
