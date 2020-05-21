@@ -65,8 +65,9 @@ public class UserDTO {
     }
 
     public Date getCreditCardExpirationDate() {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             return (Date) creditCardExpirationDate.clone();
+        }
         return null;
     }
 

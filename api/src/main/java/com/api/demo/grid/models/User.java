@@ -163,24 +163,28 @@ public class User {
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
-        if (birthDate != null)
+        if (birthDate != null) {
             return (Date) birthDate.clone();
+        }
         return null;
     }
 
     public void setBirthDate(Date birthDate) {
-        if (birthDate != null)
+        if (birthDate != null) {
             this.birthDate = (Date) birthDate.clone();
+        }
     }
 
     public Date getCreditCardExpirationDate() {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             return (Date) creditCardExpirationDate.clone();
+        }
         return null;
     }
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
-        if (creditCardExpirationDate != null)
+        if (creditCardExpirationDate != null) {
             this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+        }
     }
 }
