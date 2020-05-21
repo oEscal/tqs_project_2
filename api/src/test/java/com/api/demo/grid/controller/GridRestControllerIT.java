@@ -11,12 +11,12 @@ import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.PublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -24,11 +24,10 @@ import java.util.HashSet;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
@@ -88,6 +87,7 @@ class GridRestControllerIT {
     }
 
     @Test
+    @WithMockUser(username="spring")
     void whenRequestGenre_ReturnValidGames() throws Exception {
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName("genre");
@@ -101,7 +101,6 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("DS")));
-
     }
 
     @Test
