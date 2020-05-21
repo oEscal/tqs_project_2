@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 
 @WebMvcTest
@@ -80,12 +81,14 @@ class GridRestControllerTest {
         user.setId(2L);
 
         gameKey = new GameKey();
+        gameKey.setGame(game);
         gameKey.setId(3L);
 
         sell = new Sell();
         sell.setId(4L);
         sell.setGameKey(gameKey);
         sell.setUser(user);
+        sell.setDate(new Date());
 
         sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
     }
@@ -285,8 +288,8 @@ class GridRestControllerTest {
                 .content(asJsonString(sellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(4)));
-
+                .andExpect(jsonPath("$.id", is(4)))
+                ;
     }
 
     public static String asJsonString(final Object obj) {

@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,12 +22,15 @@ public class GameKey {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Game game;
 
     @OneToOne
+    @JsonIgnore
     private Sell sell;
 
     @OneToOne
+    @JsonIgnore
     private Auction auction;
 
     private String retailer;
@@ -46,4 +50,6 @@ public class GameKey {
     private boolean sameAsFormer(Game newGame) {
         return Objects.equals(game, newGame);
     }
+
+    public long getGameId(){ return this.game.getId(); }
 }

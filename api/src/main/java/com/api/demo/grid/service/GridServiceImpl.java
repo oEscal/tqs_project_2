@@ -163,6 +163,7 @@ public class GridServiceImpl implements GridService{
         sell.setGameKey(gameKey);
         sell.setUser(realUser);
         sell.setPrice(sellPOJO.getPrice());
+        sell.setDate(sellPOJO.getDate());
         this.sellRepository.save(sell);
         return sell;
     }
