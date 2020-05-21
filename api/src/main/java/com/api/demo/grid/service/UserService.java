@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 @Service
 public class UserService {
@@ -29,10 +32,24 @@ public class UserService {
 
     public User saveUser(UserDTO user) throws ExceptionDetails {
 
-        User userSave = convertToEntity(user);
-
-        if (this.getUser(userSave.getUsername()) != null)
+        // verify if the there are already an user with that name in the database
+        if (this.getUser(user.getUsername()) != null)
             throw new ExceptionDetails("There is already a user with that name");
+
+        // verify if the all credit card info was added at the same time
+        System.out.println(user);
+        String creditCardNumber = user.getCreditCardNumber();
+        String creditCardCSC = user.getCreditCardCSC();
+        String creditCardOwner = user.getCreditCardOwner();
+        Date creditCardExpirationDate = user.getCreditCardExpirationDate();
+        boolean noneCreditCardInfo = creditCardNumber == null && creditCardCSC == null  && creditCardOwner == null
+                && creditCardExpirationDate == null;
+        boolean allCreditCardInfo = creditCardNumber != null && creditCardCSC != null  && creditCardOwner != null
+                && creditCardExpirationDate != null;
+        if (!allCreditCardInfo && !noneCreditCardInfo)
+            throw new ExceptionDetails("If you add a new card you have to give all the details referring to that card");
+
+        User userSave = convertToEntity(user);
 
         userSave.setPassword(passwordEncoder.encode(userSave.getPassword()));
         return mRepository.save(userSave);
