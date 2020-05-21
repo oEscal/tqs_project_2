@@ -58,4 +58,6 @@ public class GameKey {
     public Auction getAuction() { return auction; }
 
     public String getPlatform() { return platform; }
+
+    public void setPlatform(String platform) { this.platform = platform; }
 }
