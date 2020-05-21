@@ -24,6 +24,10 @@ import profileImage from "assets/img/faces/avatar.jpg";
 
 import styles from "assets/jss/material-kit-react/views/componentsSections/navbarsStyle.js";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 // Router
 import {
   Link
@@ -34,13 +38,13 @@ const useStyles = makeStyles(styles);
 export default function SectionNavbars(props) {
   const classes = useStyles();
 
-  const { name, cart, wallet, heightChange, height } = props;
+  const { user, cart, heightChange, height } = props;
 
   var cartIcon
-  if (cart) {
-    cartIcon = <i class="fas fa-cart-arrow-down" style={{ color: "#fd24ac" }}></i>
-  } else {
+  if (cart == []) {
     cartIcon = <i class="fas fa-shopping-cart"></i>
+  } else {
+    cartIcon = <i class="fas fa-cart-arrow-down" style={{ color: "#fd24ac" }}></i>
   }
 
 
@@ -55,6 +59,137 @@ export default function SectionNavbars(props) {
     color = "dark"
   }
 
+  const logout = () => {
+    fetch(baseURL + "grid/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: global.user.token
+      }
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response
+        }
+        else throw new Error(response.status);
+      })
+      .then(data => {
+        localStorage.setItem('loggedUser', null);
+        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+      })
+      .catch(error => {
+        console.log(error)
+
+      });
+  }
+
+  var content = null
+  if (user != null) {
+    content = [
+      <ListItem className={classes.listItem}>
+        <Link to="/sell-game" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            <i class="fas fa-money-bill-wave"></i>
+                Sell
+              </Button>
+        </Link>
+      </ListItem>,
+
+      <ListItem className={classes.listItem}>
+        <Link to="/wishlist" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            <i class="fas fa-star"></i>
+                Wishlist
+              </Button>
+        </Link>
+      </ListItem>,
+
+      <ListItem className={classes.listItem}>
+        <Link to="/cart" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            {cartIcon}
+          </Button>
+        </Link>
+      </ListItem>,
+
+      <ListItem className={classes.listItem}>
+        <Link to="/wallet" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            <i class="fas fa-wallet"></i>
+            {user.wallet} €
+              </Button>
+        </Link>
+      </ListItem>,
+
+      <ListItem className={classes.listItem}>
+        <CustomDropdown
+          noLiPadding
+          buttonText={user.username}
+          buttonProps={{
+            className: classes.navLink,
+            color: "transparent"
+          }}
+          dropdownList={[
+            <Link to={"/user/" + user.username} style={{ color: "inherit" }} className={classes.dropdownLink}>
+              <i class="far fa-address-card"></i> My Profile
+                  </Link>,
+            <Link to="/login-page" className={classes.dropdownLink} onClick={logout}>
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </Link>,
+          ]}
+        />
+      </ListItem>
+    ]
+  } else {
+    content = [
+      <ListItem className={classes.listItem}>
+        <Link to="/cart" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            {cartIcon}
+          </Button>
+        </Link>
+      </ListItem>,
+
+      <ListItem className={classes.listItem}>
+        <Link to="/login-page" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </Button>
+        </Link>
+      </ListItem>,
+      <ListItem className={classes.listItem}>
+
+        <Link to="/signup-page" style={{ color: "inherit" }}>
+          <Button
+            className={classes.navLink}
+            color="transparent"
+          >
+            Sign up
+        </Button>
+        </Link>
+      </ListItem>,
+    ]
+  }
+
   return (
     <div id="navbar" className={classes.navbar}>
       <Header
@@ -66,7 +201,7 @@ export default function SectionNavbars(props) {
         rightLinks={
           <List className={classes.list}>
             <ListItem className={classes.listItem}>
-              <Link to="/games" style={{color:"inherit"}}>
+              <Link to="/games" style={{ color: "inherit" }}>
                 <Button
                   className={classes.navLink}
                   color="transparent"
@@ -77,69 +212,9 @@ export default function SectionNavbars(props) {
               </Link>
 
             </ListItem>
-            <ListItem className={classes.listItem}>
-              <Link to="/sell-game" style={{color:"inherit"}}>
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                >
-                  <i class="fas fa-money-bill-wave"></i>
-                Sell
-              </Button>
-              </Link>
-            </ListItem>
-            <ListItem className={classes.listItem}>
-              <Link to="/wishlist" style={{color:"inherit"}}>
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                >
-                  <i class="fas fa-star"></i>
-                Wishlist
-              </Button>
-              </Link>
-            </ListItem>
-            <ListItem className={classes.listItem}>
-              <Link to="/cart" style={{color:"inherit"}}>
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                >
-                  {cartIcon}
-                </Button>
-              </Link>
-            </ListItem>
 
-            <ListItem className={classes.listItem}>
-              <Link to="/wallet" style={{color:"inherit"}}>
-                <Button
-                  className={classes.navLink}
-                  color="transparent"
-                >
-                  <i class="fas fa-wallet"></i>
-                  {wallet} €
-              </Button>
-              </Link>
-            </ListItem>
+            {content}
 
-            <ListItem className={classes.listItem}>
-              <CustomDropdown
-                noLiPadding
-                buttonText={name}
-                buttonProps={{
-                  className: classes.navLink,
-                  color: "transparent"
-                }}
-                dropdownList={[
-                  <Link to={"/user/" + name} style={{color:"inherit"}} className={classes.dropdownLink}>
-                    <i class="far fa-address-card"></i> My Profile
-                  </Link>,
-                  <Link to="/profile" className={classes.dropdownLink}>
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                  </Link>,
-                ]}
-              />
-            </ListItem>
           </List>
         }
       />
