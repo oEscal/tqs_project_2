@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +31,9 @@ class UserServiceTest {
 
     @Mock(lenient = true)
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Mock(lenient = true)
+    private ModelMapper mModelMapper;
 
     @InjectMocks
     private UserService mUserService;
@@ -120,6 +124,10 @@ class UserServiceTest {
     @SneakyThrows
     void whenSaveUserDontExists_ReturnUser() {
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertEquals(mUser1, mUserService.saveUser(mSimpleUserDTO));
@@ -129,6 +137,10 @@ class UserServiceTest {
     @SneakyThrows
     void whenSaveExistentUser_saveIsUnsuccessful() {
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         // first insertion
@@ -150,6 +162,10 @@ class UserServiceTest {
         mUser1.setPhotoUrl(photo_url);
         mSimpleUserDTO.setPhotoUrl(photo_url);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         User savedUser = mUserService.saveUser(mSimpleUserDTO);
@@ -164,6 +180,10 @@ class UserServiceTest {
         mUser1.setAdmin(true);
         mSimpleUserDTO.setAdmin(true);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         User savedUser = mUserService.saveUser(mSimpleUserDTO);
@@ -175,6 +195,10 @@ class UserServiceTest {
     @SneakyThrows
     void whenNormalUser_returnUserWithAdminFalse() {
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         User savedUser = mUserService.saveUser(mSimpleUserDTO);
@@ -206,6 +230,10 @@ class UserServiceTest {
         mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
         mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
 
+        // mock model mapper
+        given(mModelMapper.map(mSimpleUserDTO, User.class)).willReturn(mUser1);
+
+        // mock user repository
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         User savedUser = mUserService.saveUser(mSimpleUserDTO);
@@ -272,4 +300,6 @@ class UserServiceTest {
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
     }
+
+    // TODO -> test if the encrypted password is returned
 }
