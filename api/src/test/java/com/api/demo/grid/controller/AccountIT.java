@@ -3,8 +3,11 @@ package com.api.demo.grid.controller;
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.http.MediaType;
@@ -32,8 +35,11 @@ class AccountIT {
     @Autowired
     private MockMvc mMvc;
 
-    // @Autowired
-    // private UserService mUserService;
+    @Autowired
+    private UserService mUserService;
+
+    @Autowired
+    private UserRepository mUserRepository;
 
     // specifications for user1
     private User mSimpleUser;
@@ -59,6 +65,11 @@ class AccountIT {
 
         this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+    }
+
+    @AfterEach
+    void afterEach() {
+        mUserRepository.deleteAll();
     }
 
     /***

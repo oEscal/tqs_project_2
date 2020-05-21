@@ -1,6 +1,7 @@
 package com.api.demo.grid.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -33,6 +34,7 @@ public class UserDTO {
 
     private String password;
 
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date birthDate;
 
     private boolean admin;
@@ -49,6 +51,7 @@ public class UserDTO {
     private String creditCardOwner;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date creditCardExpirationDate;
 
 

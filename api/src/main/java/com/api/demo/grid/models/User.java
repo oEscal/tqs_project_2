@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -67,6 +68,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date", nullable = false)
+    @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
@@ -91,6 +93,7 @@ public class User {
 
     @Temporal(TemporalType.DATE)
     @Future
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date creditCardExpirationDate;
 
     /***
