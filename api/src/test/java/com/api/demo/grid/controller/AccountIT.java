@@ -50,6 +50,7 @@ class AccountIT {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
+            mCountry = "country1",
             mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
 
@@ -64,7 +65,7 @@ class AccountIT {
         this.mSimpleUser.setPassword(mPassword1);
         this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 

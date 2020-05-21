@@ -3,7 +3,6 @@ package com.api.demo.grid.service;
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
-import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +34,7 @@ class UserServiceIT {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
+            mCountry1 = "country1",
             mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
 
@@ -43,7 +43,7 @@ class UserServiceIT {
     @SneakyThrows
     void setup() {
 
-        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 

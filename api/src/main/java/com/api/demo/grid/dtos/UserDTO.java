@@ -24,6 +24,8 @@ public class UserDTO {
 
     private String email;
 
+    private String country;
+
     private String password;
 
     private Date birthDate;
@@ -64,10 +66,11 @@ public class UserDTO {
     }
 
 
-    public UserDTO(String username, String name, String email, String password, Date birthDate) {
+    public UserDTO(String username, String name, String email, String country, String password, Date birthDate) {
         this.username = username;
         this.name = name;
         this.email = email;
+        this.country = country;
         this.password = password;
         this.birthDate = (Date) birthDate.clone();
     }

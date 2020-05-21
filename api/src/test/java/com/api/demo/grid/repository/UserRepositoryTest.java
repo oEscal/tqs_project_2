@@ -35,6 +35,7 @@ class UserRepositoryTest {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
+            mCountry1 = "country1",
             mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
 
@@ -58,6 +59,7 @@ class UserRepositoryTest {
         mUser1.setName(mName1);
         mUser1.setEmail(mEmail1);
         mUser1.setPassword(mPassword1);
+        mUser1.setCountry(mCountry1);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         mEntityManager.persistAndFlush(mUser1);
@@ -81,6 +83,7 @@ class UserRepositoryTest {
         userExpected.setUsername(mUsername1);
         userExpected.setName(mName1);
         userExpected.setEmail(mEmail1);
+        userExpected.setCountry(mCountry1);
         userExpected.setPassword(mPassword1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
