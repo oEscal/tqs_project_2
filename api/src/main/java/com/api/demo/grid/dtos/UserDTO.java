@@ -14,7 +14,6 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserDTO {
 
     /***
@@ -71,6 +70,6 @@ public class UserDTO {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.birthDate = birthDate;
+        this.birthDate = (Date) birthDate.clone();
     }
 }

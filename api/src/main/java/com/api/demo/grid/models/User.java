@@ -24,6 +24,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.Transient;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
@@ -37,9 +38,9 @@ import java.util.Set;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 @JsonSerialize
+@Transient
 public class User {
 
     @Id
@@ -157,11 +158,14 @@ public class User {
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
-        return (Date) birthDate.clone();
+        if (birthDate != null)
+            return (Date) birthDate.clone();
+        return null;
     }
 
     public void setBirthDate(Date birthDate) {
-        this.birthDate = (Date) birthDate.clone();
+        if (birthDate != null)
+            this.birthDate = (Date) birthDate.clone();
     }
 
     public Date getCreditCardExpirationDate() {
