@@ -55,7 +55,8 @@ export default function CustomDropdown(props) {
     hoverColor,
     left,
     rtlActive,
-    noLiPadding
+    noLiPadding,
+    id
   } = props;
   const caretClasses = classNames({
     [classes.caret]: true,
@@ -95,6 +96,7 @@ export default function CustomDropdown(props) {
           aria-haspopup="true"
           {...buttonProps}
           onClick={handleClick}
+          id={id}
         >
           {text}          
           {caret ? <b className={caretClasses} /> : null}
@@ -196,5 +198,6 @@ CustomDropdown.propTypes = {
   left: PropTypes.bool,
   noLiPadding: PropTypes.bool,
   // function that retuns the selected item
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  id: PropTypes.string
 };

@@ -1,18 +1,23 @@
 package com.api.demo.grid.models;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     @Column(unique=true)
     private String name;
@@ -45,56 +50,13 @@ public class Game {
 
     private String coverUrl;
 
-    public Integer getId() {
-        return id;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
+    // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getReleaseDate() {
         return (Date) releaseDate.clone();
-    }
-
-    public Set<GameGenre> getGameGenres() {
-        return new HashSet<>(gameGenres);
-    }
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public Set<Developer> getDeveloper() {
-        return new HashSet<>(developers);
-    }
-    
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = (Date) releaseDate.clone();
     }
-
-    public String getCoverUrl() { return coverUrl; }
-
-    public void setCoverUrl(String cover) { this.coverUrl = cover; }
-
 }

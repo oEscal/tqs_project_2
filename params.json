@@ -1,0 +1,10 @@
+{
+	"username": "ola",
+	"password": "adeus",
+	"birthDate": "1999-10-10",
+	"email": "ola@adeus.com",
+	"name": "Mr eheh uhuh",
+	"role": {
+		"name": "yo"
+	}
+}
