@@ -74,13 +74,14 @@ export default function SectionNavbars(props) {
         else throw new Error(response.status);
       })
       .then(data => {
-        localStorage.setItem('loggedUser', null);
-        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
       })
       .catch(error => {
         console.log(error)
 
       });
+    localStorage.setItem('loggedUser', null);
+    global.user = JSON.parse(localStorage.getItem('loggedUser'))
   }
 
   var content = null
