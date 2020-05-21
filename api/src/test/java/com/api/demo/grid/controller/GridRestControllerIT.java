@@ -1,14 +1,10 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +20,6 @@ import java.util.HashSet;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,12 +41,22 @@ class GridRestControllerIT {
     private PublisherRepository publisherRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private SellRepository sellRepository;
+
+    @Autowired
+    private GameKeyRepository gameKeyRepository;
+
+    @Autowired
     private MockMvc mockMvc;
 
     private GameGenrePOJO gameGenrePOJO;
     private GamePOJO gamePOJO;
     private PublisherPOJO publisherPOJO;
     private DeveloperPOJO developerPOJO;
+    private SellPOJO sellPOJO;
 
     @BeforeEach
     public void setUp(){
@@ -62,6 +67,7 @@ class GridRestControllerIT {
         gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
         gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         gamePOJO.setPublisher("publisher");
+        sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
     }
 
     @Test
@@ -117,6 +123,21 @@ class GridRestControllerIT {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
         assertTrue(gameRepository.findAllByNameContains(gamePOJO.getName()).isEmpty());
+    }
+
+    @Test
+    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
+        User user = new User();
+        Game game = new Game();
+        gameRepository.save(game);
+        userRepository.save(user);
+        sellPOJO.setGameId(game.getId());
+        sellPOJO.setUserId(user.getId());
+
+        mockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(sellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     public static String asJsonString(final Object obj) {

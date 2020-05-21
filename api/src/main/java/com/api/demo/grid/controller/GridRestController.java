@@ -1,12 +1,6 @@
 package com.api.demo.grid.controller;
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,5 +90,10 @@ public class GridRestController {
     @PostMapping("/developer")
     public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
+    }
+
+    @PostMapping("/sell-listing")
+    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
+        return new ResponseEntity<>(gridService.saveSell(sellPOJO), HttpStatus.OK);
     }
 }

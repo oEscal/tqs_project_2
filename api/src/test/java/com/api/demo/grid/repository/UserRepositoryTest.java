@@ -1,6 +1,6 @@
 package com.api.demo.grid.repository;
 
-import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -11,20 +11,20 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-class GameKeyRepositoryTest {
+class UserRepositoryTest {
     @Autowired
     private TestEntityManager pEntityManager;
 
     @Autowired
-    private GameKeyRepository pRepository;
+    private UserRepository pRepository;
 
     @Test
     void whenFindById_getGameKey(){
-        GameKey key = new GameKey();
+        User user = new User();
 
-        pEntityManager.persistAndFlush(key);
+        pEntityManager.persistAndFlush(user);
 
-        assertEquals(key, pRepository.findById(1L).get());
+        assertEquals(user, pRepository.findById(1L).get());
     }
 
     @Test

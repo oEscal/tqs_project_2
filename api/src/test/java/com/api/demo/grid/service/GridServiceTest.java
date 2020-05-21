@@ -30,6 +30,9 @@ class GridServiceTest {
     private PublisherRepository mockPubRepo;
 
     @Mock(lenient = true)
+    private UserRepository mockUserRepo;
+
+    @Mock(lenient = true)
     private GameKeyRepository mockGameKeyRepo;
 
     @Mock(lenient = true)
@@ -294,7 +297,19 @@ class GridServiceTest {
 
     @Test
     void whenSavingValidSellPOJO_ReturnValidSell_AndSaveValidGameKey(){
-        SellPOJO sellPOJO = new SellPOJO("key", "s", "s", 1L, 2.3, null);
+        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.ofNullable(game2));
 
+        SellPOJO sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
+
+        Sell savedSell = gridService.saveSell(sellPOJO);
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(2L);
+        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).save(Mockito.any(GameKey.class));
+        assertEquals("key", savedSell.getGameKey().getKey());
+        assertEquals("s", savedSell.getGameKey().getPlatform());
+        assertEquals("steam", savedSell.getGameKey().getRetailer());
+        assertEquals(game2.getName(), savedSell.getGameKey().getGame().getName());
+        assertEquals(2.3, savedSell.getPrice());
     }
 }

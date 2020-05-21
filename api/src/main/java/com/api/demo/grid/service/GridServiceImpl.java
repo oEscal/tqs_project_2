@@ -31,6 +31,9 @@ public class GridServiceImpl implements GridService{
     @Autowired
     private SellRepository sellRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = gameRepository.findById(id);
@@ -141,7 +144,27 @@ public class GridServiceImpl implements GridService{
 
     @Override
     public Sell saveSell(SellPOJO sellPOJO) {
-        return null;
+        Optional<User> user = this.userRepository.findById(sellPOJO.getUserId());
+        if (user.isEmpty()) return null;
+        User realUser = user.get();
+
+        Optional<Game> game = this.gameRepository.findById(sellPOJO.getGameId());
+        if (game.isEmpty()) return null;
+        Game realGame = game.get();
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(realGame);
+        gameKey.setKey(sellPOJO.getGameKey());
+        gameKey.setPlatform(sellPOJO.getPlatform());
+        gameKey.setRetailer(sellPOJO.getRetailer());
+        this.gameKeyRepository.save(gameKey);
+
+        Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+        sell.setUser(realUser);
+        sell.setPrice(sellPOJO.getPrice());
+        this.sellRepository.save(sell);
+        return sell;
     }
 
 }

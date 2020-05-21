@@ -1,13 +1,7 @@
 package com.api.demo.grid.controller;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,10 +37,14 @@ class GridRestControllerTest {
     private GameGenre gameGenre;
     private Publisher publisher;
     private Developer developer;
+    private Sell sell;
+    private User user;
+    private GameKey gameKey;
     private GameGenrePOJO gameGenrePOJO;
     private GamePOJO gamePOJO;
     private PublisherPOJO publisherPOJO;
     private DeveloperPOJO developerPOJO;
+    private SellPOJO sellPOJO;
 
     @BeforeEach
     void setUp(){
@@ -77,6 +75,19 @@ class GridRestControllerTest {
         gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
         gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         gamePOJO.setPublisher("publisher");
+
+        user = new User();
+        user.setId(2L);
+
+        gameKey = new GameKey();
+        gameKey.setId(3L);
+
+        sell = new Sell();
+        sell.setId(4L);
+        sell.setGameKey(gameKey);
+        sell.setUser(user);
+
+        sellPOJO = new SellPOJO("key", "s", "steam", 2L, 6L, 2.3, null);
     }
 
     @Test
@@ -264,6 +275,18 @@ class GridRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
+    }
+
+    @Test
+    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
+        Mockito.when(gridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(sell);
+        String json = asJsonString(sellPOJO);
+        mockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(sellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(4)));
+
     }
 
     public static String asJsonString(final Object obj) {
