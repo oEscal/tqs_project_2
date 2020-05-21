@@ -73,4 +73,12 @@ class UserServiceIT {
         assertEquals(1, mUserRepository.findAll().size());
         assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
     }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUser_getUserWithoutPassword() {
+
+        mUserService.saveUser(mSimpleUserDTO);
+        assertNull(mUserService.getUser(mUsername1).getPassword());
+    }
 }
