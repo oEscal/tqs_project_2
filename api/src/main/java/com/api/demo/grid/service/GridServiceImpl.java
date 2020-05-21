@@ -20,8 +20,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+<<<<<<< HEAD
 @Service
+=======
+
+>>>>>>> e443ceeb830555475777640e22a4185c538c0cf2
 public class GridServiceImpl implements GridService{
+
     @Autowired
     private DeveloperRepository developerRepository;
 
