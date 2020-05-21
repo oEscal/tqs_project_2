@@ -1,6 +1,7 @@
 package com.api.demo.grid.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -47,6 +48,7 @@ public class UserDTO {
 
     private String creditCardOwner;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Date creditCardExpirationDate;
 
 
