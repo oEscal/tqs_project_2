@@ -3,31 +3,22 @@ package com.api.demo.grid.controller;
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.models.User;
-import com.api.demo.grid.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
 
-import com.api.demo.grid.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +41,7 @@ class AccountIT {
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
+            mCountry = "country1",
             mPassword1 = "password1",
             mBirthDateStr = "17/10/2010";
 
@@ -64,14 +56,13 @@ class AccountIT {
         this.mSimpleUser.setPassword(mPassword1);
         this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
-        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1,
+        this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 
     /***
      * Create simple User (with the required params)
      ***/
-    /*
     @Test
     @SneakyThrows
     void whenCreateUserWithDefaultParams_thenReturnSuccessAndCreatedUser() {
@@ -81,9 +72,13 @@ class AccountIT {
         System.out.println(asJsonString(mSimpleUserDTO));
 
         mMvc.perform(request).andExpect(status().isOk())
-                .andExpect(jsonPath("$.username", is(mUsername1)));
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.email", is(mEmail1)))
+                .andExpect(jsonPath("$.country", is(mCountry)))
+                .andExpect(jsonPath("$.birth", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.password", is(null)));
     }
-    */
 
     // TODO -> this method can be shared between classes (create an utils class)
     private static String asJsonString(final Object obj) {

@@ -1,6 +1,8 @@
 package com.api.demo.grid.dtos;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +15,8 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@JsonDeserialize
+@JsonSerialize
 public class UserDTO {
 
     /***
@@ -23,6 +27,8 @@ public class UserDTO {
     private String name;
 
     private String email;
+
+    private String country;
 
     private String password;
 
@@ -64,10 +70,11 @@ public class UserDTO {
     }
 
 
-    public UserDTO(String username, String name, String email, String password, Date birthDate) {
+    public UserDTO(String username, String name, String email, String country, String password, Date birthDate) {
         this.username = username;
         this.name = name;
         this.email = email;
+        this.country = country;
         this.password = password;
         this.birthDate = (Date) birthDate.clone();
     }

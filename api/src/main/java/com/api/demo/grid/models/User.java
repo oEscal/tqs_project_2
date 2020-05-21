@@ -61,6 +61,9 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    private String country;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "birth_date", nullable = false)
