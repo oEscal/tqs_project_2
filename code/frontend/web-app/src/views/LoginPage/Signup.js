@@ -559,7 +559,7 @@ class Signup extends Component {
     //Overlay for when processing a login request
     if (this.state.processing) {
       processing = [
-        <div style={{ position: "absolute", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
+        <div style={{ position: "fixed", top: "0", left: "0", height: "100%", width: "100%", backgroundColor: "black", opacity: 0.6, zIndex: 11 }} id="processing">
         </div>,
 
         <div style={{ zIndex: 11, position: "absolute", top: "0", left: "0", height: "100%", width: "100%" }}>
