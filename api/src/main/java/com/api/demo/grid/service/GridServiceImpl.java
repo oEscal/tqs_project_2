@@ -144,7 +144,17 @@ public class GridServiceImpl implements GridService{
 
     @Override
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
-        return null;
+        Optional<Game> game = this.gameRepository.findById(gameKeyPOJO.getGameId());
+        if (game.isEmpty()) return null;
+        Game realGame = game.get();
+
+        GameKey gameKey = new GameKey();
+        gameKey.setKey(gameKeyPOJO.getKey());
+        gameKey.setGame(realGame);
+        gameKey.setRetailer(gameKeyPOJO.getRetailer());
+        gameKey.setPlatform(gameKeyPOJO.getPlatform());
+        this.gameKeyRepository.save(gameKey);
+        return gameKey;
     }
 
     @Override
@@ -153,8 +163,13 @@ public class GridServiceImpl implements GridService{
         if (user.isEmpty()) return null;
         User realUser = user.get();
 
+        Optional<GameKey> gameKey = this.gameKeyRepository.findByKey(sellPOJO.getGameKey());
+        if (gameKey.isEmpty()) return null;
+        GameKey realGameKey = gameKey.get();
+
         Sell sell = new Sell();
         sell.setUser(realUser);
+        sell.setGameKey(realGameKey);
         sell.setPrice(sellPOJO.getPrice());
         sell.setDate(sellPOJO.getDate());
         this.sellRepository.save(sell);

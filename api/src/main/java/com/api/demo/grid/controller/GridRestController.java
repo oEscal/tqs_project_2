@@ -92,8 +92,21 @@ public class GridRestController {
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 
+    @PostMapping("/gamekey")
+    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO){
+        GameKey gameKey = gridService.saveGameKey(gameKeyPOJO);
+        if (gameKey == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game Key");
+        }
+        return new ResponseEntity<>(gameKey, HttpStatus.OK);
+    }
+
     @PostMapping("/sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
-        return new ResponseEntity<>(gridService.saveSell(sellPOJO), HttpStatus.OK);
+        Sell sell = gridService.saveSell(sellPOJO);
+        if (sell == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
+        }
+        return new ResponseEntity<>(sell, HttpStatus.OK);
     }
 }

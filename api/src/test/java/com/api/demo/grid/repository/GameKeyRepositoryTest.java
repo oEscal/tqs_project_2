@@ -1,6 +1,7 @@
 package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -30,5 +31,21 @@ class GameKeyRepositoryTest {
     @Test
     void whenInvalidId_ReceiveEmpty(){
         assertEquals(Optional.empty(), pRepository.findById(2L));
+    }
+
+    @Test
+    void whenFindByKey_GetSell(){
+        GameKey gameKey = new GameKey();
+        gameKey.setKey("k");
+        pEntityManager.persistAndFlush(gameKey);
+
+        assertEquals("k", pRepository.findByKey("k").get().getKey());
+    }
+
+    @Test
+    void whenInvalidKey_ReceiveEmpty(){
+        GameKey gameKey = pEntityManager.persistAndFlush(new GameKey());
+
+        assertEquals(Optional.empty(), pRepository.findByKey("key"));
     }
 }

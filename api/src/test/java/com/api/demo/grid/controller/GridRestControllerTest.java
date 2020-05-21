@@ -46,6 +46,7 @@ class GridRestControllerTest {
     private PublisherPOJO publisherPOJO;
     private DeveloperPOJO developerPOJO;
     private SellPOJO sellPOJO;
+    private GameKeyPOJO gameKeyPOJO;
 
     @BeforeEach
     void setUp(){
@@ -81,6 +82,7 @@ class GridRestControllerTest {
         user.setId(2L);
 
         gameKey = new GameKey();
+        gameKey.setKey("key");
         gameKey.setGame(game);
         gameKey.setId(3L);
 
@@ -90,7 +92,8 @@ class GridRestControllerTest {
         sell.setUser(user);
         sell.setDate(new Date());
 
-        sellPOJO = new SellPOJO(2L, 6L, 2.3, null);
+        sellPOJO = new SellPOJO("key", 2L, 2.3, null);
+        gameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
     }
 
     @Test
@@ -281,15 +284,49 @@ class GridRestControllerTest {
     }
 
     @Test
+    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
+        Mockito.when(gridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(gameKey);
+        mockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(gameKeyPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.key", is("key")))
+                .andExpect(jsonPath("$.gameId", is(1)))
+        ;
+    }
+
+    @Test
+    void whenPostingInvalidGameKey_Return404Exception() throws Exception{
+        Mockito.when(gridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(null);
+        mockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(gameKeyPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game Key"))
+        ;
+    }
+
+    @Test
     void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
         Mockito.when(gridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(sell);
-        String json = asJsonString(sellPOJO);
         mockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(sellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(4)))
+                .andExpect(jsonPath("$.userId", is(2)))
                 ;
+    }
+
+    @Test
+    void whenPostingInvalidSellListing_Return404Exception() throws Exception{
+        Mockito.when(gridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(null);
+        mockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(sellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
     }
 
     public static String asJsonString(final Object obj) {

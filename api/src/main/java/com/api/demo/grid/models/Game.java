@@ -39,10 +39,10 @@ public class Game {
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private Set<ReviewGame> reviews;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private Set<GameKey> gameKeys;
 
     @ManyToMany
