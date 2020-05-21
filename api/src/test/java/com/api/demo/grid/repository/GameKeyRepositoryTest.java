@@ -24,7 +24,7 @@ class GameKeyRepositoryTest {
 
         pEntityManager.persistAndFlush(key);
 
-        assertEquals(key, pRepository.findById(1L).get());
+        assertEquals(key, pRepository.findById(key.getId()).get());
     }
 
     @Test

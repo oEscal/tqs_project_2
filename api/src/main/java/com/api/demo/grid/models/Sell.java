@@ -61,5 +61,8 @@ public class Sell {
         this.date = (Date) date.clone();
     }
 
-    public long getUserId() { return this.user.getId(); }
+    public long getUserId() {
+        if (user == null) return -1L;
+        return this.user.getId();
+    }
 }

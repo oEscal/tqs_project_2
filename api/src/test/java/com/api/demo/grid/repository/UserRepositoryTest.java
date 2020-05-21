@@ -24,7 +24,7 @@ class UserRepositoryTest {
 
         pEntityManager.persistAndFlush(user);
 
-        assertEquals(user, pRepository.findById(1L).get());
+        assertEquals(user, pRepository.findById(user.getId()).get());
     }
 
     @Test

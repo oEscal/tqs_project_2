@@ -30,7 +30,7 @@ class SellRepositoryTest {
 
         pEntityManager.persistAndFlush(sell);
 
-        assertEquals(sell, pRepository.findById(2L).get());
+        assertEquals(sell, pRepository.findById(sell.getId()).get());
     }
 
     @Test

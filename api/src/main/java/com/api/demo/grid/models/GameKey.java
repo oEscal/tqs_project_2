@@ -51,5 +51,8 @@ public class GameKey {
         return Objects.equals(game, newGame);
     }
 
-    public long getGameId(){ return this.game.getId(); }
+    public long getGameId(){
+        if (game == null) return -1L;
+        return this.game.getId();
+    }
 }
