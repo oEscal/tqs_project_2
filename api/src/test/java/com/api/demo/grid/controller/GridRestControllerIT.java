@@ -87,7 +87,6 @@ class GridRestControllerIT {
     }
 
     @Test
-    @WithMockUser(username="spring")
     void whenRequestGenre_ReturnValidGames() throws Exception {
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName("genre");
