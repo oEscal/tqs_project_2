@@ -8,9 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/*
+
 @SpringBootTest(classes= DemoApplication.class)
 public class LoginPageTest {
+    /*
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -54,6 +55,23 @@ public class LoginPageTest {
         assertTrue(controller.checkVisibility("errorTwoToast"));
         assertTrue(controller.checkText("errorTwoToast","Sorry, those credentials seem to be incorrect!"));
     }
-}
 
- */
+    @Test
+    //Check that when a correct input is fed, we get moved to the homepage and are logged in
+    // NOTE: This requires the BD to have this user...
+    public void whenValidCredentials_thenRedirectToHome_andLogin() {
+        String username = "ola";
+        String password = "adeus";
+        controller.writeInput(username,"username");
+        controller.writeInput(password,"password");
+
+        controller.clickButton("confirm");
+
+        controller.waitForLoad("processing");
+
+        String url = "http://localhost:" + port + "/";
+        assertTrue(controller.checkURL(url));
+        assertTrue(controller.checkText("logged",username.toUpperCase()));
+    }
+     */
+}

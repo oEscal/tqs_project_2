@@ -142,6 +142,7 @@ export default function SectionNavbars(props) {
             className: classes.navLink,
             color: "transparent"
           }}
+          id="logged"
           dropdownList={[
             <Link to={"/user/" + user.username} style={{ color: "inherit" }} className={classes.dropdownLink}>
               <i class="far fa-address-card"></i> My Profile

@@ -111,12 +111,13 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorMinimum"
       });
       error = true
     }
 
     var tempBirth = birthday.split("/")
-    if (tempBirth.length == 0) {
+    if (tempBirth.length != 3) {
       toast.error('Please use a valid birthday...', {
         position: "top-center",
         autoClose: 5000,
@@ -124,6 +125,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorBirthday"
       });
       error = true
     } else {
@@ -138,6 +140,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorEmail"
       });
       error = true
     }
@@ -152,12 +155,14 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId:"errorPass"
       });
       error = true
     }
 
+
     if (cardNumber != '' || cardCVC != '' || expiration != '' || cardName != '') {
-      if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName != '') {
+      if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '') {
         toast.error('Oops, if you want to add your payment info, you\'ve got to specify all four card information fields!', {
           position: "top-center",
           autoClose: 5000,
@@ -177,7 +182,7 @@ class Signup extends Component {
 
     if (expiration != null) {
       var tempExpiration = expiration.split("/")
-      if (tempExpiration.length == 0) {
+      if (tempExpiration.length != 3) {
         toast.error('Please use a valid expiration date...', {
           position: "top-center",
           autoClose: 5000,
@@ -192,7 +197,7 @@ class Signup extends Component {
       }
     }
 
-    if (cardCVC != "" && cardCVC != null && (/^\d+$/.test(cardCVC) || cardCVC.length != 3)) {
+    if (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
       toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
         position: "top-center",
         autoClose: 5000,
@@ -790,6 +795,7 @@ class Signup extends Component {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ width: "100%", backgroundColor: "#fc3196" }}
+                            id="confirm"
                           >
                             Login
                           </Button>

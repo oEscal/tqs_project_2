@@ -46,6 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
+    /*
     @Bean
     public CorsFilter corsFilter() {
 
@@ -61,6 +62,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/grid/logout", config);
         return new CorsFilter(source);
     }
+     */
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
