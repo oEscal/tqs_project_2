@@ -62,9 +62,6 @@ class UserServiceIT {
     }
 
 
-    /***
-     *  Save simple User (User with the required params)
-     ***/
     @Test
     @SneakyThrows
     void whenSaveExistentUser_saveIsUnsuccessful() {
@@ -74,6 +71,15 @@ class UserServiceIT {
 
         // second insertion
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
+        assertEquals(1, mUserRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSaveUser_returnUserWithoutPassword() {
+
+        assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
+        assertEquals(1, mUserRepository.findAll().size());
     }
 
     // TODO -> test if the encrypted password is returned -> on integration tests
