@@ -14,7 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -33,8 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.HashSet;
 
-@WebMvcTest
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 class GridRestControllerTest {
+
     @Autowired
     private MockMvc mMockMvc;
 
@@ -112,8 +118,6 @@ class GridRestControllerTest {
     @Test
     @WithMockUser(username="spring")
     void whenRequestGenre_ReturnValidGames() throws Exception {
-        Mockito.when(mGridService.getAllGamesWithGenre("genre")).thenReturn(Arrays.asList(mGame));
-
         mMockMvc.perform(get("/grid/genre")
                 .param("genre", "genre")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -128,9 +132,8 @@ class GridRestControllerTest {
     @WithMockUser(username="spring")
     void whenRequestName_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByName("game")).thenReturn(Arrays.asList(mGame));
-
         mMockMvc.perform(get("/grid/name")
-                .param("name", "game")
+                .param("name", "g")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))

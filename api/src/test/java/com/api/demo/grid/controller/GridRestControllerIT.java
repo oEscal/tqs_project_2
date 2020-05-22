@@ -110,7 +110,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGamePOJO.getName())));
-        assertFalse(mGameRepository.findAllByNameContains(mGamePOJO.getName()).isEmpty());
+        assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -122,8 +122,8 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
-        assertTrue(mGameRepository.findAllByNameContains(mGamePOJO.getName()).isEmpty());
-    }
+        assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        }
 
     public static String asJsonString(final Object obj) {
         try {

@@ -15,10 +15,11 @@ import com.api.demo.grid.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.HashSet;
 
 @Service
 public class GridServiceImpl implements GridService{
@@ -60,7 +61,7 @@ public class GridServiceImpl implements GridService{
 
     @Override
     public List<Game> getAllGamesByName(String name) {
-        return mGameRepository.findAllByNameContains(name);
+        return mGameRepository.findAllByNameContaining(name);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class GridServiceImpl implements GridService{
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
         game.setDescription(gamePOJO.getDescription());
-        game.setReleaseDate(gamePOJO.getReleaseDate());
+        game.setReleaseDate((Date) gamePOJO.getReleaseDate());
 
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();

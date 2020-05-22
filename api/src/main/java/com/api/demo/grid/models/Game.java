@@ -5,8 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Column;
+import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.OneToMany;
+import java.sql.Date;
+import java.util.Set;
 
 
 @Entity
@@ -50,12 +62,10 @@ public class Game {
 
     private String coverUrl;
 
-    public Date getReleaseDate(){
-        return (releaseDate == null)? null:(Date) releaseDate.clone();
-    }
+    public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
-    public void setReleaseDate(Date releaseDate) {
-        if (releaseDate != null) this.releaseDate = (Date) releaseDate.clone();
+    public void setReleaseDate(Date date) {
+        if (date != null) releaseDate = (Date) date.clone();
     }
 
 }

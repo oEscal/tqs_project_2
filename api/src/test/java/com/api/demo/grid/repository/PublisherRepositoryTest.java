@@ -15,23 +15,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class PublisherRepositoryTest {
 
     @Autowired
-    private TestEntityManager entityManager;
+    private TestEntityManager mEntityManager;
 
     @Autowired
-    private PublisherRepository repository;
+    private PublisherRepository mRepository;
 
     @Test
     void whenFindByName_getDeveloper(){
         Publisher example = new Publisher();
         example.setName("Exemplo");
 
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
 
-        assertEquals(example, repository.findByName("Exemplo").get());
+        assertEquals(example, mRepository.findByName("Exemplo").get());
     }
 
     @Test
     void whenInvalidName_ReceiveEmpty(){
-        assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
+        assertEquals(Optional.empty(), mRepository.findByName("Not exemplo"));
     }
 }
