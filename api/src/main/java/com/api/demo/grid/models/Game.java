@@ -50,13 +50,10 @@ public class Game {
 
     private String coverUrl;
 
+    public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
-    // because lombok doesnt support get and set params of Date type with security (clone)
-    public Date getReleaseDate() {
-        return (Date) releaseDate.clone();
+    public void setReleaseDate(Date date) {
+        if (date != null) releaseDate = (Date) date.clone();
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = (Date) releaseDate.clone();
-    }
 }
