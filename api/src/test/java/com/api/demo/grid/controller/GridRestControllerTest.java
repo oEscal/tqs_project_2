@@ -118,6 +118,7 @@ class GridRestControllerTest {
     @Test
     @WithMockUser(username="spring")
     void whenRequestGenre_ReturnValidGames() throws Exception {
+        
         mMockMvc.perform(get("/grid/genre")
                 .param("genre", "genre")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -132,8 +133,9 @@ class GridRestControllerTest {
     @WithMockUser(username="spring")
     void whenRequestName_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByName("game")).thenReturn(Arrays.asList(mGame));
+
         mMockMvc.perform(get("/grid/name")
-                .param("name", "g")
+                .param("name", "game")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))

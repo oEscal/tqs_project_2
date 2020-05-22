@@ -45,7 +45,7 @@ class GameRepositoryTest {
 
         mEntityManager.persistAndFlush(example);
 
-        assertEquals(Arrays.asList(example), mRepository.findAllByNameContaining("Exemplo"));
+        assertEquals(Arrays.asList(example), mRepository.findAllByNameContaining("Exem"));
     }
 
     @Test
