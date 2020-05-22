@@ -1,17 +1,8 @@
+FROM openjdk:11
 MAINTAINER Pedro Escaleira
 
-#
-# Build stage
-#
-FROM maven:3.6.0-jdk-11-slim AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean package
+COPY ./target/demo-0.0.1-SNAPSHOT.jar /opt/spring-cloud/lib/
 
-#
-# Package stage
-#
-FROM openjdk:11-jre-slim
-COPY --from=build /home/app/target/demo-0.0.1-SNAPSHOT.jar /usr/local/lib/demo.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/usr/local/lib/demo.jar"]
+EXPOSE 8888
+
+CMD ["java", "-jar", "/opt/spring-cloud/lib/demo-0.0.1-SNAPSHOT.jar"]
