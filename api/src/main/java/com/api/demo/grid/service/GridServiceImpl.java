@@ -185,7 +185,10 @@ public class GridServiceImpl implements GridService{
         double bill = 0;
         Optional<Sell> sell;
         Buy buy;
-        User user = userRepository.findById(buyListingsPOJO.getUserId()).get();
+        Optional<User> optionalUser = userRepository.findById(buyListingsPOJO.getUserId());
+        User user;
+        if (optionalUser.isEmpty()) return null;
+        user = optionalUser.get();
         for (long sellId : buyListingsPOJO.getListingsId()){
             sell = sellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
