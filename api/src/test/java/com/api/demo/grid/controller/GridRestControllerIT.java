@@ -11,7 +11,6 @@ import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.PublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,8 +23,6 @@ import java.util.HashSet;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,39 +32,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase
 class GridRestControllerIT {
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mMockMvc;
 
     @Autowired
-    private DeveloperRepository developerRepository;
+    private DeveloperRepository mDeveloperRepository;
 
     @Autowired
-    private PublisherRepository publisherRepository;
+    private PublisherRepository mPublisherRepository;
 
     @Autowired
-    private GameGenreRepository gameGenreRepository;
+    private GameGenreRepository mGameGenreRepository;
 
     @Autowired
-    private GameRepository gameRepository;
+    private GameRepository mGameRepository;
 
-    private Game game;
+    private Game mGame;
 
     @BeforeEach
     void setUp(){
-        game = new Game();
-        game.setName("DS");
-        game.setDescription("");
-        game.setCoverUrl("");
-        gameRepository.deleteAll();
-        developerRepository.deleteAll();
-        publisherRepository.deleteAll();
-        gameGenreRepository.deleteAll();
+        mGame = new Game();
+        mGame.setName("DS");
+        mGame.setDescription("");
+        mGame.setCoverUrl("");
+        mGameRepository.deleteAll();
+        mDeveloperRepository.deleteAll();
+        mPublisherRepository.deleteAll();
+        mGameGenreRepository.deleteAll();
     }
 
     @Test
     void whenRequestAll_ReturnAll() throws Exception {
-        gameRepository.save(game);
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
+        mMockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is("DS")));
@@ -76,11 +73,11 @@ class GridRestControllerIT {
 
     @Test
     void whenRequestGameInfo_ReturnGame() throws Exception {
-        gameRepository.save(game);
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/game")
-                        .param("id", ""+game.getId())
+                        .param("id", ""+ mGame.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("DS")));
@@ -91,11 +88,11 @@ class GridRestControllerIT {
     void whenRequestGenre_ReturnValidGames() throws Exception {
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName("genre");
-        gameGenreRepository.save(gameGenre);
-        game.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
-        gameRepository.save(game);
+        mGameGenreRepository.save(gameGenre);
+        mGame.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(get("/grid/genre")
+        mMockMvc.perform(get("/grid/genre")
                 .param("genre", "genre")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -106,9 +103,9 @@ class GridRestControllerIT {
 
     @Test
     void whenRequestName_ReturnValidGames() throws Exception {
-        gameRepository.save(game);
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(get("/grid/name")
+        mMockMvc.perform(get("/grid/name")
                 .param("name", "D")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -121,11 +118,11 @@ class GridRestControllerIT {
     void whenRequestDev_ReturnValidGames() throws Exception {
         Developer developer = new Developer();
         developer.setName("Dev");
-        developerRepository.save(developer);
-        game.setDevelopers(new HashSet<>(Arrays.asList(developer)));
-        gameRepository.save(game);
+        mDeveloperRepository.save(developer);
+        mGame.setDevelopers(new HashSet<>(Arrays.asList(developer)));
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(get("/grid/developer")
+        mMockMvc.perform(get("/grid/developer")
                 .param("dev", "Dev")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -138,11 +135,11 @@ class GridRestControllerIT {
     void whenRequestPub_ReturnValidGames() throws Exception {
         Publisher publisher = new Publisher();
         publisher.setName("Pub");
-        publisherRepository.save(publisher);
-        game.setPublisher(publisher);
-        gameRepository.save(game);
+        mPublisherRepository.save(publisher);
+        mGame.setPublisher(publisher);
+        mGameRepository.save(mGame);
 
-        mockMvc.perform(get("/grid/publisher")
+        mMockMvc.perform(get("/grid/publisher")
                 .param("pub", "Pub")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -153,7 +150,7 @@ class GridRestControllerIT {
     @Test
     void whenInvalidGameId_Return404Exception() throws Exception {
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/game")
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -165,7 +162,7 @@ class GridRestControllerIT {
     @Test
     void whenInvalidGameGenre_Return404Exception() throws Exception {
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/genre")
                         .param("genre", "no")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -177,7 +174,7 @@ class GridRestControllerIT {
     @Test
     void whenRequestDev_Return404Exception() throws Exception {
 
-        mockMvc.perform(get("/grid/developer")
+        mMockMvc.perform(get("/grid/developer")
                 .param("dev", "dev")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -188,7 +185,7 @@ class GridRestControllerIT {
     @Test
     void whenRequestPub_Return404Exception() throws Exception {
 
-        mockMvc.perform(get("/grid/publisher")
+        mMockMvc.perform(get("/grid/publisher")
                 .param("pub", "pub")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())

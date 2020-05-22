@@ -11,7 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,153 +24,153 @@ import java.util.Arrays;
 @WebMvcTest
 class GridRestControllerTest {
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mMockMvc;
 
     @MockBean
-    private GridService gridService;
+    private GridService mGridService;
 
-    private Game game;
+    private Game mGame;
 
     @BeforeEach
     void setUp(){
-        game = new Game();
-        game.setId(1L);
+        mGame = new Game();
+        mGame.setId(1L);
     }
 
     @Test
     void whenRequestAll_ReturnAll() throws Exception {
-        Mockito.when(gridService.getAllGames()).thenReturn(Arrays.asList(game));
+        Mockito.when(mGridService.getAllGames()).thenReturn(Arrays.asList(mGame));
 
-        mockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
+        mMockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGames();
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGames();
     }
 
     @Test
     void whenRequestGameInfo_ReturnGame() throws Exception {
-        Mockito.when(gridService.getGameById(1L)).thenReturn(game);
+        Mockito.when(mGridService.getGameById(1L)).thenReturn(mGame);
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/game")
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getGameById(anyLong());
+        Mockito.verify(mGridService, Mockito.times(1)).getGameById(anyLong());
     }
 
     @Test
     void whenRequestGenre_ReturnValidGames() throws Exception {
-        Mockito.when(gridService.getAllGamesWithGenre("genre")).thenReturn(Arrays.asList(game));
+        Mockito.when(mGridService.getAllGamesWithGenre("genre")).thenReturn(Arrays.asList(mGame));
 
-        mockMvc.perform(get("/grid/genre")
+        mMockMvc.perform(get("/grid/genre")
                 .param("genre", "genre")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesWithGenre(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesWithGenre(Mockito.anyString());
     }
 
     @Test
     void whenRequestName_ReturnValidGames() throws Exception {
-        Mockito.when(gridService.getAllGamesByName("game")).thenReturn(Arrays.asList(game));
+        Mockito.when(mGridService.getAllGamesByName("game")).thenReturn(Arrays.asList(mGame));
 
-        mockMvc.perform(get("/grid/name")
+        mMockMvc.perform(get("/grid/name")
                 .param("name", "game")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesByName(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByName(Mockito.anyString());
     }
 
     @Test
     void whenRequestDev_ReturnValidGames() throws Exception {
-        Mockito.when(gridService.getAllGamesByDev("dev")).thenReturn(Arrays.asList(game));
+        Mockito.when(mGridService.getAllGamesByDev("dev")).thenReturn(Arrays.asList(mGame));
 
-        mockMvc.perform(get("/grid/developer")
+        mMockMvc.perform(get("/grid/developer")
                 .param("dev", "dev")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesByDev(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByDev(Mockito.anyString());
     }
 
     @Test
     void whenRequestPub_ReturnValidGames() throws Exception {
-        Mockito.when(gridService.getAllGamesByPublisher("pub")).thenReturn(Arrays.asList(game));
+        Mockito.when(mGridService.getAllGamesByPublisher("pub")).thenReturn(Arrays.asList(mGame));
 
-        mockMvc.perform(get("/grid/publisher")
+        mMockMvc.perform(get("/grid/publisher")
                 .param("pub", "pub")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesByPublisher(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByPublisher(Mockito.anyString());
     }
 
     @Test
     void whenInvalidGameId_Return404Exception() throws Exception {
-        Mockito.when(gridService.getGameById(1L)).thenReturn(null);
+        Mockito.when(mGridService.getGameById(1L)).thenReturn(null);
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/game")
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("No Game found with Id 1"));
 
-        Mockito.verify(gridService, Mockito.times(1)).getGameById(anyLong());
+        Mockito.verify(mGridService, Mockito.times(1)).getGameById(anyLong());
     }
 
     @Test
     void whenInvalidGameGenre_Return404Exception() throws Exception {
-        Mockito.when(gridService.getAllGamesWithGenre("no")).thenReturn(null);
+        Mockito.when(mGridService.getAllGamesWithGenre("no")).thenReturn(null);
 
-        mockMvc.perform(
+        mMockMvc.perform(
                 get("/grid/genre")
                         .param("genre", "no")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("No Game found with Id no"));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesWithGenre(anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesWithGenre(anyString());
     }
 
     @Test
     void whenRequestDev_Return404Exception() throws Exception {
-        Mockito.when(gridService.getAllGamesByDev("dev")).thenReturn(null);
+        Mockito.when(mGridService.getAllGamesByDev("dev")).thenReturn(null);
 
-        mockMvc.perform(get("/grid/developer")
+        mMockMvc.perform(get("/grid/developer")
                 .param("dev", "dev")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("No Game found with Id dev"));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesByDev(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByDev(Mockito.anyString());
     }
 
     @Test
     void whenRequestPub_Return404Exception() throws Exception {
-        Mockito.when(gridService.getAllGamesByPublisher("pub")).thenReturn(null);
+        Mockito.when(mGridService.getAllGamesByPublisher("pub")).thenReturn(null);
 
-        mockMvc.perform(get("/grid/publisher")
+        mMockMvc.perform(get("/grid/publisher")
                 .param("pub", "pub")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("No Game found with Id pub"));
 
-        Mockito.verify(gridService, Mockito.times(1)).getAllGamesByPublisher(Mockito.anyString());
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByPublisher(Mockito.anyString());
     }
 
 }

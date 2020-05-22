@@ -13,23 +13,23 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class GameGenreRepositoryTest {
     @Autowired
-    private TestEntityManager entityManager;
+    private TestEntityManager mEntityManager;
 
     @Autowired
-    private GameGenreRepository repository;
+    private GameGenreRepository mRepository;
 
     @Test
     void whenFindByName_getDeveloper(){
         GameGenre example = new GameGenre();
         example.setName("Exemplo");
 
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
 
-        assertEquals(example, repository.findByName("Exemplo").get());
+        assertEquals(example, mRepository.findByName("Exemplo").get());
     }
 
     @Test
     void whenInvalidName_ReceiveEmpty(){
-        assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
+        assertEquals(Optional.empty(), mRepository.findByName("Not exemplo"));
     }
 }
