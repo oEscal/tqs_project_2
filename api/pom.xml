@@ -209,11 +209,6 @@
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
-					<configuration>
-						<excludes>
-							<exclude>**/models/*</exclude>
-						</excludes>
-					</configuration>
 					<execution>
 						<id>report</id>
 						<phase>prepare-package</phase>
@@ -222,6 +217,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>**/models/*</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 
 			<plugin>
