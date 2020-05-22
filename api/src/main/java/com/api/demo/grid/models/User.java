@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -227,11 +228,11 @@ public class User {
         this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 
-    private double getFunds() { return this.funds; }
+    public double getFunds() { return this.funds; }
 
-    private void setFunds(double funds) { this.funds = funds; }
+    public void setFunds(double funds) { this.funds = funds; }
 
-    private void payWithFunds(double bill) { this.funds -= bill; }
+    public void payWithFunds(double bill) { this.funds -= bill; }
 
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
@@ -241,9 +242,11 @@ public class User {
         sell.setUser(this);
     }
 
-    public void addBuy(Buy buy) {
-        if (this.buys.contains(buy)) return;
-        this.buys.add(buy);
-        buy.setUser(this);
+    public void addBuy(List<Buy> aboutToBuy) {
+        for (Buy buy: aboutToBuy) {
+            if (this.buys.contains(buy)) return;
+        }
+        this.buys.addAll(aboutToBuy);
+        for (Buy buy: aboutToBuy) buy.setUser(this);
     }
 }

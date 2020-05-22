@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
@@ -13,8 +14,7 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -392,13 +392,55 @@ class GridServiceTest {
         Mockito.when(mMockSellRepo.findById(9l)).thenReturn(Optional.ofNullable(mSell2));
         Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
 
+        double previousFunds = mBuyer.getFunds();
         long[] longs = {8l, 9l};
         BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, false);
 
         List<Buy> savedBuyList = mGridService.saveBuy(buyListingsPOJO);
 
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(11l);
-        Mockito.verify(mBuyer, Mockito.times(2)).addBuy(Mockito.any(Buy.class));
-        
+        Mockito.verify(mBuyer, Mockito.times(2)).addBuy(Mockito.any(List.class));
+        Mockito.verify(mMockSellRepo, Mockito.times(2)).findById(Mockito.anyLong());
+        Mockito.verify(mBuyer, Mockito.times(0)).payWithFunds(Mockito.anyLong());
+        assertEquals(previousFunds, mBuyer.getFunds());
+        assertEquals(2, mBuyer.getBuys().size());
+        assertEquals(mBuyer, mSell1.getPurchased().getUser());
+        assertEquals(mBuyer, mSell2.getPurchased().getUser());
     }
+
+    @Test
+    void whenBuyingValidListings_AndUsingFunds_WithEnoughFunds_ReturnBuyArray(){
+        Mockito.when(mMockSellRepo.findById(8l)).thenReturn(Optional.ofNullable(mSell1));
+        Mockito.when(mMockSellRepo.findById(9l)).thenReturn(Optional.ofNullable(mSell2));
+        Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
+
+        double previousFunds = mBuyer.getFunds();
+        long[] longs = {8l, 9l};
+        BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, true);
+
+        List<Buy> savedBuyList = mGridService.saveBuy(buyListingsPOJO);
+
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(11l);
+        Mockito.verify(mBuyer, Mockito.times(1)).addBuy(Mockito.any(List.class));
+        Mockito.verify(mMockSellRepo, Mockito.times(2)).findById(Mockito.anyLong());
+        Mockito.verify(mBuyer, Mockito.times(1)).payWithFunds(Mockito.anyLong());
+        assertEquals(previousFunds - mSell1.getPrice() - mSell2.getPrice(), mBuyer.getFunds());
+        assertEquals(2, mBuyer.getBuys().size());
+        assertEquals(mBuyer, mSell1.getPurchased().getUser());
+        assertEquals(mBuyer, mSell2.getPurchased().getUser());
+    }
+
+    @Test
+    void whenBuyingValidListings_AndUsingFunds_WithoutEnoughFunds_ThrowException(){
+        Mockito.when(mMockSellRepo.findById(8l)).thenReturn(Optional.ofNullable(mSell1));
+        Mockito.when(mMockSellRepo.findById(9l)).thenReturn(Optional.ofNullable(mSell2));
+        Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
+        mBuyer.setFunds(0);
+
+        long[] longs = {8l, 9l};
+        BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, true);
+
+        assertThrows(UnsufficientFundsException, mGridService.saveBuy(buyListingsPOJO));
+    }
+
 }
