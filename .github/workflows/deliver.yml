@@ -18,7 +18,7 @@ jobs:
         # run: docker build --tag spring-test:latest .
         uses: elgohr/Publish-Docker-Github-Action@master 
         with: 
-          name: oEscal/tqs_project_2/api
+          name: ooscal/tqs_project_2/api
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
