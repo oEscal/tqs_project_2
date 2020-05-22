@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -121,13 +120,11 @@ class GridRestControllerIT {
 
         mGamePOJO.setPublisher(null);
 
-        MvcResult mvcResult = mMockMvc.perform(post("/grid/game")
-                .content("{}")
+        mMockMvc.perform(post("/grid/game")
+                .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(status().is4xxClientError())
-                //.andExpect(status().reason("Could not save Game"))
-                .andReturn();
-        System.out.println(mvcResult.toString());
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game"));
         assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
