@@ -23,4 +23,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: api/Dockerfile
+          context: api/
           tags: "latest"
