@@ -12,5 +12,5 @@ import lombok.Setter;
 public class BuyListingsPOJO {
     private long userId;
     private long[] listingsId;
-    private boolean useFunds;
+    private boolean withFunds;
 }

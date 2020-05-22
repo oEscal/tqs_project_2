@@ -3,6 +3,7 @@ package com.api.demo.grid.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -13,14 +14,14 @@ public class Buy {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private long id;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "sell_id")
     private Sell sell;
 
     @OneToOne
     private Auction auction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
@@ -54,9 +55,6 @@ public class Buy {
         if (sameAsFormer(user)) return ;
         //set new user
         this.user = user;
-
-        //set myself into new owner
-        if (user!=null) user.addBuy(this);
     }
 
     private boolean sameAsFormer(User newUser) {

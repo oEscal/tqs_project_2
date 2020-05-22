@@ -25,11 +25,11 @@ public class GameKey {
     @JsonIgnore
     private Game game;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JsonIgnore
     private Sell sell;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JsonIgnore
     private Auction auction;
 
@@ -49,6 +49,16 @@ public class GameKey {
 
     private boolean sameAsFormer(Game newGame) {
         return Objects.equals(game, newGame);
+    }
+
+    public void setSell(Sell sell){
+        if (sameAsFormerSell(sell)) return ;
+        this.sell = sell;
+        if (sell!=null) sell.setGameKey(this);
+    }
+
+    private boolean sameAsFormerSell(Sell newSell) {
+        return Objects.equals(sell, newSell);
     }
 
     public long getGameId(){

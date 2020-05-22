@@ -1,6 +1,8 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
@@ -91,13 +93,15 @@ public class User {
     @JoinColumn(name = "report_to_user_id")
     private Set<ReportUser> reportsOnUser;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
     private Set<Auction> auctions;
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -234,6 +238,7 @@ public class User {
 
     public void payWithFunds(double bill) { this.funds -= bill; }
 
+    @Transactional
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 

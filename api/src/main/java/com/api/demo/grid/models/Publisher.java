@@ -24,6 +24,6 @@ public class Publisher {
 
     private String description;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private Set<Game> games;
 }

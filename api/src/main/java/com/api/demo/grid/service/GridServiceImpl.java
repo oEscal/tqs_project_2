@@ -1,15 +1,14 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exceptions.UnavailableListingException;
+import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService{
@@ -180,8 +179,31 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO){
-        return null;
+    public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO) throws UnavailableListingException,
+            UnsufficientFundsException {
+        List<Buy> buyList = new ArrayList<>();
+        double bill = 0;
+        Optional<Sell> sell;
+        Buy buy;
+        User user = userRepository.findById(buyListingsPOJO.getUserId()).get();
+        for (long sellId : buyListingsPOJO.getListingsId()){
+            sell = sellRepository.findById(sellId);
+            if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
+            else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
+                    "This listing has been bought by another user");
+            buy = new Buy();
+            buy.setDate(new Date());
+            buy.setSell(sell.get());
+            buyList.add(buy);
+            bill += sell.get().getPrice();
+        }
+        if (buyListingsPOJO.isWithFunds()) {
+            if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
+            user.payWithFunds(bill);
+        }
+        user.addBuy(buyList);
+        for (Buy buy1: buyList) buyRepository.save(buy1);
+        return buyList;
     }
 
 }

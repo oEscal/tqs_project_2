@@ -1,5 +1,7 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exceptions.UnavailableListingException;
+import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import org.springframework.stereotype.Service;
@@ -20,5 +22,5 @@ public interface GridService {
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
-    List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo);
+    List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo) throws UnavailableListingException, UnsufficientFundsException;
 }
