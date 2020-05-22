@@ -9,69 +9,69 @@ import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@Service
 public class GridServiceImpl implements GridService{
 
     @Autowired
-    private DeveloperRepository developerRepository;
+    private DeveloperRepository mDeveloperRepository;
 
     @Autowired
-    private GameGenreRepository gameGenreRepository;
+    private GameGenreRepository mGameGenreRepository;
 
     @Autowired
-    private PublisherRepository publisherRepository;
+    private PublisherRepository mPublisherRepository;
 
     @Autowired
-    private GameRepository gameRepository;
+    private GameRepository mGameRepository;
 
     @Override
     public Game getGameById(long id) {
-        Optional<Game> gameResponse = gameRepository.findById(id);
+        Optional<Game> gameResponse = mGameRepository.findById(id);
 
-        if (!gameResponse.isEmpty()) return gameResponse.get();
+        if (gameResponse.isEmpty()) return null;
 
-        return null;
+        return gameResponse.get();
     }
 
     @Override
     public List<Game> getAllGames() {
-        return gameRepository.findAll();
+        return mGameRepository.findAll();
     }
 
     @Override
     public List<Game> getAllGamesWithGenre(String genre) {
-        Optional<GameGenre> gameGenre = gameGenreRepository.findByName(genre);
+        Optional<GameGenre> gameGenre = mGameGenreRepository.findByName(genre);
 
-        if (gameGenre.isEmpty()) return new ArrayList<>();
+        if (gameGenre.isEmpty()) return null;
 
-        return gameRepository.findAllByGameGenresContains(gameGenre.get());
+        return mGameRepository.findAllByGameGenresContains(gameGenre.get());
     }
 
     @Override
     public List<Game> getAllGamesByName(String name) {
-        return gameRepository.findAllByName(name);
+        return mGameRepository.findAllByNameContaining(name);
     }
 
     @Override
     public List<Game> getAllGamesByDev(String developer) {
-        Optional<Developer> dev = developerRepository.findByName(developer);
+        Optional<Developer> dev = mDeveloperRepository.findByName(developer);
 
-        if (dev.isEmpty()) return new ArrayList<>();
+        if (dev.isEmpty()) return null;
 
-        return gameRepository.findAllByDevelopersContaining(dev.get());
+        return mGameRepository.findAllByDevelopersContaining(dev.get());
     }
 
     @Override
     public List<Game> getAllGamesByPublisher(String publisher) {
-        Optional<Publisher> pub = publisherRepository.findByName(publisher);
+        Optional<Publisher> pub = mPublisherRepository.findByName(publisher);
 
-        if (pub.isEmpty()) return new ArrayList<>();
+        if (pub.isEmpty()) return null;
 
-        return gameRepository.findAllByPublisher(pub.get());
+        return mGameRepository.findAllByPublisher(pub.get());
     }
 }

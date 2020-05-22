@@ -44,7 +44,7 @@ class GridServiceTest {
     private Publisher publisher;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         game = new Game();
         game.setId(1L);
         game.setName("Game");
@@ -72,7 +72,7 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingAll_ReturnAllGame(){
+    void whenSearchingAll_ReturnAllGame(){
         List<Game> games = Arrays.asList(game, game2);
         Mockito.when(mockGameRepo.findAll()).thenReturn(games);
 
@@ -81,7 +81,7 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingId_ReturnRightGame(){
+    void whenSearchingId_ReturnRightGame(){
         Mockito.when(mockGameRepo.findById(1L)).thenReturn(java.util.Optional.ofNullable(game));
 
         assertEquals(game, gridService.getGameById(1L));
@@ -89,7 +89,7 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingInvalidId_ReturnNull(){
+    void whenSearchingInvalidId_ReturnNull(){
         Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.empty());
 
         assertNull(gridService.getGameById(2L));
@@ -97,24 +97,24 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingName_ReturnRightGame(){
+    void whenSearchingName_ReturnRightGame(){
         List<Game> games = Arrays.asList(game);
-        Mockito.when(mockGameRepo.findAllByName("Game")).thenReturn(games);
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game")).thenReturn(games);
 
         assertEquals(games, gridService.getAllGamesByName("Game"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByName(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
-    public void whenSearchingInvalidName_ReturnNull(){
-        Mockito.when(mockGameRepo.findAllByName("Game2")).thenReturn(new ArrayList<Game>());
+    void whenSearchingInvalidName_ReturnNull(){
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game2")).thenReturn(new ArrayList<Game>());
 
         assertEquals(new ArrayList<Game>(), gridService.getAllGamesByName("Game2"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByName(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
-    public void whenSearchingGameGenre_ReturnValidList(){
+    void whenSearchingGameGenre_ReturnValidList(){
         List<Game> games = Arrays.asList(game);
         Mockito.when(mockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(gameGenre));
         Mockito.when(mockGameRepo.findAllByGameGenresContains(gameGenre)).thenReturn(games);
@@ -126,10 +126,10 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingInvalidGenre_ReturnEmptyList(){
+    void whenSearchingInvalidGenre_ReturnEmptyList(){
         Mockito.when(mockGameGenreRepo.findByName("Genre2")).thenReturn(Optional.empty());
 
-        assertEquals(new ArrayList<Game>(), gridService.getAllGamesWithGenre("Genre2"));
+        assertNull(gridService.getAllGamesWithGenre("Genre2"));
         Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName(Mockito.anyString());
         Mockito.verify(mockGameRepo, Mockito.times(0))
                 .findAllByGameGenresContains(Mockito.any(GameGenre.class));
@@ -137,7 +137,7 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingValidDev_ReturnValidList(){
+    void whenSearchingValidDev_ReturnValidList(){
         List<Game> games = Arrays.asList(game);
         Mockito.when(mockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(developer));
         Mockito.when(mockGameRepo.findAllByDevelopersContaining(developer)).thenReturn(games);
@@ -149,10 +149,10 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingInvalidDev_ReturnEmptyList(){
+    void whenSearchingInvalidDev_ReturnEmptyList(){
         Mockito.when(mockGameGenreRepo.findByName("Dev2")).thenReturn(Optional.empty());
 
-        assertEquals(new ArrayList<Game>(), gridService.getAllGamesByDev("Dev2"));
+        assertNull(gridService.getAllGamesByDev("Dev2"));
         Mockito.verify(mockDevRepo, Mockito.times(1)).findByName(Mockito.anyString());
         Mockito.verify(mockGameRepo, Mockito.times(0))
                 .findAllByDevelopersContaining(Mockito.any(Developer.class));
@@ -160,7 +160,7 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingValidPublisher_ReturnValidList(){
+    void whenSearchingValidPublisher_ReturnValidList(){
         List<Game> games = Arrays.asList(game);
         Mockito.when(mockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(publisher));
         Mockito.when(mockGameRepo.findAllByPublisher(publisher)).thenReturn(games);
@@ -172,10 +172,10 @@ class GridServiceTest {
     }
 
     @Test
-    public void whenSearchingInvalidPublisher_ReturnEmptyList(){
+    void whenSearchingInvalidPublisher_ReturnEmptyList(){
         Mockito.when(mockGameGenreRepo.findByName("Pub2")).thenReturn(Optional.empty());
 
-        assertEquals(new ArrayList<Game>(), gridService.getAllGamesByPublisher("Pub2"));
+        assertNull(gridService.getAllGamesByPublisher("Pub2"));
         Mockito.verify(mockPubRepo, Mockito.times(1)).findByName(Mockito.anyString());
         Mockito.verify(mockGameRepo, Mockito.times(0))
                 .findAllByPublisher(Mockito.any(Publisher.class));

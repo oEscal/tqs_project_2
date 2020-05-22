@@ -3,9 +3,7 @@ package com.api.demo.grid.repository;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,56 +20,56 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameRepositoryTest {
 
     @Autowired
-    private TestEntityManager entityManager;
+    private TestEntityManager mEntityManager;
 
     @Autowired
-    private GameRepository repository;
+    private GameRepository mRepository;
 
     @Test
-    public void whenFindById_getGame(){
+    void whenFindById_getGame(){
         Game example = new Game();
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
         assertNotNull(example.getId());
-        assertEquals(example.getId(), repository.findById(example.getId()).get().getId());
+        assertEquals(example.getId(), mRepository.findById(example.getId()).get().getId());
     }
 
     @Test
-    public void whenInvalidId_getNull(){
-        assertThat(repository.findById((long) 0)).isEmpty();
+    void whenInvalidId_getNull(){
+        assertThat(mRepository.findById((long) 0)).isEmpty();
     }
 
     @Test
-    public void whenFindByName_getGame(){
+    void whenFindByName_getGame(){
         Game example = new Game();
         example.setName("Exemplo");
 
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
 
-        assertEquals(Arrays.asList(example), repository.findAllByName("Exemplo"));
+        assertEquals(Arrays.asList(example), mRepository.findAllByNameContaining("Exemplo"));
     }
 
     @Test
-    public void whenInvalidName_ReceiveEmpty(){
-        assertEquals(Arrays.asList(), repository.findAllByName("Not exemplo"));
+    void whenInvalidName_ReceiveEmpty(){
+        assertEquals(Arrays.asList(), mRepository.findAllByNameContaining("Not exemplo"));
     }
 
     @Test
-    public void whenFindAll_ReceiveAll(){
+    void whenFindAll_ReceiveAll(){
         Game example = new Game();
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
 
         Game example2 = new Game();
-        entityManager.persistAndFlush(example2);
+        mEntityManager.persistAndFlush(example2);
 
-        assertEquals(Arrays.asList(example, example2), repository.findAll());
+        assertEquals(Arrays.asList(example, example2), mRepository.findAll());
     }
 
     @Test
-    public void whenFindByGenre_ReceiveAllWithGenre(){
+    void whenFindByGenre_ReceiveAllWithGenre(){
         GameGenre genre = new GameGenre();
         genre.setName("Action");
 
-        entityManager.persistAndFlush(genre);
+        mEntityManager.persistAndFlush(genre);
 
         Set<GameGenre> s = new HashSet<>();
         s.add(genre);
@@ -82,34 +79,34 @@ class GameRepositoryTest {
         Game game2 = new Game();
         game2.setGameGenres(s);
 
-        entityManager.persistAndFlush(example);
-        entityManager.persistAndFlush(game2);
-        assertEquals(Arrays.asList(example, game2), repository.findAllByGameGenresContains(genre));
+        mEntityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(game2);
+        assertEquals(Arrays.asList(example, game2), mRepository.findAllByGameGenresContains(genre));
     }
 
     @Test
-    public void whenFindByPublisher_ReceiveAllWithGenre(){
+    void whenFindByPublisher_ReceiveAllWithGenre(){
         Publisher publisher = new Publisher();
         publisher.setName("Publisher");
 
-        entityManager.persistAndFlush(publisher);
+        mEntityManager.persistAndFlush(publisher);
 
         Game example = new Game();
         example.setPublisher(publisher);
         Game game2 = new Game();
         game2.setPublisher(publisher);
 
-        entityManager.persistAndFlush(example);
-        entityManager.persistAndFlush(game2);
-        assertEquals(Arrays.asList(example, game2), repository.findAllByPublisher(publisher));
+        mEntityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(game2);
+        assertEquals(Arrays.asList(example, game2), mRepository.findAllByPublisher(publisher));
     }
 
     @Test
-    public void whenFindByDeveloper_ReceiveAllWithGenre(){
+    void whenFindByDeveloper_ReceiveAllWithGenre(){
         Developer developer = new Developer();
         developer.setName("Action");
 
-        entityManager.persistAndFlush(developer);
+        mEntityManager.persistAndFlush(developer);
 
         Set<Developer> s = new HashSet<>();
         s.add(developer);
@@ -119,9 +116,9 @@ class GameRepositoryTest {
         Game game2 = new Game();
         game2.setDevelopers(s);
 
-        entityManager.persistAndFlush(example);
-        entityManager.persistAndFlush(game2);
-        assertEquals(Arrays.asList(example, game2), repository.findAllByDevelopersContaining(developer));
+        mEntityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(game2);
+        assertEquals(Arrays.asList(example, game2), mRepository.findAllByDevelopersContaining(developer));
     }
 
 }
