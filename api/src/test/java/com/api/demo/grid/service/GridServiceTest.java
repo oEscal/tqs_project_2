@@ -400,6 +400,5 @@ class GridServiceTest {
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(11l);
         Mockito.verify(mBuyer, Mockito.times(2)).addBuy(Mockito.any(Buy.class));
         
-
     }
 }

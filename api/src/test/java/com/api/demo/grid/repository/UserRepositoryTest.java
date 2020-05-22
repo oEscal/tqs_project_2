@@ -13,22 +13,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 class UserRepositoryTest {
     @Autowired
-    private TestEntityManager pEntityManager;
+    private TestEntityManager mEntityManager;
 
     @Autowired
-    private UserRepository pRepository;
+    private UserRepository mRepository;
 
     @Test
     void whenFindById_getGameKey(){
         User user = new User();
 
-        pEntityManager.persistAndFlush(user);
+        mEntityManager.persistAndFlush(user);
 
-        assertEquals(user, pRepository.findById(user.getId()).get());
+        assertEquals(user, mRepository.findById(user.getId()).get());
     }
 
     @Test
     void whenInvalidId_ReceiveEmpty(){
-        assertEquals(Optional.empty(), pRepository.findById(2L));
+        assertEquals(Optional.empty(), mRepository.findById(2L));
     }
 }

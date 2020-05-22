@@ -15,46 +15,46 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 class SellRepositoryTest {
     @Autowired
-    private TestEntityManager pEntityManager;
+    private TestEntityManager mEntityManager;
 
     @Autowired
-    private SellRepository pRepository;
+    private SellRepository mRepository;
 
     @Test
     void whenFindById_getSell(){
         User user = new User();
-        pEntityManager.persistAndFlush(user);
+        mEntityManager.persistAndFlush(user);
 
         Sell sell = new Sell();
         sell.setUser(user);
 
-        pEntityManager.persistAndFlush(sell);
+        mEntityManager.persistAndFlush(sell);
 
-        assertEquals(sell, pRepository.findById(sell.getId()).get());
+        assertEquals(sell, mRepository.findById(sell.getId()).get());
     }
 
     @Test
     void whenInvalidId_ReceiveEmpty(){
-        assertEquals(Optional.empty(), pRepository.findById(2L));
+        assertEquals(Optional.empty(), mRepository.findById(2L));
     }
 
     @Test
     void whenFindByKey_GetSell(){
         GameKey gameKey = new GameKey();
-        pEntityManager.persistAndFlush(gameKey);
+        mEntityManager.persistAndFlush(gameKey);
 
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
 
-        pEntityManager.persistAndFlush(sell);
+        mEntityManager.persistAndFlush(sell);
 
-        assertEquals(sell, pRepository.findByGameKey(gameKey).get());
+        assertEquals(sell, mRepository.findByGameKey(gameKey).get());
     }
 
     @Test
     void whenInvalidKey_ReceiveEmpty(){
-        GameKey gameKey = pEntityManager.persistAndFlush(new GameKey());
+        GameKey gameKey = mEntityManager.persistAndFlush(new GameKey());
 
-        assertEquals(Optional.empty(), pRepository.findByGameKey(gameKey));
+        assertEquals(Optional.empty(), mRepository.findByGameKey(gameKey));
     }
 }
