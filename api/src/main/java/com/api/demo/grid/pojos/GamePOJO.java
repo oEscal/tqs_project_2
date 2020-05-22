@@ -3,12 +3,14 @@ package com.api.demo.grid.pojos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.Set;
 
 @Setter
 @Getter
+@ToString
 @NoArgsConstructor
 public class GamePOJO {
     private String name;

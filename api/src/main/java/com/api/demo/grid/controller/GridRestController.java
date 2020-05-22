@@ -76,7 +76,9 @@ public class GridRestController {
 
     @PostMapping("/game")
     public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
+        System.out.println(gamePOJO.toString());
         Game game = gridService.saveGame(gamePOJO);
+        System.out.println(game.toString());
         if (game == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
         }

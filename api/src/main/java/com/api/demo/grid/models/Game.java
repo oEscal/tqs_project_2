@@ -4,6 +4,7 @@ package com.api.demo.grid.models;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,13 +18,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.OneToMany;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Game {
 
