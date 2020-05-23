@@ -131,7 +131,7 @@ public class Game {
     public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
 
     public String[] getDeveloperNames() {
-        if (developers == null || developers.size()==0) return new String[0];
+        if (developers == null || developers.isEmpty()) return new String[0];
         String[] devNames = new String[developers.size()];
         int count = 0;
         for (Developer developer : developers){
