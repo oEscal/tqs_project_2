@@ -9,11 +9,12 @@ import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.hateoas.*;
 import java.util.List;
 
 @RestController
@@ -24,9 +25,9 @@ public class GridRestController {
     @Autowired
     private GridService gridService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Game>> getAllGames(){
-        return ResponseEntity.ok(gridService.getAllGames());
+    @GetMapping(value="/all", params = { "page" })
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+        return ResponseEntity.ok(gridService.getAllGames(page));
     }
 
     @GetMapping("/game")

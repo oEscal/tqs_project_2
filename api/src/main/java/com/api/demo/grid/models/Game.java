@@ -22,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
 import java.util.Date;
 import java.util.Set;
 
@@ -65,6 +66,7 @@ public class Game {
     private Set<ReviewGame> reviews;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<GameKey> gameKeys;
 
     @ManyToMany(cascade = CascadeType.ALL)
