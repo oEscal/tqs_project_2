@@ -102,6 +102,7 @@ public class Game {
         gameKey.setGame(this);
     }
 
+    @JsonIgnore
     public double getLowestPrice(){
         if (gameKeys.isEmpty()) return -1;
         double lowestPrice = 0;
@@ -117,6 +118,7 @@ public class Game {
         return (foundPrice)? lowestPrice:-1;
     }
 
+    @JsonIgnore
     public String[] getPlatforms(){
         if (gameKeys.isEmpty()) return new String[0];
         ArrayList<String> gamePlatforms = new ArrayList<>();
@@ -128,8 +130,10 @@ public class Game {
         return gamePlatforms.toArray(new String[gamePlatforms.size()]);
     }
 
+    @JsonIgnore
     public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
 
+    @JsonIgnore
     public String[] getDeveloperNames() {
         if (developers == null || developers.size()==0) return new String[0];
         String[] devNames = new String[developers.size()];
