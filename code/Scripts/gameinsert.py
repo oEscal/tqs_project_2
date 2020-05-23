@@ -51,7 +51,7 @@ while count < 300:
                 try:
                         requests.post(grid_url + "game", data=json.dumps({
                                 "name": game_info["name"],
-                                "description": game_info["description"][:100],
+                                "description": game_info["description"],
                                 "releaseDate": game_info["released"],
                                 "coverUrl": game_info["background_image"],
                                 "developers": [dev["name"] for dev in game_info["developers"]],

@@ -168,7 +168,9 @@ class GameSearch extends Component {
 
             var loadedItems = <div></div>
 
-            if (!this.state.gamesLoaded) {
+            var empty = false
+
+            if (this.state.gamesLoaded) {
                 var items = []
                 var i = -1
 
@@ -217,6 +219,7 @@ class GameSearch extends Component {
                 })
 
                 if (items.length == 0) {
+                    empty = true
                     items.push(
                         <GridItem xs={12} sm={12} md={12}>
                             <div style={{ textAlign: "left" }}>
@@ -226,26 +229,32 @@ class GameSearch extends Component {
                             </div>
                         </GridItem>
                     )
-                } else {
-                    items.push(
-                        <div style={{ padding: "25px 40px" }}>
-                            <GridContainer xs={12} sm={12} md={10}>
-                                <div style={{ margin: "auto", width: "50%" }}>
-                                    <Pagination count={10} variant="outlined" shape="rounded" />
-                                </div>
-                            </GridContainer>
-                        </div>
-                    )
                 }
                 loadedItems = items
             } else {
-                loadedItems = <GridItem xs={12} sm={12} md={12} style={{marginBottom:"100px"}}>
+                loadedItems = <GridItem xs={12} sm={12} md={12} style={{ marginBottom: "100px" }}>
                     <div >
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
                     </div>
                 </GridItem>
+            }
+
+            var pagination = null
+            if (!empty && this.state.gamesLoaded) {
+                pagination = <div style={{ padding: "25px 40px" }}>
+                    <GridContainer xs={12} sm={12} md={12}>
+                        <div className={"search"} style={{ margin: "auto", width: "42%" }}>
+                            <Pagination count={10} variant="outlined" shape="rounded" />
+                        </div>
+                    </GridContainer>
+                    <GridContainer xs={12} sm={12} md={12}>
+                        <div className={"searchMobile"} style={{ margin: "auto", width: "90%" }}>
+                            <Pagination count={10} variant="outlined" shape="rounded" />
+                        </div>
+                    </GridContainer>
+                </div>
             }
 
             return (
@@ -785,11 +794,16 @@ class GameSearch extends Component {
 
 
                             <div style={{ padding: "5px 0" }}>
-                                <GridContainer xs={12} sm={12} md={10}>
+                                <GridContainer xs={12} sm={12} md={11}>
                                     {loadedItems}
                                 </GridContainer>
                             </div>
+
+
+                            {pagination}
                         </div>
+                        
+                        
                         <Footer rawg={true} />
                     </div>
                 </div >
