@@ -1,9 +1,23 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 
@@ -15,10 +29,12 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonSerialize
+@SuppressFBWarnings
 public class ReportReviewUser {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
+    @EqualsAndHashCode.Exclude
     private int reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +46,7 @@ public class ReportReviewUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_user_id")
+    @EqualsAndHashCode.Exclude
     private ReviewUser reported;
 
 

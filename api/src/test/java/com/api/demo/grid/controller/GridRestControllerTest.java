@@ -1,13 +1,7 @@
 package com.api.demo.grid.controller;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -37,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 
 
@@ -55,10 +48,15 @@ class GridRestControllerTest {
     private GameGenre mGameGenre;
     private Publisher mPublisher;
     private Developer mDeveloper;
+    private Sell mSell;
+    private User mUser;
+    private GameKey mGameKey;
     private GameGenrePOJO mGameGenrePOJO;
     private GamePOJO mGamePOJO;
     private PublisherPOJO mPublisherPOJO;
     private DeveloperPOJO mDeveloperPOJO;
+    private SellPOJO mSellPOJO;
+    private GameKeyPOJO mGameKeyPOJO;
 
     @BeforeEach
     void setUp() {
@@ -89,6 +87,23 @@ class GridRestControllerTest {
         mGamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
         mGamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         mGamePOJO.setPublisher("publisher");
+
+        mUser = new User();
+        mUser.setId(2L);
+
+        mGameKey = new GameKey();
+        mGameKey.setKey("key");
+        mGameKey.setGame(mGame);
+        mGameKey.setId(3L);
+
+        mSell = new Sell();
+        mSell.setId(4L);
+        mSell.setGameKey(mGameKey);
+        mSell.setUser(mUser);
+        mSell.setDate(new Date());
+
+        mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
+        mGameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
     }
 
     @Test
@@ -267,11 +282,11 @@ class GridRestControllerTest {
     @WithMockUser(username = "spring")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(mGameGenre);
-        MvcResult result = mMockMvc.perform(post("/grid/genre")
+        mMockMvc.perform(post("/grid/genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
+                .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName())));
 
     }
 
@@ -317,6 +332,56 @@ class GridRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
+    }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
+        Mockito.when(mGridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(mGameKey);
+        mMockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(mGameKeyPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.key", is("key")))
+                .andExpect(jsonPath("$.gameId", is(1)))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingInvalidGameKey_Return404Exception() throws Exception{
+        Mockito.when(mGridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(null);
+        mMockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(mGameKeyPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game Key"))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
+        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(mSell);
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(4)))
+                .andExpect(jsonPath("$.userId", is(2)))
+                ;
+    }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingInvalidSellListing_Return404Exception() throws Exception{
+        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(null);
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
     }
 
     public static String asJsonString(final Object obj) {
