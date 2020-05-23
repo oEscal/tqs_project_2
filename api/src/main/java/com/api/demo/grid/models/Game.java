@@ -1,18 +1,22 @@
 package com.api.demo.grid.models;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 
 @Entity
+@Table
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Game {
 
     @Id
@@ -24,39 +28,36 @@ public class Game {
 
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     private Set<GameGenre> gameGenres;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     private Set<Developer> developers;
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewGame> reviews;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<GameKey> gameKeys;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<User> userWish;
 
     private String coverUrl;
 
+    public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
-    // because lombok doesnt support get and set params of Date type with security (clone)
-    public Date getReleaseDate() {
-        return (Date) releaseDate.clone();
-    }
-
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = (Date) releaseDate.clone();
+    public void setReleaseDate(Date date) {
+        if (date != null) releaseDate = (Date) date.clone();
     }
 }

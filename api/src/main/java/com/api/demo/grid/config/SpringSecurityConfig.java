@@ -21,7 +21,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
             "/grid/sign-up",
-            "/grid/login"
+            "/grid/login",
+            "/grid/all",
+            "/grid/game",
+            "/grid/genre",
+            "/grid/name",
+            "/grid/developer",
+            "/grid/publisher",
     };
 
     private static final String[] ADMIN_WHITELIST = {
@@ -52,6 +58,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint);
+                .authenticationEntryPoint(authEntryPoint)
+                .and().logout().logoutUrl("/grid/logout");
     }
 }

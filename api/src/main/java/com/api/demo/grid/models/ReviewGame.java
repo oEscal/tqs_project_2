@@ -1,5 +1,8 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.util.Date;
@@ -7,6 +10,13 @@ import java.util.Set;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class ReviewGame {
 
     @Id
@@ -34,30 +44,6 @@ public class ReviewGame {
     private Game game;
 
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
     public Date getDate() {
         return (Date) date.clone();
     }
@@ -65,10 +51,4 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
-
-    public Set<ReportReviewGame> getReports() { return reports; }
-
-    public User getAuthor() { return author; }
-
-    public Game getGame() { return game; }
 }
