@@ -1,9 +1,19 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class GameKey {
 
     @Id
@@ -26,38 +36,4 @@ public class GameKey {
     private String retailer;
 
     private String platform;
-
-    public int getId() { return id; }
-
-    public String getKey() {
-        return key;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setKey(String gameKey) {
-        this.key = gameKey;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public String getRetailer() { return this.retailer; }
-
-    public void setRetailer(String retailer) { this.retailer = retailer; }
-
-    public Sell getSell() { return sell; }
-
-    public Auction getAuction() { return auction; }
-
-    public String getPlatform() { return platform; }
-
-    public void setPlatform(String platform) { this.platform = platform; }
 }

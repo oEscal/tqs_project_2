@@ -1,18 +1,22 @@
 package com.api.demo.grid.models;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 
 @Entity
+@Table
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Game {
 
     @Id
@@ -24,28 +28,29 @@ public class Game {
 
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     private Set<GameGenre> gameGenres;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     private Set<Developer> developers;
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<ReviewGame> reviews;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<GameKey> gameKeys;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<User> userWish;
 
     private String coverUrl;
@@ -55,5 +60,4 @@ public class Game {
     public void setReleaseDate(Date date) {
         if (date != null) releaseDate = (Date) date.clone();
     }
-
 }
