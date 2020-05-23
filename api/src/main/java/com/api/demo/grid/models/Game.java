@@ -1,10 +1,12 @@
 package com.api.demo.grid.models;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Column;
+import javax.persistence.Table;
 import javax.persistence.ManyToMany;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -23,10 +26,13 @@ import java.util.Set;
 
 
 @Entity
+@Table
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Game {
 
     @Id
