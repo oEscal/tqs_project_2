@@ -74,6 +74,11 @@ public class GridRestController {
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
+        return null;
+    }
+
     @PostMapping("/game")
     public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
         Game game = gridService.saveGame(gamePOJO);
