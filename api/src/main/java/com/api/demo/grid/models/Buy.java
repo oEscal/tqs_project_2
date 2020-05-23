@@ -2,7 +2,11 @@ package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
