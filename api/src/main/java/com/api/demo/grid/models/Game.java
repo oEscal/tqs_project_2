@@ -1,18 +1,21 @@
 package com.api.demo.grid.models;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 
 @Entity
+@Table
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Game {
 
     @Id

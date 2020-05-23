@@ -1,10 +1,20 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class ReportReviewUser {
 
     @Id
@@ -23,22 +33,6 @@ public class ReportReviewUser {
     private ReviewUser reported;
 
 
-    public int getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(int reportId) {
-        this.reportId = reportId;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
     public Date getDate() {
         return (Date) date.clone();
     }
@@ -46,6 +40,4 @@ public class ReportReviewUser {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
-
-    public ReviewUser getReported() { return reported; }
 }
