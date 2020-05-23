@@ -34,6 +34,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 // Core Components
 import Header from "components/Header/Header.js";
 import Footer from "components/Footer/Footer.js";
+
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Button from "components/CustomButtons/Button.js";
@@ -41,6 +42,9 @@ import HeaderLinks from "components/Header/HeaderLinks.js";
 import Parallax from "components/Parallax/Parallax.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
 
 import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 
@@ -60,7 +64,8 @@ import Lottie from "react-lottie";
 import * as loadingAnim from "assets/animations/loading_anim.json";
 
 import {
-    Link
+    Link,
+    Redirect
 } from "react-router-dom";
 
 class GameSearch extends Component {
@@ -70,15 +75,77 @@ class GameSearch extends Component {
 
     state = {
         doneLoading: false,
+        redirectLogin: false,
         animationOptions: {
             loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
                 preserveAspectRatio: "xMidYMid slice"
             }
         },
+        games: [],
+        gamesLoaded: false
     }
 
-    componentDidMount() {
-        this.setState({ doneLoading: true })
+    async allGames() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ gamesLoaded: false })
+
+        // Get All Games
+        await fetch(baseURL + "grid/all", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+                    this.setState({ games: data })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+            });
+
+        await this.setState({ gamesLoaded: true })
+    }
+
+    async componentDidMount() {
+        this.allGames()
+        await this.setState({ doneLoading: true, })
+    }
+
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login' />
+        }
     }
 
     render() {
@@ -97,83 +164,110 @@ class GameSearch extends Component {
                 </div>
             )
         } else {
-            var items = []
-            for (var i = 0; i < 18; i++) {
-                var style = { marginTop: "25px" }
-                var text = ""
-                var image = null
 
-                if (i == 0 || i == 1 || i == 2) {
-                    style = {}
-                }
-                if (i % 2 == 0) {
-                    text = "NHS: Heat"
-                    image = image4
-                } else {
-                    text = "No Man's Sky: Beyond"
-                    image = image1
-                }
-                items.push(
-                    <GridItem xs={12} sm={12} md={4} style={style}>
-                        <Link to={"/games/info/" + text.replace(" ", "")}>
-
-                            <Card style={{ height: "375px", width: "100%" }}>
-                                <CardActionArea>
-                                    <CardMedia
-                                        component="img"
-                                        height="185px"
-                                        image={image}
-                                    />
-                                    <CardContent >
-                                        <div style={{ textAlign: "left", height: "105px" }}>
-                                            <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                                {text}
-                                            </h6>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                                Launch Date: <span style={{ fontWeight: "bold" }}>05-03-2020</span>
-                                            </h6>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                                As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
-                                            </h6>
-                                        </div>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Link >
-
-                    </GridItem>
-                )
-            }
 
             var loadedItems = <div></div>
-            if (true) {
+
+            if (!this.state.gamesLoaded) {
+                var items = []
+                var i = -1
+
+                this.state.games.forEach(game => {
+
+                    i++
+                    var style = { marginTop: "25px" }
+
+                    if (i == 0 || i == 1 || i == 2) {
+                        style = {}
+                    }
+
+                    items.push(
+                        <GridItem xs={12} sm={12} md={4} style={style}>
+                            <Link to={"/games/info/" + game.id}>
+
+                                <Card style={{ height: "375px", width: "100%" }}>
+                                    <CardActionArea>
+                                        <CardMedia
+                                            component="img"
+                                            height="185px"
+                                            image={game.coverUrl}
+                                        />
+                                        <CardContent >
+                                            <div style={{ textAlign: "left", height: "105px" }}>
+                                                <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                    {game.name}
+                                                </h6>
+                                            </div>
+                                            <div style={{ textAlign: "left" }}>
+                                                <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                    Launch Date: <span style={{ fontWeight: "bold" }}>{game.releaseDate}</span>
+                                                </h6>
+                                            </div>
+                                            <div style={{ textAlign: "left" }}>
+                                                <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                    As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
+                                                </h6>
+                                            </div>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Link >
+                        </GridItem>
+                    )
+                })
+
+                if (items.length == 0) {
+                    items.push(
+                        <GridItem xs={12} sm={12} md={12}>
+                            <div style={{ textAlign: "left" }}>
+                                <h3 style={{ color: "#999" }}>
+                                    Sorry, there don't seem to be any games like that in the Grid...
+                                </h3>
+                            </div>
+                        </GridItem>
+                    )
+                } else {
+                    items.push(
+                        <div style={{ padding: "25px 40px" }}>
+                            <GridContainer xs={12} sm={12} md={10}>
+                                <div style={{ margin: "auto", width: "50%" }}>
+                                    <Pagination count={10} variant="outlined" shape="rounded" />
+                                </div>
+                            </GridContainer>
+                        </div>
+                    )
+                }
                 loadedItems = items
             } else {
-                loadedItems = <div
-                    className="animated fadeOut animated"
-                    id="loadingGames"
-                    style={{
-                        top: "50%",
-                        left: "50%",
-                        display: ""
-                    }}>
-                    <FadeIn>
-                        <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
-                    </FadeIn>
-                </div>
+                loadedItems = <GridItem xs={12} sm={12} md={12} style={{marginBottom:"100px"}}>
+                    <div >
+                        <FadeIn>
+                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                        </FadeIn>
+                    </div>
+                </GridItem>
             }
 
             return (
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+                    {this.renderRedirectLogin()}
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={2500}
+                        hideProgressBar={false}
+                        transition={Flip}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnVisibilityChange
+                        draggable
+                        pauseOnHover
+                    />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
-                        <div className={"search"} style={{ position: "absolute", top: "8%", right: "5%", zIndex:"1" }}>
+                        <div className={"search"} style={{ position: "absolute", top: "200px", right: "25px", zIndex: "1" }}>
                             <GridContainer xs={12} sm={12} md={12}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Card style={{ height: "100%", width: "400px", float: "right" }}>
@@ -409,7 +503,7 @@ class GameSearch extends Component {
                         </div>
 
                         <div className={classes.container}>
-                            <div style={{ padding: "70px 0"}}>
+                            <div style={{ padding: "70px 0" }}>
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <div style={{ textAlign: "left" }}>
@@ -421,7 +515,7 @@ class GameSearch extends Component {
                                                     </span>
                                                 </GridItem>
                                                 <GridItem xs={12} sm={12} md={3}>
-                                                    <div style={{ color: "#000", padding: "12px 0"}}>
+                                                    <div style={{ color: "#000", padding: "12px 0" }}>
                                                         <Select
                                                             className="basic-single"
                                                             isSearchable={false}
@@ -695,19 +789,8 @@ class GameSearch extends Component {
                                     {loadedItems}
                                 </GridContainer>
                             </div>
-
-
-
-                            <div style={{ padding: "25px 40px" }}>
-                                <GridContainer xs={12} sm={12} md={10}>
-                                    <div style={{ margin: "auto", width: "50%" }}>
-                                        <Pagination count={10} variant="outlined" shape="rounded" />
-                                    </div>
-                                </GridContainer>
-                            </div>
                         </div>
-                        <Footer />
-
+                        <Footer rawg={true} />
                     </div>
                 </div >
             )

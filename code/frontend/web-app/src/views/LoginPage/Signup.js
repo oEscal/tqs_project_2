@@ -129,7 +129,7 @@ class Signup extends Component {
       });
       error = true
     } else {
-      birthday = tempBirth[2] + "-" + tempBirth[0] + "-" + tempBirth[1]
+      birthday = tempBirth[1] + "/" + tempBirth[0] + "/" + tempBirth[2]
     }
 
     if (!this.validateEmail(email)) {
@@ -193,7 +193,7 @@ class Signup extends Component {
         });
         error = true
       } else {
-        expiration = tempExpiration[2] + "-" + tempExpiration[0] + "-" + tempExpiration[1]
+        expiration = tempExpiration[1] + "/" + tempExpiration[0] + "/" + tempExpiration[2]
       }
     }
 
