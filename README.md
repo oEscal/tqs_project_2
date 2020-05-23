@@ -38,3 +38,10 @@ Or reduce the password validation strength with:
 ```sql
 > set global validate_password_policy=0
 ```
+
+## Server Deploy
+ - First, it's necessary to make a pull request to github with the tag `deploy` with the code we want to deploy next to the server. This will trigger the deploy workflow, that will create new images of the code to be deployed.
+ - The first time, it's necessary to have all containers pre-created on the server. So, on the server terminal, run:
+ ```bash
+ $ docker container run --env-file ~/env_vars/rest_api.env --publish 8080:8080 --detach --name rest docker.pkg.github.com/oescal/tqs_project_2/api                # run the rest container
+ $ docker container run --env-file ~/env_vars/frontend.env --publish 80:80 --detach --name web-app docker.pkg.github.com/oescal/tqs_project_2/web-app              # run the web-app container
