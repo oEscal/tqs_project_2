@@ -50,7 +50,6 @@ public class GridServiceImpl implements GridService {
     @Override
     public Page<Game> getAllGames(int page) {
         Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
-        System.out.println(games);
         return games;
     }
 
