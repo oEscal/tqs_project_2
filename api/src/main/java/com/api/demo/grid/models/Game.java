@@ -10,7 +10,20 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -51,6 +64,7 @@ public class Game {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<Developer> developers;
 
     @Temporal(TemporalType.DATE)
@@ -112,5 +126,18 @@ public class Game {
             if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
         }
         return gamePlatforms.toArray(new String[gamePlatforms.size()]);
+    }
+
+    public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
+
+    public String[] getDeveloperNames() {
+        if (developers == null || developers.size()==0) return new String[0];
+        String[] devNames = new String[developers.size()];
+        int count = 0;
+        for (Developer developer : developers){
+            devNames[count] = developer.getName();
+            count++;
+        }
+        return devNames;
     }
 }

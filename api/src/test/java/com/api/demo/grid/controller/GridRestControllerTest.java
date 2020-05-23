@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -255,11 +254,11 @@ class GridRestControllerTest {
     @WithMockUser(username="spring")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception{
         Mockito.when(mGridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(mGameGenre);
-        MvcResult result = mMockMvc.perform(post("/grid/genre")
+        mMockMvc.perform(post("/grid/genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
+                .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName())));
 
     }
 

@@ -9,7 +9,18 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.Objects;
 
@@ -51,14 +62,12 @@ public class Sell {
 
     public void setUser(User user) {
         //prevent endless loop
-        if (sameAsFormer(user))
-            return ;
+        if (sameAsFormer(user)) return ;
         //set new user
         this.user = user;
 
         //set myself into new owner
-        if (user!=null)
-            user.addSell(this);
+        if (user!=null) user.addSell(this);
     }
 
     private boolean sameAsFormer(User newUser) {
