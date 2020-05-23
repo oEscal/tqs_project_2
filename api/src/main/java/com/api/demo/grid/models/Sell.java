@@ -1,19 +1,40 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.ToString;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Entity
-@Setter
+@Table
 @Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
+@SuppressFBWarnings
 public class Sell {
 
     @Id
@@ -31,10 +52,12 @@ public class Sell {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private User user;
 
     private double price;
 
+    @EqualsAndHashCode.Exclude
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -49,26 +72,31 @@ public class Sell {
         if (user!=null) user.addSell(this);
     }
 
-    public void setGameKey(GameKey gameKey){
-        if (sameAsFormerGK(gameKey)) return;
-        this.gameKey = gameKey;
-        if (gameKey!= null) gameKey.setSell(this);
-    }
-
-    private boolean sameAsFormerGK(GameKey newGameKey) {
-        return gameKey==null? newGameKey == null : newGameKey.equals(gameKey);
-    }
-
     private boolean sameAsFormer(User newUser) {
         return user==null? newUser == null : newUser.equals(user);
     }
 
+    public void setGameKey(GameKey gameKey) {
+        //prevent endless loop
+        if (sameAsFormerGK(gameKey)) return ;
+        //set new user
+        this.gameKey = gameKey;
+
+        //set myself into new owner
+        if (gameKey!=null) gameKey.setSell(this);
+    }
+
+    private boolean sameAsFormerGK(GameKey newGameKey) {
+        return Objects.equals(newGameKey, gameKey);
+    }
+
     public Date getDate() {
+        if (date == null) return null;
         return (Date) date.clone();
     }
 
     public void setDate(Date date) {
-        this.date = (Date) date.clone();
+        if (date != null) this.date = (Date) date.clone();
     }
 
     public long getUserId() {

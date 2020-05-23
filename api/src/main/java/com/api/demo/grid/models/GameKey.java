@@ -1,20 +1,41 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @Entity
+@Table
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
+@SuppressFBWarnings
 public class GameKey {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @EqualsAndHashCode.Exclude
     private long id;
 
     @Column(unique = true)
@@ -23,14 +44,19 @@ public class GameKey {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Game game;
 
     @OneToOne(orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Sell sell;
 
     @OneToOne(orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Auction auction;
 
     private String retailer;

@@ -19,5 +19,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAllByPublisher(Publisher publisher);
     List<Game> findAllByDevelopersContaining(Developer developer);
     Optional<Game> findById(Long id);
-    List<Game> findAllByNameContains(String name);
+    List<Game> findAllByNameContaining(String name);
 }

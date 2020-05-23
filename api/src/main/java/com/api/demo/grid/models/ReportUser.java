@@ -1,14 +1,40 @@
 package com.api.demo.grid.models;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
+@SuppressFBWarnings
 public class ReportUser {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
+    @EqualsAndHashCode.Exclude
     private int reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,22 +48,6 @@ public class ReportUser {
     @JoinColumn(name = "report_to_user_id")
     private User reported;
 
-
-    public int getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(int reportId) {
-        this.reportId = reportId;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
 
     public Date getDate() {
         return (Date) date.clone();

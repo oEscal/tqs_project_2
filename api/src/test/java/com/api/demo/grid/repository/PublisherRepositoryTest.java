@@ -8,28 +8,30 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 @DataJpaTest
 class PublisherRepositoryTest {
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
-    private PublisherRepository repository;
+    private TestEntityManager mEntityManager;
+
+    @Autowired
+    private PublisherRepository mRepository;
 
     @Test
     void whenFindByName_getDeveloper(){
         Publisher example = new Publisher();
         example.setName("Exemplo");
 
-        entityManager.persistAndFlush(example);
+        mEntityManager.persistAndFlush(example);
 
-        assertEquals(example, repository.findByName("Exemplo").get());
+        assertEquals(example, mRepository.findByName("Exemplo").get());
     }
 
     @Test
     void whenInvalidName_ReceiveEmpty(){
-        assertEquals(Optional.empty(), repository.findByName("Not exemplo"));
+        assertEquals(Optional.empty(), mRepository.findByName("Not exemplo"));
     }
 }

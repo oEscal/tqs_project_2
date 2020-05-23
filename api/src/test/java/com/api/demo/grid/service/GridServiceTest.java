@@ -15,7 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,6 +97,7 @@ class GridServiceTest {
         mBuyer.setId(11l);
 
         mGameKey = new GameKey();
+        mGameKey.setKey("key1");
         mGameKey.setId(7L);
 
         mSell1 = new Sell();
@@ -138,18 +144,18 @@ class GridServiceTest {
     @Test
     void whenSearchingName_ReturnRightGame(){
         List<Game> games = Arrays.asList(mGame);
-        Mockito.when(mMockGameRepo.findAllByNameContains("Game")).thenReturn(games);
+        Mockito.when(mMockGameRepo.findAllByNameContaining("Game")).thenReturn(games);
 
         assertEquals(games, mGridService.getAllGamesByName("Game"));
-        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAllByNameContains(Mockito.anyString());
+        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
     void whenSearchingInvalidName_ReturnNull(){
-        Mockito.when(mMockGameRepo.findAllByNameContains("Game2")).thenReturn(new ArrayList<Game>());
+        Mockito.when(mMockGameRepo.findAllByNameContaining("Game2")).thenReturn(new ArrayList<Game>());
 
         assertEquals(new ArrayList<Game>(), mGridService.getAllGamesByName("Game2"));
-        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAllByNameContains(Mockito.anyString());
+        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
@@ -271,6 +277,7 @@ class GridServiceTest {
         assertEquals(mGame.getPublisher(), savedGame.getPublisher());
         assertEquals(mGame.getGameGenres(), savedGame.getGameGenres());
     }
+
     @Test
     void whenSavingGamePOJOWithInvalidGenre_ReturnNull(){
         Mockito.when(mMockGameGenreRepo.findByName("Genre")).thenReturn(Optional.empty());

@@ -12,8 +12,6 @@ import LandingPage from "views/LandingPage/LandingPage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
 import Signup from "views/LoginPage/Signup.js";
 
-import OldieLoginPage from "views/LoginPage/OldieLoginPage.js";
-
 
 import Game from "views/GameInfo/Game.js";
 import GameSearch from "views/GameSearch/GameSearch.js";
@@ -27,8 +25,6 @@ import Admin from "views/Admin/Admin.js"
 
 import Cart from "views/Cart/Cart.js";
 import WishList from "views/WishList/WishList.js";
-
-import LoggedHeader from "components/MyHeaders/LoggedHeader.js"
 
 
 var hist = createBrowserHistory();

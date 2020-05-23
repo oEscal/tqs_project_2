@@ -2,6 +2,10 @@
 import React, { Component } from 'react';
 import classNames from "classnames";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 // Styles
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import "./edit.css";
@@ -133,7 +137,7 @@ class ProfilePage extends Component {
         if (!this.state.doneLoading) {
             return (
                 <div>
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                     <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
@@ -415,7 +419,7 @@ class ProfilePage extends Component {
                         pauseOnHover
                     />
 
-                    <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false} username={"Jonas_PP"} />
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
@@ -567,7 +571,7 @@ class ProfilePage extends Component {
                                     </GridItem>
 
                                     <GridItem xs={12} sm={12} md={12}>
-                                        <div style={{marginTop: "45px" }}>
+                                        <div style={{ marginTop: "45px" }}>
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={8}>
                                                     <CustomInput

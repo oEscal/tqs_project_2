@@ -12,33 +12,34 @@ import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService{
-    @Autowired
-    private DeveloperRepository developerRepository;
 
     @Autowired
-    private GameGenreRepository gameGenreRepository;
+    private DeveloperRepository mDeveloperRepository;
 
     @Autowired
-    private PublisherRepository publisherRepository;
+    private GameGenreRepository mGameGenreRepository;
 
     @Autowired
-    private GameRepository gameRepository;
+    private PublisherRepository mPublisherRepository;
 
     @Autowired
-    private GameKeyRepository gameKeyRepository;
+    private GameRepository mGameRepository;
 
     @Autowired
-    private SellRepository sellRepository;
+    private GameKeyRepository mGameKeyRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private SellRepository mSellRepository;
 
     @Autowired
-    private BuyRepository buyRepository;
+    private UserRepository mUserRepository;
+
+    @Autowired
+    private BuyRepository mBuyRepository;
 
     @Override
     public Game getGameById(long id) {
-        Optional<Game> gameResponse = gameRepository.findById(id);
+        Optional<Game> gameResponse = mGameRepository.findById(id);
 
         if (gameResponse.isEmpty()) return null;
 
@@ -47,39 +48,39 @@ public class GridServiceImpl implements GridService{
 
     @Override
     public List<Game> getAllGames() {
-        return gameRepository.findAll();
+        return mGameRepository.findAll();
     }
 
     @Override
     public List<Game> getAllGamesWithGenre(String genre) {
-        Optional<GameGenre> gameGenre = gameGenreRepository.findByName(genre);
+        Optional<GameGenre> gameGenre = mGameGenreRepository.findByName(genre);
 
         if (gameGenre.isEmpty()) return null;
 
-        return gameRepository.findAllByGameGenresContains(gameGenre.get());
+        return mGameRepository.findAllByGameGenresContains(gameGenre.get());
     }
 
     @Override
     public List<Game> getAllGamesByName(String name) {
-        return gameRepository.findAllByNameContains(name);
+        return mGameRepository.findAllByNameContaining(name);
     }
 
     @Override
     public List<Game> getAllGamesByDev(String developer) {
-        Optional<Developer> dev = developerRepository.findByName(developer);
+        Optional<Developer> dev = mDeveloperRepository.findByName(developer);
 
         if (dev.isEmpty()) return null;
 
-        return gameRepository.findAllByDevelopersContaining(dev.get());
+        return mGameRepository.findAllByDevelopersContaining(dev.get());
     }
 
     @Override
     public List<Game> getAllGamesByPublisher(String publisher) {
-        Optional<Publisher> pub = publisherRepository.findByName(publisher);
+        Optional<Publisher> pub = mPublisherRepository.findByName(publisher);
 
         if (pub.isEmpty()) return null;
 
-        return gameRepository.findAllByPublisher(pub.get());
+        return mGameRepository.findAllByPublisher(pub.get());
     }
 
     @Override
@@ -88,20 +89,20 @@ public class GridServiceImpl implements GridService{
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
         game.setDescription(gamePOJO.getDescription());
-        game.setReleaseDate(gamePOJO.getReleaseDate());
+        game.setReleaseDate((Date) gamePOJO.getReleaseDate());
 
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
         for (String gameGenrePOJO: gamePOJO.getGameGenres()) {
-            gameGenre = gameGenreRepository.findByName(gameGenrePOJO);
+            gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
             gameGenreSet.add(gameGenre.get());
         }
         game.setGameGenres(gameGenreSet);
 
         // Get Publisher
-        Optional<Publisher> publisher = publisherRepository.findByName(gamePOJO.getPublisher());
+        Optional<Publisher> publisher = mPublisherRepository.findByName(gamePOJO.getPublisher());
         if (publisher.isEmpty()) return null;
         game.setPublisher(publisher.get());
 
@@ -109,13 +110,13 @@ public class GridServiceImpl implements GridService{
         Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
         for (String developerPOJO: gamePOJO.getDevelopers()) {
-            developer = developerRepository.findByName(developerPOJO);
+            developer = mDeveloperRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
             developerSet.add(developer.get());
         }
         game.setDevelopers(developerSet);
 
-        this.gameRepository.save(game);
+        this.mGameRepository.save(game);
         return game;
     }
 
@@ -124,7 +125,7 @@ public class GridServiceImpl implements GridService{
         Publisher publisher = new Publisher();
         publisher.setName(publisherPOJO.getName());
         publisher.setDescription(publisherPOJO.getDescription());
-        this.publisherRepository.save(publisher);
+        this.mPublisherRepository.save(publisher);
         return publisher;
     }
 
@@ -132,7 +133,7 @@ public class GridServiceImpl implements GridService{
     public Developer saveDeveloper(DeveloperPOJO developerPOJO) {
         Developer developer = new Developer();
         developer.setName(developerPOJO.getName());
-        this.developerRepository.save(developer);
+        this.mDeveloperRepository.save(developer);
         return developer;
     }
 
@@ -140,13 +141,13 @@ public class GridServiceImpl implements GridService{
     public GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO) {
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName(gameGenrePOJO.getName());
-        this.gameGenreRepository.save(gameGenre);
+        this.mGameGenreRepository.save(gameGenre);
         return gameGenre;
     }
 
     @Override
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
-        Optional<Game> game = this.gameRepository.findById(gameKeyPOJO.getGameId());
+        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
         if (game.isEmpty()) return null;
         Game realGame = game.get();
 
@@ -155,17 +156,17 @@ public class GridServiceImpl implements GridService{
         gameKey.setGame(realGame);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
-        this.gameKeyRepository.save(gameKey);
+        this.mGameKeyRepository.save(gameKey);
         return gameKey;
     }
 
     @Override
     public Sell saveSell(SellPOJO sellPOJO) {
-        Optional<User> user = this.userRepository.findById(sellPOJO.getUserId());
+        Optional<User> user = this.mUserRepository.findById(sellPOJO.getUserId());
         if (user.isEmpty()) return null;
         User realUser = user.get();
 
-        Optional<GameKey> gameKey = this.gameKeyRepository.findByKey(sellPOJO.getGameKey());
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByKey(sellPOJO.getGameKey());
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
 
@@ -174,7 +175,7 @@ public class GridServiceImpl implements GridService{
         sell.setGameKey(realGameKey);
         sell.setPrice(sellPOJO.getPrice());
         sell.setDate(sellPOJO.getDate());
-        this.sellRepository.save(sell);
+        this.mSellRepository.save(sell);
         return sell;
     }
 
@@ -185,12 +186,12 @@ public class GridServiceImpl implements GridService{
         double bill = 0;
         Optional<Sell> sell;
         Buy buy;
-        Optional<User> optionalUser = userRepository.findById(buyListingsPOJO.getUserId());
+        Optional<User> optionalUser = mUserRepository.findById(buyListingsPOJO.getUserId());
         User user;
         if (optionalUser.isEmpty()) return null;
         user = optionalUser.get();
         for (long sellId : buyListingsPOJO.getListingsId()){
-            sell = sellRepository.findById(sellId);
+            sell = mSellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
             else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
                     "This listing has been bought by another user");
@@ -205,7 +206,7 @@ public class GridServiceImpl implements GridService{
             user.payWithFunds(bill);
         }
         user.addBuy(buyList);
-        for (Buy buy1: buyList) buyRepository.save(buy1);
+        for (Buy buy1: buyList) mBuyRepository.save(buy1);
         return buyList;
     }
 

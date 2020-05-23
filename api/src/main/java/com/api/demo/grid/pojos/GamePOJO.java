@@ -3,19 +3,22 @@ package com.api.demo.grid.pojos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
 @Getter
+@ToString
 @NoArgsConstructor
 public class GamePOJO {
     private String name;
     private String description;
-    private Set<String> gameGenres;
+    private Set<String> gameGenres = new HashSet<>();
     private String publisher;
-    private Set<String> developers;
+    private Set<String> developers = new HashSet<>();
     private Date releaseDate = new Date();
     private String coverUrl;
 

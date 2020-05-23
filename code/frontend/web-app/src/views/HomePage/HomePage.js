@@ -2,6 +2,11 @@
 import React, { Component } from 'react';
 import classNames from "classnames";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
+
 // Styles
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 
@@ -34,11 +39,16 @@ class HomePage extends Component {
     state = {
     }
 
+
+    componentDidMount(){
+
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div>
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={true} username={"Jonas_PP"} height={600} />
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={600} />
 
                 <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>

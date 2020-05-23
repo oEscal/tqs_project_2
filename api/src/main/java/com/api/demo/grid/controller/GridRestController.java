@@ -7,17 +7,23 @@ import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/grid")
 public class GridRestController {
-    private static final String sERRORSEARCHER = "No Game found with Id ";
+    public static final String ERROR = "No Game found with Id ";
 
     @Autowired
     private GridService mGridService;
@@ -31,7 +37,7 @@ public class GridRestController {
     public ResponseEntity<Game> getGameInfo(@RequestParam long id){
         Game gameResponse = mGridService.getGameById(id);
         if (gameResponse == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + id);
         }
         return ResponseEntity.ok(gameResponse);
     }
@@ -40,7 +46,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre){
         List<Game> gameList = mGridService.getAllGamesWithGenre(genre);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + genre);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + genre);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -49,7 +55,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByName(@RequestParam String name){
         List<Game> gameList = mGridService.getAllGamesByName(name);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + name);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + name);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -58,7 +64,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev){
         List<Game> gameList = mGridService.getAllGamesByDev(dev);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + dev);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + dev);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -67,7 +73,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub){
         List<Game> gameList = mGridService.getAllGamesByPublisher(pub);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + pub);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + pub);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }

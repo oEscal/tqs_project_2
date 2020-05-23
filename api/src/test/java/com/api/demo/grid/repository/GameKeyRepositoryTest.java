@@ -1,7 +1,6 @@
 package com.api.demo.grid.repository;
 
 import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Sell;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
