@@ -52,7 +52,7 @@ public class Auction {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate = (Date) startDate.clone();
     }
 
     public Date getStartDate() {

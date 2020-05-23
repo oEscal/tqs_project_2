@@ -43,6 +43,6 @@ public class Buy {
     }
 
     public void setDate(Date date) {
-        this.date = (Date) date.clone();
+        if (date != null) this.date = (Date) date.clone();
     }
 }
