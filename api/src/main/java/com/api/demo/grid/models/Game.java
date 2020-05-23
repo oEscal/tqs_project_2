@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -97,8 +94,9 @@ public class Game {
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
             if (gameKey.getSell() != null){
-                if (!foundPrice) lowestPrice = gameKey.getSell().getPrice();
-                else if (lowestPrice > gameKey.getSell().getPrice()) lowestPrice = gameKey.getSell().getPrice();
+                if (!foundPrice || lowestPrice > gameKey.getSell().getPrice()) {
+                    lowestPrice = gameKey.getSell().getPrice();
+                }
                 foundPrice = true;
             }
         }
