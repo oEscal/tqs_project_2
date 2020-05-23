@@ -94,6 +94,7 @@ class Game extends Component {
         },
         game: null,
         redirectLogin: false,
+        redirectGames: false,
 
         loadingSell: false,
         loadingAuctions: false,
@@ -107,6 +108,7 @@ class Game extends Component {
 
         await this.setState({ gamesLoaded: false })
 
+        console.log(this.props.match.params.game)
         // Get All Games
         await fetch(baseURL + "grid/game?id=" + this.props.match.params.game, {
             method: "GET",
@@ -136,12 +138,19 @@ class Game extends Component {
                     var description = data.description
                     description = description.substring(3, description.length - 4)
 
+                    description = description.replace(/&#39;s/g, "'s")
+                    description = description.replace(/<p>/g, "\n")
+                    description = description.replace(/<\/p>/g, "")
+                    description = description.replace(/<br \/>/g, "\n")
+
                     var minimizedDescription = description
                     if (description.length > 315) {
                         minimizedDescription = description.substring(0, 312) + "..."
                     }
                     data.minimizedDescription = minimizedDescription
                     data.description = description
+
+                    console.log(description)
 
                     var allDevelopers = ""
                     data.developers.forEach(developer => {
@@ -161,15 +170,7 @@ class Game extends Component {
                 }
             })
             .catch(error => {
-                console.log(error)
-                toast.error('Sorry, an unexpected error has occurred!', {
-                    position: "top-center",
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    toastId: "errorToast"
-                });
+                this.setState({ redirectGames: true })
             });
 
     }
@@ -183,6 +184,12 @@ class Game extends Component {
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
             return <Redirect to='/login' />
+        }
+    }
+
+    renderRedirectGames = () => {
+        if (this.state.redirectGames) {
+            return <Redirect to='/games' />
         }
     }
 
@@ -478,147 +485,291 @@ class Game extends Component {
                     </GridContainer>
                 </div>
 
-                gameInfo = <div style={{ padding: "45px 0px" }}>
-                    <GridContainer>
-                        <GridItem xs={12} sm={12} md={12}>
-                            <span>
-                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
+                gameInfo = [
+                    <div className={"search"} style={{ padding: "45px 0px" }}>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <span>
+                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
                             </h2>
-                            </span>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fdf147" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Name
+                                </span>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fdf147" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Name
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.name}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.name}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #feec4c" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Release Date
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #feec4c" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Release Date
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.releaseDate}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.releaseDate}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f5c758" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Description
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f5c758" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Description
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "15px" }}>
-                                        {this.state.game.description}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                            {this.state.game.description}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fca963" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Genres
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fca963" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Genres
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.allGenres}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f77a71" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Platforms
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f77a71" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Platforms
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.allGenres}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc4b8f" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Developer
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc4b8f" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Developer
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.allDevelopers}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
 
-                        <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                            <GridContainer>
-                                <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc1bbe" }}>
-                                    <span>
-                                        <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Publisher
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc1bbe" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Publisher
                                     </h3>
-                                    </span>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
-                                </GridItem>
-                                <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                    <div style={{ color: "black", fontSize: "18px" }}>
-                                        {this.state.game.allDevelopers}
-                                    </div>
-                                </GridItem>
-                            </GridContainer>
-                        </GridItem>
-                    </GridContainer>
-                </div>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+                        </GridContainer>
+                    </div>,
+                    <div className={"searchMobile"} style={{ padding: "45px 0px" }}>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <span>
+                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
+                            </h2>
+                                </span>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "15px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fdf147"  }}>Name
+                                            </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.name}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #feec4c" }}>Release Date
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.releaseDate}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0",  borderBottom: "2px solid #f5c758" }}>Description
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                            {this.state.game.description}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fca963" }}>Genres
+                                            </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #f77a71" }}>Platforms
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fc4b8f" }}>Developer
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "15px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fc1bbe" }}>Publisher
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    
+                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+                        </GridContainer>
+                    </div>
+                ]
             }
 
             return (
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     {this.renderRedirectLogin()}
+                    {this.renderRedirectGames()}
+
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
@@ -686,7 +837,7 @@ class Game extends Component {
                             {gameInfo}
                         </div>
 
-                        <Footer />
+                        <Footer rawg={true}/>
 
                     </div>
                 </div>

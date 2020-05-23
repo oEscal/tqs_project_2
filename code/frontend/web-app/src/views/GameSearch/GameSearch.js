@@ -138,8 +138,8 @@ class GameSearch extends Component {
     }
 
     async componentDidMount() {
-        this.allGames()
-        await this.setState({ doneLoading: true, })
+        await this.allGames()
+        this.setState({ doneLoading: true, })
     }
 
     renderRedirectLogin = () => {
@@ -351,7 +351,7 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="MMO"
+                                                        label="Action"
                                                     />
                                                 </div>
 
@@ -369,7 +369,25 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Point n Click"
+                                                        label="Indie"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Adventure"
                                                     />
                                                 </div>
 
@@ -405,14 +423,267 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="RTS"
+                                                        label="Strategy"
                                                     />
                                                 </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Shooter"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Casual"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Simulation"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Puzzle"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Arcade"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Platformer"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Racing"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Sports"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Massively Multiplayer"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Family"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Fighting"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Board Games"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Card"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Educational"
+                                                    />
+                                                </div>
+
                                             </div>
 
                                             <div style={{ textAlign: "left", width: "100%", marginTop: "30px" }}>
                                                 <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
-                                                    Genres
+                                                    Platforms
                                                 </h6>
 
                                                 <div class="row">
@@ -631,7 +902,7 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="MMO"
+                                                        label="Action"
                                                     />
                                                 </div>
 
@@ -649,7 +920,25 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Point n Click"
+                                                        label="Indie"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Adventure"
                                                     />
                                                 </div>
 
@@ -685,7 +974,259 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="RTS"
+                                                        label="Strategy"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Shooter"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Casual"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Simulation"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Puzzle"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Arcade"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Platformer"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Racing"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Sports"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Massively Multiplayer"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Family"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Fighting"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Board Games"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Card"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Educational"
                                                     />
                                                 </div>
                                             </div>
@@ -802,8 +1343,8 @@ class GameSearch extends Component {
 
                             {pagination}
                         </div>
-                        
-                        
+
+
                         <Footer rawg={true} />
                     </div>
                 </div >
