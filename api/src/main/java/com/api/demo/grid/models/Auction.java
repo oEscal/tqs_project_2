@@ -1,10 +1,20 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Auction {
 
     @Id
@@ -21,6 +31,7 @@ public class Auction {
 
     @OneToOne
     @JoinColumn(name = "buy_id")
+    @EqualsAndHashCode.Exclude
     private Buy purchased;
 
     @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
@@ -32,30 +43,6 @@ public class Auction {
 
     private double price;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int auctionId) {
-        this.id = auctionId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public GameKey getGameKey() {
-        return gameKey;
-    }
-
-    public void setGameKey(GameKey gameKey) {
-        this.gameKey = gameKey;
-    }
-
     public Date getEndDate() {
         return (Date) endDate.clone();
     }
@@ -64,20 +51,8 @@ public class Auction {
         this.endDate = (Date) endDate.clone();
     }
 
-    public Buy getPurchased() {
-        return purchased;
-    }
-
-    public void setPurchased(Buy purchased) {
-        this.purchased = purchased;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getStartDate() {

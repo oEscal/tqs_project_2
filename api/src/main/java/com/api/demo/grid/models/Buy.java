@@ -1,10 +1,20 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Buy {
 
     @Id
@@ -13,9 +23,11 @@ public class Buy {
 
     @OneToOne
     @JoinColumn(name = "sell_id")
+    @EqualsAndHashCode.Exclude
     private Sell sell;
 
     @OneToOne
+    @EqualsAndHashCode.Exclude
     private Auction auction;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,30 +37,6 @@ public class Buy {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int buyId) {
-        this.id = buyId;
-    }
-
-    public Sell getSell() {
-        return sell;
-    }
-
-    public void setSell(Sell sell) {
-        this.sell = sell;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Date getDate() {
         return (Date) date.clone();

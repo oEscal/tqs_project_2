@@ -1,18 +1,21 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
-@Setter
+@Table
 @Getter
+@Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Sell {
 
     @Id
@@ -30,10 +33,12 @@ public class Sell {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private User user;
 
     private double price;
 
+    @EqualsAndHashCode.Exclude
     @Temporal(TemporalType.DATE)
     private Date date;
 

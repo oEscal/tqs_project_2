@@ -11,7 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -51,7 +56,7 @@ class GridServiceTest {
     private GameKey gameKey;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         game = new Game();
         game.setId(1L);
         game.setName("Game");
@@ -112,18 +117,18 @@ class GridServiceTest {
     @Test
     void whenSearchingName_ReturnRightGame(){
         List<Game> games = Arrays.asList(game);
-        Mockito.when(mockGameRepo.findAllByNameContains("Game")).thenReturn(games);
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game")).thenReturn(games);
 
         assertEquals(games, gridService.getAllGamesByName("Game"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContains(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test
     void whenSearchingInvalidName_ReturnNull(){
-        Mockito.when(mockGameRepo.findAllByNameContains("Game2")).thenReturn(new ArrayList<Game>());
+        Mockito.when(mockGameRepo.findAllByNameContaining("Game2")).thenReturn(new ArrayList<Game>());
 
         assertEquals(new ArrayList<Game>(), gridService.getAllGamesByName("Game2"));
-        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContains(Mockito.anyString());
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findAllByNameContaining(Mockito.anyString());
     }
 
     @Test

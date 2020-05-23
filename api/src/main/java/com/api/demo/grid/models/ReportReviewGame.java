@@ -1,14 +1,25 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class ReportReviewGame {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
+    @EqualsAndHashCode.Exclude
     private int reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -20,24 +31,9 @@ public class ReportReviewGame {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_game_id")
+    @EqualsAndHashCode.Exclude
     private ReviewGame reported;
 
-
-    public int getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(int reportId) {
-        this.reportId = reportId;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
 
     public Date getDate() {
         return (Date) date.clone();

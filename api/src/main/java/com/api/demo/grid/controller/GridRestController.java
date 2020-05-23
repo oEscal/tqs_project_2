@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/grid")
 public class GridRestController {
-    private static final String sERRORSEARCHER = "No Game found with Id ";
+    public static final String ERROR = "No Game found with Id ";
 
     @Autowired
     private GridService gridService;
@@ -27,7 +27,7 @@ public class GridRestController {
     public ResponseEntity<Game> getGameInfo(@RequestParam long id){
         Game gameResponse = gridService.getGameById(id);
         if (gameResponse == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + id);
         }
         return ResponseEntity.ok(gameResponse);
     }
@@ -36,7 +36,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre){
         List<Game> gameList = gridService.getAllGamesWithGenre(genre);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + genre);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + genre);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -45,7 +45,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByName(@RequestParam String name){
         List<Game> gameList = gridService.getAllGamesByName(name);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + name);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + name);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -54,7 +54,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev){
         List<Game> gameList = gridService.getAllGamesByDev(dev);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + dev);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + dev);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
@@ -63,7 +63,7 @@ public class GridRestController {
     public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub){
         List<Game> gameList = gridService.getAllGamesByPublisher(pub);
         if (gameList == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, sERRORSEARCHER + pub);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + pub);
         }
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }

@@ -1,18 +1,28 @@
 package com.api.demo.grid.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
+@Table
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
 public class Game {
 
     @Id
@@ -24,39 +34,46 @@ public class Game {
 
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
+    @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
+    @EqualsAndHashCode.Exclude
     private Set<Developer> developers;
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReviewGame> reviews;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<GameKey> gameKeys;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<User> userWish;
 
     private String coverUrl;
 
-    public Date getReleaseDate(){
-        return (releaseDate == null)? null:(Date) releaseDate.clone();
-    }
+    public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
-    public void setReleaseDate(Date releaseDate) {
-        if (releaseDate != null) this.releaseDate = (Date) releaseDate.clone();
-        else this.releaseDate = null;
+    public void setReleaseDate(Date date) {
+        if (date != null) releaseDate = (Date) date.clone();
     }
 
     public void addGameKey(GameKey gameKey) {
