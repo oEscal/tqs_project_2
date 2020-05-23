@@ -9,8 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,7 +43,7 @@ public class Game {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
-    private Set<GameGenre> gameGenres;
+    private Set<GameGenre> gameGenres = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
@@ -58,12 +62,14 @@ public class Game {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<ReviewGame> reviews;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<GameKey> gameKeys;
+    @ToString.Exclude
+    private Set<GameKey> gameKeys = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
@@ -83,5 +89,30 @@ public class Game {
         else if (gameKeys.contains(gameKey)) return;
         gameKeys.add(gameKey);
         gameKey.setGame(this);
+    }
+
+    public double getLowestPrice(){
+        if (gameKeys.isEmpty()) return -1;
+        double lowestPrice = 0;
+        boolean foundPrice = false;
+        for (GameKey gameKey : gameKeys){
+            if (gameKey.getSell() != null){
+                if (!foundPrice) lowestPrice = gameKey.getSell().getPrice();
+                else if (lowestPrice > gameKey.getSell().getPrice()) lowestPrice = gameKey.getSell().getPrice();
+                foundPrice = true;
+            }
+        }
+        return (foundPrice)? lowestPrice:-1;
+    }
+
+    public String[] getPlatforms(){
+        if (gameKeys.isEmpty()) return new String[0];
+        ArrayList<String> gamePlatforms = new ArrayList<>();
+        String platform;
+        for (GameKey gameKey : gameKeys){
+            platform = gameKey.getPlatform();
+            if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
+        }
+        return gamePlatforms.toArray(new String[gamePlatforms.size()]);
     }
 }

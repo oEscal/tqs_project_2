@@ -35,5 +35,6 @@ public class GameGenre {
 
     @ManyToMany
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Game> games;
 }

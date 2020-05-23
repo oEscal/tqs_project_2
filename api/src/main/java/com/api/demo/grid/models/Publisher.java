@@ -35,5 +35,6 @@ public class Publisher {
 
     @OneToMany
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Game> games;
 }

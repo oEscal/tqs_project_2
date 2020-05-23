@@ -34,5 +34,6 @@ public class Developer {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Game> games;
 }

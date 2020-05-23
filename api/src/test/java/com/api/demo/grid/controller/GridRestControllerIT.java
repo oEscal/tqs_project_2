@@ -14,12 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -72,6 +75,7 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("publisher");
         mGameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
         mSellPOJO = new SellPOJO("key", 6L, 2.3, null);
+
         mGameRepository.deleteAll();
         mGameGenreRepository.deleteAll();
         mDeveloperRepository.deleteAll();
@@ -79,7 +83,6 @@ class GridRestControllerIT {
         mUserRepository.deleteAll();
         mGameKeyRepository.deleteAll();
         mSellRepository.deleteAll();
-
     }
 
     @Test
@@ -161,6 +164,7 @@ class GridRestControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
         Game game = new Game();
         mGameRepository.save(game);
@@ -175,6 +179,7 @@ class GridRestControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void whenPostingInvalidGameKey_Return404Exception() throws Exception{
         mGameKeyPOJO.setGameId(-1);
         mMockMvc.perform(post("/grid/gamekey")
@@ -186,8 +191,15 @@ class GridRestControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
         User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
         gameKey.setKey("key");
@@ -204,6 +216,43 @@ class GridRestControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception{
+        Game game = new Game();
+        GameKey gameKey = new GameKey();
+        gameKey.setKey("key");
+        gameKey.setPlatform("ps4");
+        gameKey.setGame(game);
+        mGameRepository.save(game);
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mUserRepository.save(user);
+        mSellPOJO.setUserId(user.getId());
+        mSellPOJO.setPrice(2.4);
+        mSellPOJO.setGameKey("key");
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameKey.platform", is("ps4")))
+                .andExpect(jsonPath("$.price", is(2.4)))
+        ;
+        mMockMvc.perform(get("/grid/game")
+                .param("id", "" + game.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lowestPrice", is(2.4)))
+                .andExpect(jsonPath("$.platforms[0]", is("ps4")))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception{
         mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))

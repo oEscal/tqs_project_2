@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Entity
@@ -62,6 +63,20 @@ public class Sell {
 
     private boolean sameAsFormer(User newUser) {
         return user==null? newUser == null : newUser.equals(user);
+    }
+
+    public void setGameKey(GameKey gameKey) {
+        //prevent endless loop
+        if (sameAsFormerGK(gameKey)) return ;
+        //set new user
+        this.gameKey = gameKey;
+
+        //set myself into new owner
+        if (gameKey!=null) gameKey.setSell(this);
+    }
+
+    private boolean sameAsFormerGK(GameKey newGameKey) {
+        return Objects.equals(newGameKey, gameKey);
     }
 
     public Date getDate() {

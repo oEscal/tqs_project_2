@@ -10,16 +10,7 @@ import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 
 @Entity
@@ -47,7 +38,7 @@ public class GameKey {
     @EqualsAndHashCode.Exclude
     private Game game;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Sell sell;
@@ -70,6 +61,16 @@ public class GameKey {
         //set myself into new owner
         if (game!=null) game.addGameKey(this);
     }
+
+    public void setSell(Sell sell){
+        if (sameAsFormerSale(sell)) return;
+
+        this.sell = sell;
+
+        if (sell != null) sell.setGameKey(this);
+    }
+
+    private boolean sameAsFormerSale(Sell newSale) {return Objects.equals(newSale, sell); }
 
     private boolean sameAsFormer(Game newGame) {
         return Objects.equals(game, newGame);
