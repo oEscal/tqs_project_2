@@ -4,6 +4,10 @@ import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
 import com.api.demo.grid.repository.DeveloperRepository;
 import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameRepository;
@@ -16,9 +20,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -62,8 +72,8 @@ class GridServiceTest {
         publisher.setName("Pub");
 
         game2 = new Game();
-        game.setId(5L);
-        game.setName("Game 2");
+        game2.setId(5L);
+        game2.setName("Game 2");
 
         game.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
         game.setDevelopers(new HashSet<>(Arrays.asList(developer)));
@@ -180,5 +190,110 @@ class GridServiceTest {
         Mockito.verify(mockGameRepo, Mockito.times(0))
                 .findAllByPublisher(Mockito.any(Publisher.class));
 
+    }
+
+    @Test
+    void whenSavingGameGenrePojo_ReturnValidGameGenre(){
+        GameGenrePOJO gameGenrePOJO = new GameGenrePOJO("Genre", null);
+
+        GameGenre savedGameGenre = gridService.saveGameGenre(gameGenrePOJO);
+
+        assertEquals(gameGenre.getName(), gameGenre.getName());
+        assertEquals(gameGenre.getDescription(), savedGameGenre.getDescription());
+    }
+
+    @Test
+    void whenSavingDevPOJO_ReturnValidDeveloper(){
+        DeveloperPOJO developerPOJO = new DeveloperPOJO("Dev");
+
+        Developer savedDev = gridService.saveDeveloper(developerPOJO);
+
+        assertEquals(developer.getName(), savedDev.getName());
+    }
+
+    @Test
+    void whenSavingPubPOJO_ReturnValidPublisher(){
+        PublisherPOJO publisherPOJO = new PublisherPOJO("Pub", null);
+
+        Publisher savedPub = gridService.savePublisher(publisherPOJO);
+
+        assertEquals(publisher.getName(), savedPub.getName());
+        assertEquals(publisher.getDescription(), publisher.getDescription());
+    }
+
+    @Test
+    void whenSavingGamePOJO_ReturnValidGame(){
+        Mockito.when(mockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(gameGenre));
+        Mockito.when(mockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(developer));
+        Mockito.when(mockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(publisher));
+
+        Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
+
+        Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
+
+        GamePOJO gamePOJO = new GamePOJO("Game", null, gameGenrePOJOSet, "Pub", developerPOJOSet, null, null);
+
+        Game savedGame = gridService.saveGame(gamePOJO);
+        Mockito.verify(mockPubRepo, Mockito.times(1)).findByName("Pub");
+        Mockito.verify(mockDevRepo, Mockito.times(1)).findByName("Dev");
+        Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName("Genre");
+        assertEquals(game.getName(), savedGame.getName());
+        assertEquals(game.getDescription(), savedGame.getDescription());
+        assertEquals(game.getPublisher(), savedGame.getPublisher());
+        assertEquals(game.getGameGenres(), savedGame.getGameGenres());
+    }
+    @Test
+    void whenSavingGamePOJOWithInvalidGenre_ReturnNull(){
+        Mockito.when(mockGameGenreRepo.findByName("Genre")).thenReturn(Optional.empty());
+        Mockito.when(mockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(developer));
+        Mockito.when(mockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(publisher));
+
+        Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
+
+        Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
+
+        GamePOJO gamePOJO = new GamePOJO("Game", null, gameGenrePOJOSet, "Pub", developerPOJOSet, null, null);
+
+        Game savedGame = gridService.saveGame(gamePOJO);
+        Mockito.verify(mockPubRepo, Mockito.times(0)).findByName("Pub");
+        Mockito.verify(mockDevRepo, Mockito.times(0)).findByName("Dev");
+        Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName("Genre");
+        assertNull(savedGame);
+    }
+    @Test
+    void whenSavingGamePOJOWithInvalidPub_ReturnNull(){
+        Mockito.when(mockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(gameGenre));
+        Mockito.when(mockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(developer));
+        Mockito.when(mockPubRepo.findByName("Pub")).thenReturn(Optional.empty());
+
+        Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
+
+        Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
+
+        GamePOJO gamePOJO = new GamePOJO("Game", null, gameGenrePOJOSet, "Pub", developerPOJOSet, null, null);
+
+        Game savedGame = gridService.saveGame(gamePOJO);
+        Mockito.verify(mockPubRepo, Mockito.times(1)).findByName("Pub");
+        Mockito.verify(mockDevRepo, Mockito.times(0)).findByName("Dev");
+        Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName("Genre");
+        assertNull(savedGame);
+    }
+    @Test
+    void whenSavingGamePOJOWithInvalidDev_ReturnNull(){
+        Mockito.when(mockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(gameGenre));
+        Mockito.when(mockDevRepo.findByName("Dev")).thenReturn(Optional.empty());
+        Mockito.when(mockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(publisher));
+
+        Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
+
+        Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
+
+        GamePOJO gamePOJO = new GamePOJO("Game", null, gameGenrePOJOSet, "Pub", developerPOJOSet, null, null);
+
+        Game savedGame = gridService.saveGame(gamePOJO);
+        Mockito.verify(mockPubRepo, Mockito.times(1)).findByName("Pub");
+        Mockito.verify(mockDevRepo, Mockito.times(1)).findByName("Dev");
+        Mockito.verify(mockGameGenreRepo, Mockito.times(1)).findByName("Genre");
+        assertNull(savedGame);
     }
 }
