@@ -27,8 +27,9 @@ public class UserService {
 
     public User getUser(String username) {
         User user = mRepository.findByUsername(username);
-        if (user != null)
+        if (user != null) {
             user.setPassword(null);
+        }
         return user;
     }
 
