@@ -1,14 +1,10 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +15,17 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @AutoConfigureMockMvc
@@ -34,7 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 class GridRestControllerIT {
     @Autowired
-    private MockMvc mMockMvc;
+    private GameRepository mGameRepository;
+
+    @Autowired
+    private GameGenreRepository mGameGenreRepository;
 
     @Autowired
     private DeveloperRepository mDeveloperRepository;
@@ -43,154 +45,227 @@ class GridRestControllerIT {
     private PublisherRepository mPublisherRepository;
 
     @Autowired
-    private GameGenreRepository mGameGenreRepository;
+    private UserRepository mUserRepository;
 
     @Autowired
-    private GameRepository mGameRepository;
+    private SellRepository mSellRepository;
 
-    private Game mGame;
+    @Autowired
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private MockMvc mMockMvc;
+
+    private GameGenrePOJO mGameGenrePOJO;
+    private GamePOJO mGamePOJO;
+    private PublisherPOJO mPublisherPOJO;
+    private DeveloperPOJO mDeveloperPOJO;
+    private SellPOJO mSellPOJO;
+    private GameKeyPOJO mGameKeyPOJO;
 
     @BeforeEach
-    void setUp(){
-        mGame = new Game();
-        mGame.setName("DS");
-        mGame.setDescription("");
-        mGame.setCoverUrl("");
+    public void setUp(){
+        mGameGenrePOJO = new GameGenrePOJO("genre", "");
+        mPublisherPOJO = new PublisherPOJO("publisher", "");
+        mDeveloperPOJO = new DeveloperPOJO("developer");
+        mGamePOJO = new GamePOJO("game", "", null, null, null, null, "");
+        mGamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer")));
+        mGamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
+        mGamePOJO.setPublisher("publisher");
+        mGameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
+        mSellPOJO = new SellPOJO("key", 6L, 2.3, null);
+
         mGameRepository.deleteAll();
+        mGameGenreRepository.deleteAll();
         mDeveloperRepository.deleteAll();
         mPublisherRepository.deleteAll();
-        mGameGenreRepository.deleteAll();
+        mUserRepository.deleteAll();
+        mGameKeyRepository.deleteAll();
+        mSellRepository.deleteAll();
     }
 
     @Test
-    void whenRequestAll_ReturnAll() throws Exception {
-        mGameRepository.save(mGame);
+    @WithMockUser(username = "spring")
+    void whenPostingValidGenre_ReturnValidResponse() throws Exception{
 
-        mMockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
+        mMockMvc.perform(post("/grid/genre")
+                .content(asJsonString(mGameGenrePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("DS")));
+                .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
+
+        assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
 
     }
 
     @Test
-    void whenRequestGameInfo_ReturnGame() throws Exception {
-        mGameRepository.save(mGame);
-
-        mMockMvc.perform(
-                get("/grid/game")
-                        .param("id", ""+ mGame.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+    @WithMockUser(username = "spring")
+    void whenPostingValidPub_ReturnValidResponse() throws Exception{
+        mMockMvc.perform(post("/grid/publisher")
+                .content(asJsonString(mPublisherPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("DS")));
+                .andExpect(jsonPath("$.name", is(mPublisherPOJO.getName())));
+        assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
 
     }
 
     @Test
-    void whenRequestGenre_ReturnValidGames() throws Exception {
+    @WithMockUser(username = "spring")
+    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
+        mMockMvc.perform(post("/grid/developer")
+                .content(asJsonString(mDeveloperPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(mDeveloperPOJO.getName())));
+        assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidGame_ReturnValidResponse() throws Exception{
+        Developer developer = new Developer();
+        developer.setName("dev");
+        mDeveloperRepository.save(developer);
+
+        Publisher publisher = new Publisher();
+        publisher.setName("pub");
+        mPublisherRepository.save(publisher);
+
         GameGenre gameGenre = new GameGenre();
         gameGenre.setName("genre");
         mGameGenreRepository.save(gameGenre);
-        mGame.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
-        mGameRepository.save(mGame);
 
-        mMockMvc.perform(get("/grid/genre")
-                .param("genre", "genre")
+        mGamePOJO.setPublisher("pub");
+        mGamePOJO.setDevelopers(new HashSet<>(Arrays.asList("dev")));
+        mGamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre")));
+        mMockMvc.perform(post("/grid/game")
+                .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("DS")));
+                .andExpect(jsonPath("$.name", is(mGamePOJO.getName())))
+        ;
+        assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
-    void whenRequestName_ReturnValidGames() throws Exception {
-        mGameRepository.save(mGame);
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
 
-        mMockMvc.perform(get("/grid/name")
-                .param("name", "D")
+        mGamePOJO.setPublisher(null);
+
+        mMockMvc.perform(post("/grid/game")
+                .content(asJsonString(mGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game"));
+        assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
+        Game game = new Game();
+        mGameRepository.save(game);
+        mGameKeyPOJO.setGameId(game.getId());
+        mMockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("DS")));
-
+                .andExpect(jsonPath("$.rkey", is("key")))
+                .andExpect(jsonPath("$.gameId", is(Math.toIntExact(game.getId()))))
+        ;
     }
 
     @Test
-    void whenRequestDev_ReturnValidGames() throws Exception {
-        Developer developer = new Developer();
-        developer.setName("Dev");
-        mDeveloperRepository.save(developer);
-        mGame.setDevelopers(new HashSet<>(Arrays.asList(developer)));
-        mGameRepository.save(mGame);
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidGameKey_Return404Exception() throws Exception{
+        mGameKeyPOJO.setGameId(-1);
+        mMockMvc.perform(post("/grid/gamekey")
+                .content(asJsonString(mGameKeyPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game Key"))
+        ;
+    }
 
-        mMockMvc.perform(get("/grid/developer")
-                .param("dev", "Dev")
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mUserRepository.save(user);
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey("key");
+        mGameKeyRepository.save(gameKey);
+        mSellPOJO.setUserId(user.getId());
+        mSellPOJO.setGameKey("key");
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("DS")));
-
+                .andExpect(jsonPath("$.gameKey.rkey", is("key")))
+                .andExpect(jsonPath("$.userId", is(Math.toIntExact(user.getId()))))
+        ;
     }
 
     @Test
-    void whenRequestPub_ReturnValidGames() throws Exception {
-        Publisher publisher = new Publisher();
-        publisher.setName("Pub");
-        mPublisherRepository.save(publisher);
-        mGame.setPublisher(publisher);
-        mGameRepository.save(mGame);
-
-        mMockMvc.perform(get("/grid/publisher")
-                .param("pub", "Pub")
+    @WithMockUser(username = "spring")
+    void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception{
+        Game game = new Game();
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey("key");
+        gameKey.setPlatform("ps4");
+        gameKey.setGame(game);
+        mGameRepository.save(game);
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mUserRepository.save(user);
+        mSellPOJO.setUserId(user.getId());
+        mSellPOJO.setPrice(2.4);
+        mSellPOJO.setGameKey("key");
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].name", is("DS")));
-
-    }
-    @Test
-    void whenInvalidGameId_Return404Exception() throws Exception {
-
-        mMockMvc.perform(
-                get("/grid/game")
-                        .param("id", "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("No Game found with Id 1"));
-
+                .andExpect(jsonPath("$.gameKey.platform", is("ps4")))
+                .andExpect(jsonPath("$.price", is(2.4)))
+        ;
+        mMockMvc.perform(get("/grid/game")
+                .param("id", "" + game.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lowestPrice", is(2.4)))
+                .andExpect(jsonPath("$.platforms[0]", is("ps4")))
+        ;
     }
 
     @Test
-    void whenInvalidGameGenre_Return404Exception() throws Exception {
-
-        mMockMvc.perform(
-                get("/grid/genre")
-                        .param("genre", "no")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("No Game found with Id no"));
-
-    }
-
-    @Test
-    void whenRequestDev_Return404Exception() throws Exception {
-
-        mMockMvc.perform(get("/grid/developer")
-                .param("dev", "dev")
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidSellListing_Return404Exception() throws Exception{
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("No Game found with Id dev"));
-
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
     }
 
-    @Test
-    void whenRequestPub_Return404Exception() throws Exception {
-
-        mMockMvc.perform(get("/grid/publisher")
-                .param("pub", "pub")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("No Game found with Id pub"));
-
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

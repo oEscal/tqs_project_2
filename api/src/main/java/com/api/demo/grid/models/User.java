@@ -3,6 +3,7 @@ package com.api.demo.grid.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,6 +30,7 @@ import org.springframework.security.core.Transient;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -41,6 +43,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @JsonSerialize
 @Transient
+@SuppressFBWarnings
 public class User {
 
     @Id
@@ -100,66 +103,77 @@ public class User {
      *  User's relations with other entities
      ***/
     //The games he reviewed
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReviewUser> reviewUsers;
 
     //The users that reviewed him
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReviewUser> reviewedUsers;
 
     //The reviews directed to the users
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReportReviewGame> reportsOnGameReview;
 
     //The reports this user has issued on user reviews
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReportReviewUser> reportsOnUserReview;
 
     //The reports this user has received
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "report_from_user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReportUser> reportsThisUser;
 
     //The reports this user has issued on users
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "report_to_user_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<ReportUser> reportsOnUser;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Buy> buys;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Auction> auctions;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonIgnore
-    private Set<Sell> sells;
+    @EqualsAndHashCode.Exclude
+    private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
-
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
@@ -186,5 +200,13 @@ public class User {
         if (creditCardExpirationDate != null) {
             this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
         }
+    }
+
+    public void addSell(Sell sell) {
+        if (this.sells.contains(sell)) return;
+
+        this.sells.add(sell);
+
+        sell.setUser(this);
     }
 }

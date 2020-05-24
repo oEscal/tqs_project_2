@@ -4,7 +4,6 @@ package com.api.demo.grid.service;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

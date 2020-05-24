@@ -1,9 +1,25 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Min;
 import java.util.Date;
 import java.util.Set;
@@ -17,6 +33,7 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonSerialize
+@SuppressFBWarnings
 public class ReviewGame {
 
     @Id
@@ -35,11 +52,11 @@ public class ReviewGame {
     @OneToMany
     private Set<ReportReviewGame> reports;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     private Game game;
 
