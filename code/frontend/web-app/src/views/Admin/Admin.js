@@ -145,7 +145,6 @@ class Admin extends Component {
 
         }
 
-
         this.setState({
             [`${type}`]: newData
         });
