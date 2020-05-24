@@ -34,6 +34,10 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import CustomInput from "components/CustomInput/CustomInput";
 
+// Global Variables
+import baseURL from '../../variables/baseURL'
+import global from "../../variables/global";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
@@ -141,7 +145,6 @@ class Admin extends Component {
 
         }
 
-        
         this.setState({
             [`${type}`]: newData
         });
@@ -890,6 +893,26 @@ class Admin extends Component {
         );
     }
 
+    renderAddGame() {
+        return (
+            <div>
+                <span>
+                    <h2 style={{
+                        color: "#999",
+                        fontWeight: "bolder",
+                        marginTop: "10px",
+                        padding: "0 0"
+                    }}>Add Game
+                    </h2>
+                </span>
+                <div>
+                    <Button color="primary" round size="lg" onClick={window.open("/sell-new-game", "newTab")}>Add Game</Button>
+                </div>
+
+            </div>
+        )
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -897,8 +920,8 @@ class Admin extends Component {
             <div>
                 <ToastContainer/>
 
-                <LoggedHeader name="Jonas Pistolas" cart={true} wallet={0.00} heightChange={false}
-                              username={"Jonas_PP"}/>
+                <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+
                 <div className={classNames(classes.main)} style={{marginTop: "60px"}}>
                     <div className={classes.container}>
                         <div style={{padding: "70px 0"}}>
@@ -930,9 +953,14 @@ class Admin extends Component {
                                                             tabContent: this.renderReviews()
                                                         },
                                                         {
-                                                            tabButton: "Games",
+                                                            tabButton: "Games Request",
                                                             tabIcon: "fas fa-gamepad",
                                                             tabContent: this.renderGames()
+                                                        },
+                                                        {
+                                                            tabButton: "Add Game",
+                                                            tabIcon: "fas fa-gamepad",
+                                                            tabContent: this.renderAddGame()
                                                         },
                                                         {
                                                             tabButton: "Users",

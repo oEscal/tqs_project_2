@@ -1,16 +1,38 @@
 package com.api.demo.grid.models;
 
 
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.util.Set;
 
 
 @Entity
+@Table
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonSerialize
+@SuppressFBWarnings
 public class GameGenre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private long id;
 
     @Column(unique=true)
     private String name;
@@ -18,31 +40,7 @@ public class GameGenre {
     private String description;
 
     @ManyToMany
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Game> games;
-
-    public Set<Game> getGames() { return games; }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
