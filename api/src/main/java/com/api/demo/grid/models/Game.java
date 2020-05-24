@@ -103,7 +103,7 @@ public class Game {
     }
 
     public double getLowestPrice(){
-        if (gameKeys.isEmpty()) return -1;
+        if (gameKeys == null || gameKeys.isEmpty()) return -1;
         double lowestPrice = 0;
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
@@ -118,7 +118,7 @@ public class Game {
     }
 
     public String[] getPlatforms(){
-        if (gameKeys.isEmpty()) return new String[0];
+        if (gameKeys == null || gameKeys.isEmpty()) return new String[0];
         ArrayList<String> gamePlatforms = new ArrayList<>();
         String platform;
         for (GameKey gameKey : gameKeys){

@@ -3,6 +3,7 @@ import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 
@@ -24,9 +24,9 @@ public class GridRestController {
     @Autowired
     private GridService gridService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Game>> getAllGames(){
-        return ResponseEntity.ok(gridService.getAllGames());
+    @GetMapping(value="/all", params = { "page" })
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+        return ResponseEntity.ok(gridService.getAllGames(page));
     }
 
     @GetMapping("/game")

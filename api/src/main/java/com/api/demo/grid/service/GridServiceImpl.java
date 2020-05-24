@@ -4,6 +4,8 @@ import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,7 +15,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Service
-public class GridServiceImpl implements GridService{
+public class GridServiceImpl implements GridService {
 
     @Autowired
     private DeveloperRepository mDeveloperRepository;
@@ -46,8 +48,9 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public List<Game> getAllGames() {
-        return mGameRepository.findAll();
+    public Page<Game> getAllGames(int page) {
+        Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
+        return games;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public Game saveGame(GamePOJO gamePOJO){
+    public Game saveGame(GamePOJO gamePOJO) {
         Game game = new Game();
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
@@ -93,7 +96,7 @@ public class GridServiceImpl implements GridService{
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
-        for (String gameGenrePOJO: gamePOJO.getGameGenres()) {
+        for (String gameGenrePOJO : gamePOJO.getGameGenres()) {
             gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
             gameGenreSet.add(gameGenre.get());
@@ -108,7 +111,7 @@ public class GridServiceImpl implements GridService{
         //Get Game Developers
         Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
-        for (String developerPOJO: gamePOJO.getDevelopers()) {
+        for (String developerPOJO : gamePOJO.getDevelopers()) {
             developer = mDeveloperRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
             developerSet.add(developer.get());
