@@ -144,10 +144,10 @@ function GamesStack(props) {
           header: ({ navigation, scene }) => (
             <Header
               search
-              tabs
               title="Games"
               navigation={navigation}
               scene={scene}
+              tabs
             />
           )
         }}

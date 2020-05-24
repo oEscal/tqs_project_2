@@ -82,7 +82,10 @@ class GameSearch extends Component {
             }
         },
         games: [],
-        gamesLoaded: false
+        gamesLoaded: false,
+        curPage: 1,
+        noPages: 1,
+        noGames: 0
     }
 
     async allGames() {
@@ -94,7 +97,7 @@ class GameSearch extends Component {
         await this.setState({ gamesLoaded: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/all", {
+        await fetch(baseURL + "grid/all?page=" + (this.state.curPage - 1), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -119,7 +122,14 @@ class GameSearch extends Component {
                     })
 
                 } else {
-                    this.setState({ games: data })
+                    if (data.first) {
+                        this.setState({ 
+                            noPages: data.totalPages,
+                            noGames: data.totalElements
+                         })
+
+                    }
+                    this.setState({ games: data.content })
                 }
             })
             .catch(error => {
@@ -144,9 +154,19 @@ class GameSearch extends Component {
 
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
-            return <Redirect to='/login' />
+            return <Redirect to='/login-page' />
         }
     }
+
+    changePage = async (event, value) => {    
+        await this.setState({
+          curPage: value
+        })
+    
+        window.scrollTo(0, 0)
+        await this.allGames()
+        
+      };
 
     render() {
         const { classes } = this.props;
@@ -246,12 +266,12 @@ class GameSearch extends Component {
                 pagination = <div style={{ padding: "25px 40px" }}>
                     <GridContainer xs={12} sm={12} md={12}>
                         <div className={"search"} style={{ margin: "auto", width: "42%" }}>
-                            <Pagination count={10} variant="outlined" shape="rounded" />
+                            <Pagination count={this.state.noPages} page={this.state.curPage} onChange={this.changePage} variant="outlined" shape="rounded" />
                         </div>
                     </GridContainer>
                     <GridContainer xs={12} sm={12} md={12}>
                         <div className={"searchMobile"} style={{ margin: "auto", width: "90%" }}>
-                            <Pagination count={10} variant="outlined" shape="rounded" />
+                            <Pagination count={this.state.noPages} page={this.state.curPage} onChange={this.changePage} variant="outlined" shape="rounded" />
                         </div>
                     </GridContainer>
                 </div>
@@ -790,7 +810,7 @@ class GameSearch extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={9}>
                                                     <span>
-                                                        <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Games <span style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>(xxxxx products)</span>
+                                                        <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Games <span style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>({this.state.noGames} products)</span>
                                                         </h2>
                                                     </span>
                                                 </GridItem>

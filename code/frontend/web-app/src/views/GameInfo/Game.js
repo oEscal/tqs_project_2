@@ -141,6 +141,8 @@ class Game extends Component {
                     description = description.replace(/&#39;s/g, "'s")
                     description = description.replace(/<p>/g, "\n")
                     description = description.replace(/<\/p>/g, "")
+                    description = description.replace(/<h3>/g, "\n")
+                    description = description.replace(/<\/h3>/g, "")
                     description = description.replace(/<br \/>/g, "\n")
 
                     var minimizedDescription = description
@@ -150,11 +152,9 @@ class Game extends Component {
                     data.minimizedDescription = minimizedDescription
                     data.description = description
 
-                    console.log(description)
-
                     var allDevelopers = ""
-                    data.developers.forEach(developer => {
-                        allDevelopers += developer.name + ", "
+                    data.developerNames.forEach(developer => {
+                        allDevelopers += developer + ", "
                     })
                     allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
                     data["allDevelopers"] = allDevelopers
@@ -166,10 +166,18 @@ class Game extends Component {
                     allGenres = allGenres.substring(0, allGenres.length - 2)
                     data["allGenres"] = allGenres
 
+                    var allPlatforms = ""
+                    data.platforms.forEach(platform => {
+                        allGenres += platform + ", "
+                    })
+                    allPlatforms = allPlatforms.substring(0, allPlatforms.length - 2)
+                    data["allPlatforms"] = allPlatforms
+
                     this.setState({ game: data })
                 }
             })
             .catch(error => {
+                console.log(error)
                 this.setState({ redirectGames: true })
             });
 
@@ -183,7 +191,7 @@ class Game extends Component {
 
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
-            return <Redirect to='/login' />
+            return <Redirect to='/login-page' />
         }
     }
 
@@ -586,7 +594,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allGenres}
+                                            {this.state.game.allPlatforms}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -622,7 +630,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allDevelopers}
+                                            {this.state.game.publisherName}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
