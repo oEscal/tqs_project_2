@@ -326,7 +326,7 @@ class GridServiceTest {
         GameKey savedGameKey = gridService.saveGameKey(gameKeyPOJO);
 
         Mockito.verify(mockGameRepo, Mockito.times(1)).findById(2L);
-        assertEquals("key", savedGameKey.getKey());
+        assertEquals("key", savedGameKey.getRKey());
         assertEquals("ps3", savedGameKey.getPlatform());
         assertEquals("steam", savedGameKey.getRetailer());
         assertEquals(game2.getName(), savedGameKey.getGame().getName());
@@ -347,39 +347,39 @@ class GridServiceTest {
     @Test
     void whenSavingValidSellPOJO_ReturnValidSell(){
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(mockGameKeyRepo.findByKey("key")).thenReturn(Optional.ofNullable(gameKey));
+        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(gameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = gridService.saveSell(sellPOJO);
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByKey("key");
+        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertEquals(2.3, savedSell.getPrice());
     }
 
     @Test
     void whenSavingInvalidUser_ReturnNullSell(){
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.empty());
-        Mockito.when(mockGameKeyRepo.findByKey("key")).thenReturn(Optional.ofNullable(gameKey));
+        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(gameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = gridService.saveSell(sellPOJO);
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(0)).findByKey("key");
+        Mockito.verify(mockGameKeyRepo, Mockito.times(0)).findByrKey("key");
         assertNull(savedSell);
     }
 
     @Test
     void whenSavingInvalidGameKey_ReturnNullSell(){
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
-        Mockito.when(mockGameKeyRepo.findByKey("key")).thenReturn(Optional.empty());
+        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.empty());
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = gridService.saveSell(sellPOJO);
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByKey("key");
+        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertNull(savedSell);
     }
 }

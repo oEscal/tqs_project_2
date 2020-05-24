@@ -77,7 +77,6 @@ public class Game {
     private Set<ReviewGame> reviews;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
