@@ -47,6 +47,7 @@ public class Sell {
 
     @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "buy_id")
+    @EqualsAndHashCode.Exclude
     private Buy purchased;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

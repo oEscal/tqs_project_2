@@ -88,6 +88,7 @@ public class GameKey {
         return Objects.equals(sell, newSell);
     }
 
+    @EqualsAndHashCode.Include
     public long getGameId(){
         if (game == null) return -1L;
         return this.game.getId();

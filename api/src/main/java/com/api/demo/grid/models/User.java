@@ -219,12 +219,12 @@ public class User {
         sell.setUser(this);
     }
 
-    public void addBuy(List<Buy> aboutToBuy) {
+    public void addBuy(Buy aboutToBuy) {
         if (this.buys == null) this.buys = new HashSet<>();
-        for (Buy buy: aboutToBuy) {
-            if (this.buys.contains(buy)) return;
-        }
-        this.buys.addAll(aboutToBuy);
-        for (Buy buy: aboutToBuy) buy.setUser(this);
+
+        if (this.buys.contains(aboutToBuy)) return;
+        System.out.println(this.buys);
+        this.buys.add(aboutToBuy);
+        aboutToBuy.setUser(this);
     }
 }

@@ -38,13 +38,13 @@ class GameKeyRepositoryTest {
         gameKey.setRKey("k");
         pEntityManager.persistAndFlush(gameKey);
 
-        assertEquals("k", pRepository.findByRKey("k").get().getRKey());
+        assertEquals("k", pRepository.findByrKey("k").get().getRKey());
     }
 
     @Test
     void whenInvalidKey_ReceiveEmpty(){
         GameKey gameKey = pEntityManager.persistAndFlush(new GameKey());
 
-        assertEquals(Optional.empty(), pRepository.findByRKey("key"));
+        assertEquals(Optional.empty(), pRepository.findByrKey("key"));
     }
 }

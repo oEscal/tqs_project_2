@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,7 +30,6 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
-@EqualsAndHashCode
 @JsonSerialize
 @SuppressFBWarnings
 public class Buy {
@@ -40,11 +40,12 @@ public class Buy {
 
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "sell_id")
-    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Sell sell;
 
     @OneToOne
-    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Auction auction;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -56,17 +57,38 @@ public class Buy {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    @Transactional
+    public void setUser(User user) {
+        //prevent endless loop
+        if (sameAsFormer(user)) return ;
+        //set new user
+        this.user = user;
+
+        //set myself into new owner
+        if (user!=null) user.addBuy(this);
+    }
+
+    private boolean sameAsFormer(User newUser) {
+        return user==null? newUser == null : newUser.equals(user);
+    }
 
     public Date getDate() {
-        return (Date) date.clone();
+        return (date==null)? null:(Date) date.clone();
     }
 
     public void setDate(Date date) {
         if (date != null) this.date = (Date) date.clone();
     }
 
+    @ToString.Include
     public long getUserId() {
         if (user == null) return -1L;
         return this.user.getId();
+    }
+
+    @ToString.Include
+    public long getSellId(){
+        if (sell == null) return -1L;
+        return this.sell.getId();
     }
 }

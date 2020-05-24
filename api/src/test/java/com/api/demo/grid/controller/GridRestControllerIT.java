@@ -18,6 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,6 +71,7 @@ class GridRestControllerIT {
     private SellPOJO mSellPOJO;
     private GameKeyPOJO mGameKeyPOJO;
     private BuyListingsPOJO mBuyListingsPOJO;
+    private static int mNumberUser = 0;
 
     @BeforeEach
     public void setUp(){
@@ -85,6 +87,8 @@ class GridRestControllerIT {
 
         mBuyListingsPOJO = new BuyListingsPOJO();
         mUserRepository.deleteAll();
+        mGameRepository.deleteAll();
+        mGameGenreRepository.deleteAll();
         mPublisherRepository.deleteAll();
         mGameKeyRepository.deleteAll();
         mSellRepository.deleteAll();
@@ -199,13 +203,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring")
     void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
-        User user = new User();
-        user.setUsername("mUsername1");
-        user.setName("mName1");
-        user.setEmail("mEmail1");
-        user.setPassword("mPassword1");
-        user.setCountry("mCountry1");
-        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        User user = createUser();
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
         gameKey.setRKey("key");
@@ -230,13 +228,7 @@ class GridRestControllerIT {
         gameKey.setPlatform("ps4");
         gameKey.setGame(game);
         mGameRepository.save(game);
-        User user = new User();
-        user.setUsername("mUsername1");
-        user.setName("mName1");
-        user.setEmail("mEmail1");
-        user.setPassword("mPassword1");
-        user.setCountry("mCountry1");
-        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        User user = createUser();
         mUserRepository.save(user);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setPrice(2.4);
@@ -255,6 +247,8 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.lowestPrice", is(2.4)))
                 .andExpect(jsonPath("$.platforms[0]", is("ps4")))
         ;
+        mGameKeyRepository.deleteAll();
+        mGameRepository.deleteAll();
     }
 
     @Test
@@ -270,12 +264,12 @@ class GridRestControllerIT {
 
     @Test
     void whenPostingValidBuylisting_ReturnBuyList() throws Exception{
-        User seller = new User();
+        User seller = createUser();
         mUserRepository.save(seller);
         Sell sell = new Sell();
         sell.setUser(mUserRepository.findById(seller.getId()).get());
         mSellRepository.save(sell);
-        User buyer = new User();
+        User buyer = createUser();
         mUserRepository.save(buyer);
         long[] listingId = {sell.getId()};
         mBuyListingsPOJO.setListingsId(listingId);
@@ -292,12 +286,12 @@ class GridRestControllerIT {
 
     @Test
     void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception{
-        User seller = new User();
+        User seller = createUser();
         mUserRepository.save(seller);
         Sell sell = new Sell();
-        sell.setUser(mUserRepository.findById(seller.getId()).get());
+        sell.setUser(seller);
         mSellRepository.save(sell);
-        User buyer = new User();
+        User buyer = createUser();
         mUserRepository.save(buyer);
 
         Buy buy = new Buy();
@@ -312,21 +306,20 @@ class GridRestControllerIT {
         mBuyListingsPOJO.setListingsId(listingId);
         mBuyListingsPOJO.setUserId(buyer.getId());
         mBuyListingsPOJO.setWithFunds(false);
-        MvcResult mvcResult = mMockMvc.perform(post("/grid/buy-listing")
+        mMockMvc.perform(post("/grid/buy-listing")
                 .content(asJsonString(mBuyListingsPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                //.andExpect(status().is4xxClientError())
-                //.andExpect(status().reason("This listing has been bought by another user"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("This listing has been bought by another user"))
         ;
         System.out.println();
     }
 
     @Test
     void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception{
-        User seller = new User();
+        User seller = createUser();
         mUserRepository.save(seller);
-        User buyer = new User();
+        User buyer = createUser();
         mUserRepository.save(buyer);
         Sell sell = new Sell();
         sell.setUser(mUserRepository.findById(seller.getId()).get());
@@ -348,9 +341,9 @@ class GridRestControllerIT {
 
     @Test
     void whenPostingValidBuylisting_AndUserHasNoFunds_ThrowException() throws Exception{
-        User seller = new User();
+        User seller = createUser();
         mUserRepository.save(seller);
-        User buyer = new User();
+        User buyer = createUser();
         buyer.setFunds(0);
         mUserRepository.save(buyer);
         Sell sell = new Sell();
@@ -375,5 +368,17 @@ class GridRestControllerIT {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static User createUser() throws ParseException {
+        User user = new User();
+        user.setUsername("mUsername" + mNumberUser);
+        user.setName("mName" + mNumberUser);
+        user.setEmail("mEmail" + mNumberUser);
+        user.setPassword("mPassword" + mNumberUser);
+        user.setCountry("mCountry" + mNumberUser);
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mNumberUser++;
+        return user;
     }
 }

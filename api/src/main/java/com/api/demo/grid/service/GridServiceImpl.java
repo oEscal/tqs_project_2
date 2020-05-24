@@ -169,7 +169,7 @@ public class GridServiceImpl implements GridService {
         if (user.isEmpty()) return null;
         User realUser = user.get();
 
-        Optional<GameKey> gameKey = this.mGameKeyRepository.findByRKey(sellPOJO.getGameKey());
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
 
@@ -208,8 +208,10 @@ public class GridServiceImpl implements GridService {
             if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
             user.payWithFunds(bill);
         }
-        user.addBuy(buyList);
-        for (Buy buy1: buyList) mBuyRepository.save(buy1);
+        for (Buy buy1: buyList) {
+            user.addBuy(buy1);
+            mBuyRepository.save(buy1);
+        }
         return buyList;
     }
 
