@@ -13,7 +13,7 @@ class DemoApplicationTest {
     private GridRestController controller;
 
     @Test
-    void contextLoads() throws Exception {
+    void contextLoads() {
         assertThat(controller).isNotNull();
     }
 
