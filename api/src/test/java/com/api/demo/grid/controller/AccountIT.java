@@ -202,6 +202,18 @@ class AccountIT {
                 .andExpect(jsonPath("$.creditCardCSC", nullValue()))
                 .andExpect(jsonPath("$.creditCardOwner", nullValue()))
                 .andExpect(jsonPath("$.creditCardExpirationDate", nullValue()));
-        assertEquals(1, mUserRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenBadLoginWithExistentSimpleUser_returnLoginError() {
+
+        // add the user to database
+        mSimpleUserDTO.setPassword("test_password");
+        mUserService.saveUser(mSimpleUserDTO);
+
+        RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
+
+        mMvc.perform(request).andExpect(status().isUnauthorized());
     }
 }
