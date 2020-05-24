@@ -1,18 +1,11 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,7 +15,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Service
-public class GridServiceImpl implements GridService{
+public class GridServiceImpl implements GridService {
 
     @Autowired
     private DeveloperRepository mDeveloperRepository;
@@ -36,6 +29,15 @@ public class GridServiceImpl implements GridService{
     @Autowired
     private GameRepository mGameRepository;
 
+    @Autowired
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private SellRepository mSellRepository;
+
+    @Autowired
+    private UserRepository mUserRepository;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = mGameRepository.findById(id);
@@ -46,8 +48,9 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public List<Game> getAllGames() {
-        return mGameRepository.findAll();
+    public Page<Game> getAllGames(int page) {
+        Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
+        return games;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public Game saveGame(GamePOJO gamePOJO){
+    public Game saveGame(GamePOJO gamePOJO) {
         Game game = new Game();
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
@@ -93,7 +96,7 @@ public class GridServiceImpl implements GridService{
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
-        for (String gameGenrePOJO: gamePOJO.getGameGenres()) {
+        for (String gameGenrePOJO : gamePOJO.getGameGenres()) {
             gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
             gameGenreSet.add(gameGenre.get());
@@ -108,7 +111,7 @@ public class GridServiceImpl implements GridService{
         //Get Game Developers
         Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
-        for (String developerPOJO: gamePOJO.getDevelopers()) {
+        for (String developerPOJO : gamePOJO.getDevelopers()) {
             developer = mDeveloperRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
             developerSet.add(developer.get());
@@ -142,6 +145,40 @@ public class GridServiceImpl implements GridService{
         gameGenre.setName(gameGenrePOJO.getName());
         this.mGameGenreRepository.save(gameGenre);
         return gameGenre;
+    }
+
+    @Override
+    public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
+        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
+        if (game.isEmpty()) return null;
+        Game realGame = game.get();
+
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey(gameKeyPOJO.getKey());
+        gameKey.setGame(realGame);
+        gameKey.setRetailer(gameKeyPOJO.getRetailer());
+        gameKey.setPlatform(gameKeyPOJO.getPlatform());
+        this.mGameKeyRepository.save(gameKey);
+        return gameKey;
+    }
+
+    @Override
+    public Sell saveSell(SellPOJO sellPOJO) {
+        Optional<User> user = this.mUserRepository.findById(sellPOJO.getUserId());
+        if (user.isEmpty()) return null;
+        User realUser = user.get();
+
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
+        if (gameKey.isEmpty()) return null;
+        GameKey realGameKey = gameKey.get();
+
+        Sell sell = new Sell();
+        sell.setUser(realUser);
+        sell.setGameKey(realGameKey);
+        sell.setPrice(sellPOJO.getPrice());
+        sell.setDate(sellPOJO.getDate());
+        this.mSellRepository.save(sell);
+        return sell;
     }
 
 }
