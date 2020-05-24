@@ -187,15 +187,23 @@ class Game extends Component {
         }
     }
 
-    renderRedirectGames = () => {
-        if (this.state.redirectGames) {
-            return <Redirect to='/games' />
-        }
-    }
 
     render() {
         const { classes } = this.props;
 
+        if(this.state.redirectGames){
+            return (
+                <div>
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+
+                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                        <FadeIn>
+                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                        </FadeIn>
+                    </div>
+                </div>
+            )
+        }
 
 
         if (!this.state.doneLoading) {
@@ -768,8 +776,6 @@ class Game extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     {this.renderRedirectLogin()}
-                    {this.renderRedirectGames()}
-
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
