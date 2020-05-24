@@ -40,7 +40,6 @@ public class Account {
         String credentials = new String(credDecoded, StandardCharsets.UTF_8);
 
         final String[] values = credentials.split(":", 2);
-        System.out.println(values[0]);
         User user = mUserService.getUser(values[0]);
 
         return ResponseEntity.ok().body(user);
