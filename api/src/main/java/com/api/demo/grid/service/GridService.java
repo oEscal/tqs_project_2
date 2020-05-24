@@ -4,14 +4,13 @@ import com.api.demo.grid.exceptions.UnavailableListingException;
 import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Service
 public interface GridService {
     Game getGameById(long id);
-    List<Game> getAllGames();
+    Page<Game> getAllGames(int page);
     List<Game> getAllGamesWithGenre(String genre);
     List<Game> getAllGamesByName(String name);
     List<Game> getAllGamesByDev(String developer);

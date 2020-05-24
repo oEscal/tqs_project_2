@@ -5,7 +5,8 @@ import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
-import lombok.SneakyThrows;
+
+import com.api.demo.grid.utils.Pagination;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Arrays;
@@ -97,7 +100,7 @@ class GridServiceTest {
         mBuyer.setId(11l);
 
         mGameKey = new GameKey();
-        mGameKey.setKey("key1");
+        mGameKey.setRKey("key1");
         mGameKey.setId(7L);
 
         mSell1 = new Sell();
@@ -110,23 +113,29 @@ class GridServiceTest {
         mSell2.setUser(mUser);
 
         GameKey gameKey1 = new GameKey();
-        gameKey1.setKey("key2");
+        gameKey1.setRKey("key2");
         gameKey1.setId(10l);
 
         mSell2.setGameKey(gameKey1);
     }
 
     @Test
-    void whenSearchingAll_ReturnAllGame(){
-        List<Game> games = Arrays.asList(mGame, mGame2);
-        Mockito.when(mMockGameRepo.findAll()).thenReturn(games);
+    void whenSearchingAll_ReturnAllGame() {
+        List<Game> gamesList = Arrays.asList(mGame, mGame2);
+        Pagination<Game> pagination = new Pagination<>(gamesList);
+        int page = 1;
+        int entriesPerPage = 18;
+        PageRequest pageRequest = PageRequest.of(page, entriesPerPage);
 
-        assertEquals(games, mGridService.getAllGames());
-        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAll();
+        Page<Game> games = pagination.pageImpl(page, entriesPerPage);
+        Mockito.when(mMockGameRepo.findAll(pageRequest)).thenReturn(games);
+
+        assertEquals(games, mGridService.getAllGames(page));
+        Mockito.verify(mMockGameRepo, Mockito.times(1)).findAll(pageRequest);
     }
 
     @Test
-    void whenSearchingId_ReturnRightGame(){
+    void whenSearchingId_ReturnRightGame() {
         Mockito.when(mMockGameRepo.findById(1L)).thenReturn(java.util.Optional.ofNullable(mGame));
 
         assertEquals(mGame, mGridService.getGameById(1L));
@@ -209,7 +218,6 @@ class GridServiceTest {
         List<Game> games = Arrays.asList(mGame);
         Mockito.when(mMockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(mPublisher));
         Mockito.when(mMockGameRepo.findAllByPublisher(mPublisher)).thenReturn(games);
-
         assertEquals(games, mGridService.getAllGamesByPublisher("Pub"));
         Mockito.verify(mMockPubRepo, Mockito.times(1)).findByName(Mockito.anyString());
         Mockito.verify(mMockGameRepo, Mockito.times(1))
@@ -228,7 +236,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingGameGenrePojo_ReturnValidGameGenre(){
+    void whenSavingGameGenrePojo_ReturnValidGameGenre() {
         GameGenrePOJO gameGenrePOJO = new GameGenrePOJO("Genre", null);
 
         GameGenre savedGameGenre = mGridService.saveGameGenre(gameGenrePOJO);
@@ -238,7 +246,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingDevPOJO_ReturnValidDeveloper(){
+    void whenSavingDevPOJO_ReturnValidDeveloper() {
         DeveloperPOJO developerPOJO = new DeveloperPOJO("Dev");
 
         Developer savedDev = mGridService.saveDeveloper(developerPOJO);
@@ -247,7 +255,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingPubPOJO_ReturnValidPublisher(){
+    void whenSavingPubPOJO_ReturnValidPublisher() {
         PublisherPOJO publisherPOJO = new PublisherPOJO("Pub", null);
 
         Publisher savedPub = mGridService.savePublisher(publisherPOJO);
@@ -296,12 +304,12 @@ class GridServiceTest {
         Mockito.verify(mMockGameGenreRepo, Mockito.times(1)).findByName("Genre");
         assertNull(savedGame);
     }
+
     @Test
     void whenSavingGamePOJOWithInvalidPub_ReturnNull(){
         Mockito.when(mMockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(mGameGenre));
         Mockito.when(mMockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(mDeveloper));
         Mockito.when(mMockPubRepo.findByName("Pub")).thenReturn(Optional.empty());
-
         Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
 
         Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
@@ -314,12 +322,12 @@ class GridServiceTest {
         Mockito.verify(mMockGameGenreRepo, Mockito.times(1)).findByName("Genre");
         assertNull(savedGame);
     }
+
     @Test
     void whenSavingGamePOJOWithInvalidDev_ReturnNull(){
         Mockito.when(mMockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(mGameGenre));
         Mockito.when(mMockDevRepo.findByName("Dev")).thenReturn(Optional.empty());
         Mockito.when(mMockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(mPublisher));
-
         Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
 
         Set<String> developerPOJOSet = new HashSet<>(Arrays.asList("Dev"));
@@ -342,7 +350,7 @@ class GridServiceTest {
         GameKey savedGameKey = mGridService.saveGameKey(gameKeyPOJO);
 
         Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(2L);
-        assertEquals("key", savedGameKey.getKey());
+        assertEquals("key", savedGameKey.getRKey());
         assertEquals("ps3", savedGameKey.getPlatform());
         assertEquals("steam", savedGameKey.getRetailer());
         assertEquals(mGame2.getName(), savedGameKey.getGame().getName());
@@ -363,39 +371,39 @@ class GridServiceTest {
     @Test
     void whenSavingValidSellPOJO_ReturnValidSell(){
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
-        Mockito.when(mMockGameKeyRepo.findByKey("key")).thenReturn(Optional.ofNullable(mGameKey));
+        Mockito.when(mMockGameKeyRepo.findByRKey("key")).thenReturn(Optional.ofNullable(mGameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = mGridService.saveSell(sellPOJO);
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByKey("key");
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByRKey("key");
         assertEquals(2.3, savedSell.getPrice());
     }
 
     @Test
     void whenSavingInvalidUser_ReturnNullSell(){
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.empty());
-        Mockito.when(mMockGameKeyRepo.findByKey("key")).thenReturn(Optional.ofNullable(mGameKey));
+        Mockito.when(mMockGameKeyRepo.findByRKey("key")).thenReturn(Optional.ofNullable(mGameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = mGridService.saveSell(sellPOJO);
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mMockGameKeyRepo, Mockito.times(0)).findByKey("key");
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(0)).findByRKey("key");
         assertNull(savedSell);
     }
 
     @Test
     void whenSavingInvalidGameKey_ReturnNullSell(){
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
-        Mockito.when(mMockGameKeyRepo.findByKey("key")).thenReturn(Optional.empty());
+        Mockito.when(mMockGameKeyRepo.findByRKey("key")).thenReturn(Optional.empty());
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = mGridService.saveSell(sellPOJO);
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByKey("key");
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByRKey("key");
         assertNull(savedSell);
     }
 

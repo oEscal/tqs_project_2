@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
 
 import java.util.Objects;
 import javax.persistence.Column;
@@ -39,7 +40,7 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
-    private String key;
+    private String rKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")

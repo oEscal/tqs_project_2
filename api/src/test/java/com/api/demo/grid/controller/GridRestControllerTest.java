@@ -5,6 +5,7 @@ import com.api.demo.grid.exceptions.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -62,7 +65,7 @@ class GridRestControllerTest {
     private BuyListingsPOJO mBuyListingsPOJO;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         mGame = new Game();
         mGame.setDescription("");
         mGame.setName("game");
@@ -95,7 +98,7 @@ class GridRestControllerTest {
         mUser.setId(2L);
 
         mGameKey = new GameKey();
-        mGameKey.setKey("key");
+        mGameKey.setRKey("key");
         mGameKey.setGame(mGame);
         mGameKey.setId(3L);
 
@@ -123,20 +126,45 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenRequestAll_ReturnAll() throws Exception {
-        Mockito.when(mGridService.getAllGames()).thenReturn(Arrays.asList(mGame));
+        Pagination<Game> pagination = new Pagination<>(Arrays.asList(mGame));
+        Page<Game> games = pagination.pageImpl(1, 1);
 
-        mMockMvc.perform(get("/grid/all").contentType(MediaType.APPLICATION_JSON))
+        int page = 1;
+        Mockito.when(mGridService.getAllGames(page)).thenReturn(games);
+
+        mMockMvc.perform(get("/grid/all")
+                .param("page", String.valueOf(page))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(1)));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(1)));
 
-        Mockito.verify(mGridService, Mockito.times(1)).getAllGames();
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGames(page);
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
+    void whenRequestAllEmpty_ReturnEmpty() throws Exception {
+        Pagination<Game> pagination = new Pagination<>(new ArrayList<>());
+        Page<Game> games = pagination.pageImpl(10, 10);
+
+        int page = 1;
+        Mockito.when(mGridService.getAllGames(page)).thenReturn(games);
+
+        mMockMvc.perform(get("/grid/all")
+                .param("page", String.valueOf(page))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(0)));
+
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGames(page);
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
     void whenRequestGameInfo_ReturnGame() throws Exception {
         Mockito.when(mGridService.getGameById(1L)).thenReturn(mGame);
 
@@ -151,7 +179,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenRequestGenre_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesWithGenre("genre")).thenReturn(Arrays.asList(mGame));
 
@@ -166,7 +194,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenRequestName_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByName("game")).thenReturn(Arrays.asList(mGame));
 
@@ -181,7 +209,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenRequestDev_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByDev("dev")).thenReturn(Arrays.asList(mGame));
 
@@ -196,7 +224,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenRequestPub_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByPublisher("pub")).thenReturn(Arrays.asList(mGame));
 
@@ -211,7 +239,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenInvalidGameId_Return404Exception() throws Exception {
         Mockito.when(mGridService.getGameById(1L)).thenReturn(null);
 
@@ -226,7 +254,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenInvalidGameGenre_Return404Exception() throws Exception {
         Mockito.when(mGridService.getAllGamesWithGenre("no")).thenReturn(null);
 
@@ -241,7 +269,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenInvalidDev_Return404Exception() throws Exception {
         Mockito.when(mGridService.getAllGamesByDev("dev")).thenReturn(null);
 
@@ -255,7 +283,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
+    @WithMockUser(username = "spring")
     void whenInvalidPub_Return404Exception() throws Exception {
         Mockito.when(mGridService.getAllGamesByPublisher("pub")).thenReturn(null);
 
@@ -269,8 +297,8 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidGenre_ReturnValidResponse() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidGenre_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(mGameGenre);
         mMockMvc.perform(post("/grid/genre")
                 .content(asJsonString(mGameGenrePOJO))
@@ -281,8 +309,8 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidPub_ReturnValidResponse() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidPub_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.savePublisher(Mockito.any(PublisherPOJO.class))).thenReturn(mPublisher);
         mMockMvc.perform(post("/grid/publisher")
                 .content(asJsonString(mPublisherPOJO))
@@ -292,8 +320,8 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveDeveloper(Mockito.any(DeveloperPOJO.class))).thenReturn(mDeveloper);
         mMockMvc.perform(post("/grid/developer")
                 .content(asJsonString(mDeveloperPOJO))
@@ -303,8 +331,8 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidGame_ReturnValidResponse() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidGame_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(mGame);
         mMockMvc.perform(post("/grid/game")
                 .content(asJsonString(mGamePOJO))
@@ -314,8 +342,8 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username="spring")
-    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
         mMockMvc.perform(post("/grid/game")
                 .content(asJsonString(mGamePOJO))
@@ -332,7 +360,7 @@ class GridRestControllerTest {
                 .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.key", is("key")))
+                .andExpect(jsonPath("$.rkey", is("key")))
                 .andExpect(jsonPath("$.gameId", is(1)))
         ;
     }

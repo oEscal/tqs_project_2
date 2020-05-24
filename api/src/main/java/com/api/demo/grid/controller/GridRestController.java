@@ -5,6 +5,7 @@ import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,9 +28,9 @@ public class GridRestController {
     @Autowired
     private GridService mGridService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Game>> getAllGames(){
-        return ResponseEntity.ok(mGridService.getAllGames());
+    @GetMapping(value="/all", params = { "page" })
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+        return ResponseEntity.ok(mGridService.getAllGames(page));
     }
 
     @GetMapping("/game")
@@ -122,7 +122,7 @@ public class GridRestController {
 
     @PostMapping("/buy-listing")
     public ResponseEntity<List<Buy>> saveBuy(@RequestBody @Valid BuyListingsPOJO buyListingsPOJO){
-        List<Buy> buys = new ArrayList<>();
+        List<Buy> buys;
         try {
             buys = mGridService.saveBuy(buyListingsPOJO);
         } catch (UnavailableListingException e) {

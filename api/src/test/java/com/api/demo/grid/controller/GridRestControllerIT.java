@@ -179,7 +179,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.key", is("key")))
+                .andExpect(jsonPath("$.rkey", is("key")))
                 .andExpect(jsonPath("$.gameId", is(Math.toIntExact(game.getId()))))
         ;
     }
@@ -208,7 +208,7 @@ class GridRestControllerIT {
         user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
-        gameKey.setKey("key");
+        gameKey.setRKey("key");
         mGameKeyRepository.save(gameKey);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
@@ -216,7 +216,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameKey.key", is("key")))
+                .andExpect(jsonPath("$.gameKey.rkey", is("key")))
                 .andExpect(jsonPath("$.userId", is(Math.toIntExact(user.getId()))))
         ;
     }
@@ -226,7 +226,7 @@ class GridRestControllerIT {
     void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception{
         Game game = new Game();
         GameKey gameKey = new GameKey();
-        gameKey.setKey("key");
+        gameKey.setRKey("key");
         gameKey.setPlatform("ps4");
         gameKey.setGame(game);
         mGameRepository.save(game);
