@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import static com.api.demo.grid.utils.UserJson.simpleUserJson;
 import static com.api.demo.grid.utils.UserJson.userCreditCardJson;

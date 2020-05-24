@@ -71,7 +71,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date", nullable = false)
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern="dd/MM/yyyy", locale = "en_GB")
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
