@@ -19,8 +19,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -339,6 +341,43 @@ class UserServiceTest {
 
     @Test
     void whenSearchignInvalidUser_throwUserNotFoundException(){
+        given(mUserRepository.findByUsername("username1")).willReturn(null);
+
+        assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenSearchingValidUser_andAmUser_getFullInformation() {
+        //Added sell
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey("key");
+        gameKey.setId(1l);
+        Sell sell = new Sell();
+        sell.setId(2l);
+        sell.setGameKey(gameKey);
+        mUser1.addSell(sell);
+        given(mUserRepository.findByUsername("username1")).willReturn(mUser1);
+
+        User user = null;
+        try {
+            user = mUserService.getFullUserInfo("username1");
+        } catch (UserNotFoundException e) {
+            fail();
+        }
+
+        assertEquals(mUsername1, user.getUsername());
+        assertEquals(mName1, user.getName());
+        assertEquals(mBirthDateStr, user.getBirthDateStr());
+        assertEquals(mCountry1, user.getCountry());
+        assertEquals(2l, new ArrayList<>(user.getSells()).get(0).getId());
+        assertEquals(1l, new ArrayList<>(user.getSells()).get(0).getGameKey().getId());
+        //TODO check for buys and wishlist when endpoints are done
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenSearchingInvalidUser_andAmUser_throwUserNotFoundException(){
         given(mUserRepository.findByUsername("username1")).willReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));

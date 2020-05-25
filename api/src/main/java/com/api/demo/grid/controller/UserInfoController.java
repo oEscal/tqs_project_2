@@ -1,6 +1,7 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.grid.exception.UserNotFoundException;
+import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,19 @@ public class UserInfoController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(value="/user-info", params={"username"})
+    @GetMapping(value="/public/user-info", params={"username"})
     public ResponseEntity<UserInfoProxy> getUserInfo(@RequestParam("username") String username){
         try{
             return ResponseEntity.ok(userService.getUserInfo(username));
+        } catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping(value="/private/user-info", params={"username"})
+    public ResponseEntity<User> getPrivateUserInfo(@RequestParam("username") String username){
+        try{
+            return ResponseEntity.ok(userService.getFullUserInfo(username));
         } catch (UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

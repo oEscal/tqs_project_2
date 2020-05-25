@@ -82,7 +82,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
                 .thenReturn(mUserInfoProxy);
 
-        mMockMvc.perform(get("/grid/user-info")
+        mMockMvc.perform(get("/grid/public/user-info")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -103,7 +103,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
                 .thenThrow(new UserNotFoundException("Username not found in the database"));
 
-        mMockMvc.perform(get("/grid/user-info")
+        mMockMvc.perform(get("/grid/public/user-info")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())

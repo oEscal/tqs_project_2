@@ -21,22 +21,22 @@ public class UserInfoProxy {
     private String birthDate;
     private String startDate;
     private List<Sell> listings;
+    private List<ReviewUser> reviews;
 
     public UserInfoProxy(User user){
         this.username = user.getUsername();
         this.name = user.getName();
-        this.score = this.calculateScore(user.getReviews());
         this.photoUrl = user.getPhotoUrl();
         this.country = user.getCountry();
         this.description = user.getDescription();
         this.birthDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getBirthDate());
         this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getStartDate());
         this.listings = (user.getSells() == null)? new ArrayList<>():new ArrayList<>(user.getSells());
-
+        this.reviews = (user.getReviews() == null)? new ArrayList<>(): new ArrayList<>(user.getReviews());
     }
 
-    private double calculateScore(Set<ReviewUser> reviews){
-        if (reviews == null || reviews.isEmpty()) return -1;
+    private double getScore(){
+        if (reviews.isEmpty()) return -1;
         double sum = 0;
         for (ReviewUser review: reviews) sum += review.getScore();
         return sum/reviews.size();

@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -39,6 +40,7 @@ public class ReportReviewGame {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User author;
 
     @Temporal(TemporalType.DATE)
@@ -47,6 +49,7 @@ public class ReportReviewGame {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_game_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private ReviewGame reported;
 
 
@@ -57,4 +60,8 @@ public class ReportReviewGame {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
+
+    public long getTargetId() { return (reported == null)? 0:reported.getId(); }
 }

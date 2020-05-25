@@ -77,4 +77,12 @@ public class UserService {
         return new UserInfoProxy(user);
     }
 
+    public User getFullUserInfo(String username) throws UserNotFoundException {
+        User user = mRepository.findByUsername(username);
+
+        if (user == null) throw new UserNotFoundException("Username not found in the database");
+
+        return user;
+    }
+
 }

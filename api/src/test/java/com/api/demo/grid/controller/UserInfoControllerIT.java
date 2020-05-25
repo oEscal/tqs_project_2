@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
@@ -96,7 +97,7 @@ class UserInfoControllerIT {
     void whenSearchingForValidUsername_getValidProxy(){
         mGameRepo.save(mGame);
 
-        mMockMvc.perform(get("/grid/user-info")
+        mMockMvc.perform(get("/grid/public/user-info")
                 .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -115,7 +116,42 @@ class UserInfoControllerIT {
     @SneakyThrows
     void whenSearchingForInvalidUsername_getException(){
 
-        mMockMvc.perform(get("/grid/user-info")
+        mMockMvc.perform(get("/grid/public/user-info")
+                .param("username", "user")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason(is("Username not found in the database")))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockUser(username = "spring")
+    void whenSearchingForValidUsername_andIsUserOrAdmin_getValidProxy(){
+        mGameRepo.save(mGame);
+
+        mMockMvc.perform(get("/grid/private/user-info")
+                .param("username", "username1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.country", is(mCountry1)))
+                .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
+                .andExpect(jsonPath("$.listings[0].id", is((int)mSell.getId())))
+                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId())))
+        ;
+        //TODO check for wishlist, buys and reviews once endpoints are done
+
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockUser(username = "spring")
+    void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
+
+        mMockMvc.perform(get("/grid/public/user-info")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())

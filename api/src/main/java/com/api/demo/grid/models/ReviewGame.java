@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -54,10 +55,12 @@ public class ReviewGame {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User author;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Game game;
 
 
@@ -68,4 +71,8 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
+
+    public long getGameId() { return (game == null)? 0:game.getId(); }
 }
