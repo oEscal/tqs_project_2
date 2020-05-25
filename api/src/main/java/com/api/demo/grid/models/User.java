@@ -75,11 +75,19 @@ public class User {
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
-    
+
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
+    @JsonFormat(pattern="dd/MM/yyyy")
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;
 
     private String photoUrl;
+
+    @Column(columnDefinition = "LONGTEXT default 'This user has no description'")
+    private String description;
 
     /***
      *  User's credit card info

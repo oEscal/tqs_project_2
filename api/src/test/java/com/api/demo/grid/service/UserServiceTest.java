@@ -2,7 +2,9 @@ package com.api.demo.grid.service;
 
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.RandomStringUtils;
@@ -19,12 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 
@@ -52,7 +49,8 @@ class UserServiceTest {
             mCountry1 = "country1",
             mPassword1 = "password1",
             mPasswordEncrypted1 = "password_encrypted1",
-            mBirthDateStr = "17/10/2010";
+            mBirthDateStr = "17/10/2010",
+            mStartDateStr = "25/05/2020";
 
 
     @BeforeEach
@@ -63,9 +61,10 @@ class UserServiceTest {
         mUser1.setUsername(mUsername1);
         mUser1.setName(mName1);
         mUser1.setEmail(mEmail1);
-        mUser1.setEmail(mCountry1);
+        mUser1.setCountry(mCountry1);
         mUser1.setPassword(mPasswordEncrypted1);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        mUser1.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
@@ -101,9 +100,10 @@ class UserServiceTest {
         userExpected.setUsername(mUsername1);
         userExpected.setName(mName1);
         userExpected.setEmail(mEmail1);
-        userExpected.setEmail(mCountry1);
+        userExpected.setCountry(mCountry1);
         userExpected.setPassword(mPasswordEncrypted1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        userExpected.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         userExpected.setPassword(null);
 
@@ -307,5 +307,29 @@ class UserServiceTest {
         given(mUserRepository.save(mUser1)).willReturn(mUser1);
 
         assertThrows(ExceptionDetails.class, () -> mUserService.saveUser(mSimpleUserDTO));
+    }
+
+    @Test
+    void whenSearchingValidUser_getValidUserProxy() {
+        given(mUserRepository.findByUsername("username1")).willReturn(mUser1);
+
+        UserInfoProxy userProxy = null;
+        try {
+            userProxy = mUserService.getUserInfo("username1");
+        } catch (UserNotFoundException e) {
+            fail();
+        }
+
+        assertEquals(mUsername1, userProxy.getUsername());
+        assertEquals(mName1, userProxy.getName());
+        assertEquals(mBirthDateStr, userProxy.getBirthDate());
+        assertEquals(mCountry1, userProxy.getCountry());
+    }
+
+    @Test
+    void whenSearchignInvalidUser_throwUserNotFoundException(){
+        given(mUserRepository.findByUsername("username1")).willReturn(null);
+
+        assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));
     }
 }
