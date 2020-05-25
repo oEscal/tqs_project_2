@@ -247,8 +247,6 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.lowestPrice", is(2.4)))
                 .andExpect(jsonPath("$.platforms[0]", is("ps4")))
         ;
-        mGameKeyRepository.deleteAll();
-        mGameRepository.deleteAll();
     }
 
     @Test

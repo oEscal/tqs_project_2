@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Entity
@@ -30,6 +31,7 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@EqualsAndHashCode
 @JsonSerialize
 @SuppressFBWarnings
 public class Buy {
@@ -38,7 +40,7 @@ public class Buy {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private long id;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "sell_id")
     @JsonIgnore
     @ToString.Exclude
@@ -90,5 +92,15 @@ public class Buy {
     public long getSellId(){
         if (sell == null) return -1L;
         return this.sell.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Buy buy = (Buy) o;
+        if (buy.getId() == id) return true;
+        return Objects.equals(date, buy.date) && buy.getSellId() == this.getSellId()
+                && this.getUserId()==buy.getUserId();
     }
 }

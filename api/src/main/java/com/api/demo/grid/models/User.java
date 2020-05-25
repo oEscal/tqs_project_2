@@ -223,7 +223,7 @@ public class User {
         if (this.buys == null) this.buys = new HashSet<>();
 
         if (this.buys.contains(aboutToBuy)) return;
-        System.out.println(this.buys);
+
         this.buys.add(aboutToBuy);
         aboutToBuy.setUser(this);
     }
