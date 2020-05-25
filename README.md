@@ -45,3 +45,5 @@ Or reduce the password validation strength with:
  ```bash
  $ docker container run --env-file ~/env_vars/rest_api.env --publish 8080:8080 --detach --name rest docker.pkg.github.com/oescal/tqs_project_2/api                # run the rest container
  $ docker container run --env-file ~/env_vars/frontend.env --publish 80:80 --detach --name web-app docker.pkg.github.com/oescal/tqs_project_2/web-app              # run the web-app container
+
+ $ docker run --env-file ~/env_vars/watchtower.env -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock -v ~/.docker/config.json:/config.json containrrr/watchtower              # run the watchtower container for continuous deployment
