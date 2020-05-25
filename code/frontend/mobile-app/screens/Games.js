@@ -19,7 +19,60 @@ export default class GamesScreen extends React.Component {
     noGames: 0,
 
     gamesLoaded: false,
-    totalNumberOfPages: 1
+    totalNumberOfPages: 1,
+    searchParam: ""
+  }
+
+  async searchGame() {
+    if (this.state.searchParam == "") {
+      this.allGames()
+    } else {
+      var login_info = null
+      if (global.user != null) {
+        login_info = global.user.token
+      }
+
+      await this.setState({ gamesLoaded: false })
+
+      // Get All Games
+      await fetch(baseURL + "grid/name?name=" + this.state.searchParam, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: login_info
+        }
+      })
+        .then(response => {
+          if (response.status === 401) {
+            return response
+          } else if (response.status === 200) {
+            return response.json()
+          }
+          else throw new Error(response.status);
+        })
+        .then(data => {
+          if (data.status === 401) { // Wrong token
+            localStorage.setItem('loggedUser', null);
+            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+            this.setState({
+              redirectLogin: true
+            })
+
+          } else {
+            this.setState({
+              noPages: 0,
+              totalNumberOfPages: -1,
+              games: data
+            })
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        });
+
+      await this.setState({ gamesLoaded: true })
+    }
   }
 
   async allGames() {
@@ -56,7 +109,7 @@ export default class GamesScreen extends React.Component {
           })
 
         } else {
-          if (data.first) {
+          if (data.first || this.state.totalNumberOfPages == -1) {
             this.setState({
               noPages: data.totalPages,
               noGames: data.totalElements,
@@ -100,6 +153,19 @@ export default class GamesScreen extends React.Component {
     this.setState({ doneLoading: true })
   }
 
+  renderSearch = () => {
+    return (
+      <Input
+        right
+        color="black"
+        style={styles.search}
+        placeholder="Looking for something in specific?"
+        onChangeText={(search) => this.setState({ searchParam: search })}
+        onSubmitEditing={() => this.searchGame()}
+        iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="magnifying-glass" family="entypo" />}
+      />
+    )
+  }
 
   renderProducts = () => {
     var loadedItems = null
@@ -126,7 +192,7 @@ export default class GamesScreen extends React.Component {
     }
 
     var pagination = null
-    if (this.state.gamesLoaded && !empty) {
+    if (this.state.gamesLoaded && !empty && this.state.totalNumberOfPages != -1) {
       var back = null
       var forward = null
       if (this.state.curPage == 1) {
@@ -183,6 +249,7 @@ export default class GamesScreen extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
+        {this.renderSearch()}
         {this.renderProducts()}
       </Block>
     );
@@ -216,6 +283,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     marginTop: 10,
     elevation: 4,
+  },
+  search: {
+    height: 48,
+    width: width - 32,
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderRadius: 3,
   },
   tab: {
     backgroundColor: theme.COLORS.TRANSPARENT,

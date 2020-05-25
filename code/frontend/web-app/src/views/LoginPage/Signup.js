@@ -111,7 +111,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorMinimum"
+        toastId: "errorMinimum"
       });
       error = true
     }
@@ -125,7 +125,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorBirthday"
+        toastId: "errorBirthday"
       });
       error = true
     } else {
@@ -140,7 +140,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorEmail"
+        toastId: "errorEmail"
       });
       error = true
     }
@@ -155,7 +155,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorPass"
+        toastId: "errorPass"
       });
       error = true
     }
@@ -170,8 +170,10 @@ class Signup extends Component {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
+          toastId: "errorCardAll"
         });
         error = true
+        console.log(document.getElementById("errorMinimum"))
       }
     } else {
       cardNumber = null
@@ -190,6 +192,7 @@ class Signup extends Component {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
+          toastId: "errorCardExpiration"
         });
         error = true
       } else {
@@ -205,6 +208,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId: "errorCardCVC"
       });
       error = true
     }
