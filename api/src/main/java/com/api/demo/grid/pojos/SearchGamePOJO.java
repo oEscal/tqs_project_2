@@ -13,8 +13,6 @@ public class SearchGamePOJO {
     String name;
     String[] genres;
     String[] plataforms;
-    String[] publishers;
-    String[] developers;
     double startPrice;
     double endPrice;
 }

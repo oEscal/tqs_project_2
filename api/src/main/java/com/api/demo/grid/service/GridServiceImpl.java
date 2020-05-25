@@ -4,10 +4,7 @@ import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.DeveloperRepository;
 import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameRepository;
@@ -15,11 +12,7 @@ import com.api.demo.grid.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService{
@@ -142,6 +135,11 @@ public class GridServiceImpl implements GridService{
         gameGenre.setName(gameGenrePOJO.getName());
         this.mGameGenreRepository.save(gameGenre);
         return gameGenre;
+    }
+
+    @Override
+    public List<Game> searchGames(SearchGamePOJO searchGamePOJO){
+        return new ArrayList<>();
     }
 
 }

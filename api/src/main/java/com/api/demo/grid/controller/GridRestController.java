@@ -71,7 +71,7 @@ public class GridRestController {
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
         return null;
     }
