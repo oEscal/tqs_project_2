@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
@@ -79,7 +80,7 @@ public class User {
     @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    private Date startDate;
+    private Date startDate = new Date();
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;

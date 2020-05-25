@@ -58,7 +58,8 @@ class AccountIT {
             mEmail1 = "email1",
             mCountry1 = "country1",
             mPassword1 = "password1",
-            mBirthDateStr = "17/10/2010";
+            mBirthDateStr = "17/10/2010"
+    ;
 
 
     @BeforeEach
