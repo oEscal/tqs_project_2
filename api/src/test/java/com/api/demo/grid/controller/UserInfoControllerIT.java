@@ -1,20 +1,15 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
-import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.repository.UserRepository;
-import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
-public class UserInfoControllerIT {
+class UserInfoControllerIT {
     @Autowired
     private MockMvc mMockMvc;
 

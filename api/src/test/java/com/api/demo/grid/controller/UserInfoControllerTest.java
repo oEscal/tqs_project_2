@@ -3,7 +3,6 @@ package com.api.demo.grid.controller;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
-import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,7 @@ import java.text.SimpleDateFormat;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-public class UserInfoControllerTest {
+class UserInfoControllerTest {
     @Autowired
     private MockMvc mMockMvc;
 

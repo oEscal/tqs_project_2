@@ -23,7 +23,6 @@ import javax.persistence.JoinColumn;
 
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
