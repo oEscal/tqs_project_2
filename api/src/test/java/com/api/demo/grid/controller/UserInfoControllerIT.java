@@ -1,13 +1,15 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.DemoApplication;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
-import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,33 +17,33 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.mockito.Mockito;
+
+import java.text.SimpleDateFormat;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
-
-@SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-public class UserInfoControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
+public class UserInfoControllerIT {
     @Autowired
     private MockMvc mMockMvc;
 
-    @MockBean
-    private UserService mMockUserService;
+    @Autowired
+    private UserRepository mUserRepo;
 
     private User mUser;
-    private UserInfoProxy mUserInfoProxy;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
             mCountry1 = "country1",
+            mPassword1 = "password1",
             mBirthDateStr = "17/10/2010",
-            mStartDateStr = "25/05/2020";
+            mStartDateStr = "25/05/2020",
+            mPhotoUrl = "photo.jpg";
 
     @BeforeEach
     @SneakyThrows
@@ -51,20 +53,22 @@ public class UserInfoControllerTest {
         mUser.setName(mName1);
         mUser.setEmail(mEmail1);
         mUser.setCountry(mCountry1);
+        mUser.setPassword(mPassword1);
+        mUser.setPhotoUrl(mPhotoUrl);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
-        mUserInfoProxy = new UserInfoProxy(mUser);
+        mUserRepo.deleteAll();
+
     }
 
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
-        Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
-                .thenReturn(mUserInfoProxy);
+        mUserRepo.save(mUser);
 
         mMockMvc.perform(get("/grid/user-info")
-                .param("username", "user")
+                .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is(mUsername1)))
@@ -79,8 +83,6 @@ public class UserInfoControllerTest {
     @Test
     @SneakyThrows
     void whenSearchingForInvalidUsername_getException(){
-        Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
-                .thenThrow(new UserNotFoundException("Username not found in the database"));
 
         mMockMvc.perform(get("/grid/user-info")
                 .param("username", "user")
