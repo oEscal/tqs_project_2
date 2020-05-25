@@ -1,12 +1,13 @@
 package com.api.demo.grid.proxy;
 
 import com.api.demo.grid.models.ReviewUser;
+import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.text.SimpleDateFormat;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -19,6 +20,7 @@ public class UserInfoProxy {
     private String description;
     private String birthDate;
     private String startDate;
+    private List<Sell> listings;
 
     public UserInfoProxy(User user){
         this.username = user.getUsername();
@@ -29,6 +31,8 @@ public class UserInfoProxy {
         this.description = user.getDescription();
         this.birthDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getBirthDate());
         this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getStartDate());
+        this.listings = (user.getSells() == null)? new ArrayList<>():new ArrayList<>(user.getSells());
+
     }
 
     private double calculateScore(Set<ReviewUser> reviews){

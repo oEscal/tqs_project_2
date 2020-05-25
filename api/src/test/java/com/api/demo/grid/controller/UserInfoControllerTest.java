@@ -1,6 +1,9 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.grid.exception.UserNotFoundException;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.service.UserService;
@@ -15,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +38,9 @@ class UserInfoControllerTest {
     private UserService mMockUserService;
 
     private User mUser;
+    private Sell mSell;
+    private GameKey mGameKey;
+    private Game mGame;
     private UserInfoProxy mUserInfoProxy;
     private String mUsername1 = "username1",
             mName1 = "name1",
@@ -46,12 +53,25 @@ class UserInfoControllerTest {
     @SneakyThrows
     void setup(){
         mUser = new User();
+        mUser.setId(4l);
         mUser.setUsername(mUsername1);
         mUser.setName(mName1);
         mUser.setEmail(mEmail1);
         mUser.setCountry(mCountry1);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
+        mGame = new Game();
+        mGame.setId(0l);
+        mGame.setName("nam");
+        mGameKey = new GameKey();
+        mGameKey.setGame(mGame);
+        mGameKey.setRKey("key");
+        mGameKey.setId(1l);
+        mSell = new Sell();
+        mSell.setId(2l);
+        mSell.setDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        mSell.setGameKey(mGameKey);
+        mUser.addSell(mSell);
 
         mUserInfoProxy = new UserInfoProxy(mUser);
     }
@@ -71,8 +91,10 @@ class UserInfoControllerTest {
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.startDate", is(mStartDateStr)))
-        ;
+                .andExpect(jsonPath("$.listings[0].id", is(2)))
+                .andExpect(jsonPath("$.listings[0].gameKey.id", is(1)))
 
+        ;
     }
 
     @Test

@@ -1,7 +1,13 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,7 +37,19 @@ class UserInfoControllerIT {
     @Autowired
     private UserRepository mUserRepo;
 
+    @Autowired
+    private SellRepository mSellRepo;
+
+    @Autowired
+    private GameRepository mGameRepo;
+
+    @Autowired
+    private GameKeyRepository mGameKeyRepo;
+
     private User mUser;
+    private Game mGame;
+    private GameKey mGameKey;
+    private Sell mSell;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
@@ -53,14 +72,29 @@ class UserInfoControllerIT {
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
-        mUserRepo.deleteAll();
+        mGame = new Game();
+        mGame.setName("name");
 
+        mGameKey = new GameKey();
+        mGameKey.setGame(mGame);
+        mGameKey.setRKey("key");
+
+        mSell = new Sell();
+        mSell.setGameKey(mGameKey);
+        mSell.setDate(new Date());
+        mSell.setPrice(2.4);
+        mSell.setUser(mUser);
+
+        mUserRepo.deleteAll();
+        mGameRepo.deleteAll();
+        mGameKeyRepo.deleteAll();
+        mSellRepo.deleteAll();
     }
 
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
-        mUserRepo.save(mUser);
+        mGameRepo.save(mGame);
 
         mMockMvc.perform(get("/grid/user-info")
                 .param("username", "username1")
@@ -71,6 +105,8 @@ class UserInfoControllerIT {
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.startDate", is(mStartDateStr)))
+                .andExpect(jsonPath("$.listings[0].id", is((int)mSell.getId())))
+                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId())))
         ;
 
     }

@@ -3,6 +3,8 @@ package com.api.demo.grid.service;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UserNotFoundException;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.repository.UserRepository;
@@ -311,6 +313,13 @@ class UserServiceTest {
 
     @Test
     void whenSearchingValidUser_getValidUserProxy() {
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey("key");
+        gameKey.setId(1l);
+        Sell sell = new Sell();
+        sell.setId(2l);
+        sell.setGameKey(gameKey);
+        mUser1.addSell(sell);
         given(mUserRepository.findByUsername("username1")).willReturn(mUser1);
 
         UserInfoProxy userProxy = null;
@@ -324,6 +333,8 @@ class UserServiceTest {
         assertEquals(mName1, userProxy.getName());
         assertEquals(mBirthDateStr, userProxy.getBirthDate());
         assertEquals(mCountry1, userProxy.getCountry());
+        assertEquals(2l, userProxy.getListings().get(0).getId());
+        assertEquals(1l, userProxy.getListings().get(0).getGameKey().getId());
     }
 
     @Test
