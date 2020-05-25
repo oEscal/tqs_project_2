@@ -46,7 +46,7 @@ class UserServiceIT {
     @SneakyThrows
     void setup() {
 
-        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry1,
+        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 
