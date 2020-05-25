@@ -4,10 +4,7 @@ import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.DeveloperRepository;
 import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameRepository;
@@ -52,6 +49,9 @@ class GridServiceTest {
     private GameGenre gameGenre;
     private Developer developer;
     private Publisher publisher;
+
+    private double searchParamBeginPrice, searchParamEndPrice;
+    
 
     @BeforeEach
     void setUp(){
@@ -297,5 +297,9 @@ class GridServiceTest {
         assertNull(savedGame);
     }
 
+    void whenReceivingSearchGame_withValidName_returnValidList(){
+        SearchGamePOJO searchGamePOJO = new SearchGamePOJO("ga", new String[0], new String[0], 0, -1);
+
+    }
     
 }
