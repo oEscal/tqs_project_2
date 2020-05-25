@@ -56,11 +56,11 @@ class SpringSecurityConfigIT {
 
     @Test
     @SneakyThrows
-    void whenAccessOpenUrlWithoutLoggedIn_accessIsOk() {
+    void whenAccessOpenUrlWithoutLoggedIn_accessIsNotUnauthorized() {
 
-        String[] auth_whitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
+        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
 
-        for (String endPoint : auth_whitelist) {
+        for (String endPoint : authWhitelist) {
             RequestBuilder request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
 
             int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
@@ -69,4 +69,29 @@ class SpringSecurityConfigIT {
         }
     }
 
+    @Test
+    @SneakyThrows
+    void whenAccessClosedUrlWithoutLoggedIn_accessIsUnauthorized() {
+
+        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
+
+        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
+
+        // verify for admin endpoints
+        verifyEndpointsAreUnauthorized(adminWhitelist);
+
+        // verify for user endpoints
+        verifyEndpointsAreUnauthorized(userWhitelist);
+    }
+
+    @SneakyThrows
+    private void verifyEndpointsAreUnauthorized(String[] authList) {
+
+        for (String endPoint : authList) {
+            RequestBuilder request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
+
+            int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
+            assertEquals(401, returnedStatus, "Endpoint " + endPoint + " should be unauthorized");
+        }
+    }
 }
