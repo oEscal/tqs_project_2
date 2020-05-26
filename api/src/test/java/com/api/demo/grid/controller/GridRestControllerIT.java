@@ -284,11 +284,11 @@ class GridRestControllerIT {
 
 
         mMockMvc.perform(post("/grid/add-wish-list")
-                .param("user_id", String.valueOf(1))
-                .param("game_id", String.valueOf(1))
+                .param("user_id", String.valueOf(user.getId()))
+                .param("game_id", String.valueOf(game.getId()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", is(1)));
+                .andExpect(jsonPath("$.[0].id", is((int)game.getId())));
     }
 
     @Test
