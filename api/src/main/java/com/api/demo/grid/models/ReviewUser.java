@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -53,10 +54,12 @@ public class ReviewUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_from_user_id")
+    @JsonIgnore
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_to_user_id")
+    @JsonIgnore
     private User target;
 
 
@@ -67,4 +70,8 @@ public class ReviewUser {
     public void setDate(Date date) {
         this.date = (Date) date.clone();
     }
+
+    public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
+
+    public long getTargetId() { return (target == null)? 0:target.getId(); }
 }
