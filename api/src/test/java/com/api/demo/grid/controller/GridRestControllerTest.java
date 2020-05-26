@@ -1,7 +1,18 @@
 package com.api.demo.grid.controller;
 
-import com.api.demo.grid.models.*;
-import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.models.Developer;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GameKeyPOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -291,10 +302,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidPub_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.savePublisher(Mockito.any(PublisherPOJO.class))).thenReturn(mPublisher);
-        mMockMvc.perform(post("/grid/publisher")
+        mMockMvc.perform(post("/grid/add-publisher")
                 .content(asJsonString(mPublisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

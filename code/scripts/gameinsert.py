@@ -33,7 +33,7 @@ while count < 50 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		genre_info = requests.get(base_url + "genres/" + str(genre["id"])).json()
-		requests.post(grid_url + "genre",
+		requests.post(f"{grid_url}/add-genre",
 		              data=json.dumps({"name": genre_info["name"], "description": genre_info["description"][:100]}),
 		              headers=headers,
 		              auth=authentication)
@@ -48,7 +48,7 @@ while count < 100 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		pub_info = requests.get(base_url + "publishers/" + str(genre["id"])).json()
-		requests.post(grid_url + "publisher",
+		requests.post(f"{grid_url}add-publisher",
 		              data=json.dumps({"name": pub_info["name"], "description": pub_info["description"][:100]}),
 		              headers=headers,
 		              auth=authentication)

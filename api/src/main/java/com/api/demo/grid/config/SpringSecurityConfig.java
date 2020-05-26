@@ -35,6 +35,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/add-game",
             "/grid/add-developer",
             "/grid/add-genre",
+            "/grid/add-publisher",
     };
 
     private static final String[] USER_WHITELIST = {
