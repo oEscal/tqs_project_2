@@ -116,6 +116,7 @@ class UserInfoControllerTest {
                 .andExpect(jsonPath("$.startDate", is(mStartDateStr)))
                 .andExpect(jsonPath("$.listings[0].id", is(2)))
                 .andExpect(jsonPath("$.listings[0].gameKey.id", is(1)))
+                .andExpect(jsonPath("$.score", is(-1.0)))
 
         ;
     }

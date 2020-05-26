@@ -14,7 +14,6 @@ import java.util.*;
 public class UserInfoProxy {
     private String username;
     private String name;
-    private double score;
     private String photoUrl;
     private String country;
     private String description;
@@ -35,7 +34,7 @@ public class UserInfoProxy {
         this.reviews = (user.getReviews() == null)? new ArrayList<>(): new ArrayList<>(user.getReviews());
     }
 
-    private double getScore(){
+    public double getScore(){
         if (reviews.isEmpty()) return -1;
         double sum = 0;
         for (ReviewUser review: reviews) sum += review.getScore();

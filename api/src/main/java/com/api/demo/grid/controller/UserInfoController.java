@@ -29,7 +29,6 @@ public class UserInfoController {
     @GetMapping(value="/private/user-info", params={"username"})
     public ResponseEntity<User> getPrivateUserInfo(@RequestHeader("Authorization") String auth,
                                                    @RequestParam("username") String username){
-        System.out.println(auth);
         String value = ControllerUtils.getUserFromAuth(auth);
         User user = mUserService.getUser(value);
         if (user == null){
