@@ -8,8 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.io.OptionalDataException;
-import java.security.InvalidKeyException;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -192,10 +191,15 @@ public class GridServiceImpl implements GridService {
         if (game.isEmpty()) return null;
 
         User realUser = user.get();
+        Game realGame = game.get();
         Set<Game> wishList = realUser.getWishList();
-        wishList.add(game.get());
+        wishList.add(realGame);
+        Set<User> users = realGame.getUserWish();
+        users.add(realUser);
         realUser.setWishList(wishList);
+        realGame.setUserWish(users);
         this.mUserRepository.save(realUser);
+        this.mGameRepository.save(realGame);
         return wishList;
     }
 

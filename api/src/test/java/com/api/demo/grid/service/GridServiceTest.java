@@ -391,7 +391,10 @@ class GridServiceTest {
 
         Set<Game> expected = new HashSet<>();
         expected.add(game);
+        Set<User> users = new HashSet<>();
+        users.add(user);
         user.setWishList(expected);
+        game.setUserWish(users);
 
         Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(user));
         Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(game));
