@@ -2,7 +2,6 @@ package com.api.demo.grid.config;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
-import com.api.demo.grid.models.User;
 import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
@@ -78,7 +77,7 @@ class SpringSecurityConfigIT {
 
         String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
 
-        verifyEndpointsAreAuthorized(authWhitelist);
+        verifyEndpointsAreAuthorized(authWhitelist, false);
     }
 
     @Test
@@ -90,10 +89,10 @@ class SpringSecurityConfigIT {
         String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorized(adminWhitelist);
+        verifyEndpointsAreUnauthorized(adminWhitelist, false);
 
         // verify for user endpoints
-        verifyEndpointsAreUnauthorized(userWhitelist);
+        verifyEndpointsAreUnauthorized(userWhitelist, false);
     }
 
 
@@ -114,10 +113,10 @@ class SpringSecurityConfigIT {
         String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
 
         // verify for open endpoints
-        verifyEndpointsAreAuthorized(authWhitelist);
+        verifyEndpointsAreAuthorized(authWhitelist, true);
 
         // verify for user endpoints
-        verifyEndpointsAreAuthorized(userWhitelist);
+        verifyEndpointsAreAuthorized(userWhitelist, true);
     }
 
     @Test
@@ -133,7 +132,7 @@ class SpringSecurityConfigIT {
         String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorized(adminWhitelist);
+        verifyEndpointsAreUnauthorized(adminWhitelist, true);
     }
 
 
@@ -156,21 +155,26 @@ class SpringSecurityConfigIT {
         String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
 
         // verify for open endpoints
-        verifyEndpointsAreAuthorized(authWhitelist);
+        verifyEndpointsAreAuthorized(authWhitelist, true);
 
         // verify for user endpoints
-        verifyEndpointsAreAuthorized(userWhitelist);
+        verifyEndpointsAreAuthorized(userWhitelist, true);
 
         // verify for admin endpoints
-        verifyEndpointsAreAuthorized(adminWhitelist);
+        verifyEndpointsAreAuthorized(adminWhitelist, true);
     }
 
 
     @SneakyThrows
-    private void verifyEndpointsAreAuthorized(String[] authList) {
+    private void verifyEndpointsAreAuthorized(String[] authList, boolean authenticate) {
 
         for (String endPoint : authList) {
-            RequestBuilder request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
+            RequestBuilder request;
+            if (authenticate) {
+                request = post(endPoint).with(httpBasic(mUsername1, mPassword1)).contentType(MediaType.APPLICATION_JSON);
+            } else {
+                request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
+            }
 
             int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
             assertNotEquals(401, returnedStatus, "Endpoint " + endPoint + " should be unauthorized");
@@ -178,10 +182,15 @@ class SpringSecurityConfigIT {
     }
 
     @SneakyThrows
-    private void verifyEndpointsAreUnauthorized(String[] authList) {
+    private void verifyEndpointsAreUnauthorized(String[] authList, boolean authenticate) {
 
         for (String endPoint : authList) {
-            RequestBuilder request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
+            RequestBuilder request;
+            if (authenticate) {
+                request = post(endPoint).with(httpBasic(mUsername1, mPassword1)).contentType(MediaType.APPLICATION_JSON);
+            } else {
+                request = post(endPoint).contentType(MediaType.APPLICATION_JSON);
+            }
 
             int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
             assertEquals(401, returnedStatus, "Endpoint " + endPoint + " should be unauthorized");
