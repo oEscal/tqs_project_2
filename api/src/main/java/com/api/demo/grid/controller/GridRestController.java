@@ -1,13 +1,28 @@
 package com.api.demo.grid.controller;
-
-import com.api.demo.grid.models.*;
-import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.models.Developer;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GameKeyPOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -74,8 +89,8 @@ public class GridRestController {
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
 
-    @PostMapping("/game")
-    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO) {
+    @PostMapping("/add-game")
+    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
         Game game = gridService.saveGame(gamePOJO);
         if (game == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
@@ -83,18 +98,18 @@ public class GridRestController {
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
-    @PostMapping("/genre")
-    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO) {
+    @PostMapping("/add-genre")
+    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
         return new ResponseEntity<>(gridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
 
-    @PostMapping("/publisher")
-    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO) {
+    @PostMapping("/add-publisher")
+    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
         return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
     }
 
-    @PostMapping("/developer")
-    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO) {
+    @PostMapping("/add-developer")
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 

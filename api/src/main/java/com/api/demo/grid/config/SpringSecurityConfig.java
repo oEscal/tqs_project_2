@@ -34,6 +34,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] ADMIN_WHITELIST = {
             "/grid/add-game",
+            "/grid/add-developer",
+            "/grid/add-genre",
+            "/grid/add-publisher",
     };
 
     private static final String[] USER_WHITELIST = {
@@ -69,8 +72,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(USER_WHITELIST).hasAnyRole("USER", "ADMIN")
-                .antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
+                .antMatchers(USER_WHITELIST).hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(ADMIN_WHITELIST).hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .authenticationEntryPoint(mAuthEntryPoint)
