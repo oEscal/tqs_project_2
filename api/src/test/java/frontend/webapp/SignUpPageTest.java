@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SignUpPageTest {
+    /*
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -296,4 +297,6 @@ public class SignUpPageTest {
 
         return sb.toString();
     }
+
+     */
 }
