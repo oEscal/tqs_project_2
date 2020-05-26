@@ -151,6 +151,35 @@ class SpringSecurityConfigIT {
     }
 
 
+    /***
+     * Logged in admin accesses
+     ***/
+    @Test
+    @SneakyThrows
+    void whenAccessAllUrlWithAdmin_accessIsAuthorized() {
+
+        // login with admin user
+        mSimpleUserDTO.setAdmin(true);
+        mUserService.saveUser(mSimpleUserDTO);
+        RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.admin", is(true)));
+
+        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
+        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
+        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
+
+        // verify for open endpoints
+        verifyEndpointsAreAuthorized(authWhitelist);
+
+        // verify for user endpoints
+        verifyEndpointsAreAuthorized(userWhitelist);
+
+        // verify for admin endpoints
+        verifyEndpointsAreAuthorized(adminWhitelist);
+    }
+
+
     @SneakyThrows
     private void verifyEndpointsAreAuthorized(String[] authList) {
 
