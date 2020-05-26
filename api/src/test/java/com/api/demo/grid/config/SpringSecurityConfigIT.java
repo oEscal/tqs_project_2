@@ -20,9 +20,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.text.SimpleDateFormat;
 
-import static com.api.demo.grid.utils.UserJson.simpleUserJson;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,9 +47,7 @@ class SpringSecurityConfigIT {
 
 
     // specifications for user1
-    private User mSimpleUser;
     private UserDTO mSimpleUserDTO;
-    private String mSimpleUserJson;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
@@ -63,16 +59,6 @@ class SpringSecurityConfigIT {
     @BeforeEach
     @SneakyThrows
     void setup() {
-        this.mSimpleUser = new User();
-        this.mSimpleUser.setUsername(mUsername1);
-        this.mSimpleUser.setName(mName1);
-        this.mSimpleUser.setEmail(mEmail1);
-        this.mSimpleUser.setCountry(mCountry1);
-        this.mSimpleUser.setPassword(mPassword1);
-        this.mSimpleUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-
-        this.mSimpleUserJson = simpleUserJson(mUsername1, mPassword1, mBirthDateStr, mEmail1, mCountry1, mName1);
-
         this.mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
