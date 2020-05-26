@@ -50,7 +50,6 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Long id;
 
     /***
