@@ -183,6 +183,68 @@ class Game extends Component {
 
     }
 
+    async addToWishlist() {
+        console.log(global.user)
+        console.log(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.username)
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+        
+        await this.setState({ gamesLoaded: false })
+
+        // Get All Games
+        await fetch(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+                    toast.error('Game successfully added to your wishlist!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorToast"
+                    });
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+            });
+
+        await this.setState({ gamesLoaded: true })
+        
+    }
+
     async componentDidMount() {
         window.scrollTo(0, 0)
         await this.getGameInfo()
@@ -199,7 +261,7 @@ class Game extends Component {
     render() {
         const { classes } = this.props;
 
-        if(this.state.redirectGames){
+        if (this.state.redirectGames) {
             return (
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
@@ -489,9 +551,9 @@ class Game extends Component {
                                 <Button
                                     size="md"
                                     style={{ backgroundColor: "#1598a7", width: "100%" }}
-                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={() => this.addToWishlist()}
                                 >
                                     <i class="far fa-heart"></i> Add to Wishlist
                                             </Button>
@@ -649,7 +711,7 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={2} >
                                         <span>
-                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fdf147"  }}>Name
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fdf147" }}>Name
                                             </h3>
                                         </span>
                                     </GridItem>
@@ -687,7 +749,7 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={2}>
                                         <span>
-                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0",  borderBottom: "2px solid #f5c758" }}>Description
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #f5c758" }}>Description
                                     </h3>
                                         </span>
                                     </GridItem>
@@ -767,7 +829,7 @@ class Game extends Component {
                                     </h3>
                                         </span>
                                     </GridItem>
-                                    
+
                                     <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
                                             {this.state.game.allDevelopers}
@@ -851,7 +913,7 @@ class Game extends Component {
                             {gameInfo}
                         </div>
 
-                        <Footer rawg={true}/>
+                        <Footer rawg={true} />
 
                     </div>
                 </div>
