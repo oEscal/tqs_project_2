@@ -1,42 +1,56 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
 import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
-import { Block, Text, theme } from 'galio-framework';
+import { Block, Text, theme, Button, Icon } from 'galio-framework';
 
 import materialTheme from '../constants/Theme';
 
 const { width } = Dimensions.get('screen');
 
-class Product extends React.Component {
+class ProductKey extends React.Component {
   render() {
     const { navigation, product, horizontal, full, style, priceColor, imageStyle, page } = this.props;
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
 
     var pageName = page
-    if(pageName == null){
+    if (pageName == null) {
       pageName = "GameInfo"
     }
 
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate(pageName, { product: product })}>
+        <TouchableWithoutFeedback>
           <Block flex style={[styles.imageContainer, styles.shadow]}>
-            <Image source={{ uri: product.coverUrl }} style={imageStyles} />
+            <Image source={require('../assets/img/default_user.png')} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate(pageName, { product: product })}>
+        <TouchableWithoutFeedback>
           <Block flex space="between" style={styles.productDescription}>
-            <Text size={14} style={styles.productTitle}>{product.name}</Text>
-            <Text size={10} muted={!priceColor} color={priceColor}>Release Date:  {product.releaseDate}</Text>
-            <Text size={13} muted={!priceColor} color={priceColor}>As low as {product.lowestPrice}€</Text>
+            <Text size={14} style={styles.productTitle}>Seller: {product.seller}</Text>
+            <Text size={10} muted={!priceColor} color={priceColor}>Seller's Greed Score:  {product.score}</Text>
+            <Text size={18} color={"#f44336"}>{product.price}€</Text>
           </Block>
         </TouchableWithoutFeedback>
-      </Block>
+        <TouchableWithoutFeedback>
+          <Block center>
+            <Button
+              shadowless
+              style={styles.button}
+              color={materialTheme.COLORS.BUTTON_COLOR}
+              onPress={() => navigation.navigate('App')}>
+              <Text color={"#fff"}>
+                <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
+                Add to Cart
+              </Text>
+            </Button>
+          </Block>
+        </TouchableWithoutFeedback>
+      </Block >
     );
   }
 }
 
-export default withNavigation(Product);
+export default withNavigation(ProductKey);
 
 const styles = StyleSheet.create({
   product: {
@@ -75,5 +89,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     shadowOpacity: 0.1,
     elevation: 2,
+  },
+  button: {
+    width: width / 3,
+    height: theme.SIZES.BASE * 2,
+    marginBottom: 10,
+    shadowRadius: 0,
+    shadowOpacity: 0,
   },
 });
