@@ -33,7 +33,7 @@ while count < 50 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		genre_info = requests.get(base_url + "genres/" + str(genre["id"])).json()
-		requests.post(f"{grid_url}/add-genre",
+		requests.post(f"{grid_url}add-genre",
 		              data=json.dumps({"name": genre_info["name"], "description": genre_info["description"][:100]}),
 		              headers=headers,
 		              auth=authentication)
@@ -64,11 +64,10 @@ while count < 30000:
 	for genre in response["results"]:
 		game_info = requests.get(base_url + "games/" + str(genre["id"])).json()
 		publisher = ""
-      if len(game_info["publishers"]) != 0:
-         publisher = game_info["publishers"][0]["name"]
+		if len(game_info["publishers"]) != 0:
+			publisher = game_info["publishers"][0]["name"]
 		try:
-			print(f"{grid_url}add-game")
-			response = requests.post(f"{grid_url}add-game", data=json.dumps({
+			requests.post(f"{grid_url}add-game", data=json.dumps({
 				"name": game_info["name"],
 				"description": game_info["description"],
 				"releaseDate": game_info["released"],
@@ -78,7 +77,6 @@ while count < 30000:
 				"publisher": publisher
 			}), headers=headers, auth=authentication)
 			count += 1
-			print(response)
 		except Exception as error:
 			print(f"Error: {error}")
 	url = response["next"]
