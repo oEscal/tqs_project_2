@@ -122,7 +122,7 @@ class GridRestControllerIT {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", roles = "ADMIN")
     void whenPostingValidGame_ReturnValidResponse() throws Exception{
         Developer developer = new Developer();
         developer.setName("dev");
@@ -139,7 +139,7 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("pub");
         mGamePOJO.setDevelopers(new HashSet<>(Arrays.asList("dev")));
         mGamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre")));
-        mMockMvc.perform(post("/grid/game")
+        mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -149,12 +149,12 @@ class GridRestControllerIT {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", roles = "ADMIN")
     void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
 
         mGamePOJO.setPublisher(null);
 
-        mMockMvc.perform(post("/grid/game")
+        mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
