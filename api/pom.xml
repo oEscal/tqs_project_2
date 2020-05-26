@@ -232,6 +232,7 @@
 				<version>2.19.1</version>
 				<configuration>
 					<skipTests>true</skipTests>
+					<excludes>**/UserInfoControllerIT.*</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -258,7 +259,6 @@
 							<includes>
 								<include>**/*IT.*</include>
 								<include>**/*Tests.*</include>
-								<exclude>**/UserInfoControllerIT.*</exclude>
 							</includes>
 						</configuration>
 					</execution>
