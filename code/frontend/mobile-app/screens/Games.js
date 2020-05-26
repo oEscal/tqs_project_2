@@ -176,7 +176,7 @@ export default class GamesScreen extends React.Component {
 
       this.state.games.forEach(game => {
         items.push(
-          <Product product={game} horizontal />
+          <Product product={game} key={game.id} horizontal />
         )
       })
 
@@ -197,13 +197,13 @@ export default class GamesScreen extends React.Component {
       var forward = null
       if (this.state.curPage == 1) {
         back = <Button shadowless style={[styles.tab, styles.divider]}>
-          <Block row middle>
+          <Block id="backPage" row middle>
             <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#999" }} />
             <Text size={16} style={styles.tabTitle} color={"#999"}>Previous Page</Text>
           </Block>
         </Button>
       } else {
-        back = <Button shadowless style={[styles.tab, styles.divider]} onPress={() => this.changePageBackward()}>
+        back = <Button id="backPage" shadowless style={[styles.tab, styles.divider]} onPress={() => this.changePageBackward()}>
           <Block row middle>
             <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#fd24ac" }} />
             <Text size={16} style={styles.tabTitle} color={"#fd24ac"}>Previous Page</Text>
@@ -212,14 +212,14 @@ export default class GamesScreen extends React.Component {
       }
 
       if (this.state.curPage == this.state.totalNumberOfPages) {
-        forward = <Button shadowless style={styles.tab} >
+        forward = <Button id="nextPage" shadowless style={styles.tab} >
           <Block row middle>
             <Text size={16} style={styles.tabTitle} color={"#999"}>Next Page</Text>
             <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#999" }} />
           </Block>
         </Button>
       } else {
-        forward = <Button shadowless style={styles.tab} onPress={() => this.changePageForward()}>
+        forward = <Button id="nextPage" shadowless style={styles.tab} onPress={() => this.changePageForward()}>
           <Block row middle>
             <Text size={16} style={styles.tabTitle} color={"#fd24ac"}>Next Page</Text>
             <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#fd24ac" }} />

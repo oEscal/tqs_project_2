@@ -23,9 +23,7 @@ export default class GameInfoScreen extends React.Component {
     if (global.user != null) {
       login_info = global.user.token
     }
-
-    await this.setState({ gamesLoaded: false })
-
+    
     // Get All Games
     await fetch(baseURL + "grid/game?id=" + this.props.route.params.game.id, {
       method: "GET",

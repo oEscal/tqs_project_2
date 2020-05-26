@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public class WebAppPageObject {
@@ -61,6 +62,16 @@ public class WebAppPageObject {
     public boolean checkText(String id, String text) {
         System.out.println(driver.findElement(By.id(id)).getText());
         return driver.findElement(By.id(id)).getText().equals(text);
+    }
+
+    // Check if an element exists
+    public boolean checkExistance(String id){
+        return driver.findElements( By.id(id) ).size() != 0;
+    }
+
+    // Wait for a specified amount of seconds
+    public void waitSeconds(int seconds){
+        driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
     }
 
     // Write value into an input box
