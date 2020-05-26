@@ -185,21 +185,21 @@ class Game extends Component {
 
     async addToWishlist() {
         console.log(global.user)
-        console.log(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.username)
+        console.log(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id)
         var login_info = null
         if (global.user != null) {
             login_info = global.user.token
         }
-        
-        await this.setState({ gamesLoaded: false })
+
+        await this.setState({ doneLoading: false })
 
         // Get All Games
         await fetch(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
             method: "POST",
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
         })
             .then(response => {
                 if (response.status === 401) {
@@ -210,24 +210,27 @@ class Game extends Component {
                 else throw new Error(response.status);
             })
             .then(data => {
+                console.log(data)
+
                 if (data.status === 401) { // Wrong token
                     localStorage.setItem('loggedUser', null);
                     global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                     this.setState({
-                        redirectLogin: true
+                        doneLoading: true
                     })
 
                 } else {
-                    toast.error('Game successfully added to your wishlist!', {
+                    toast.success('Game successfully added to your wishlist!', {
                         position: "top-center",
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
-                        toastId: "errorToast"
+                        toastId: "successWishlistAdd"
                     });
                 }
+
             })
             .catch(error => {
                 console.log(error)
@@ -241,8 +244,8 @@ class Game extends Component {
                 });
             });
 
-        await this.setState({ gamesLoaded: true })
-        
+        await this.setState({ doneLoading: true })
+
     }
 
     async componentDidMount() {
@@ -456,6 +459,92 @@ class Game extends Component {
             var gameHeader = null
             var gameInfo = null
 
+            var bestPrice = <GridItem xs={12} sm={12} md={2}>
+                <div style={{ textAlign: "left", paddingTop: "15px" }}>
+                    <Button
+                        size="md"
+                        style={{ backgroundColor: "#1598a7", width: "100%" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => this.addToWishlist()}
+                    >
+                        <i class="far fa-heart"></i> Add to Wishlist
+                    </Button>
+                </div>
+            </GridItem>
+            if (this.state.game.bestSell != null) {
+                bestPrice = <GridItem xs={12} sm={12} md={2}>
+                    <div style={{ textAlign: "left", marginTop: "30px" }}>
+                        <span style={{ color: "#999", fontSize: "12px" }}>
+                            BEST OFFER
+                            </span>
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                        <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                            Jonas_PP
+                            </span>
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                        <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
+                            4 <i class="far fa-star"></i>
+                        </span>
+                        <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
+                            Grid Score
+                            </span>
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                        <Button
+                            color="danger"
+                            size="sm"
+                            style={{ backgroundColor: "#ff3ea0" }}
+                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i class="far fa-user"></i> Seller Profile
+                            </Button>
+                    </div>
+
+                    <div style={{ textAlign: "left", marginTop: "20px" }}>
+                        <span style={{ color: "#999", fontSize: "12px" }}>
+                            Price
+                            </span>
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                        <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
+                            5,99€
+                            </span>
+
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                        <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
+                            ( PC Key )
+                            </span>
+                    </div>
+
+                    <div style={{ textAlign: "left", marginTop: "5px" }}>
+                        <Button
+                            size="md"
+                            style={{ backgroundColor: "#4ec884", width: "100%" }}
+                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                            </Button>
+                        <Button
+                            size="md"
+                            style={{ backgroundColor: "#1598a7", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => this.addToWishlist()}
+                        >
+                            <i class="far fa-heart"></i> Add to Wishlist
+                            </Button>
+                    </div>
+                </GridItem>
+            }
+
             if (this.state.game != null) {
                 gameHeader = <div style={{ padding: "70px 0" }}>
                     <GridContainer>
@@ -489,77 +578,7 @@ class Game extends Component {
                             </div>
                         </GridItem>
 
-                        <GridItem xs={12} sm={12} md={2}>
-                            <div style={{ textAlign: "left", marginTop: "30px" }}>
-                                <span style={{ color: "#999", fontSize: "12px" }}>
-                                    BEST OFFER
-                                            </span>
-                            </div>
-                            <div style={{ textAlign: "left" }}>
-                                <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                    Jonas_PP
-                                            </span>
-                            </div>
-                            <div style={{ textAlign: "left" }}>
-                                <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                                    4 <i class="far fa-star"></i>
-                                </span>
-                                <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
-                                    Grid Score
-                                            </span>
-                            </div>
-                            <div style={{ textAlign: "left" }}>
-                                <Button
-                                    color="danger"
-                                    size="sm"
-                                    style={{ backgroundColor: "#ff3ea0" }}
-                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <i class="far fa-user"></i> Seller Profile
-                                            </Button>
-                            </div>
-
-                            <div style={{ textAlign: "left", marginTop: "20px" }}>
-                                <span style={{ color: "#999", fontSize: "12px" }}>
-                                    Price
-                                            </span>
-                            </div>
-                            <div style={{ textAlign: "left" }}>
-                                <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
-                                    5,99€
-                                            </span>
-
-                            </div>
-                            <div style={{ textAlign: "left" }}>
-                                <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
-                                    ( PC Key )
-                                            </span>
-                            </div>
-
-                            <div style={{ textAlign: "left", marginTop: "5px" }}>
-                                <Button
-                                    size="md"
-                                    style={{ backgroundColor: "#4ec884", width: "100%" }}
-                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                                            </Button>
-                                <Button
-                                    size="md"
-                                    style={{ backgroundColor: "#1598a7", width: "100%" }}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() => this.addToWishlist()}
-                                >
-                                    <i class="far fa-heart"></i> Add to Wishlist
-                                            </Button>
-                            </div>
-
-                        </GridItem>
+                        {bestPrice}
                     </GridContainer>
                 </div>
 
@@ -846,6 +865,19 @@ class Game extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     {this.renderRedirectLogin()}
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={2500}
+                        hideProgressBar={false}
+                        transition={Flip}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnVisibilityChange
+                        draggable
+                        pauseOnHover
+                    />
+
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>

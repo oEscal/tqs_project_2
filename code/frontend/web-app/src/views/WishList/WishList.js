@@ -43,6 +43,7 @@ import javascriptStyles from "assets/jss/material-kit-react/views/componentsSect
 // Global Variables
 import baseURL from '../../variables/baseURL'
 import global from "../../variables/global";
+import CardBody from 'components/Card/CardBody';
 
 class WishList extends Component {
     constructor(props) {
@@ -73,7 +74,7 @@ class WishList extends Component {
         }
 
         await this.setState({ gamesLoaded: false })
-        
+
         // Get All Games
         await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
             method: "GET",
@@ -237,34 +238,16 @@ class WishList extends Component {
                                                 Launch Date: <span style={{ fontWeight: "bold" }}>{game.releaseDate}</span>
                                             </h6>
                                         </div>
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={11}>
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                                        As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
-                                                    </h6>
-                                                </div>
-                                            </GridItem>
-                                            <GridItem xs={12} sm={12} md={1}>
-                                                <div>
-                                                    <IconButton aria-label="settings"
-                                                        id={"icon" + game.id}
-                                                        name={game.name}
-                                                        onClick={(e) => {
-                                                            this.setAnchorElLeft(e.currentTarget)
-                                                        }}>
-                                                        {this.renderFavoriteIcon(true, game)}
-
-
-                                                    </IconButton>
-                                                </div>
-                                            </GridItem>
-                                        </GridContainer>
+                                        <div style={{ textAlign: "left" }}>
+                                            <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                                As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
+                                            </h6>
+                                        </div>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
                         </Link >
-                    </GridItem>
+                    </GridItem >
                 )
             })
 

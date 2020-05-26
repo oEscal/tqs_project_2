@@ -123,10 +123,10 @@ class GameSearch extends Component {
 
                 } else {
                     if (data.first) {
-                        this.setState({ 
+                        this.setState({
                             noPages: data.totalPages,
                             noGames: data.totalElements
-                         })
+                        })
 
                     }
                     this.setState({ games: data.content })
@@ -158,15 +158,15 @@ class GameSearch extends Component {
         }
     }
 
-    changePage = async (event, value) => {    
+    changePage = async (event, value) => {
         await this.setState({
-          curPage: value
+            curPage: value
         })
-    
+
         window.scrollTo(0, 0)
         await this.allGames()
-        
-      };
+
+    };
 
     render() {
         const { classes } = this.props;
@@ -203,6 +203,15 @@ class GameSearch extends Component {
                         style = {}
                     }
 
+                    var bestPrice = <h6 style={{ color: "#999", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                        No one is selling this game...
+                    </h6>
+                    if (game.bestSell != null) {
+                        bestPrice = <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                            As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> {game.bestSell.price}€</span>
+                        </h6>
+                    }
+
                     items.push(
                         <GridItem xs={12} sm={12} md={4} style={style}>
                             <Link to={"/games/info/" + game.id}>
@@ -226,9 +235,7 @@ class GameSearch extends Component {
                                                 </h6>
                                             </div>
                                             <div style={{ textAlign: "left" }}>
-                                                <h6 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                                    As low as <span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> 5,99€</span>
-                                                </h6>
+                                                {bestPrice}
                                             </div>
                                         </CardContent>
                                     </CardActionArea>
