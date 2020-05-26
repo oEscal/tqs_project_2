@@ -10,7 +10,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
 
@@ -177,11 +176,9 @@ class AccountIT {
         assertEquals(1, mUserRepository.findAll().size());
     }
 
-    @Autowired
-    private TestRestTemplate template;
 
     /***
-     * Create User with all credit card details
+     * Login tests
      ***/
     @Test
     @SneakyThrows
@@ -250,5 +247,26 @@ class AccountIT {
         RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
 
         mMvc.perform(request).andExpect(status().isUnauthorized());
+    }
+
+
+    /***
+     * Logout tests
+     ***/
+    @Test
+    @SneakyThrows
+    void whenLogoutWhenLoggedIn_returnLogoutSuccess() {
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // login
+        RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // logout
+        request = post("/grid/logout").with(httpBasic(mUsername1, mPassword1));
+
+        mMvc.perform(request).andExpect(status().is2xxSuccessful());
     }
 }

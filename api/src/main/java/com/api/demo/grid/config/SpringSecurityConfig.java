@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/grid/sign-up",
             "/grid/login",
+            "/grid/logout",
             "/grid/all",
             "/grid/game",
             "/grid/genre",
@@ -32,21 +34,37 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     private static final String[] ADMIN_WHITELIST = {
+            "/grid/add-game",
+            "/grid/add-developer",
+            "/grid/add-genre",
+            "/grid/add-publisher",
     };
 
     private static final String[] USER_WHITELIST = {
+            "/grid/private/user-info",
     };
 
     @Autowired
-    private AuthenticationEntryPoint authEntryPoint;
+    private AuthenticationEntryPoint mAuthEntryPoint;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsService mUserDetailsService;
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
+        auth.userDetailsService(mUserDetailsService)
                 .passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/**",
+                "/swagger-ui.html",
+                "/webjars/**");
     }
 
     @Override
@@ -55,11 +73,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                //.antMatchers(USER_WHITELIST).hasRole("USER")
-                //.antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
+                .antMatchers(USER_WHITELIST).hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(ADMIN_WHITELIST).hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint)
+                .authenticationEntryPoint(mAuthEntryPoint)
                 .and().logout().logoutUrl("/grid/logout");
     }
 }

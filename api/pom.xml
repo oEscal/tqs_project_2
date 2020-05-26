@@ -244,6 +244,7 @@
 							<skipTests>false</skipTests>
 							<includes>
 								<include>**/*Test.java</include>
+								<include>**/*IT.java</include>
 							</includes>
 						</configuration>
 					</execution>

@@ -348,7 +348,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey(){
+    void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey() {
         Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.empty());
 
         GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
@@ -373,7 +373,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingInvalidUser_ReturnNullSell(){
+    void whenSavingInvalidUser_ReturnNullSell() {
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.empty());
         Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(mGameKey));
 
@@ -485,7 +485,7 @@ class GridServiceTest {
 
         List<Game> gamesList = Arrays.asList(mGame, mGame2);
         Pagination<Game> pagination = new Pagination<>(gamesList);
-        int page = 0;
+        int page = 1;
         int entriesPerPage = 18;
 
         Page<Game> games = pagination.pageImpl(page, entriesPerPage);
@@ -493,4 +493,28 @@ class GridServiceTest {
         assertEquals(games, mGridService.pageSearchGames(mSearchGamePOJO));
     }
 
+    @Test
+    void whenPostingValidWishList_ReturnWishList() {
+        long userID = 1L;
+        long gameID = 1L;
+
+
+        Set<Game> expected = new HashSet<>();
+        expected.add(mGame);
+        Set<User> users = new HashSet<>();
+        users.add(mUser);
+        mUser.setWishList(expected);
+        mGame.setUserWish(users);
+
+        Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(mGame));
+
+        Set<Game> games = mGridService.addWishListByUserID(gameID, userID);
+
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+
+        assertEquals(expected, games);
+    }
 }
