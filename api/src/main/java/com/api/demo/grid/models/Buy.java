@@ -42,10 +42,6 @@ public class Buy {
     @EqualsAndHashCode.Exclude
     private Sell sell;
 
-    @OneToOne
-    @EqualsAndHashCode.Exclude
-    private Auction auction;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

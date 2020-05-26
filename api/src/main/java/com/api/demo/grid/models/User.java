@@ -160,9 +160,16 @@ public class User {
     private Set<Buy> buys;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auctioneer_user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<Auction> auctions;
+    private Set<Auction> auctions_created;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auction_buyer_user_id")
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    private Set<Auction> auctions_won;
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonIgnore
@@ -174,6 +181,7 @@ public class User {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
+
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {

@@ -38,27 +38,29 @@ public class Auction {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "auctioneer_user_id", nullable = false)
+    private User auctioneer;
+
+    @ManyToOne
+    @JoinColumn(name = "auction_buyer_user_id", nullable = false)
+    private User buyer;
 
     @OneToOne
-    @JoinColumn(name = "game_key_id")
+    @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 
-    @OneToOne
-    @JoinColumn(name = "buy_id")
-    @EqualsAndHashCode.Exclude
-    private Buy purchased;
-
-    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date startDate;
 
     @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
     private Date endDate;
 
+    @Column(nullable = false)
     private double price;
+
 
     public Date getEndDate() {
         return (Date) endDate.clone();
