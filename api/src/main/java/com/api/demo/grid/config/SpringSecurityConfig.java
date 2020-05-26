@@ -22,6 +22,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/grid/sign-up",
             "/grid/login",
+            "/grid/logout",
             "/grid/all",
             "/grid/game",
             "/grid/genre",
@@ -31,20 +32,23 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     private static final String[] ADMIN_WHITELIST = {
+            "/grid/add-game",
     };
 
     private static final String[] USER_WHITELIST = {
+            "/grid/private/user-info",
     };
 
     @Autowired
-    private AuthenticationEntryPoint authEntryPoint;
+    private AuthenticationEntryPoint mAuthEntryPoint;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsService mUserDetailsService;
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
+        auth.userDetailsService(mUserDetailsService)
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
@@ -54,11 +58,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                //.antMatchers(USER_WHITELIST).hasRole("USER")
-                //.antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
+                .antMatchers(USER_WHITELIST).hasAnyRole("USER", "ADMIN")
+                .antMatchers(ADMIN_WHITELIST).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint)
+                .authenticationEntryPoint(mAuthEntryPoint)
                 .and().logout().logoutUrl("/grid/logout");
     }
 }
