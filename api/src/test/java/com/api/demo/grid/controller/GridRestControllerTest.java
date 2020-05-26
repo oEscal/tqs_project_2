@@ -279,10 +279,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(mGameGenre);
-        mMockMvc.perform(post("/grid/genre")
+        mMockMvc.perform(post("/grid/add-genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

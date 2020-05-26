@@ -85,10 +85,10 @@ class GridRestControllerIT {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception{
 
-        mMockMvc.perform(post("/grid/genre")
+        mMockMvc.perform(post("/grid/add-genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

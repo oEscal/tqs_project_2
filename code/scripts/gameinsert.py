@@ -18,7 +18,7 @@ while count < 100 and url:
 	print(url)
 	response = requests.get(url).json()
 	for dev in response["results"]:
-		requests.post(grid_url + "developer",
+		requests.post(f"{grid_url}add-developer",
 		              data=json.dumps({"name": dev["name"]}),
 		              headers=headers,
 		              auth=authentication)

@@ -79,7 +79,7 @@ public class GridRestController {
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
-    @PostMapping("/genre")
+    @PostMapping("/add-genre")
     public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
         return new ResponseEntity<>(gridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
