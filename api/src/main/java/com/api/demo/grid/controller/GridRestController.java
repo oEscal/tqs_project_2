@@ -1,4 +1,5 @@
 package com.api.demo.grid.controller;
+
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
@@ -8,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -20,13 +24,13 @@ public class GridRestController {
     @Autowired
     private GridService gridService;
 
-    @GetMapping(value="/all", params = { "page" })
-    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+    @GetMapping(value = "/all", params = {"page"})
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page) {
         return ResponseEntity.ok(gridService.getAllGames(page));
     }
 
     @GetMapping("/game")
-    public ResponseEntity<Game> getGameInfo(@RequestParam long id){
+    public ResponseEntity<Game> getGameInfo(@RequestParam long id) {
         Game gameResponse = gridService.getGameById(id);
         if (gameResponse == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + id);
@@ -35,7 +39,7 @@ public class GridRestController {
     }
 
     @GetMapping("/genre")
-    public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre){
+    public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre) {
         List<Game> gameList = gridService.getAllGamesWithGenre(genre);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + genre);
@@ -44,7 +48,7 @@ public class GridRestController {
     }
 
     @GetMapping("/name")
-    public ResponseEntity<List<Game>> getGameByName(@RequestParam String name){
+    public ResponseEntity<List<Game>> getGameByName(@RequestParam String name) {
         List<Game> gameList = gridService.getAllGamesByName(name);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + name);
@@ -53,7 +57,7 @@ public class GridRestController {
     }
 
     @GetMapping("/developer")
-    public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev){
+    public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev) {
         List<Game> gameList = gridService.getAllGamesByDev(dev);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + dev);
@@ -62,7 +66,7 @@ public class GridRestController {
     }
 
     @GetMapping("/publisher")
-    public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub){
+    public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub) {
         List<Game> gameList = gridService.getAllGamesByPublisher(pub);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + pub);
@@ -71,31 +75,31 @@ public class GridRestController {
     }
 
     @PostMapping("/game")
-    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
+    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO) {
         Game game = gridService.saveGame(gamePOJO);
-        if (game == null){
+        if (game == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
         }
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
     @PostMapping("/genre")
-    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
+    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO) {
         return new ResponseEntity<>(gridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
 
     @PostMapping("/publisher")
-    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
+    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO) {
         return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
     }
 
     @PostMapping("/developer")
-    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO) {
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 
     @PostMapping("/gamekey")
-    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO){
+    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO) {
         GameKey gameKey = gridService.saveGameKey(gameKeyPOJO);
         if (gameKey == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game Key");
@@ -104,11 +108,20 @@ public class GridRestController {
     }
 
     @PostMapping("/sell-listing")
-    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
+    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
         Sell sell = gridService.saveSell(sellPOJO);
-        if (sell == null){
+        if (sell == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }
         return new ResponseEntity<>(sell, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add-wish-list", params = {"game_id", "user_id"})
+    public ResponseEntity<Set<Game>> addWishList(@RequestParam("game_id") long gameID, @RequestParam("user_id") long userID) {
+        Set<Game> games = gridService.addWishListByUserID(gameID, userID);
+        if (games == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add game to wish List");
+
+        return new ResponseEntity<>(games, HttpStatus.OK);
     }
 }
