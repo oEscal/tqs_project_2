@@ -263,15 +263,12 @@ class GridRestControllerIT {
         ;
     }
 
+    /*
     @Test
     @WithMockUser(username = "spring")
     void whenPostingValidWishList_ReturnSuccess() throws  Exception {
 
         Game game = new Game();
-        GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
-        gameKey.setPlatform("ps4");
-        gameKey.setGame(game);
         mGameRepository.save(game);
         User user = new User();
         user.setUsername("mUsername1");
@@ -290,6 +287,8 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", is((int)game.getId())));
     }
+    */
+    
 
     @Test
     @WithMockUser(username = "spring")
