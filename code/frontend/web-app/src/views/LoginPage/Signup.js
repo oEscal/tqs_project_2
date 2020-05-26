@@ -111,7 +111,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorMinimum"
+        toastId: "errorMinimum"
       });
       error = true
     }
@@ -125,11 +125,11 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorBirthday"
+        toastId: "errorBirthday"
       });
       error = true
     } else {
-      birthday = tempBirth[2] + "-" + tempBirth[0] + "-" + tempBirth[1]
+      birthday = tempBirth[1] + "/" + tempBirth[0] + "/" + tempBirth[2]
     }
 
     if (!this.validateEmail(email)) {
@@ -140,7 +140,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorEmail"
+        toastId: "errorEmail"
       });
       error = true
     }
@@ -155,7 +155,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId:"errorPass"
+        toastId: "errorPass"
       });
       error = true
     }
@@ -170,8 +170,10 @@ class Signup extends Component {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
+          toastId: "errorCardAll"
         });
         error = true
+        console.log(document.getElementById("errorMinimum"))
       }
     } else {
       cardNumber = null
@@ -190,10 +192,11 @@ class Signup extends Component {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
+          toastId: "errorCardExpiration"
         });
         error = true
       } else {
-        expiration = tempExpiration[2] + "-" + tempExpiration[0] + "-" + tempExpiration[1]
+        expiration = tempExpiration[1] + "/" + tempExpiration[0] + "/" + tempExpiration[2]
       }
     }
 
@@ -205,6 +208,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        toastId: "errorCardCVC"
       });
       error = true
     }

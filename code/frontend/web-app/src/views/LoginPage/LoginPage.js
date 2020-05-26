@@ -139,7 +139,6 @@ class LoginPage extends Component {
 
           } else { // Successful Login
             data["token"] = login_info
-            console.log(data)
             localStorage.setItem('loggedUser', JSON.stringify(data));
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
             success = true
