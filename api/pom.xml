@@ -280,6 +280,7 @@
 						<include>**/*IT</include>
 						<include>**/Test</include>
 					</includes>
+					<excludes>**/UserInfoControllerIT.*</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
