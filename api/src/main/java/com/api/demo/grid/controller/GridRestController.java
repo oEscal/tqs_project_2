@@ -89,7 +89,7 @@ public class GridRestController {
         return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
     }
 
-    @PostMapping("/developer")
+    @PostMapping("/add-developer")
     public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }

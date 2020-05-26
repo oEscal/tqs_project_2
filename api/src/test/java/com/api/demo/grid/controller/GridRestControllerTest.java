@@ -302,10 +302,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidDeveloper_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveDeveloper(Mockito.any(DeveloperPOJO.class))).thenReturn(mDeveloper);
-        mMockMvc.perform(post("/grid/developer")
+        mMockMvc.perform(post("/grid/add-developer")
                 .content(asJsonString(mDeveloperPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -313,7 +313,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring", roles = "ADMIN")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGame_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(mGame);
         mMockMvc.perform(post("/grid/add-game")
@@ -324,7 +324,7 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring", roles = "ADMIN")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
         mMockMvc.perform(post("/grid/add-game")
