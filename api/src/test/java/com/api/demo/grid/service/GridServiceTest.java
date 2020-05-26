@@ -318,8 +318,8 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingValidGameKeyPOJO_ReturnValidGameKey(){
-        Mockito.when(mockGameRepo.findById( 2L)).thenReturn(Optional.ofNullable(game2));
+    void whenSavingValidGameKeyPOJO_ReturnValidGameKey() {
+        Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.ofNullable(game2));
 
         GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
 
@@ -333,7 +333,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey(){
+    void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey() {
         Mockito.when(mockGameRepo.findById(2L)).thenReturn(Optional.empty());
 
         GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
@@ -345,7 +345,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingValidSellPOJO_ReturnValidSell(){
+    void whenSavingValidSellPOJO_ReturnValidSell() {
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
         Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(gameKey));
 
@@ -358,7 +358,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingInvalidUser_ReturnNullSell(){
+    void whenSavingInvalidUser_ReturnNullSell() {
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.empty());
         Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(gameKey));
 
@@ -371,7 +371,7 @@ class GridServiceTest {
     }
 
     @Test
-    void whenSavingInvalidGameKey_ReturnNullSell(){
+    void whenSavingInvalidGameKey_ReturnNullSell() {
         Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(user));
         Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.empty());
 
@@ -381,5 +381,30 @@ class GridServiceTest {
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
         Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertNull(savedSell);
+    }
+
+    @Test
+    void whenPostingValidWishList_ReturnWishList() {
+        long userID = 1L;
+        long gameID = 1L;
+
+
+        Set<Game> expected = new HashSet<>();
+        expected.add(game);
+        Set<User> users = new HashSet<>();
+        users.add(user);
+        user.setWishList(expected);
+        game.setUserWish(users);
+
+        Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(game));
+
+        Set<Game> games = gridService.addWishListByUserID(gameID, userID);
+
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+
+        assertEquals(expected, games);
     }
 }

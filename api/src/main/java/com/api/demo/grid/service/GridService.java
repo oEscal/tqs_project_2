@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public interface GridService {
@@ -21,4 +22,5 @@ public interface GridService {
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
+    Set<Game> addWishListByUserID(long gameID, long userID);
 }
