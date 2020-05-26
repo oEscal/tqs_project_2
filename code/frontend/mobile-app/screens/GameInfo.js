@@ -9,7 +9,7 @@ const { width } = Dimensions.get('screen');
 // Global Variables
 import baseURL from '../constants/baseURL'
 import global from "../constants/global";
-
+import { AsyncStorage } from 'react-native';
 
 export default class GameInfoScreen extends React.Component {
   state = {
@@ -42,8 +42,8 @@ export default class GameInfoScreen extends React.Component {
       })
       .then(data => {
         if (data.status === 401) { // Wrong token
-          localStorage.setItem('loggedUser', null);
-          global.user = JSON.parse(localStorage.getItem('loggedUser'))
+          AsyncStorage.setItem('loggedUser', null);
+          global.user = JSON.parse(AsyncStorage.getItem('loggedUser'))
 
           this.setState({
             redirectLogin: true

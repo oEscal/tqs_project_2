@@ -1,13 +1,15 @@
+import { AsyncStorage } from 'react-native';
+
 var loggedUser_temp
 try{
-    loggedUser_temp = JSON.parse(localStorage.getItem('loggedUser'));
+    loggedUser_temp = AsyncStorage.getItem('loggedUser');
 }catch{
     loggedUser_temp = null
 }
 
 var cart_temp
 try{
-    cart_temp = JSON.parse(localStorage.getItem('cart'));
+    cart_temp = AsyncStorage.getItem('cart');
 }catch{
     cart_temp = null
 }
