@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 
@@ -35,8 +36,11 @@ public class Account {
     public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) {
 
         String base64Credentials = auth.substring("Basic".length()).trim();
-        String username = new String(Base64.getDecoder().decode(base64Credentials)).split(":", 2)[0];
-        User user = mUserService.getUser(username);
+        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+
+        final String[] values = credentials.split(":", 2);
+        User user = mUserService.getUser(values[0]);
 
         return ResponseEntity.ok().body(user);
     }

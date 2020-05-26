@@ -1,17 +1,20 @@
 package com.api.demo.grid.controller;
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/grid")
@@ -21,9 +24,9 @@ public class GridRestController {
     @Autowired
     private GridService gridService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Game>> getAllGames(){
-        return ResponseEntity.ok(gridService.getAllGames());
+    @GetMapping(value="/all", params = { "page" })
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+        return ResponseEntity.ok(gridService.getAllGames(page));
     }
 
     @GetMapping("/game")
@@ -72,8 +75,8 @@ public class GridRestController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
-        return null;
+    public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
+        return ResponseEntity.ok(gridService.pageSearchGames(searchGamePOJO));
     }
 
     @PostMapping("/game")
@@ -98,5 +101,23 @@ public class GridRestController {
     @PostMapping("/developer")
     public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
+    }
+
+    @PostMapping("/gamekey")
+    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO){
+        GameKey gameKey = gridService.saveGameKey(gameKeyPOJO);
+        if (gameKey == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game Key");
+        }
+        return new ResponseEntity<>(gameKey, HttpStatus.OK);
+    }
+
+    @PostMapping("/sell-listing")
+    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
+        Sell sell = gridService.saveSell(sellPOJO);
+        if (sell == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
+        }
+        return new ResponseEntity<>(sell, HttpStatus.OK);
     }
 }

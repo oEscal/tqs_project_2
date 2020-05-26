@@ -13,6 +13,7 @@ import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -267,5 +268,17 @@ class UserRepositoryTest {
         userInsert.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
 
         assertThrows(PersistenceException.class, () -> mEntityManager.persistAndFlush(userInsert));
+    }
+
+    @Test
+    void whenFindById_getGameKey(){
+        mEntityManager.persistAndFlush(mUser1);
+
+        assertEquals(mUser1, mUserRepository.findById(mUser1.getId()).get());
+    }
+
+    @Test
+    void whenInvalidId_ReceiveEmpty(){
+        assertEquals(Optional.empty(), mUserRepository.findById(2L));
     }
 }

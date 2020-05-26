@@ -1,10 +1,8 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +10,9 @@ import java.util.List;
 @Service
 public interface GridService {
     Game getGameById(long id);
-    List<Game> getAllGames();
+    Page<Game> getAllGames(int page);
+    Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO);
+    List<Game> searchGames(SearchGamePOJO searchGamePOJO);
     List<Game> getAllGamesWithGenre(String genre);
     List<Game> getAllGamesByName(String name);
     List<Game> getAllGamesByDev(String developer);
@@ -21,5 +21,6 @@ public interface GridService {
     Publisher savePublisher(PublisherPOJO publisherPOJO);
     Developer saveDeveloper(DeveloperPOJO developerPOJO);
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
-    List<Game> searchGames(SearchGamePOJO searchGamePOJO);
+    GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
+    Sell saveSell(SellPOJO sellPOJO);
 }

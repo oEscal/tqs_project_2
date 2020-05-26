@@ -1,21 +1,20 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
 @Service
-public class GridServiceImpl implements GridService{
+public class GridServiceImpl implements GridService {
 
     @Autowired
     private DeveloperRepository mDeveloperRepository;
@@ -29,6 +28,19 @@ public class GridServiceImpl implements GridService{
     @Autowired
     private GameRepository mGameRepository;
 
+    @Autowired
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private SellRepository mSellRepository;
+
+    @Autowired
+    private UserRepository mUserRepository;
+
+    private SearchGamePOJO mPreviousGamePojo;
+
+    private List<Game> mPreviousSearch;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = mGameRepository.findById(id);
@@ -39,8 +51,9 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public List<Game> getAllGames() {
-        return mGameRepository.findAll();
+    public Page<Game> getAllGames(int page) {
+        Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
+        return games;
     }
 
     @Override
@@ -76,7 +89,7 @@ public class GridServiceImpl implements GridService{
     }
 
     @Override
-    public Game saveGame(GamePOJO gamePOJO){
+    public Game saveGame(GamePOJO gamePOJO) {
         Game game = new Game();
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
@@ -86,7 +99,7 @@ public class GridServiceImpl implements GridService{
         //Get Game genres
         Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
-        for (String gameGenrePOJO: gamePOJO.getGameGenres()) {
+        for (String gameGenrePOJO : gamePOJO.getGameGenres()) {
             gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
             gameGenreSet.add(gameGenre.get());
@@ -101,7 +114,7 @@ public class GridServiceImpl implements GridService{
         //Get Game Developers
         Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
-        for (String developerPOJO: gamePOJO.getDevelopers()) {
+        for (String developerPOJO : gamePOJO.getDevelopers()) {
             developer = mDeveloperRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
             developerSet.add(developer.get());
@@ -137,9 +150,87 @@ public class GridServiceImpl implements GridService{
         return gameGenre;
     }
 
-    @Override
-    public List<Game> searchGames(SearchGamePOJO searchGamePOJO){
-        return new ArrayList<>();
+    public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
+        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
+        if (game.isEmpty()) return null;
+        Game realGame = game.get();
+
+        GameKey gameKey = new GameKey();
+        gameKey.setRKey(gameKeyPOJO.getKey());
+        gameKey.setGame(realGame);
+        gameKey.setRetailer(gameKeyPOJO.getRetailer());
+        gameKey.setPlatform(gameKeyPOJO.getPlatform());
+        this.mGameKeyRepository.save(gameKey);
+        return gameKey;
     }
 
+    @Override
+    public Sell saveSell(SellPOJO sellPOJO) {
+        Optional<User> user = this.mUserRepository.findById(sellPOJO.getUserId());
+        if (user.isEmpty()) return null;
+        User realUser = user.get();
+
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
+        if (gameKey.isEmpty()) return null;
+        GameKey realGameKey = gameKey.get();
+
+        Sell sell = new Sell();
+        sell.setUser(realUser);
+        sell.setGameKey(realGameKey);
+        sell.setPrice(sellPOJO.getPrice());
+        sell.setDate(sellPOJO.getDate());
+        this.mSellRepository.save(sell);
+        return sell;
+    }
+
+    @Override
+    public List<Game> searchGames(SearchGamePOJO searchGamePOJO) {
+        String queryName = searchGamePOJO.getName();
+        List<Game> games;
+        if (!queryName.isEmpty()) {
+            games = this.mGameRepository.findAllByNameContaining(queryName);
+        } else {
+            games = this.mGameRepository.findAll();
+        }
+
+        String[] genres = searchGamePOJO.getGenres();
+        Optional<GameGenre> genre;
+        ArrayList<GameGenre> realGenres = new ArrayList<>();
+        if (genres.length > 0){
+            for (String gen: genres){
+                genre = this.mGameGenreRepository.findByName(gen);
+                if (genre.isEmpty()) continue;
+                realGenres.add(genre.get());
+            }
+            games.removeIf(game -> !game.getGameGenres().containsAll(realGenres));
+        }
+        //Filter by platform
+        String[] platforms = searchGamePOJO.getPlataforms();
+        if (platforms.length > 0){
+            games.removeIf(game -> !CollectionUtils.containsAny(game.getPlatforms(), Arrays.asList(platforms)));
+        }
+
+        double begin = searchGamePOJO.getStartPrice();
+        double end = searchGamePOJO.getEndPrice();
+        if (begin != 0 && end > begin){
+            games.removeIf(game -> game.getLowestPrice() <= begin || game.getLowestPrice() >= end);
+        } else if (begin != 0){
+            games.removeIf(game -> game.getLowestPrice() <= begin);
+        }
+        return games;
+    }
+
+    @Override
+    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO){
+        if (!searchGamePOJO.equals(mPreviousGamePojo)){
+            mPreviousGamePojo = searchGamePOJO;
+            mPreviousSearch = searchGames(searchGamePOJO);
+        }
+        int page = searchGamePOJO.getPage();
+        Pageable pageable = PageRequest.of(page, 18);
+        long start = pageable.getOffset();
+        long end = (start + 18 > mPreviousSearch.size())? mPreviousSearch.size():start+18;
+        return new PageImpl<>(mPreviousSearch.subList((int)start,(int) end),
+                PageRequest.of(page, 18), mPreviousSearch.size());
+    }
 }

@@ -15,7 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
@@ -43,7 +46,7 @@ class UserServiceIT {
     @SneakyThrows
     void setup() {
 
-        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mPassword1, mCountry1,
+        mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
     }
 

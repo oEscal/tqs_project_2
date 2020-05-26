@@ -1,9 +1,25 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 
@@ -15,6 +31,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonSerialize
+@SuppressFBWarnings
 public class Auction {
 
     @Id
@@ -31,6 +48,7 @@ public class Auction {
 
     @OneToOne
     @JoinColumn(name = "buy_id")
+    @EqualsAndHashCode.Exclude
     private Buy purchased;
 
     @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
@@ -42,7 +60,6 @@ public class Auction {
 
     private double price;
 
-
     public Date getEndDate() {
         return (Date) endDate.clone();
     }
@@ -52,7 +69,7 @@ public class Auction {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+        this.startDate = (Date) startDate.clone();
     }
 
     public Date getStartDate() {
