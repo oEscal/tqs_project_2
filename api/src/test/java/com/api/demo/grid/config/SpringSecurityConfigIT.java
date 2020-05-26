@@ -90,10 +90,10 @@ class SpringSecurityConfigIT {
         String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, false);
+        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, false, false);
 
         // verify for user endpoints
-        verifyEndpointsAreUnauthorizedOrForbidden(userWhitelist, false);
+        verifyEndpointsAreUnauthorizedOrForbidden(userWhitelist, false, false);
     }
 
 
@@ -133,7 +133,7 @@ class SpringSecurityConfigIT {
         String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, true);
+        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, true, true);
     }
 
 
@@ -183,7 +183,7 @@ class SpringSecurityConfigIT {
     }
 
     @SneakyThrows
-    private void verifyEndpointsAreUnauthorizedOrForbidden(String[] authList, boolean authenticate) {
+    private void verifyEndpointsAreUnauthorizedOrForbidden(String[] authList, boolean authenticate, boolean forbidden) {
 
         for (String endPoint : authList) {
             RequestBuilder request;
@@ -194,11 +194,11 @@ class SpringSecurityConfigIT {
             }
 
             int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
-            try {
-                assertEquals(401, returnedStatus);
-            } catch (AssertionFailedError error) {
-                assertEquals(403, returnedStatus, "Endpoint " + endPoint + " should be unauthorized" +
-                        "or forbidden");
+
+            if (forbidden) {
+                assertEquals(403, returnedStatus, "Endpoint " + endPoint + " should be or forbidden");
+            } else {
+                assertEquals(401, returnedStatus, "Endpoint " + endPoint + " should be unauthorized");
             }
         }
     }
