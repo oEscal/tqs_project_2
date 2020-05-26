@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -179,6 +180,27 @@ public class GridServiceImpl implements GridService {
         sell.setDate(sellPOJO.getDate());
         this.mSellRepository.save(sell);
         return sell;
+    }
+
+    @Override
+    public Set<Game> addWishListByUserID(long gameID, long userID) {
+        Optional<User> user = this.mUserRepository.findById(userID);
+        if (user.isEmpty()) return null;
+
+        Optional<Game> game = this.mGameRepository.findById(gameID);
+        if (game.isEmpty()) return null;
+
+        User realUser = user.get();
+        Game realGame = game.get();
+        Set<Game> wishList = realUser.getWishList();
+        wishList.add(realGame);
+        Set<User> users = realGame.getUserWish();
+        users.add(realUser);
+        realUser.setWishList(wishList);
+        realGame.setUserWish(users);
+        this.mUserRepository.save(realUser);
+        this.mGameRepository.save(realGame);
+        return wishList;
     }
 
 }

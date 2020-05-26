@@ -253,12 +253,51 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception{
+
+
         mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Sell Listing"))
         ;
+    }
+
+    /*
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidWishList_ReturnSuccess() throws  Exception {
+
+        Game game = new Game();
+        mGameRepository.save(game);
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mUserRepository.save(user);
+
+
+        mMockMvc.perform(post("/grid/add-wish-list")
+                .param("user_id", String.valueOf(user.getId()))
+                .param("game_id", String.valueOf(game.getId()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", is((int)game.getId())));
+    }
+    */
+    
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidWishList_ReturnException() throws  Exception {
+        mMockMvc.perform(post("/grid/add-wish-list")
+                .param("user_id", String.valueOf(1))
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 
     public static String asJsonString(final Object obj) {
