@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -89,10 +90,10 @@ class SpringSecurityConfigIT {
         String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorized(adminWhitelist, false);
+        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, false);
 
         // verify for user endpoints
-        verifyEndpointsAreUnauthorized(userWhitelist, false);
+        verifyEndpointsAreUnauthorizedOrForbidden(userWhitelist, false);
     }
 
 
@@ -132,7 +133,7 @@ class SpringSecurityConfigIT {
         String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
 
         // verify for admin endpoints
-        verifyEndpointsAreUnauthorized(adminWhitelist, true);
+        verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, true);
     }
 
 
@@ -182,7 +183,7 @@ class SpringSecurityConfigIT {
     }
 
     @SneakyThrows
-    private void verifyEndpointsAreUnauthorized(String[] authList, boolean authenticate) {
+    private void verifyEndpointsAreUnauthorizedOrForbidden(String[] authList, boolean authenticate) {
 
         for (String endPoint : authList) {
             RequestBuilder request;
@@ -193,7 +194,12 @@ class SpringSecurityConfigIT {
             }
 
             int returnedStatus = mMvc.perform(request).andReturn().getResponse().getStatus();
-            assertEquals(401, returnedStatus, "Endpoint " + endPoint + " should be unauthorized");
+            try {
+                assertEquals(401, returnedStatus);
+            } catch (AssertionFailedError error) {
+                assertEquals(403, returnedStatus, "Endpoint " + endPoint + " should be unauthorized" +
+                        "or forbidden");
+            }
         }
     }
 }
