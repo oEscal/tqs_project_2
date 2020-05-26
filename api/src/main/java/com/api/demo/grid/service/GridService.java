@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import java.util.Set;
 public interface GridService {
     Game getGameById(long id);
     Page<Game> getAllGames(int page);
+    Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException;
     List<Game> getAllGamesWithGenre(String genre);
     List<Game> getAllGamesByName(String name);
     List<Game> getAllGamesByDev(String developer);

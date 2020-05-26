@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
@@ -52,6 +53,14 @@ public class GridServiceImpl implements GridService {
     public Page<Game> getAllGames(int page) {
         Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
         return games;
+    }
+
+    @Override
+    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException{
+        Optional<Game> game = mGameRepository.findById(gameId);
+        if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
+        Page<Sell> sells = mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
+        return sells;
     }
 
     @Override
