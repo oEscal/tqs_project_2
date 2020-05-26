@@ -35,12 +35,8 @@ public class Account {
     @PostMapping("/grid/login")
     public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) {
 
-        String base64Credentials = auth.substring("Basic".length()).trim();
-        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
-        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
-
-        final String[] values = credentials.split(":", 2);
-        User user = mUserService.getUser(values[0]);
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
 
         return ResponseEntity.ok().body(user);
     }

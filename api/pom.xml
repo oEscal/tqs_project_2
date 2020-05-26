@@ -258,6 +258,7 @@
 							<includes>
 								<include>**/*IT.*</include>
 								<include>**/*Tests.*</include>
+								<exclude>**/UserInfoControllerIT.*</exclude>
 							</includes>
 						</configuration>
 					</execution>

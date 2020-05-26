@@ -7,10 +7,7 @@ import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -18,21 +15,32 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserInfoController {
 
     @Autowired
-    private UserService userService;
+    private UserService mUserService;
 
     @GetMapping(value="/public/user-info", params={"username"})
     public ResponseEntity<UserInfoProxy> getUserInfo(@RequestParam("username") String username){
         try{
-            return ResponseEntity.ok(userService.getUserInfo(username));
+            return ResponseEntity.ok(mUserService.getUserInfo(username));
         } catch (UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
     @GetMapping(value="/private/user-info", params={"username"})
-    public ResponseEntity<User> getPrivateUserInfo(@RequestParam("username") String username){
+    public ResponseEntity<User> getPrivateUserInfo(@RequestHeader("Authorization") String auth,
+                                                   @RequestParam("username") String username){
+        System.out.println(auth);
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        if (!value.equals(username) && !user.isAdmin()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You are not allowed to see this user's private info");
+        }
         try{
-            return ResponseEntity.ok(userService.getFullUserInfo(username));
+            return ResponseEntity.ok(mUserService.getFullUserInfo(username));
         } catch (UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
