@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  database:
+    image: mysql:latest
+    container_name: db_rest_api
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'market'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'wYVGBUqd6zj9cjf*b9zpgYzt%@cbDeDnNa@GV'
+      MYSQL_ROOT_PASSWORD: 'mhXdu2P$8iDUAM*cH$^5WU5ymnaMV8gG7QAD@'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+volumes:
+  my-db:
+  influx-db:
