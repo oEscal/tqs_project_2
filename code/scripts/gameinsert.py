@@ -58,21 +58,24 @@ while count < 100 and url:
 # Insert games
 url = base_url + "games"
 count = 0
-while count < 300:
+while count < 30000:
 	print(url)
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		game_info = requests.get(base_url + "games/" + str(genre["id"])).json()
+		publisher = ""
+      if len(game_info["publishers"]) != 0:
+         publisher = game_info["publishers"][0]["name"]
 		try:
 			print(f"{grid_url}add-game")
 			response = requests.post(f"{grid_url}add-game", data=json.dumps({
 				"name": game_info["name"],
-				"description": game_info["description"][:100],
+				"description": game_info["description"],
 				"releaseDate": game_info["released"],
 				"coverUrl": game_info["background_image"],
 				"developers": [dev["name"] for dev in game_info["developers"]],
 				"gameGenres": [genre["name"] for genre in game_info["genres"]],
-				"publisher": game_info["publishers"][0]["name"]
+				"publisher": publisher
 			}), headers=headers, auth=authentication)
 			count += 1
 			print(response)
