@@ -31,7 +31,6 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -222,7 +221,9 @@ public class User {
     public void addBuy(Buy aboutToBuy) {
         if (this.buys == null) this.buys = new HashSet<>();
 
-        if (this.buys.contains(aboutToBuy)) return;
+        for (Buy buy: this.buys) {
+            if (buy.equals(aboutToBuy)) return;
+        }
 
         this.buys.add(aboutToBuy);
         aboutToBuy.setUser(this);

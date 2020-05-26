@@ -1,7 +1,7 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.exceptions.UnavailableListingException;
-import com.api.demo.grid.exceptions.UnsufficientFundsException;
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import org.springframework.data.domain.Page;

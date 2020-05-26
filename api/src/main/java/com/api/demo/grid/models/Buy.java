@@ -99,8 +99,13 @@ public class Buy {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Buy buy = (Buy) o;
-        if (buy.getId() == id) return true;
-        return Objects.equals(date, buy.date) && buy.getSellId() == this.getSellId()
+        return Objects.equals(date, buy.date)
+                && buy.getSellId() == this.getSellId()
                 && this.getUserId()==buy.getUserId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSellId(), getUserId(), date);
     }
 }

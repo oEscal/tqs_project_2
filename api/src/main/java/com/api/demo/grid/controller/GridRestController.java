@@ -1,6 +1,6 @@
 package com.api.demo.grid.controller;
-import com.api.demo.grid.exceptions.UnavailableListingException;
-import com.api.demo.grid.exceptions.UnsufficientFundsException;
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
@@ -122,9 +122,7 @@ public class GridRestController {
         List<Buy> buys;
         try {
             buys = mGridService.saveBuy(buyListingsPOJO);
-        } catch (UnavailableListingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (UnsufficientFundsException e) {
+        } catch (UnavailableListingException | UnsufficientFundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return new ResponseEntity<>(buys, HttpStatus.OK);

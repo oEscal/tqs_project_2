@@ -1,7 +1,7 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.exceptions.UnavailableListingException;
-import com.api.demo.grid.exceptions.UnsufficientFundsException;
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
@@ -418,9 +418,7 @@ class GridServiceTest {
 
         try {
             mGridService.saveBuy(buyListingsPOJO);
-        } catch (UnavailableListingException e) {
-            fail();
-        } catch (UnsufficientFundsException e) {
+        } catch (UnavailableListingException | UnsufficientFundsException e) {
             fail();
         }
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(11l);
@@ -441,9 +439,7 @@ class GridServiceTest {
 
         try {
             mGridService.saveBuy(buyListingsPOJO);
-        } catch (UnavailableListingException e) {
-            fail();
-        } catch (UnsufficientFundsException e) {
+        } catch (UnavailableListingException | UnsufficientFundsException e) {
             fail();
         }
 
@@ -473,7 +469,6 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
         mSell1.setPurchased(new Buy());
 
-        double previousFunds = mBuyer.getFunds();
         long[] longs = {8l, 9l};
         BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, false);
 
@@ -490,7 +485,6 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
         mSell1.setPurchased(new Buy());
 
-        double previousFunds = mBuyer.getFunds();
         long[] longs = {8l, 9l};
         BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, true);
 
@@ -506,7 +500,6 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
         mSell1.setPurchased(new Buy());
 
-        double previousFunds = mBuyer.getFunds();
         long[] longs = {8l, 9l};
         BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, false);
 
@@ -523,7 +516,6 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(11l)).thenReturn(Optional.ofNullable(mBuyer));
         mSell1.setPurchased(new Buy());
 
-        double previousFunds = mBuyer.getFunds();
         long[] longs = {8l, 9l};
         BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO(11l, longs, true);
 

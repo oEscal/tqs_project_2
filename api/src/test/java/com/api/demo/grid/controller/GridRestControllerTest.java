@@ -1,7 +1,7 @@
 package com.api.demo.grid.controller;
 
-import com.api.demo.grid.exceptions.UnavailableListingException;
-import com.api.demo.grid.exceptions.UnsufficientFundsException;
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
@@ -9,7 +9,6 @@ import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -417,12 +416,11 @@ class GridRestControllerTest {
     void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception{
         Mockito.when(mGridService.saveBuy(Mockito.any(BuyListingsPOJO.class)))
                 .thenThrow(new UnavailableListingException("This listing has been bought by another user"));
-        MvcResult result = mMockMvc.perform(post("/grid/buy-listing")
+        mMockMvc.perform(post("/grid/buy-listing")
                 .content(asJsonString(mBuyListingsPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                //.andExpect(status().is4xxClientError())
-                //.andExpect(status().reason("This listing has been bought by another user"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("This listing has been bought by another user"))
         ;
         System.out.println();
     }
