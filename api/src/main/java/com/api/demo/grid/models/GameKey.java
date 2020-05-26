@@ -31,6 +31,7 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
+    @JsonIgnore
     private String rKey;
 
     @ManyToOne(fetch = FetchType.LAZY)

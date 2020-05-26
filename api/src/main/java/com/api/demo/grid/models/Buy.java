@@ -61,4 +61,10 @@ public class Buy {
     public void setDate(Date date) {
         if (date != null) this.date = (Date) date.clone();
     }
+
+    public String getGamerKey(){
+        if (sell != null) return sell.getGameKey().getRKey();
+        if (auction != null) return auction.getGameKey().getRKey();
+        return null;
+    }
 }
