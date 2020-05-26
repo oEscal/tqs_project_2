@@ -37,7 +37,6 @@ public class Account {
         String base64Credentials = auth.substring("Basic".length()).trim();
         String username = new String(Base64.getDecoder().decode(base64Credentials)).split(":", 2)[0];
         User user = mUserService.getUser(username);
-
         return ResponseEntity.ok().body(user);
     }
 }
