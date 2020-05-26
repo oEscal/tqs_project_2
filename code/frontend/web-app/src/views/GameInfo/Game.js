@@ -71,6 +71,14 @@ import Lottie from "react-lottie";
 import * as loadingAnim from "assets/animations/loading_anim.json";
 
 
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
+
+import {
+    Link,
+    Redirect
+} from "react-router-dom";
 
 class Game extends Component {
     constructor() {
@@ -84,16 +92,126 @@ class Game extends Component {
                 preserveAspectRatio: "xMidYMid slice"
             }
         },
+        game: null,
+        redirectLogin: false,
+        redirectGames: false,
+
+        loadingSell: false,
+        loadingAuctions: false,
     }
 
-    componentDidMount() {
+    async getGameInfo() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ gamesLoaded: false })
+
+        console.log(this.props.match.params.game)
+        // Get All Games
+        await fetch(baseURL + "grid/game?id=" + this.props.match.params.game, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+                    var description = data.description
+                    description = description.substring(3, description.length - 4)
+
+                    description = description.replace(/&#39;s/g, "'s")
+                    description = description.replace(/<p>/g, "\n")
+                    description = description.replace(/<\/p>/g, "")
+                    description = description.replace(/<h3>/g, "\n")
+                    description = description.replace(/<\/h3>/g, "")
+                    description = description.replace(/<br \/>/g, "\n")
+
+                    var minimizedDescription = description
+                    if (description.length > 315) {
+                        minimizedDescription = description.substring(0, 312) + "..."
+                    }
+                    data.minimizedDescription = minimizedDescription
+                    data.description = description
+
+                    var allDevelopers = ""
+                    data.developerNames.forEach(developer => {
+                        allDevelopers += developer + ", "
+                    })
+                    allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
+                    data["allDevelopers"] = allDevelopers
+
+                    var allGenres = ""
+                    data.gameGenres.forEach(genre => {
+                        allGenres += genre.name + ", "
+                    })
+                    allGenres = allGenres.substring(0, allGenres.length - 2)
+                    data["allGenres"] = allGenres
+
+                    var allPlatforms = ""
+                    data.platforms.forEach(platform => {
+                        allGenres += platform + ", "
+                    })
+                    allPlatforms = allPlatforms.substring(0, allPlatforms.length - 2)
+                    data["allPlatforms"] = allPlatforms
+
+                    this.setState({ game: data })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                this.setState({ redirectGames: true })
+            });
+
+    }
+
+    async componentDidMount() {
         window.scrollTo(0, 0)
+        await this.getGameInfo()
         this.setState({ doneLoading: true })
     }
+
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
+    }
+
 
     render() {
         const { classes } = this.props;
 
+        if(this.state.redirectGames){
+            return (
+                <div>
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+
+                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                        <FadeIn>
+                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                        </FadeIn>
+                    </div>
+                </div>
+            )
+        }
 
 
         if (!this.state.doneLoading) {
@@ -273,117 +391,404 @@ class Game extends Component {
                 </div>
             }
 
+            var gameHeader = null
+            var gameInfo = null
+
+            if (this.state.game != null) {
+                gameHeader = <div style={{ padding: "70px 0" }}>
+                    <GridContainer>
+                        <GridItem xs={12} sm={12} md={5}>
+                            <img
+                                src={this.state.game.coverUrl}
+                                alt="..."
+                                style={{ width: "95%", height: "260px", marginTop: "28px" }}
+                                className={
+                                    classes.imgRaised +
+                                    " " +
+                                    classes.imgRounded
+                                }
+                            />
+                        </GridItem>
+
+                        <GridItem xs={12} sm={12} md={5}>
+                            <div style={{ textAlign: "left" }}>
+                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>{this.state.game.name}</b></h3>
+                                <hr style={{ color: "#999" }}></hr>
+                            </div>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "15px" }}>
+                                    <b>Description:</b> <span style={{ color: "#3b3e48" }}> {this.state.game.minimizedDescription}</span>
+                                </span>
+                            </div>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "25px" }}>
+                                    <img src={image} style={{ marginBottom: "10px" }}></img><b> Grid Score:</b> <span style={{ color: "#4ec884" }}><b>4 <i class="far fa-star"></i></b></span>
+                                </span>
+                            </div>
+                        </GridItem>
+
+                        <GridItem xs={12} sm={12} md={2}>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "12px" }}>
+                                    BEST OFFER
+                                            </span>
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                    Jonas_PP
+                                            </span>
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
+                                    4 <i class="far fa-star"></i>
+                                </span>
+                                <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
+                                    Grid Score
+                                            </span>
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <Button
+                                    color="danger"
+                                    size="sm"
+                                    style={{ backgroundColor: "#ff3ea0" }}
+                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="far fa-user"></i> Seller Profile
+                                            </Button>
+                            </div>
+
+                            <div style={{ textAlign: "left", marginTop: "20px" }}>
+                                <span style={{ color: "#999", fontSize: "12px" }}>
+                                    Price
+                                            </span>
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
+                                    5,99€
+                                            </span>
+
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
+                                    ( PC Key )
+                                            </span>
+                            </div>
+
+                            <div style={{ textAlign: "left", marginTop: "5px" }}>
+                                <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#4ec884", width: "100%" }}
+                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                                            </Button>
+                                <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#1598a7", width: "100%" }}
+                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="far fa-heart"></i> Add to Wishlist
+                                            </Button>
+                            </div>
+
+                        </GridItem>
+                    </GridContainer>
+                </div>
+
+                gameInfo = [
+                    <div className={"search"} style={{ padding: "45px 0px" }}>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <span>
+                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
+                            </h2>
+                                </span>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fdf147" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Name
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.name}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #feec4c" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Release Date
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.releaseDate}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f5c758" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Description
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                            {this.state.game.description}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fca963" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Genres
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #f77a71" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Platforms
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allPlatforms}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc4b8f" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Developer
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} style={{ borderRight: "2px solid #fc1bbe" }}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Publisher
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.publisherName}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+                        </GridContainer>
+                    </div>,
+                    <div className={"searchMobile"} style={{ padding: "45px 0px" }}>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <span>
+                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
+                            </h2>
+                                </span>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "15px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fdf147"  }}>Name
+                                            </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.name}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #feec4c" }}>Release Date
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.releaseDate}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0",  borderBottom: "2px solid #f5c758" }}>Description
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                            {this.state.game.description}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fca963" }}>Genres
+                                            </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #f77a71" }}>Platforms
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allGenres}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={2}>
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fc4b8f" }}>Developer
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
+                                    </GridItem>
+                                    <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+
+                            </GridItem>
+
+                            <GridItem xs={12} sm={12} md={12} style={{ marginTop: "15px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12} >
+                                        <span>
+                                            <h3 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0", borderBottom: "2px solid #fc1bbe" }}>Publisher
+                                    </h3>
+                                        </span>
+                                    </GridItem>
+                                    
+                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                            {this.state.game.allDevelopers}
+                                        </div>
+                                    </GridItem>
+                                </GridContainer>
+                            </GridItem>
+                        </GridContainer>
+                    </div>
+                ]
+            }
 
             return (
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+                    {this.renderRedirectLogin()}
+
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
                         <div className={classes.container}>
-                            <div style={{ padding: "70px 0" }}>
-                                <GridContainer>
-                                    <GridItem xs={12} sm={12} md={5}>
-                                        <img
-                                            src={image1}
-                                            alt="..."
-                                            style={{ width: "95%", height: "260px", marginTop: "28px" }}
-                                            className={
-                                                classes.imgRaised +
-                                                " " +
-                                                classes.imgRounded
-                                            }
-                                        />
-                                    </GridItem>
 
-                                    <GridItem xs={12} sm={12} md={5}>
-                                        <div style={{ textAlign: "left" }}>
-                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>No Man's Sky</b></h3>
-                                            <hr style={{ color: "#999" }}></hr>
-                                        </div>
-                                        <div style={{ textAlign: "left", marginTop: "30px" }}>
-                                            <span style={{ color: "#999", fontSize: "15px" }}>
-                                                <b>Description:</b> <span style={{ color: "#3b3e48" }}> Form a team with friends or fly alone and discover everything the universe has to offer. Gather, craft, explore – rediscover the title and enjoy new features introduced by the major expansion packs, including the famous Next update.</span>
-                                            </span>
-                                        </div>
-                                        <div style={{ textAlign: "left", marginTop: "30px" }}>
-                                            <span style={{ color: "#999", fontSize: "25px" }}>
-                                                <img src={image} style={{ marginBottom: "10px" }}></img><b> Grid Score:</b> <span style={{ color: "#4ec884" }}><b>4 <i class="far fa-star"></i></b></span>
-                                            </span>
-                                        </div>
-                                    </GridItem>
-
-                                    <GridItem xs={12} sm={12} md={2}>
-                                        <div style={{ textAlign: "left", marginTop: "30px" }}>
-                                            <span style={{ color: "#999", fontSize: "12px" }}>
-                                                BEST OFFER
-                                            </span>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                                Jonas_PP
-                                            </span>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                                                4 <i class="far fa-star"></i>
-                                            </span>
-                                            <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
-                                                Grid Score
-                                            </span>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <Button
-                                                color="danger"
-                                                size="sm"
-                                                style={{ backgroundColor: "#ff3ea0" }}
-                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <i class="far fa-user"></i> Seller Profile
-                                            </Button>
-                                        </div>
-
-                                        <div style={{ textAlign: "left", marginTop: "20px" }}>
-                                            <span style={{ color: "#999", fontSize: "12px" }}>
-                                                Price
-                                            </span>
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
-                                                5,99€
-                                            </span>
-
-                                        </div>
-                                        <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
-                                                ( Steam Key )
-                                            </span>
-                                        </div>
-
-                                        <div style={{ textAlign: "left", marginTop: "5px" }}>
-                                            <Button
-                                                size="md"
-                                                style={{ backgroundColor: "#4ec884", width: "100%" }}
-                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                                            </Button>
-                                            <Button
-                                                size="md"
-                                                style={{ backgroundColor: "#1598a7", width: "100%" }}
-                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <i class="far fa-heart"></i> Add to Wishlist
-                                            </Button>
-                                        </div>
-
-                                    </GridItem>
-                                </GridContainer>
-                            </div>
+                            {gameHeader}
 
                             <div style={{ padding: "20px 0px" }}>
                                 <GridContainer>
@@ -443,25 +848,10 @@ class Game extends Component {
                                 </GridContainer>
                             </div>
 
-                            <div style={{ padding: "45px 0px" }}>
-                                <GridContainer>
-                                    <GridItem xs={12} sm={12} md={12}>
-                                        <span>
-                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Game Details
-                                            </h2>
-                                        </span>
-                                    </GridItem>
-                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black" }}>
-                                            ADD GAME INFO
-                                        </div>
-                                    </GridItem>
-                                </GridContainer>
-                            </div>
-
+                            {gameInfo}
                         </div>
 
-                        <Footer />
+                        <Footer rawg={true}/>
 
                     </div>
                 </div>

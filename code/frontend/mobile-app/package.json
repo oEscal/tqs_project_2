@@ -1,7 +1,7 @@
 {
-  "name": "rn-material-kit-free",
+  "name": "grid-marketplace",
   "version": "1.5.0",
-  "description": "Material Kit React Native. Coded by Creative Tim",
+  "description": "Grid Marketplace. An e-commerce project for TQS",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
   "scripts": {
@@ -9,10 +9,20 @@
     "android": "cross-env REACT_EDITOR=code expo start --android",
     "ios": "cross-env REACT_EDITOR=code expo start --ios",
     "eject": "expo eject",
-    "test": "node ./node_modules/jest/bin/jest.js --watchAll"
+    "test": "jest"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*|galio-framework|deprecated-react-native-listview)"
+    ],
+    "setupFilesAfterEnv": [
+      "jest-enzyme"
+    ],
+    "testEnvironment": "enzyme",
+    "testEnvironmentOptions": {
+      "enzymeAdapter": "react16"
+    }
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.5",
@@ -24,6 +34,7 @@
     "expo-asset": "~8.0.0",
     "expo-font": "~8.0.0",
     "expo-linear-gradient": "~8.0.0",
+    "fetch-mock": "^9.10.1",
     "galio-framework": "~0.6.3",
     "react": "16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
@@ -36,8 +47,13 @@
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",
     "cross-env": "~7.0.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "expo-cli": "~3.11.7",
-    "jest-expo": "~36.0.0"
+    "jest-environment-enzyme": "^7.1.2",
+    "jest-enzyme": "^7.1.2",
+    "jest-expo": "~36.0.0",
+    "react-dom": "^16.13.1"
   },
   "bugs": {
     "url": "https://github.com/creativetimofficial/material-kit-react-native/issues"
