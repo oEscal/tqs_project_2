@@ -7,6 +7,7 @@ import com.api.demo.grid.pojos.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
 
 public interface GridService {
     Game getGameById(long id);
@@ -22,4 +23,5 @@ public interface GridService {
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
     List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo) throws UnavailableListingException, UnsufficientFundsException;
+    Set<Game> addWishListByUserID(long gameID, long userID);
 }

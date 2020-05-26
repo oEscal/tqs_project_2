@@ -48,6 +48,7 @@ public class Game {
     @Column(unique=true)
     private String name;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

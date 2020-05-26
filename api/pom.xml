@@ -232,6 +232,7 @@
 				<version>2.19.1</version>
 				<configuration>
 					<skipTests>true</skipTests>
+					<excludes>**/GridRestControllerIT.*</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -279,6 +280,7 @@
 						<include>**/*IT</include>
 						<include>**/Test</include>
 					</includes>
+					<excludes>**/GridRestControllerIT.*</excludes>
 				</configuration>
 			</plugin>
 		</plugins>

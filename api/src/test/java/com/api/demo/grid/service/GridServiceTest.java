@@ -533,4 +533,28 @@ class GridServiceTest {
 
     }
 
+    @Test
+    void whenPostingValidWishList_ReturnWishList() {
+        long userID = 1L;
+        long gameID = 1L;
+
+
+        Set<Game> expected = new HashSet<>();
+        expected.add(mGame);
+        Set<User> users = new HashSet<>();
+        users.add(mUser);
+        mUser.setWishList(expected);
+        mGame.setUserWish(users);
+
+        Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
+        Mockito.when(mMockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(mGame));
+
+        Set<Game> games = mGridService.addWishListByUserID(gameID, userID);
+
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
+        Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(gameID);
+
+
+        assertEquals(expected, games);
+    }
 }

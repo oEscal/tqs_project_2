@@ -8,20 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
 @RequestMapping("/grid")
+@CrossOrigin
 public class GridRestController {
     public static final String ERROR = "No Game found with Id ";
 
@@ -131,5 +128,14 @@ public class GridRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return new ResponseEntity<>(buys, HttpStatus.OK);
+    }
+    
+    @PostMapping(value = "/add-wish-list", params = {"game_id", "user_id"})
+    public ResponseEntity<Set<Game>> addWishList(@RequestParam("game_id") long gameID, @RequestParam("user_id") long userID) {
+        Set<Game> games = mGridService.addWishListByUserID(gameID, userID);
+        if (games == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add game to wish List");
+
+        return new ResponseEntity<>(games, HttpStatus.OK);
     }
 }

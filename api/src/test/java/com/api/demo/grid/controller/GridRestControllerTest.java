@@ -31,10 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 
 
 @SpringBootTest
@@ -455,6 +452,41 @@ class GridRestControllerTest {
                 .andExpect(status().reason("This user doesn't have enough funds"))
         ;
     }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingValidWishList_ReturnSuccess() throws  Exception {
+        int gameID = 1;
+        int userID = 1;
+        Set<Game> games = new HashSet<>();
+        games.add(mGame);
+        Mockito.when(mGridService.addWishListByUserID(gameID, userID)).thenReturn(games);
+
+        mMockMvc.perform(post("/grid/add-wish-list")
+                .param("user_id", String.valueOf(1))
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", is(1)));
+
+
+
+    }
+
+    @Test
+    @WithMockUser(username="spring")
+    void whenPostingInvalidWishList_ReturnException() throws  Exception {
+        int gameID = 1;
+        int userID = 1;
+        Mockito.when(mGridService.addWishListByUserID(gameID, userID)).thenReturn(null);
+
+        mMockMvc.perform(post("/grid/add-wish-list")
+                .param("user_id", String.valueOf(1))
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {
