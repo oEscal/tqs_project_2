@@ -156,7 +156,7 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    private Set<Buy> buys;
+    private Set<Buy> buys = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
@@ -170,6 +170,8 @@ public class User {
     @JoinColumn(name = "game_id")
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
+
+    private double funds = 0;
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
@@ -208,11 +210,28 @@ public class User {
         }
     }
 
+    public double getFunds() { return this.funds; }
+
+    public void setFunds(double funds) { this.funds = funds; }
+
+    public void payWithFunds(double bill) { this.funds -= bill; }
+
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 
         this.sells.add(sell);
 
         sell.setUser(this);
+    }
+
+    public void addBuy(Buy aboutToBuy) {
+        if (this.buys == null) this.buys = new HashSet<>();
+
+        for (Buy buy: this.buys) {
+            if (buy.equals(aboutToBuy)) return;
+        }
+
+        this.buys.add(aboutToBuy);
+        aboutToBuy.setUser(this);
     }
 }

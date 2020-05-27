@@ -42,11 +42,13 @@ public class GameKey {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Sell sell;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Auction auction;
 
@@ -64,20 +66,21 @@ public class GameKey {
         if (game!=null) game.addGameKey(this);
     }
 
-    public void setSell(Sell sell){
-        if (sameAsFormerSale(sell)) return;
-
-        this.sell = sell;
-
-        if (sell != null) sell.setGameKey(this);
-    }
-
-    private boolean sameAsFormerSale(Sell newSale) {return Objects.equals(newSale, sell); }
-
     private boolean sameAsFormer(Game newGame) {
         return Objects.equals(game, newGame);
     }
 
+    public void setSell(Sell sell){
+        if (sameAsFormerSell(sell)) return ;
+        this.sell = sell;
+        if (sell!=null) sell.setGameKey(this);
+    }
+
+    private boolean sameAsFormerSell(Sell newSell) {
+        return Objects.equals(sell, newSell);
+    }
+
+    @EqualsAndHashCode.Include
     public long getGameId(){
         if (game == null) return -1L;
         return this.game.getId();

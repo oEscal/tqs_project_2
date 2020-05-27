@@ -1,6 +1,10 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
+
+import com.api.demo.grid.models.Buy;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -8,6 +12,7 @@ import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
@@ -15,6 +20,7 @@ import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.repository.BuyRepository;
 import com.api.demo.grid.repository.DeveloperRepository;
 import com.api.demo.grid.repository.GameGenreRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
@@ -36,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Date;
 
 @Service
 public class GridServiceImpl implements GridService {
@@ -60,6 +67,9 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private UserRepository mUserRepository;
+
+    @Autowired
+    private BuyRepository mBuyRepository;
 
     private SearchGamePOJO mPreviousGamePojo;
 
@@ -209,6 +219,39 @@ public class GridServiceImpl implements GridService {
         sell.setDate(sellPOJO.getDate());
         this.mSellRepository.save(sell);
         return sell;
+    }
+
+    @Override
+    public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO) throws UnavailableListingException,
+            UnsufficientFundsException {
+        List<Buy> buyList = new ArrayList<>();
+        double bill = 0;
+        Optional<Sell> sell;
+        Buy buy;
+        Optional<User> optionalUser = mUserRepository.findById(buyListingsPOJO.getUserId());
+        User user;
+        if (optionalUser.isEmpty()) return null;
+        user = optionalUser.get();
+        for (long sellId : buyListingsPOJO.getListingsId()){
+            sell = mSellRepository.findById(sellId);
+            if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
+            else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
+                    "This listing has been bought by another user");
+            buy = new Buy();
+            buy.setDate(new Date());
+            buy.setSell(sell.get());
+            buyList.add(buy);
+            bill += sell.get().getPrice();
+        }
+        if (buyListingsPOJO.isWithFunds()) {
+            if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
+            user.payWithFunds(bill);
+        }
+        for (Buy buy1: buyList) {
+            user.addBuy(buy1);
+            mBuyRepository.save(buy1);
+        }
+        return buyList;
     }
 
     @Override

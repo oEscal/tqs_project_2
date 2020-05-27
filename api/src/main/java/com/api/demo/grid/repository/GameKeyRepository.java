@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface GameKeyRepository extends JpaRepository<GameKey, Long> {
-    Optional<GameKey> findByrKey(String key);
+    Optional<GameKey> findByrKey(String rKey);
     Optional<GameKey> findById(long id);
     List<GameKey> findAllByGame(Game game);
 }
