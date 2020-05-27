@@ -33,6 +33,7 @@ class SellRepositoryTest {
         user.setPassword("mPassword1");
         user.setCountry("mCountry1");
         user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        user.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse("25/05/2020"));
         mEntityManager.persistAndFlush(user);
 
         Sell sell = new Sell();
