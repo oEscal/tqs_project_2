@@ -5,15 +5,20 @@ import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 
 @Service
 public class GridServiceImpl implements GridService {
@@ -38,6 +43,10 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private UserRepository mUserRepository;
+
+    private SearchGamePOJO mPreviousGamePojo;
+
+    private List<Game> mPreviousSearch;
 
     @Override
     public Game getGameById(long id) {
@@ -148,7 +157,6 @@ public class GridServiceImpl implements GridService {
         return gameGenre;
     }
 
-    @Override
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
         Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
         if (game.isEmpty()) return null;
@@ -183,6 +191,56 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
+    public List<Game> searchGames(SearchGamePOJO searchGamePOJO) {
+        String queryName = searchGamePOJO.getName();
+        List<Game> games;
+        if (!queryName.isEmpty()) {
+            games = this.mGameRepository.findAllByNameContaining(queryName);
+        } else {
+            games = this.mGameRepository.findAll();
+        }
+
+        String[] genres = searchGamePOJO.getGenres();
+        Optional<GameGenre> genre;
+        ArrayList<GameGenre> realGenres = new ArrayList<>();
+        if (genres.length > 0){
+            for (String gen: genres){
+                genre = this.mGameGenreRepository.findByName(gen);
+                if (genre.isEmpty()) continue;
+                realGenres.add(genre.get());
+            }
+            games.removeIf(game -> !game.getGameGenres().containsAll(realGenres));
+        }
+        //Filter by platform
+        String[] platforms = searchGamePOJO.getPlataforms();
+        if (platforms.length > 0){
+            games.removeIf(game -> !CollectionUtils.containsAny(game.getPlatforms(), Arrays.asList(platforms)));
+        }
+
+        double begin = searchGamePOJO.getStartPrice();
+        double end = searchGamePOJO.getEndPrice();
+        if (begin != 0 && end > begin){
+            games.removeIf(game -> game.getBestSell().getPrice() <= begin || game.getBestSell().getPrice() >= end);
+        } else if (begin != 0){
+            games.removeIf(game -> game.getBestSell().getPrice() <= begin);
+        }
+        return games;
+    }
+
+    @Override
+    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO){
+        if (!searchGamePOJO.equals(mPreviousGamePojo)){
+            mPreviousGamePojo = searchGamePOJO;
+            mPreviousSearch = searchGames(searchGamePOJO);
+        }
+        int page = searchGamePOJO.getPage();
+        Pageable pageable = PageRequest.of(page, 18);
+        long start = pageable.getOffset();
+        long end = (start + 18 > mPreviousSearch.size())? mPreviousSearch.size():start+18;
+        return new PageImpl<>(mPreviousSearch.subList((int)start,(int) end),
+                PageRequest.of(page, 18), mPreviousSearch.size());
+    }
+
     public Set<Game> addWishListByUserID(long gameID, long userID) {
         Optional<User> user = this.mUserRepository.findById(userID);
         if (user.isEmpty()) return null;
