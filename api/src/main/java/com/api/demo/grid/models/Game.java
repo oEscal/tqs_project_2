@@ -102,19 +102,19 @@ public class Game {
         gameKey.setGame(this);
     }
 
-    public double getLowestPrice(){
-        if (gameKeys == null || gameKeys.isEmpty()) return -1;
-        double lowestPrice = 0;
+    public Sell getBestSell(){
+        if (gameKeys == null || gameKeys.isEmpty()) return null;
+        Sell bestSell = new Sell();
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
             if (gameKey.getSell() != null){
-                if (!foundPrice || lowestPrice > gameKey.getSell().getPrice()) {
-                    lowestPrice = gameKey.getSell().getPrice();
+                if (!foundPrice || bestSell.getPrice() > gameKey.getSell().getPrice()) {
+                    bestSell = gameKey.getSell();
                 }
                 foundPrice = true;
             }
         }
-        return (foundPrice)? lowestPrice:-1;
+        return (foundPrice)? bestSell:null;
     }
 
     public ArrayList<String> getPlatforms(){

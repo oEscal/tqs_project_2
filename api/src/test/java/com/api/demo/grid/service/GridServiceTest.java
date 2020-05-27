@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
@@ -484,13 +485,8 @@ class GridServiceTest {
         Mockito.when(mockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
 
         List<Game> gamesList = Arrays.asList(mGame, mGame2);
-        Pagination<Game> pagination = new Pagination<>(gamesList);
-        int page = 1;
-        int entriesPerPage = 18;
 
-        Page<Game> games = pagination.pageImpl(page, entriesPerPage);
-        System.out.println();
-        assertEquals(games, mGridService.pageSearchGames(mSearchGamePOJO));
+        assertEquals(gamesList, mGridService.pageSearchGames(mSearchGamePOJO).getContent());
     }
 
     @Test
@@ -513,7 +509,6 @@ class GridServiceTest {
 
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
         Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
-
 
         assertEquals(expected, games);
     }

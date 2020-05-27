@@ -220,9 +220,9 @@ public class GridServiceImpl implements GridService {
         double begin = searchGamePOJO.getStartPrice();
         double end = searchGamePOJO.getEndPrice();
         if (begin != 0 && end > begin){
-            games.removeIf(game -> game.getLowestPrice() <= begin || game.getLowestPrice() >= end);
+            games.removeIf(game -> game.getBestSell().getPrice() <= begin || game.getBestSell().getPrice() >= end);
         } else if (begin != 0){
-            games.removeIf(game -> game.getLowestPrice() <= begin);
+            games.removeIf(game -> game.getBestSell().getPrice() <= begin);
         }
         return games;
     }
@@ -240,6 +240,7 @@ public class GridServiceImpl implements GridService {
         return new PageImpl<>(mPreviousSearch.subList((int)start,(int) end),
                 PageRequest.of(page, 18), mPreviousSearch.size());
     }
+
     public Set<Game> addWishListByUserID(long gameID, long userID) {
         Optional<User> user = this.mUserRepository.findById(userID);
         if (user.isEmpty()) return null;

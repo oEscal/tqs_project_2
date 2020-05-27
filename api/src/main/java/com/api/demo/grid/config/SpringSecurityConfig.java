@@ -30,7 +30,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/name",
             "/grid/developer",
             "/grid/publisher",
-            "/grid/search"
+            "/grid/search",
+            "/grid/public/user-info",
     };
 
     private static final String[] ADMIN_WHITELIST = {
