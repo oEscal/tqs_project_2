@@ -6,6 +6,8 @@ import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.text.SimpleDateFormat;
 
@@ -31,7 +32,10 @@ class AuctionServiceTest {
     private AuctionRepository mAuctionRepository;
 
     @Mock(lenient = true)
-    private ModelMapper mModelMapper;
+    private UserRepository mUserRepository;
+
+    @Mock(lenient = true)
+    private GameKeyRepository mGameKeyRepository;
 
     @InjectMocks
     private AuctionService mAuctionService;
@@ -126,8 +130,11 @@ class AuctionServiceTest {
     @Test
     void whenSaveNewAuction_insertIsSuccessful() {
 
-        // mock model mapper
-        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
+        // mock user repository
+        given(mUserRepository.findByUsername(mAuctioneerUsername)).willReturn(mAuctioneer);
+
+        // mock game key repository
+        given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
@@ -138,8 +145,11 @@ class AuctionServiceTest {
     @Test
     void whenSaveNewAuction_insertReceiveAuction() {
 
-        // mock model mapper
-        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
+        // mock user repository
+        given(mUserRepository.findByUsername(mAuctioneerUsername)).willReturn(mAuctioneer);
+
+        // mock game key repository
+        given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);

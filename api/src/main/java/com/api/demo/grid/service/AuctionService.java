@@ -1,7 +1,6 @@
 package com.api.demo.grid.service;
 
 
-import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.models.Auction;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
@@ -9,7 +8,6 @@ import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +25,6 @@ public class AuctionService {
 
     @Autowired
     private GameKeyRepository mGameKeyRepository;
-
-    @Autowired
-    private ModelMapper mModelMapper;
 
 
     public Auction getAuctionByGameKey(String key) {
@@ -52,10 +47,5 @@ public class AuctionService {
         auctionSave.setPrice(auctionPOJO.getPrice());
         auctionSave.setEndDate(auctionPOJO.getEndDate());
         return mAuctionRepository.save(auctionSave);
-    }
-
-
-    private Auction convertToEntity(AuctionPOJO auctionPOJO) {
-        return mModelMapper.map(auctionPOJO, Auction.class);
     }
 }

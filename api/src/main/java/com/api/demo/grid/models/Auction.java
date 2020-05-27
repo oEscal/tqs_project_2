@@ -78,10 +78,17 @@ public class Auction {
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = (Date) startDate.clone();
+        if (startDate != null) {
+            this.startDate = (Date) startDate.clone();
+        } else {
+            this.startDate = null;
+        }
     }
 
     public Date getStartDate() {
-        return (Date) startDate.clone();
+        if (startDate != null) {
+            return (Date) startDate.clone();
+        }
+        return null;
     }
 }
