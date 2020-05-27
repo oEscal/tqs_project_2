@@ -203,4 +203,9 @@ public class GridServiceImpl implements GridService {
         return wishList;
     }
 
+    @Override
+    public Sell deleteSell(long sellId){
+        return null;
+    }
+
 }

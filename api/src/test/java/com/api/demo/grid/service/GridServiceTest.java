@@ -407,4 +407,9 @@ class GridServiceTest {
 
         assertEquals(expected, games);
     }
+
+    @Test
+    void whenDeletingValidSellListing_DeleteSuccessful_AndReturnSell(){
+        
+    }
 }
