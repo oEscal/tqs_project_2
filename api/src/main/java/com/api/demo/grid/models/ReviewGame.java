@@ -68,8 +68,5 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = date;
     }
-
-    //public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
-//
-    //public long getGameId() { return (game == null)? 0:game.getId(); }
+    
 }
