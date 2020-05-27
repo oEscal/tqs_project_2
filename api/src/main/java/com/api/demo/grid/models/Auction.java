@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,17 +36,17 @@ public class Auction {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
     @ManyToOne
-    @JoinColumn(name = "auction_buyer_user_id", nullable = false)
+    @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 

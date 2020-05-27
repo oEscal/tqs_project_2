@@ -60,7 +60,7 @@ public class Buy {
 
     public String getGamerKey(){
         if (sell != null) return sell.getGameKey().getRKey();
-        if (auction != null) return auction.getGameKey().getRKey();
+        // if (auction != null) return auction.getGameKey().getRKey();
         return null;
     }
 }
