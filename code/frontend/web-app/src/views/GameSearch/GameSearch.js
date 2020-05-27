@@ -85,7 +85,8 @@ class GameSearch extends Component {
         gamesLoaded: false,
         curPage: 1,
         noPages: 1,
-        noGames: 0
+        noGames: 0,
+        cacheRequest: null
     }
 
     async allGames() {
@@ -123,10 +124,10 @@ class GameSearch extends Component {
 
                 } else {
                     if (data.first) {
-                        this.setState({ 
+                        this.setState({
                             noPages: data.totalPages,
                             noGames: data.totalElements
-                         })
+                        })
 
                     }
                     this.setState({ games: data.content })
@@ -147,6 +148,192 @@ class GameSearch extends Component {
         await this.setState({ gamesLoaded: true })
     }
 
+    async search(changePage) {
+        if (changePage) {
+            var body = this.state.cacheRequest
+            body["page"] = this.state.curPage
+
+            await this.setState({
+                gamesLoaded: false,
+                cacheRequest: body
+            })
+            
+
+            // Proceed to login
+            await fetch(baseURL + "grid/search", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.state.cacheRequest)
+            })
+                .then(response => {
+                    if (response.status === 400 || response.status === 200) {
+                        return response.json()
+                    }
+                    else throw new Error(response.status);
+                })
+                .then(data => {
+                    if (data.status === 400) { // Wrong Credentials
+                        toast.error(data.message, {
+                            position: "top-center",
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            toastId: "errorTwoToast"
+                        });
+
+
+                    } else { // Successful Login
+                        this.setState({ games: data.content})
+                    }
+                })
+                .catch(error => {
+                    toast.error('Sorry, an unexpected error has occurred!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorThreeToast"
+                    });
+                });
+
+            await this.setState({
+                gamesLoaded: true,
+            })
+
+        } else {
+            var name = document.getElementById("name").value
+            var priceFrom = document.getElementById("priceFrom").value
+            var priceTo = document.getElementById("priceTo").textContent
+
+            var genres = []
+            var platforms = []
+            window.scrollTo(0, 0)
+
+
+            for (var i = 0; i < 19; i++) {
+                if (document.getElementById('genre_' + i).checked) {
+                    genres.push(document.getElementById("genre_" + i).name)
+                }
+            }
+
+            for (var i = 0; i < 6; i++) {
+                if (document.getElementById('platform_' + i).checked) {
+                    platforms.push(document.getElementById("platform_" + i).name)
+                }
+            }
+
+            var error = false
+
+
+            if (isNaN(priceFrom) || isNaN(priceTo)) {
+                toast.error('Oops, the specified price ranges must be numbers!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorRangeNumber"
+                });
+                error = true
+            }
+
+            if (!error) {
+                await this.setState({
+                    gamesLoaded: false,
+                    curPage: 1
+                })
+
+                var body = {
+                    "page": this.state.curPage - 1
+
+                }
+
+                if (name != null && name != "") {
+                    body["name"] = name
+                }
+
+                if (priceFrom != null && priceFrom != "") {
+                    body["startPrice"] = parseFloat(priceFrom)
+                }
+
+                if (priceTo != null && priceTo != "") {
+                    body["endPrice"] = parseFloat(priceTo)
+                }
+
+                if (genres != null && genres != []) {
+                    body["genres"] = genres
+                }
+
+                if (platforms != null && platforms != []) {
+                    body["platforms"] = platforms
+                }
+
+                console.log(body)
+
+                // Proceed to login
+                await fetch(baseURL + "grid/search", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                })
+                    .then(response => {
+                        if (response.status === 400 || response.status === 200) {
+                            return response.json()
+                        }
+                        else throw new Error(response.status);
+                    })
+                    .then(data => {
+                        if (data.status === 400) { // Wrong Credentials
+                            toast.error(data.message, {
+                                position: "top-center",
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                toastId: "errorTwoToast"
+                            });
+
+
+                        } else { // Successful Login
+                            if (data.first) {
+                                this.setState({
+                                    noPages: data.totalPages,
+                                    noGames: data.totalElements
+                                })
+
+                            }
+                            this.setState({ games: data.content, cacheRequest: body })
+
+                        }
+                    })
+                    .catch(error => {
+                        toast.error('Sorry, an unexpected error has occurred!', {
+                            position: "top-center",
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            toastId: "errorThreeToast"
+                        });
+                    });
+
+                await this.setState({
+                    gamesLoaded: true,
+                })
+            }
+        }
+
+    }
+
     async componentDidMount() {
         await this.allGames()
         this.setState({ doneLoading: true, })
@@ -158,15 +345,21 @@ class GameSearch extends Component {
         }
     }
 
-    changePage = async (event, value) => {    
+    changePage = async (event, value) => {
         await this.setState({
-          curPage: value
+            curPage: value
         })
-    
+
         window.scrollTo(0, 0)
-        await this.allGames()
-        
-      };
+
+        if(this.state.cacheRequest != null){
+            await this.search(true)
+
+        }else{
+            await this.allGames()
+        }
+
+    };
 
     render() {
         const { classes } = this.props;
@@ -362,6 +555,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_0"
+                                                                name="Action"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -380,6 +575,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                name="Indie"
+                                                                id="genre_1"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -398,6 +595,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_2"
+                                                                name="Adventure"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -416,6 +615,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_3"
+                                                                name="RPG"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -434,6 +635,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_4"
+                                                                name="Strategy"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -452,6 +655,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_5"
+                                                                name="Shooter"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -470,6 +675,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_6"
+                                                                name="Casual"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -488,6 +695,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_7"
+                                                                name="Simulation"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -506,6 +715,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_8"
+                                                                name="Puzzle"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -524,6 +735,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_9"
+                                                                name="Arcade"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -542,6 +755,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_10"
+                                                                name="Platformer"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -560,6 +775,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_11"
+                                                                name="Racing"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -578,6 +795,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_12"
+                                                                name="Sports"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -596,6 +815,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_13"
+                                                                name="Massively Multiplayer"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -614,6 +835,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_14"
+                                                                name="Family"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -632,6 +855,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_15"
+                                                                name="Fighting"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -650,6 +875,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_16"
+                                                                name="Board Games"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -668,6 +895,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_17"
+                                                                name="Card"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -686,6 +915,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_18"
+                                                                name="Educational"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -711,6 +942,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_0"
+                                                                name="Steam"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -720,7 +953,7 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="PC"
+                                                        label="Steam"
                                                     />
                                                 </div>
 
@@ -729,6 +962,48 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_1"
+                                                                name="Origin"
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Origin"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                id="platform_2"
+                                                                name="Epic Games Store"
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Epic Games Store"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                id="platform_3"
+                                                                name="PS4"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -747,6 +1022,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_4"
+                                                                name="Xbox One"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -765,6 +1042,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_5"
+                                                                name="Nintendo eShop"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -774,28 +1053,24 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Nintendo Switch"
-                                                    />
-                                                </div>
-
-                                                <div class="row">
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                tabIndex={-1}
-                                                                checkedIcon={<Check className={classes.checkedIcon} />}
-                                                                icon={<Check className={classes.uncheckedIcon} />}
-                                                                classes={{
-                                                                    checked: classes.checked,
-                                                                    root: classes.checkRoot
-                                                                }}
-                                                            />
-                                                        }
-                                                        classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Other"
+                                                        label="Nintendo eShop"
                                                     />
                                                 </div>
                                             </div>
+                                            <div style={{ marginTop: "20px" }}>
+                                                <Button
+                                                    color="rose"
+                                                    size="md"
+                                                    onClick={() => this.search(false)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ width: "100%", backgroundColor: "#fc3196" }}
+                                                    id="confirm"
+                                                >
+                                                    Search
+                                            </Button>
+                                            </div>
+
                                         </CardContent>
                                     </Card>
                                 </GridItem>
@@ -887,7 +1162,7 @@ class GameSearch extends Component {
                                                 </h6>
                                                 <CustomInput
                                                     labelText="From"
-                                                    id="from"
+                                                    id="priceFrom"
                                                     formControlProps={{
                                                         fullWidth: false
                                                     }}
@@ -895,7 +1170,7 @@ class GameSearch extends Component {
                                                 <span style={{ marginRight: "5px", marginLeft: "5px" }}></span>
                                                 <CustomInput
                                                     labelText="To"
-                                                    id="to"
+                                                    id="priceTo"
                                                     formControlProps={{
                                                         fullWidth: false
                                                     }}
@@ -913,6 +1188,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_0"
+                                                                name="Action"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -931,6 +1208,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                name="Indie"
+                                                                id="genre_1"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -949,6 +1228,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_2"
+                                                                name="Adventure"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -967,6 +1248,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_3"
+                                                                name="RPG"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -985,6 +1268,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_4"
+                                                                name="Strategy"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1003,6 +1288,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_5"
+                                                                name="Shooter"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1021,6 +1308,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_6"
+                                                                name="Casual"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1039,6 +1328,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_7"
+                                                                name="Simulation"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1057,6 +1348,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_8"
+                                                                name="Puzzle"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1075,6 +1368,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_9"
+                                                                name="Arcade"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1093,6 +1388,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_10"
+                                                                name="Platformer"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1111,6 +1408,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_11"
+                                                                name="Racing"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1129,6 +1428,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_12"
+                                                                name="Sports"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1147,6 +1448,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_13"
+                                                                name="Massively Multiplayer"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1165,6 +1468,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_14"
+                                                                name="Family"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1183,6 +1488,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_15"
+                                                                name="Fighting"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1201,6 +1508,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_16"
+                                                                name="Board Games"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1219,6 +1528,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_17"
+                                                                name="Card"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1237,6 +1548,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="genre_18"
+                                                                name="Educational"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1249,13 +1562,14 @@ class GameSearch extends Component {
                                                         label="Educational"
                                                     />
                                                 </div>
+
                                             </div>
                                         </ExpansionPanelDetails>
 
                                         <ExpansionPanelDetails>
                                             <div style={{ textAlign: "left", width: "100%", marginTop: "30px" }}>
                                                 <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
-                                                    Genres
+                                                    Platforms
                                                 </h6>
 
                                                 <div class="row">
@@ -1263,6 +1577,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_0"
+                                                                name="Steam"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1272,7 +1588,7 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="PC"
+                                                        label="Steam"
                                                     />
                                                 </div>
 
@@ -1281,6 +1597,48 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_1"
+                                                                name="Origin"
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Origin"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                id="platform_2"
+                                                                name="Epic Games Store"
+                                                                checkedIcon={<Check className={classes.checkedIcon} />}
+                                                                icon={<Check className={classes.uncheckedIcon} />}
+                                                                classes={{
+                                                                    checked: classes.checked,
+                                                                    root: classes.checkRoot
+                                                                }}
+                                                            />
+                                                        }
+                                                        classes={{ label: classes.label, root: classes.labelRoot }}
+                                                        label="Epic Games Store"
+                                                    />
+                                                </div>
+
+                                                <div class="row">
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                tabIndex={-1}
+                                                                id="platform_3"
+                                                                name="PS4"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1299,6 +1657,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_4"
+                                                                name="Xbox One"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1317,6 +1677,8 @@ class GameSearch extends Component {
                                                         control={
                                                             <Checkbox
                                                                 tabIndex={-1}
+                                                                id="platform_5"
+                                                                name="Nintendo eShop"
                                                                 checkedIcon={<Check className={classes.checkedIcon} />}
                                                                 icon={<Check className={classes.uncheckedIcon} />}
                                                                 classes={{
@@ -1326,29 +1688,25 @@ class GameSearch extends Component {
                                                             />
                                                         }
                                                         classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Nintendo Switch"
-                                                    />
-                                                </div>
-
-                                                <div class="row">
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                tabIndex={-1}
-                                                                checkedIcon={<Check className={classes.checkedIcon} />}
-                                                                icon={<Check className={classes.uncheckedIcon} />}
-                                                                classes={{
-                                                                    checked: classes.checked,
-                                                                    root: classes.checkRoot
-                                                                }}
-                                                            />
-                                                        }
-                                                        classes={{ label: classes.label, root: classes.labelRoot }}
-                                                        label="Other"
+                                                        label="Nintendo eShop"
                                                     />
                                                 </div>
                                             </div>
                                         </ExpansionPanelDetails>
+
+                                        <div style={{ marginTop: "20px" }}>
+                                            <Button
+                                                color="rose"
+                                                size="md"
+                                                onClick={() => this.search(false)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ width: "100%", backgroundColor: "#fc3196" }}
+                                                id="confirm"
+                                            >
+                                                Search
+                                            </Button>
+                                        </div>
                                     </ExpansionPanel>
                                 </GridContainer>
                             </div>

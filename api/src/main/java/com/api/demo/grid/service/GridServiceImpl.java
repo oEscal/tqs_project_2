@@ -14,7 +14,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -101,17 +100,16 @@ public class GridServiceImpl implements GridService {
         game.setName(gamePOJO.getName());
         game.setCoverUrl(gamePOJO.getCoverUrl());
         game.setDescription(gamePOJO.getDescription());
-        game.setReleaseDate((Date) gamePOJO.getReleaseDate());
+        game.setReleaseDate(gamePOJO.getReleaseDate());
+
 
         //Get Game genres
-        Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
         for (String gameGenrePOJO : gamePOJO.getGameGenres()) {
             gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
             if (gameGenre.isEmpty()) return null;
-            gameGenreSet.add(gameGenre.get());
+            game.addGenre(gameGenre.get());
         }
-        game.setGameGenres(gameGenreSet);
 
         // Get Publisher
         Optional<Publisher> publisher = mPublisherRepository.findByName(gamePOJO.getPublisher());
@@ -119,14 +117,12 @@ public class GridServiceImpl implements GridService {
         game.setPublisher(publisher.get());
 
         //Get Game Developers
-        Set<Developer> developerSet = new HashSet<>();
         Optional<Developer> developer;
         for (String developerPOJO : gamePOJO.getDevelopers()) {
             developer = mDeveloperRepository.findByName(developerPOJO);
             if (developer.isEmpty()) return null;
-            developerSet.add(developer.get());
+            game.addDeveloper(developer.get());
         }
-        game.setDevelopers(developerSet);
 
         this.mGameRepository.save(game);
         return game;
