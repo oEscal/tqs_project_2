@@ -6,6 +6,7 @@ import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
+import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +44,11 @@ class UserInfoControllerTest {
 
     @MockBean
     private UserService mMockUserService;
+
+    @MockBean
+    private UserRepository mUserRepository;
+
+    private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
     private User mUser;
     private User mUser2;
@@ -66,6 +74,7 @@ class UserInfoControllerTest {
         mUser.setName(mName1);
         mUser.setEmail(mEmail1);
         mUser.setCountry(mCountry1);
+        mUser.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
@@ -74,7 +83,7 @@ class UserInfoControllerTest {
         mUser2.setName("admin");
         mUser2.setEmail(mEmail1 + "2");
         mUser2.setCountry(mCountry1);
-        mUser2.setPassword(mPassword1);
+        mUser2.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
@@ -135,12 +144,18 @@ class UserInfoControllerTest {
         ;
 
     }
+
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsUser_getValidPrivateInfo(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
         Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
+
+        Mockito.when(mUserRepository.findByUsername("username1"))
+                .thenReturn(mUser);
+
+
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("username", "username1")
@@ -165,6 +180,9 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
         mUser2.setAdmin(true);
 
+        Mockito.when(mUserRepository.findByUsername("spring"))
+                .thenReturn(mUser2);
+
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "username1")
@@ -184,10 +202,15 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
-    void whenSearchingForValidUsername_andIsNotTheOwnerNorAdmin_getException(){
-        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+    void whenSearchingForValidUsername_andIsNotUserNorAdmin_getException(){
+
+        Mockito.when(mUserRepository.findByUsername("spring"))
                 .thenReturn(mUser2);
-        Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
+        Mockito.when(mMockUserService.getUser("spring"))
+                .thenReturn(mUser2);
+
+        Mockito.when(mMockUserService.getUser("username1")).thenReturn(mUser);
+
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "username1")
@@ -195,18 +218,20 @@ class UserInfoControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("You are not allowed to see this user's private info")))
         ;
-
     }
 
     @Test
     @SneakyThrows
     void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
+        mUser2.setAdmin(true);
         Mockito.when(mMockUserService.getUser("spring"))
                 .thenReturn(mUser2);
-        mUser2.setAdmin(true);
 
         Mockito.when(mMockUserService.getFullUserInfo(Mockito.anyString()))
                 .thenThrow(new UserNotFoundException("Username not found in the database"));
+
+        Mockito.when(mUserRepository.findByUsername("spring"))
+                .thenReturn(mUser2);
 
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic("spring", mPassword1))
