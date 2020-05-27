@@ -14,7 +14,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @DataJpaTest
@@ -104,14 +106,6 @@ class AuctionRepositoryTest {
 
         mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
 
-        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mAuction));
-    }
-
-    @Test
-    @SneakyThrows
-    void whenSetStartDate_setIsUnsuccessful() {
-
-        mAuction.setStartDate((new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999")));
         assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mAuction));
     }
 

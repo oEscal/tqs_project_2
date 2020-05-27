@@ -21,6 +21,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
 import java.util.Date;
 
 
@@ -58,10 +60,12 @@ public class Auction {
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
+    @Future
     @JsonFormat(pattern="dd/MM/yyyy")
     private Date endDate;
 
     @Column(nullable = false)
+    @Min(0)
     private double price;
 
 
