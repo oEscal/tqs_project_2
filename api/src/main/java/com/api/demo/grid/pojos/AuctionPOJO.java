@@ -22,9 +22,6 @@ public class AuctionPOJO {
     // auctioneer username
     private String auctioneer;
 
-    // buyer username
-    private String buyer;
-
     // game key
     private String gameKey;
 
@@ -43,9 +40,8 @@ public class AuctionPOJO {
     }
 
 
-    public AuctionPOJO(String auctioneer, String buyer, String gameKey, Date endDate, double price) {
+    public AuctionPOJO(String auctioneer, String gameKey, double price, Date endDate) {
         this.auctioneer = auctioneer;
-        this.buyer = buyer;
         this.gameKey = gameKey;
         this.endDate = (Date) endDate.clone();
         this.price = price;

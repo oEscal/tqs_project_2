@@ -32,8 +32,7 @@ class AuctionRepositoryTest {
     private Auction mAuction;
     private GameKey mGameKey;
     private Game mGame;
-    private User mAuctioneer,
-            mBuyer;
+    private User mAuctioneer;
 
     private double mPrice = 10.20;
     private String mEndDate = "10/11/2020";
