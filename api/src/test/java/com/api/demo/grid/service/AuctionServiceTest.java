@@ -17,8 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 
@@ -112,5 +111,25 @@ class AuctionServiceTest {
     void whenAuctionGameKeyNotExists_receiveNothing() {
 
         assertNull(mAuctionService.getAuctionByGameKey(mGameKeyRKey));
+    }
+
+
+    /***
+     *  Save Auction
+     ***/
+    @Test
+    void whenSaveNewAuction_insertIsSuccessful() {
+
+        given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
+
+        assertDoesNotThrow(() -> mAuctionService.addAuction(mAuctionPOJO));
+    }
+
+    @Test
+    void whenSaveNewAuction_insertReceiveAuction() {
+
+        given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
+
+        assertEquals(mAuction, mAuctionService.addAuction(mAuctionPOJO));
     }
 }
