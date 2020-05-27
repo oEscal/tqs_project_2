@@ -136,6 +136,11 @@ public class AuctionServiceIT {
     @SneakyThrows
     void whenSetAuctionOfSameSellGameKey_setIsUnsuccessful() {
 
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
         // insert game key on sell
         Sell sell = new Sell();
         sell.setGameKey(mGameKey);
