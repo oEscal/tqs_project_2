@@ -81,6 +81,7 @@ class SellGame extends Component {
 
         games: [],
         gameKey: null,
+        game: null,
 
         platform: null,
 
@@ -90,6 +91,10 @@ class SellGame extends Component {
                 preserveAspectRatio: "xMidYMid slice"
             }
         },
+
+        redirectProfile: false,
+        redirectLogin: false
+
     }
 
     async searchGame(inputVal) {
@@ -265,104 +270,15 @@ class SellGame extends Component {
         })
     }
 
-    async addGame() {
-        var game = this.state.game
-        var key = document.getElementById("key").value
-        var price = document.getElementById("price").value
-        var platform = document.getElementById("platform").textContent
-
-
-        var error = false
-        // Check if fields are filled
-        if (game.value == "" || key == "" || price == "" || platform == "" || game == null || platform == null || game.value == null || key == null || price == null) {
-            toast.error('Oops, you\'ve got to specify, all fields!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                toastId: "errorMinimum"
-            });
-            error = true
+    renderRedirectProfile = () => {
+        if (this.state.redirectProfile) {
+            return <Redirect to={"/user/" + global.user.username} />
         }
+    }
 
-        // Check if price is numeric
-        if (isNaN(price)) {
-            toast.error('You must specify a valid selling price!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                toastId: "errorPrice"
-            });
-            error = true
-        }
-
-        if (!error) {
-            price = parseFloat(price)
-
-            var login_info = null
-            if (global.user != null) {
-                login_info = global.user.token
-            }
-
-            await this.setState({ doneLoading: false })
-
-            var body = {
-                "gameId": game.value,
-                "key": key,
-                "platform": platform,
-                "retailer": global.user.username
-            }
-
-            // Insert new Key
-            await fetch(baseURL + "grid/gamekey", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: login_info
-                },
-                body: JSON.stringify(body)
-            })
-                .then(response => {
-                    if (response.status === 401) {
-                        return response
-                    } else if (response.status === 200) {
-                        return response.json()
-                    }
-                    else throw new Error(response.status);
-                })
-                .then(data => {
-                    console.log(data)
-
-                    if (data.status === 401) { // Wrong token
-                        localStorage.setItem('loggedUser', null);
-                        global.user = JSON.parse(localStorage.getItem('loggedUser'))
-
-                        this.setState({
-                            doneLoading: true
-                        })
-
-                    } else {
-                        this.addSale()
-                    }
-
-                })
-                .catch(error => {
-                    console.log(error)
-                    toast.error('Sorry, an unexpected error has occurred!', {
-                        position: "top-center",
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        toastId: "errorToast"
-                    });
-                });
-            await this.setState({ doneLoading: true })
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
         }
     }
 
@@ -375,7 +291,7 @@ class SellGame extends Component {
 
         var error = false
         // Check if fields are filled
-        if (game.value == "" || key == "" || price == "" || platform == "" || game == null || platform == null || game.value == null || key == null || price == null) {
+        if (game == null || platform == null || game.value == null || key == null || price == null || game.value == "" || key == "" || price == "" || platform == "") {
             toast.error('Oops, you\'ve got to specify, all fields!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -438,7 +354,7 @@ class SellGame extends Component {
                 })
                 .then(data => {
                     console.log(data)
-
+                    var d = new Date();
                     if (data.status === 401) { // Wrong token
                         localStorage.setItem('loggedUser', null);
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))
@@ -448,13 +364,64 @@ class SellGame extends Component {
                         })
 
                     } else {
-                        this.addSale()
+                        var body2 = {
+                            "gameKey": key,
+                            "price": price,
+                            "userId": global.user.id,
+                            "date": d.toISOString()
+                        }
+                        // Create selling
+                        fetch(baseURL + "grid/sell-listing", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: login_info
+                            },
+                            body: JSON.stringify(body2)
+                        })
+                            .then(response => {
+                                if (response.status === 401) {
+                                    return response
+                                } else if (response.status === 200) {
+                                    return response.json()
+                                }
+                                else throw new Error(response.status);
+                            })
+                            .then(data => {
+                                console.log(data)
+
+                                if (data.status === 401) { // Wrong token
+                                    localStorage.setItem('loggedUser', null);
+                                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                                    this.setState({
+                                        doneLoading: true
+                                    })
+
+                                } else {
+                                    this.setState({
+                                        redirectProfile: true
+                                    })
+                                }
+
+                            })
+                            .catch(error => {
+                                console.log(error)
+                                toast.error('Sorry, an unexpected error has occurred when creating the listing!', {
+                                    position: "top-center",
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    toastId: "errorToast"
+                                });
+                            });
                     }
 
                 })
                 .catch(error => {
                     console.log(error)
-                    toast.error('Sorry, an unexpected error has occurred!', {
+                    toast.error('Sorry, an unexpected error has occurred when creating the key!', {
                         position: "top-center",
                         hideProgressBar: false,
                         closeOnClick: true,
@@ -548,6 +515,18 @@ class SellGame extends Component {
                         )
                     }}
                 />
+                <div style={{ marginTop: "25px", color: "black" }}>
+                    <Select
+
+                        className="basic-single"
+                        classNamePrefix="select"
+                        defaultValue={null}
+                        id="platform"
+                        placeholder="Platform"
+                        options={[{ "value": "Steam", "label": "Steam" }, { "value": "Origin", "label": "Origin" }, { "value": "Epic Games Store", "label": "Epic Games Store" }, { "value": "PS4", "label": "PS4" }, { "value": "XBox One", "label": "XBox One" }, { "value": "Nintendo eShop", "label": "Nintendo eShop" }]}
+                    />
+
+                </div>
             </div>
         } else {
             key = <div style={{ marginTop: "25px" }}>
@@ -580,6 +559,8 @@ class SellGame extends Component {
         return (
             <div>
                 <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+                {this.renderRedirectLogin()}
+                {this.renderRedirectProfile()}
 
                 <ToastContainer
                     position="top-center"
@@ -631,18 +612,7 @@ class SellGame extends Component {
 
                                                     {key}
 
-                                                    <div style={{ marginTop: "25px", color: "black" }}>
-                                                        <Select
 
-                                                            className="basic-single"
-                                                            classNamePrefix="select"
-                                                            defaultValue={null}
-                                                            id="platform"
-                                                            placeholder="Platform"
-                                                            options={[{ "value": "Steam", "label": "Steam" }, { "value": "Origin", "label": "Origin" }, { "value": "Epic Games Store", "label": "Epic Games Store" }, { "value": "PS4", "label": "PS4" }, { "value": "XBox One", "label": "XBox One" }, { "value": "Nintendo eShop", "label": "Nintendo eShop" }]}
-                                                        />
-
-                                                    </div>
 
                                                     <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "22px" }} />
 
