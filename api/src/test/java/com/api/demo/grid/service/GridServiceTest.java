@@ -13,6 +13,7 @@ import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.repository.DeveloperRepository;
 import com.api.demo.grid.repository.GameGenreRepository;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -80,6 +82,7 @@ class GridServiceTest {
     private GameKey mGameKey2;
     private Sell mSell1;
     private Sell mSell2;
+    private SearchGamePOJO mSearchGamePOJO;
 
     @BeforeEach
     void setUp() {
@@ -114,15 +117,17 @@ class GridServiceTest {
         mGameKey.setId(7L);
 
         mGameKey2 = new GameKey();
-        mGameKey.setId(8L);
+        mGameKey2.setId(8l);
 
         mSell1 = new Sell();
-        mSell1.setId(9l);
         mSell1.setGameKey(mGameKey);
+        mSell1.setPrice(5.3);
 
         mSell2 = new Sell();
-        mSell1.setId(10l);
         mSell2.setGameKey(mGameKey2);
+        mSell2.setPrice(50.3);
+
+        mSearchGamePOJO = new SearchGamePOJO();
     }
 
     @Test
@@ -239,7 +244,6 @@ class GridServiceTest {
         Mockito.verify(mMockPubRepo, Mockito.times(1)).findByName(Mockito.anyString());
         Mockito.verify(mMockGameRepo, Mockito.times(0))
                 .findAllByPublisher(Mockito.any(Publisher.class));
-
     }
 
     @Test
@@ -251,6 +255,7 @@ class GridServiceTest {
         assertEquals(mGameGenre.getName(), mGameGenre.getName());
         assertEquals(mGameGenre.getDescription(), savedGameGenre.getDescription());
     }
+
 
     @Test
     void whenSavingDevPOJO_ReturnValidDeveloper() {
@@ -349,7 +354,7 @@ class GridServiceTest {
         Mockito.verify(mMockGameGenreRepo, Mockito.times(1)).findByName("Genre");
         assertNull(savedGame);
     }
-
+    
     @Test
     void whenSavingValidGameKeyPOJO_ReturnValidGameKey() {
         Mockito.when(mMockGameRepo.findById(2L)).thenReturn(Optional.ofNullable(mGame2));
@@ -414,6 +419,96 @@ class GridServiceTest {
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
         Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertNull(savedSell);
+    }
+
+    @Test
+    void whenReceivingSearchGame_withValidName_returnValidList(){
+        Mockito.when(mMockGameRepo.findAllByNameContaining(Mockito.anyString()))
+                .thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        mSearchGamePOJO.setName("g");
+
+        List<Game> games = mGridService.searchGames(mSearchGamePOJO);
+        assertEquals(2, games.size());
+        assertEquals(mGame, games.get(0));
+        assertEquals(mGame2, games.get(1));
+    }
+
+    @Test
+    void whenReceivingSearchGame_withValidGenre_returnValidList(){
+        Mockito.when(mMockGameGenreRepo.findByName(Mockito.anyString())).thenReturn(Optional.of(mGameGenre));
+        Mockito.when(mMockGameRepo.findAllByGameGenresContains(Mockito.any(GameGenre.class)))
+                .thenReturn(new ArrayList<>(Arrays.asList(mGame)));
+        Mockito.when(mMockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        String[] genres = {"adventure"};
+        mSearchGamePOJO.setGenres(genres);
+
+        List<Game> games = mGridService.searchGames(mSearchGamePOJO);
+        assertEquals(1, games.size());
+        assertEquals(mGame, games.get(0));
+    }
+
+    @Test
+    void whenReceivingSearchGame_withValidPlatforms_returnValidList(){
+        Mockito.when(mMockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        mGameKey.setPlatform("ps4");
+        mGame2.addGameKey(mGameKey);
+        String[] platforms = {"ps4"};
+        mSearchGamePOJO.setPlataforms(platforms);
+
+        List<Game> games = mGridService.searchGames(mSearchGamePOJO);
+        assertEquals(1, games.size());
+        assertEquals(mGame2, games.get(0));
+    }
+
+    @Test
+    void whenReceivingSearchGame_withValidBeginPrice_andNullEndPrice_returnListWithStartingPrice(){
+        Mockito.when(mMockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        mGame.addGameKey(mGameKey);
+        mGame2.addGameKey(mGameKey2);
+        mSearchGamePOJO.setStartPrice(5);
+
+        List<Game> games = mGridService.searchGames(mSearchGamePOJO);
+        assertEquals(Arrays.asList(mGame, mGame2), games);
+    }
+
+    @Test
+    void whenReceivingSearchGame_withValidBeginPriceAndEndPrice_returnListWithStartingPrice(){
+        Mockito.when(mMockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        mGame.addGameKey(mGameKey);
+        mGame2.addGameKey(mGameKey2);
+        mSearchGamePOJO.setStartPrice(5);
+        mSearchGamePOJO.setEndPrice(10);
+
+        List<Game> games = mGridService.searchGames(mSearchGamePOJO);
+        assertEquals(Arrays.asList(mGame), games);
+    }
+
+    @Test
+    void whenReceivingSeargGame_withMoreParameters_returnIntersectionOfList(){
+        Mockito.when(mMockGameRepo.findAllByNameContaining(Mockito.anyString()))
+                .thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+        mSearchGamePOJO.setName("g");
+        Mockito.when(mMockGameGenreRepo.findByName(Mockito.anyString())).thenReturn(Optional.of(mGameGenre));
+        Mockito.when(mMockGameRepo.findAllByGameGenresContains(Mockito.any(GameGenre.class)))
+                .thenReturn(new ArrayList<>(Arrays.asList(mGame)));
+        String[] genres = {"adventure"};
+        mSearchGamePOJO.setGenres(genres);
+        mGameKey.setPlatform("ps4");
+        mGame2.addGameKey(mGameKey2);
+        String[] platforms = {"ps4"};
+        mSearchGamePOJO.setPlataforms(platforms);
+        mSearchGamePOJO.setStartPrice(5);
+        mSearchGamePOJO.setEndPrice(10);
+        assertTrue(mGridService.searchGames(mSearchGamePOJO).isEmpty());
+    }
+
+    @Test
+    void whenSearchingGame_ReturnPaginatedSearchGame() {
+        Mockito.when(mMockGameRepo.findAll()).thenReturn(new ArrayList<>(Arrays.asList(mGame, mGame2)));
+
+        List<Game> gamesList = Arrays.asList(mGame, mGame2);
+
+        assertEquals(gamesList, mGridService.pageSearchGames(mSearchGamePOJO).getContent());
     }
 
     @Test

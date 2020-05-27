@@ -11,6 +11,7 @@ import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,11 @@ public class GridRestController {
         } catch (GameNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found in Database");
         }
+    }
+    
+    @PostMapping("/search")
+    public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
+        return ResponseEntity.ok(gridService.pageSearchGames(searchGamePOJO));
     }
 
     @PostMapping("/add-game")

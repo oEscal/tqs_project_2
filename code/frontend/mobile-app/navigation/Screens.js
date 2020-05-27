@@ -165,10 +165,10 @@ function GameInfoStack(props) {
       <Stack.Screen
         name={props.route.params.product.name}
         component={GameInfoScreen}
-        initialParams={{'game':props.route.params.product}}
+        initialParams={{ 'game': props.route.params.product }}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title={props.route.params.product.name} scene={scene} navigation={navigation}/>
+            <Header title={props.route.params.product.name} scene={scene} navigation={navigation} />
           ),
         }}
       />
@@ -211,15 +211,6 @@ function AppStack(props) {
       <Drawer.Screen
         name="Games"
         component={GamesStack}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
-          )
-        }}
-      />
-      <Drawer.Screen
-        name="GameInfo"
-        component={GameInfoStack}
         options={{
           drawerIcon: ({ focused }) => (
             <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
@@ -277,6 +268,16 @@ function AppStack(props) {
               color={focused ? "white" : materialTheme.COLORS.MUTED}
               style={{ marginRight: 2, marginLeft: 2 }}
             />
+          )
+        }}
+      />
+
+      <Drawer.Screen
+        name="GameInfo"
+        component={GameInfoStack}
+        options={{
+          drawerIcon: ({ focused }) => (
+            <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />

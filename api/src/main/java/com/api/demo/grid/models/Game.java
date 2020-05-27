@@ -24,10 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -56,7 +53,7 @@ public class Game {
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -66,7 +63,7 @@ public class Game {
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    private Set<Developer> developers;
+    private Set<Developer> developers = new HashSet<>();
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
@@ -117,15 +114,15 @@ public class Game {
         return (foundPrice)? bestSell:null;
     }
 
-    public String[] getPlatforms(){
-        if (gameKeys == null || gameKeys.isEmpty()) return new String[0];
-        ArrayList<String> gamePlatforms = new ArrayList<>();
+    public List<String> getPlatforms(){
+        if (gameKeys == null || gameKeys.isEmpty()) return new ArrayList<>();
+        List<String> gamePlatforms = new ArrayList<>();
         String platform;
         for (GameKey gameKey : gameKeys){
             platform = gameKey.getPlatform();
             if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
         }
-        return gamePlatforms.toArray(new String[gamePlatforms.size()]);
+        return gamePlatforms;
     }
 
     public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
@@ -139,5 +136,23 @@ public class Game {
             count++;
         }
         return devNames;
+    }
+
+    public void setPublisher(Publisher publisher){
+        if (Objects.equals(this.publisher, publisher)) return;
+        this.publisher = publisher;
+        publisher.addGame(this);
+    }
+
+    public void addGenre(GameGenre gameGenre) {
+        if (this.gameGenres.contains(gameGenre)) return;
+        this.gameGenres.add(gameGenre);
+        gameGenre.addGame(this);
+    }
+
+    public void addDeveloper(Developer developer) {
+        if (this.developers.contains(developer)) return;
+        this.developers.add(developer);
+        developer.addGame(this);
     }
 }

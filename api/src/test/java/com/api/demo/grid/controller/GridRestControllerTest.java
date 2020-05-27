@@ -13,6 +13,7 @@ import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.utils.Pagination;
@@ -65,6 +66,7 @@ class GridRestControllerTest {
     private DeveloperPOJO mDeveloperPOJO;
     private SellPOJO mSellPOJO;
     private GameKeyPOJO mGameKeyPOJO;
+    private SearchGamePOJO mSearchGamePOJO;
 
     @BeforeEach
     void setUp() {
@@ -112,6 +114,8 @@ class GridRestControllerTest {
 
         mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
         mGameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
+
+        mSearchGamePOJO = new SearchGamePOJO();
     }
 
     @Test
@@ -131,6 +135,24 @@ class GridRestControllerTest {
                 .andExpect(jsonPath("$.content[0].id", is(1)));
 
         Mockito.verify(mGridService, Mockito.times(1)).getAllGames(page);
+    }
+
+    @Test
+    void whenSearchingGames_ReturnPaginatedResult() throws Exception {
+        Pagination<Game> pagination = new Pagination<>(Arrays.asList(mGame));
+        Page<Game> games = pagination.pageImpl(1, 1);
+
+        int page = 1;
+        Mockito.when(mGridService.pageSearchGames(mSearchGamePOJO)).thenReturn(games);
+
+        mMockMvc.perform(post("/grid/search")
+                .content(asJsonString(mSearchGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(1)));
+
+        Mockito.verify(mGridService, Mockito.times(1)).pageSearchGames(mSearchGamePOJO);
     }
 
     @Test

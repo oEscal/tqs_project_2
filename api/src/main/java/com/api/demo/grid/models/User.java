@@ -76,7 +76,7 @@ public class User {
     @Past
     private Date birthDate;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     private Date startDate = new Date();
@@ -86,7 +86,7 @@ public class User {
 
     private String photoUrl;
 
-    @Column(columnDefinition = "LONGTEXT default 'This user has no description'")
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     /***
