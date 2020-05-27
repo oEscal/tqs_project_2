@@ -123,10 +123,10 @@ class GameSearch extends Component {
 
                 } else {
                     if (data.first) {
-                        this.setState({ 
+                        this.setState({
                             noPages: data.totalPages,
                             noGames: data.totalElements
-                         })
+                        })
 
                     }
                     this.setState({ games: data.content })
@@ -158,15 +158,15 @@ class GameSearch extends Component {
         }
     }
 
-    changePage = async (event, value) => {    
+    changePage = async (event, value) => {
         await this.setState({
-          curPage: value
+            curPage: value
         })
-    
+
         window.scrollTo(0, 0)
         await this.allGames()
-        
-      };
+
+    };
 
     render() {
         const { classes } = this.props;
