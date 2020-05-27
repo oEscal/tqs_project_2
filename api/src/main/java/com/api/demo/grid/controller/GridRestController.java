@@ -150,7 +150,7 @@ public class GridRestController {
     }
 
     @GetMapping(value = "/game-review" , params = {"game_id"})
-    public ResponseEntity<Set<ReviewGame>> GameReviews(@RequestParam("game_id") long gameID) {
+    public ResponseEntity<Set<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID) {
        Set<ReviewGame> reviews = gridService.getGameReviews(gameID);
         if (reviews == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain game review");
