@@ -1,7 +1,6 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
@@ -10,23 +9,16 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.GenerationType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
@@ -158,17 +150,16 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<Auction> auctions_created;
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Auction> auctionsCreated = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "auction_buyer_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<Auction> auctions_won;
+    private Set<Auction> auctionsWon = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
@@ -223,5 +214,14 @@ public class User {
         this.sells.add(sell);
 
         sell.setUser(this);
+    }
+
+    @Transactional
+    public void addAuctionCreated(Auction auction) {
+        if (this.auctionsCreated.contains(auction)) return;
+
+        this.auctionsCreated.add(auction);
+
+        auction.setAuctioneer(this);
     }
 }

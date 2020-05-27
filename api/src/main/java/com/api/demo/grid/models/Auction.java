@@ -8,22 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Entity
@@ -41,7 +32,7 @@ public class Auction {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
@@ -70,11 +61,18 @@ public class Auction {
 
 
     public Date getEndDate() {
-        return (Date) endDate.clone();
+        if (endDate != null) {
+            return (Date) endDate.clone();
+        }
+        return null;
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = (Date) endDate.clone();
+        if (endDate != null) {
+            this.endDate = (Date) endDate.clone();
+        } else {
+            this.endDate = null;
+        }
     }
 
     public void setStartDate(Date startDate) {
@@ -90,5 +88,24 @@ public class Auction {
             return (Date) startDate.clone();
         }
         return null;
+    }
+
+    @Transactional
+    public void setAuctioneer(User auctioneer) {
+        if (Objects.equals(this.auctioneer, auctioneer)) return;
+
+        this.auctioneer = auctioneer;
+
+        if (auctioneer != null)
+            auctioneer.addAuctionCreated(this);
+    }
+
+    public void setGameKey(GameKey gameKey) {
+        if (Objects.equals(this.gameKey, gameKey)) return;
+
+        this.gameKey = gameKey;
+
+        if (gameKey != null)
+            gameKey.setAuction(this);
     }
 }

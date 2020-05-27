@@ -91,4 +91,13 @@ public class GameKey {
         if (game == null) return -1L;
         return this.game.getId();
     }
+
+    public void setAuction(Auction auction) {
+        if(Objects.equals(this.auction, auction)) return;
+
+        this.auction = auction;
+
+        if (auction != null)
+            auction.setGameKey(this);
+    }
 }

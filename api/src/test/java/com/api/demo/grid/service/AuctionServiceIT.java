@@ -102,11 +102,11 @@ public class AuctionServiceIT {
         mGameKey.setGame(mGame);
 
         // create auction
-        mAuction = new Auction();
-        mAuction.setGameKey(mGameKey);
-        mAuction.setAuctioneer(mAuctioneer);
-        mAuction.setPrice(mPrice);
-        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+        // mAuction = new Auction();
+        // mAuction.setGameKey(mGameKey);
+        // mAuction.setAuctioneer(mAuctioneer);
+        // mAuction.setPrice(mPrice);
+        // mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
 
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
