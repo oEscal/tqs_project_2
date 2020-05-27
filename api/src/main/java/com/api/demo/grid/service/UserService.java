@@ -24,7 +24,7 @@ public class UserService {
     @Autowired
     private ModelMapper mModelMapper;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();;
+    private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
 
     public User getUser(String username) {
@@ -59,7 +59,7 @@ public class UserService {
 
         User userSave = convertToEntity(user);
 
-        userSave.setPassword(passwordEncoder.encode(userSave.getPassword()));
+        userSave.setPassword(mPasswordEncoder.encode(userSave.getPassword()));
         User userSaved = mRepository.save(userSave);
         userSaved.setPassword(null);
         return userSaved;
