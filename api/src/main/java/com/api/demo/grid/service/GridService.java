@@ -12,6 +12,8 @@ import java.util.Set;
 public interface GridService {
     Game getGameById(long id);
     Page<Game> getAllGames(int page);
+    Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO);
+    List<Game> searchGames(SearchGamePOJO searchGamePOJO);
     List<Game> getAllGamesWithGenre(String genre);
     List<Game> getAllGamesByName(String name);
     List<Game> getAllGamesByDev(String developer);
