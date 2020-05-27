@@ -1,7 +1,10 @@
 package com.api.demo.grid.service;
 
 import com.api.demo.grid.exception.ListingNotFoundException;
-import com.api.demo.grid.models.*;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.repository.GameKeyRepository;
@@ -11,15 +14,19 @@ import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(MockitoExtension.class)
 public class ListingServiceTest {
     @Mock(lenient = true)
     private SellRepository mMockSellRepo;
@@ -31,7 +38,7 @@ public class ListingServiceTest {
     private UserRepository mMockUserRepo;
 
     @Mock(lenient = true)
-    private GameKeyRepository mGameKeyRepo;
+    private GameKeyRepository mMockGameKeyRepo;
 
     @InjectMocks
     private ListingServiceImpl mListingService;
@@ -53,9 +60,9 @@ public class ListingServiceTest {
         mGameKey = new GameKey();
         mGameKey.setId(3L);
 
-        sell = new Sell();
-        sell.setId(4L);
-        sell.setGameKey(mGameKey);
+        mSell = new Sell();
+        mSell.setId(4L);
+        mSell.setGameKey(mGameKey);
     }
 
     @Test
@@ -64,13 +71,13 @@ public class ListingServiceTest {
 
         GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
 
-        GameKey savedGameKey = gridService.saveGameKey(gameKeyPOJO);
+        GameKey savedGameKey = mListingService.saveGameKey(gameKeyPOJO);
 
         Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(1L);
         assertEquals("key", savedGameKey.getRKey());
         assertEquals("ps3", savedGameKey.getPlatform());
         assertEquals("steam", savedGameKey.getRetailer());
-        assertEquals(game2.getName(), savedGameKey.getGame().getName());
+        assertEquals(mGame.getName(), savedGameKey.getGame().getName());
     }
 
     @Test
@@ -79,7 +86,7 @@ public class ListingServiceTest {
 
         GameKeyPOJO gameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
 
-        GameKey savedGameKey = gridService.saveGameKey(gameKeyPOJO);
+        GameKey savedGameKey = mListingService.saveGameKey(gameKeyPOJO);
 
         Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(2L);
         assertNull(savedGameKey);
@@ -87,40 +94,40 @@ public class ListingServiceTest {
 
     @Test
     void whenSavingValidSellPOJO_ReturnValidSell() {
-        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
-        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(mGameKey));
+        Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
+        Mockito.when(mMockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(mGameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
-        Sell savedSell = gridService.saveSell(sellPOJO);
-        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByrKey("key");
+        Sell savedSell = mListingService.saveSell(sellPOJO);
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertEquals(2.3, savedSell.getPrice());
     }
 
     @Test
     void whenSavingInvalidUser_ReturnNullSell() {
-        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.empty());
-        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(mGameKey));
+        Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.empty());
+        Mockito.when(mMockGameKeyRepo.findByrKey("key")).thenReturn(Optional.ofNullable(mGameKey));
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
-        Sell savedSell = gridService.saveSell(sellPOJO);
-        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(0)).findByrKey("key");
+        Sell savedSell = mListingService.saveSell(sellPOJO);
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(0)).findByrKey("key");
         assertNull(savedSell);
     }
 
     @Test
     void whenSavingInvalidGameKey_ReturnNullSell() {
-        Mockito.when(mockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
-        Mockito.when(mockGameKeyRepo.findByrKey("key")).thenReturn(Optional.empty());
+        Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
+        Mockito.when(mMockGameKeyRepo.findByrKey("key")).thenReturn(Optional.empty());
 
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
-        Sell savedSell = gridService.saveSell(sellPOJO);
-        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(6L);
-        Mockito.verify(mockGameKeyRepo, Mockito.times(1)).findByrKey("key");
+        Sell savedSell = mListingService.saveSell(sellPOJO);
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
+        Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByrKey("key");
         assertNull(savedSell);
     }
 
@@ -128,9 +135,9 @@ public class ListingServiceTest {
     @SneakyThrows
     void whenDeletingValidSellListing_DeleteSuccessful_AndReturnSell(){
         Mockito.when(mMockSellRepo.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(sell));
+                .thenReturn(Optional.ofNullable(mSell));
 
-        assertEquals(sell, gridService.deleteSell(8l));
+        assertEquals(mSell, mListingService.deleteSell(8l));
         Mockito.verify(mMockSellRepo, Mockito.times(1))
                 .delete(Mockito.any(Sell.class));
     }
@@ -141,7 +148,7 @@ public class ListingServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(ListingNotFoundException.class
-                ,() -> gridService.deleteSell(8l));
+                ,() -> mListingService.deleteSell(8l));
         Mockito.verify(mMockSellRepo, Mockito.times(0))
                 .delete(Mockito.any(Sell.class));
     }
