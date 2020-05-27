@@ -1,4 +1,5 @@
 package com.api.demo.grid.controller;
+
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
@@ -80,7 +81,7 @@ public class GridRestController {
     }
 
     @PostMapping("/add-game")
-    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
+    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO) {
         Game game = gridService.saveGame(gamePOJO);
         if (game == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
@@ -89,17 +90,17 @@ public class GridRestController {
     }
 
     @PostMapping("/add-genre")
-    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
+    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO) {
         return new ResponseEntity<>(gridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
 
     @PostMapping("/add-publisher")
-    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
+    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO) {
         return new ResponseEntity<>(gridService.savePublisher(publisherPOJO), HttpStatus.OK);
     }
 
     @PostMapping("/add-developer")
-    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO) {
         return new ResponseEntity<>(gridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 
@@ -137,5 +138,14 @@ public class GridRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add game review");
 
         return new ResponseEntity<>(reviewGames, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add-user-review")
+    public ResponseEntity<Set<ReviewUser>> addUserReview(@RequestBody ReviewUserPOJO reviewUserPOJO) {
+        Set<ReviewUser> reviewUsers = gridService.addUserReview(reviewUserPOJO);
+        if (reviewUsers == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add user review");
+
+        return new ResponseEntity<>(reviewUsers, HttpStatus.OK);
     }
 }

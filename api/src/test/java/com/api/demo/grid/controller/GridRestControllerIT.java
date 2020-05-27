@@ -55,6 +55,9 @@ class GridRestControllerIT {
     @Autowired
     private GameKeyRepository mGameKeyRepository;
 
+    @Autowired
+    private ReviewUserRepository mReviewUserRepository;
+
 
     @Autowired
     private MockMvc mMockMvc;
@@ -66,6 +69,7 @@ class GridRestControllerIT {
     private SellPOJO mSellPOJO;
     private GameKeyPOJO mGameKeyPOJO;
     private ReviewGamePOJO mReviewGamePOJO;
+    private ReviewUserPOJO mReviewUserPOJO;
 
 
     @BeforeEach
@@ -80,15 +84,17 @@ class GridRestControllerIT {
         mGameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
         mSellPOJO = new SellPOJO("key", 6L, 2.3, null);
         mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
-
+        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
 
         mGameRepository.deleteAll();
+        mReviewUserRepository.deleteAll();
         mGameGenreRepository.deleteAll();
         mDeveloperRepository.deleteAll();
         mPublisherRepository.deleteAll();
         mUserRepository.deleteAll();
         mGameKeyRepository.deleteAll();
         mSellRepository.deleteAll();
+
     }
 
     @Test
@@ -352,7 +358,7 @@ class GridRestControllerIT {
         user.setReportsThisUser(new HashSet<>());
         user.setReviewUsers(new HashSet<>());
         user.setReviewedUsers(new HashSet<>());
-        user.setReviews(new HashSet<>());
+        user.setReviewUsers(new HashSet<>());
         user.setAuctions(new HashSet<>());
         user.setSells(new HashSet<>());
         user.setWishList(new HashSet<>());
@@ -395,6 +401,96 @@ class GridRestControllerIT {
 
         mMockMvc.perform(post("/grid/add-game-review")
                 .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidUserReview_ReturnSuccess() throws Exception {
+        User author = new User();
+        author.setUsername("mUsername1");
+        author.setName("mName1");
+        author.setEmail("mEmail1");
+        author.setPassword("mPassword1");
+        author.setCountry("mCountry1");
+        author.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        User target = new User();
+        target.setUsername("mUsername2");
+        target.setName("mName2");
+        target.setEmail("mEmail2");
+        target.setPassword("mPassword2");
+        target.setCountry("mCountry2");
+        target.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+
+        this.mUserRepository.save(author);
+        this.mUserRepository.save(target);
+
+        mReviewUserPOJO.setAuthor(author.getId());
+        mReviewUserPOJO.setTarget(target.getId());
+
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].comment",is(mReviewUserPOJO.getComment())))
+                .andExpect(jsonPath("$[0].score",is(mReviewUserPOJO.getScore())))
+                .andExpect(jsonPath("$[0].author.username",is(author.getUsername())));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingRepeatedUserReview_ReturnException() throws Exception {
+        User author = new User();
+        author.setUsername("mUsername1");
+        author.setName("mName1");
+        author.setEmail("mEmail1");
+        author.setPassword("mPassword1");
+        author.setCountry("mCountry1");
+        author.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        User target = new User();
+        target.setUsername("mUsername2");
+        target.setName("mName2");
+        target.setEmail("mEmail2");
+        target.setPassword("mPassword2");
+        target.setCountry("mCountry2");
+        target.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+
+        mReviewUserPOJO.setAuthor(1);
+        mReviewUserPOJO.setTarget(2);
+
+        ReviewUser review = new ReviewUser();
+
+        review.setComment(mReviewUserPOJO.getComment());
+        review.setScore(mReviewUserPOJO.getScore());
+        review.setAuthor(author);
+        review.setTarget(target);
+        review.setDate(mReviewUserPOJO.getDate());
+
+
+        this.mUserRepository.save(author);
+        this.mUserRepository.save(target);
+        this.mReviewUserRepository.save(review);
+
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidUserReview_ReturnException() throws Exception {
+        mReviewUserPOJO.setAuthor(1);
+        mReviewUserPOJO.setTarget(2);
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
 

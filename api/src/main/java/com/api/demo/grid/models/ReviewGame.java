@@ -52,12 +52,10 @@ public class ReviewGame {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
-
     private User author;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id", nullable = false)
-
     private Game game;
 
 

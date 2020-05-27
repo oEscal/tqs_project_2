@@ -15,7 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.sql.SQLDataException;
+
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,6 +44,10 @@ class GridServiceTest {
     @Mock(lenient = true)
     private SellRepository mockSellRepo;
 
+
+    @Mock(lenient = true)
+    private ReviewUserRepository mockReviewUserRepo;
+
     @InjectMocks
     private GridServiceImpl gridService;
 
@@ -53,8 +57,11 @@ class GridServiceTest {
     private Developer developer;
     private Publisher publisher;
     private User user;
+    private User user2;
     private GameKey gameKey;
     private ReviewGame reviewGame;
+    private ReviewUser reviewUser;
+
 
     private static final Date now = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
 
@@ -87,7 +94,17 @@ class GridServiceTest {
 
         user = new User();
         user.setId(6L);
+        user.setBirthDate(now);
         user.setReviewGames(new HashSet<>());
+        user.setReviewedUsers(new HashSet<>());
+        user.setReviewUsers(new HashSet<>());
+
+        user2 = new User();
+        user2.setId(1L);
+        user2.setBirthDate(now);
+        user2.setReviewGames(new HashSet<>());
+        user2.setReviewedUsers(new HashSet<>());
+        user2.setReviewUsers(new HashSet<>());
 
         gameKey = new GameKey();
         gameKey.setId(7L);
@@ -99,6 +116,13 @@ class GridServiceTest {
         reviewGame.setAuthor(user);
         reviewGame.setGame(game);
         reviewGame.setDate(now);
+
+        reviewUser = new ReviewUser();
+        reviewUser.setComment("comment");
+        reviewUser.setScore(1);
+        reviewUser.setAuthor(user);
+        reviewUser.setTarget(user2);
+        reviewUser.setDate(now);
 
     }
 
@@ -436,7 +460,7 @@ class GridServiceTest {
         Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
         Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
 
-        assertEquals(expected,reviewGames);
+        assertEquals(expected, reviewGames);
     }
 
     @Test
@@ -492,4 +516,43 @@ class GridServiceTest {
 
         assertNull(reviewGames);
     }
+
+    @Test
+    void whenPostingValidUserReview_ReturnReviews() {
+        long authorID = 1;
+        long targetID = 2;
+
+
+        Mockito.when(mockUserRepo.findById(authorID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockUserRepo.findById(targetID)).thenReturn(Optional.ofNullable(user2));
+        Mockito.when(mockReviewUserRepo.save(Mockito.any(ReviewUser.class))).thenReturn(reviewUser);
+
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
+
+        Set<ReviewUser> expected = new HashSet<>();
+        expected.add(reviewUser);
+
+        Set<ReviewUser> reviews = gridService.addUserReview(review);
+
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(authorID);
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(targetID);
+
+        assertEquals(expected, reviews);
+
+    }
+
+    @Test
+    void whenPostingSameIDUserReview_ReturnReviews() {
+        long authorID = 1L;
+        long targetID = 1L;
+
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
+
+        Set<ReviewUser> reviews = gridService.addUserReview(review);
+
+        assertNull(reviews);
+
+    }
+
+
 }

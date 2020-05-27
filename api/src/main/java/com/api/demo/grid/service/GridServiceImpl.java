@@ -42,6 +42,9 @@ public class GridServiceImpl implements GridService {
     @Autowired
     private ReviewGameRepository mReviewGameRepository;
 
+    @Autowired
+    private ReviewUserRepository mReviewUserRepository;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = mGameRepository.findById(id);
@@ -239,11 +242,53 @@ public class GridServiceImpl implements GridService {
         try {
             this.mGameRepository.save(realGame);
             this.mUserRepository.save(realUser);
-        }
-        catch (Exception e){
-            return  null;
+        } catch (Exception e) {
+            return null;
         }
         return gameReviews;
+    }
+
+    @Override
+    public Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO) {
+        long authorID = reviewUserPOJO.getAuthor();
+        long targetID = reviewUserPOJO.getTarget();
+
+        if (authorID == targetID) return null;
+
+        Optional<User> author = this.mUserRepository.findById(authorID);
+        if (author.isEmpty()) return null;
+
+        Optional<User> target = this.mUserRepository.findById(targetID);
+        if (target.isEmpty()) return null;
+
+
+        User realAuthor = author.get();
+        User realTarget = target.get();
+
+        Set<ReviewUser> authorReviews = realAuthor.getReviewedUsers();
+        Set<ReviewUser> targetReviews = realTarget.getReviewUsers();
+
+        ReviewUser review = new ReviewUser();
+
+        review.setComment(reviewUserPOJO.getComment());
+        review.setScore(reviewUserPOJO.getScore());
+        review.setAuthor(realAuthor);
+        review.setTarget(realTarget);
+        review.setDate(reviewUserPOJO.getDate());
+
+        authorReviews.add(review);
+        targetReviews.add(review);
+
+        realAuthor.setReviewedUsers(authorReviews);
+        realTarget.setReviewUsers(targetReviews);
+
+        try {
+            this.mReviewUserRepository.save(review);
+        } catch (Exception e) {
+            return null;
+        }
+
+        return targetReviews;
     }
 
 }

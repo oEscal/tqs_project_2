@@ -120,18 +120,18 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewedUsers;
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewUsers;
 
-    //The reviews directed to the users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
