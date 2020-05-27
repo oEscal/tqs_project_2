@@ -1,39 +1,43 @@
 package com.api.demo.grid.service;
 
+
+import com.api.demo.DemoApplication;
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.Auction;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
+import com.api.demo.grid.repository.SellRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-@ExtendWith(MockitoExtension.class)
-class AuctionServiceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
+@AutoConfigureMockMvc
+@AutoConfigureTestDatabase
+public class AuctionServiceIT {
 
-    @Mock(lenient = true)
+    @Autowired
     private AuctionRepository mAuctionRepository;
 
-    @Mock(lenient = true)
-    private ModelMapper mModelMapper;
+    @Autowired
+    private SellRepository mSellRepository;
 
-    @InjectMocks
+    @Autowired
     private AuctionService mAuctionService;
 
 
@@ -102,48 +106,30 @@ class AuctionServiceTest {
     }
 
 
-    /***
-     *  Get Auction
-     ***/
     @Test
-    void whenAuctionGameKeyExists_receiveCorrectAuction() {
+    @SneakyThrows
+    void whenSetExistentAuctionGameKey_setIsUnsuccessful() {
 
-        given(mAuctionRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(mAuction);
+        // first insertion
+        mAuctionService.addAuction(mAuctionPOJO);
 
-        assertEquals(mAuction, mAuctionService.getAuctionByGameKey(mGameKeyRKey));
+        // second insertion
+        mAuction.setPrice(2000);
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
+        assertEquals(1, mAuctionRepository.findAll().size());
     }
 
     @Test
-    void whenAuctionGameKeyNotExists_receiveNothing() {
+    @SneakyThrows
+    void whenSetAuctionOfSameSellGameKey_setIsUnsuccessful() {
 
-        assertNull(mAuctionService.getAuctionByGameKey(mGameKeyRKey));
-    }
+        // insert game key on sell
+        Sell sell = new Sell();
+        sell.setGameKey(mGameKey);
+        mSellRepository.save(sell);
 
-
-    /***
-     *  Save Auction
-     ***/
-    @Test
-    void whenSaveNewAuction_insertIsSuccessful() {
-
-        // mock model mapper
-        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
-
-        // mock auction repository
-        given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
-
-        assertDoesNotThrow(() -> mAuctionService.addAuction(mAuctionPOJO));
-    }
-
-    @Test
-    void whenSaveNewAuction_insertReceiveAuction() {
-
-        // mock model mapper
-        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
-
-        // mock auction repository
-        given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
-
-        assertEquals(mAuction, mAuctionService.addAuction(mAuctionPOJO));
+        // second insertion
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
+        assertEquals(1, mAuctionRepository.findAll().size());
     }
 }
