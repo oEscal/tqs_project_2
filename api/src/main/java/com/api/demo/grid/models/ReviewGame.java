@@ -68,5 +68,5 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
 }

@@ -34,7 +34,7 @@ public class ReviewGamePOJO {
         this.date = (date == null) ? new Date() : date;
     }
 
-    public Date getDate() { return (date == null) ? new Date() : date; }
+    public Date getDate() { return (date == null) ? (Date) new Date().clone() : date; }
 
     public void setDate(Date date){ this.date = (date == null) ? this.date : date; }
 
