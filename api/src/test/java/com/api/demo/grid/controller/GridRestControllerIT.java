@@ -500,9 +500,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenGetValidGameReviews_ReturnSuccess() throws Exception {
         Game game = new Game();
-        game.setId(1L);
         User user = new User();
-        user.setId(1L);
         user.setUsername("mUsername1");
         user.setName("mName1");
         user.setEmail("mEmail1");
@@ -515,7 +513,7 @@ class GridRestControllerIT {
         review.setScore(1);
         review.setAuthor(user);
         review.setGame(game);
-        review.setDate(mReviewGamePOJO.getDate());
+        review.setDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
 
         Set<ReviewGame> reviews = new HashSet<>();
         reviews.add(review);
@@ -523,6 +521,7 @@ class GridRestControllerIT {
         game.setReviews(reviews);
 
         this.mGameRepository.save(game);
+
 
         mMockMvc.perform(get("/grid/game-review")
                 .param("game_id", String.valueOf(game.getId()))
