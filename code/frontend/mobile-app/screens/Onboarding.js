@@ -30,9 +30,6 @@ export default class Onboarding extends React.Component {
     const username = this.state.username;
     const password = this.state.password;
 
-    console.log(username)
-    console.log(password)
-
     const login_info = "Basic " + Base64.btoa(username + ":" + password);
 
     var error = false
