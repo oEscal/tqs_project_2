@@ -1,19 +1,18 @@
 package com.api.demo.grid.service;
 
 import com.api.demo.grid.models.*;
+import com.api.demo.grid.pagination.Pagination;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.HashSet;
+import java.awt.print.Pageable;
+import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService {
@@ -292,12 +291,22 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
-    public Set<ReviewGame> getGameReviews(long gameID) {
+    public Page<ReviewGame> getGameReviews(long gameID, int page) {
+
+
         Optional<Game> game = this.mGameRepository.findById(gameID);
         if (game.isEmpty()) return null;
 
         Set<ReviewGame> reviews = game.get().getReviews();
-        return reviews == null ? new HashSet<>() : reviews;
+        reviews = (reviews == null) ? new HashSet<>() : reviews;
+        List<ReviewGame> reviewsList = new ArrayList<>();
+        reviewsList.addAll(reviews);
+
+        Pagination<ReviewGame> pagination = new Pagination<>();
+
+
+        return pagination.convertToPage(reviewsList, page,18);
+
     }
 
 }

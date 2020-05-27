@@ -570,11 +570,13 @@ class GridServiceTest {
 
         Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(game));
 
-        Set<ReviewGame> expected = gridService.getGameReviews(gameID);
+        Page<ReviewGame> expected = gridService.getGameReviews(gameID, 1);
 
         Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+        List<ReviewGame> reviewsList = new ArrayList<>(reviews);
+        Pagination<ReviewGame> reviewsPage = new Pagination<>(reviewsList);
 
-        assertEquals(expected, reviews);
+        assertEquals(expected, reviewsPage.pageImpl(1, 18));
     }
 
 
@@ -585,7 +587,7 @@ class GridServiceTest {
 
         Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.empty());
 
-        Set<ReviewGame> expected = gridService.getGameReviews(gameID);
+        Page<ReviewGame> expected = gridService.getGameReviews(gameID,1);
 
         Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
 

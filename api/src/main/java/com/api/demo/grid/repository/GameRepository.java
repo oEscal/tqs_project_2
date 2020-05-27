@@ -1,9 +1,6 @@
 package com.api.demo.grid.repository;
 
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.*;
 
 
 import org.springframework.data.domain.Page;
@@ -24,4 +21,5 @@ public interface GameRepository extends JpaRepository<Game, Long>  {
     List<Game> findAllByDevelopersContaining(Developer developer);
     Optional<Game> findById(Long id);
     List<Game> findAllByNameContaining(String name);
+
 }

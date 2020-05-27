@@ -525,11 +525,12 @@ class GridRestControllerIT {
 
         mMockMvc.perform(get("/grid/game-review")
                 .param("game_id", String.valueOf(game.getId()))
+                .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].comment",is(review.getComment())))
-                .andExpect(jsonPath("$[0].score",is(review.getScore())))
-                .andExpect(jsonPath("$[0].game.id", is((int) game.getId())));
+                .andExpect(jsonPath("$.content.[0].comment",is(review.getComment())))
+                .andExpect(jsonPath("$.content.[0].score",is(review.getScore())))
+                .andExpect(jsonPath("$.content.[0].game.id", is((int) game.getId())));
     }
 
 

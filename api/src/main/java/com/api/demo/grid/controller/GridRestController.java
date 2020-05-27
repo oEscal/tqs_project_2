@@ -149,9 +149,9 @@ public class GridRestController {
         return new ResponseEntity<>(reviewUsers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/game-review" , params = {"game_id"})
-    public ResponseEntity<Set<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID) {
-       Set<ReviewGame> reviews = gridService.getGameReviews(gameID);
+    @GetMapping(value = "/game-review", params = {"game_id", "page"})
+    public ResponseEntity<Page<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID,@RequestParam("page") int page) {
+        Page<ReviewGame> reviews = gridService.getGameReviews(gameID, page);
         if (reviews == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain game review");
 
