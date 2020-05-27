@@ -39,6 +39,9 @@ public class GridServiceImpl implements GridService {
     @Autowired
     private UserRepository mUserRepository;
 
+    @Autowired
+    private ReviewGameRepository mReviewGameRepository;
+
     @Override
     public Game getGameById(long id) {
         Optional<Game> gameResponse = mGameRepository.findById(id);
@@ -201,6 +204,43 @@ public class GridServiceImpl implements GridService {
         this.mUserRepository.save(realUser);
         this.mGameRepository.save(realGame);
         return wishList;
+    }
+
+    @Override
+    public Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO) {
+        Optional<User> user = this.mUserRepository.findById(reviewGamePOJO.getAuthor());
+        if (user.isEmpty()) return null;
+
+        Optional<Game> game = this.mGameRepository.findById(reviewGamePOJO.getGame());
+        if (game.isEmpty()) return null;
+
+
+        User realUser = user.get();
+        Game realGame = game.get();
+
+        Set<ReviewGame> gameReviews = realGame.getReviews();
+        Set<ReviewGame> userGameReviews = realUser.getReviewGames();
+
+
+        ReviewGame review = new ReviewGame();
+
+        review.setComment(reviewGamePOJO.getComment());
+        review.setScore(reviewGamePOJO.getScore());
+        review.setAuthor(realUser);
+        review.setGame(realGame);
+        review.setDate(reviewGamePOJO.getDate());
+
+        gameReviews.add(review);
+        userGameReviews.add(review);
+
+        realUser.setReviewGames(userGameReviews);
+        realGame.setReviews(gameReviews);
+
+
+        this.mGameRepository.save(realGame);
+        this.mUserRepository.save(realUser);
+
+        return gameReviews;
     }
 
 }

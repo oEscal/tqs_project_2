@@ -72,9 +72,9 @@ public class Game {
     private Date releaseDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Set<ReviewGame> reviews;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

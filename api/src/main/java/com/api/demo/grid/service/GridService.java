@@ -23,4 +23,5 @@ public interface GridService {
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
     Set<Game> addWishListByUserID(long gameID, long userID);
+    Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);
 }

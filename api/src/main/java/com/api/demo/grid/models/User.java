@@ -104,8 +104,8 @@ public class User {
      ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed

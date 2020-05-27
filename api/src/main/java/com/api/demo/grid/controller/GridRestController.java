@@ -124,4 +124,13 @@ public class GridRestController {
 
         return new ResponseEntity<>(games, HttpStatus.OK);
     }
+
+    @PostMapping(value = "/add-game-review")
+    public ResponseEntity<Set<ReviewGame>> addGameReview(@RequestBody ReviewGamePOJO reviewGamePOJO) {
+        Set<ReviewGame> reviewGames = gridService.addGameReview(reviewGamePOJO);
+        if (reviewGames == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add game review");
+
+        return new ResponseEntity<>(reviewGames, HttpStatus.OK);
+    }
 }
