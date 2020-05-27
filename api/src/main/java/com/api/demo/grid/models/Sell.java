@@ -6,7 +6,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
@@ -41,16 +40,16 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "buy_id")
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -62,7 +61,6 @@ public class Sell {
     @Temporal(TemporalType.DATE)
     private Date date;
 
-    @Transactional
     public void setUser(User user) {
         //prevent endless loop
         if (sameAsFormer(user)) return ;
