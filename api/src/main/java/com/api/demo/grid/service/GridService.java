@@ -2,6 +2,7 @@ package com.api.demo.grid.service;
 
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -26,4 +27,5 @@ public interface GridService {
     Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);
     Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO);
     Page<ReviewGame> getGameReviews(long gameID,int page);
+    Page<ReviewJoiner> getUserReviews(long userID, int page);
 }

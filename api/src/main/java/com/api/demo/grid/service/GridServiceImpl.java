@@ -4,14 +4,14 @@ import com.api.demo.grid.models.*;
 import com.api.demo.grid.pagination.Pagination;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.repository.*;
+import com.api.demo.grid.utils.ReviewJoiner;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-
-import java.awt.print.Pageable;
 import java.util.*;
 
 @Service
@@ -307,6 +307,48 @@ public class GridServiceImpl implements GridService {
 
         return pagination.convertToPage(reviewsList, page,18);
 
+    }
+
+    @Override
+    public Page<ReviewJoiner> getUserReviews(long userID, int page) {
+        Optional<User> user = this.mUserRepository.findById(userID);
+        if (user.isEmpty()) return null;
+
+        User realUser = user.get();
+
+        Set<ReviewUser> reviewsUser = realUser.getReviewedUsers();
+        Set<ReviewGame> reviewsGame = realUser.getReviewGames();
+
+        reviewsUser = (reviewsUser == null) ? new HashSet<>() : reviewsUser;
+        reviewsGame = (reviewsGame == null) ? new HashSet<>() : reviewsGame;
+
+        List<ReviewJoiner> reviews = new ArrayList<>();
+
+        for (ReviewUser currentReview : reviewsUser) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportUser> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            User target = currentReview.getTarget();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+        }
+
+        for (ReviewGame currentReview : reviewsGame) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportReviewGame> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            Game game = currentReview.getGame();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+        }
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>();
+
+        return pagination.convertToPage(reviews, page,18);
     }
 
 }

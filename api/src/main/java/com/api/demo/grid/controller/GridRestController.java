@@ -3,6 +3,7 @@ package com.api.demo.grid.controller;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -155,6 +156,14 @@ public class GridRestController {
         if (reviews == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain game review");
 
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user-reviewed", params = {"user_id", "page"})
+    public ResponseEntity<Page<ReviewJoiner>> userReviews(@RequestParam("user_id") long userID, @RequestParam("page") int page) {
+        Page<ReviewJoiner> reviews = gridService.getUserReviews(userID, page);
+        if (reviews == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain user review");
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 

@@ -544,6 +544,28 @@ class GridRestControllerIT {
                 .andExpect(status().is4xxClientError());
     }
 
+    //@Test
+    //@WithMockUser(username = "spring")
+    //void whenGetValidUserReviews_ReturnSuccess() throws Exception {
+//
+    //    mMockMvc.perform(get("/grid/user-reviewed")
+    //            .param("user_id", String.valueOf(1))
+    //            .param("page", String.valueOf(1))
+    //            .contentType(MediaType.APPLICATION_JSON))
+    //            .andExpect(status().is4xxClientError());
+    //}
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidUserReviews_ReturnException() throws Exception {
+
+        mMockMvc.perform(get("/grid/user-reviewed")
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
