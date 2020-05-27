@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.text.SimpleDateFormat;
 
@@ -26,6 +27,9 @@ class AuctionServiceTest {
 
     @Mock(lenient = true)
     private AuctionRepository mAuctionRepository;
+
+    @Mock(lenient = true)
+    private ModelMapper mModelMapper;
 
     @InjectMocks
     private AuctionService mAuctionService;
@@ -120,6 +124,10 @@ class AuctionServiceTest {
     @Test
     void whenSaveNewAuction_insertIsSuccessful() {
 
+        // mock model mapper
+        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
+
+        // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 
         assertDoesNotThrow(() -> mAuctionService.addAuction(mAuctionPOJO));
@@ -128,6 +136,10 @@ class AuctionServiceTest {
     @Test
     void whenSaveNewAuction_insertReceiveAuction() {
 
+        // mock model mapper
+        given(mModelMapper.map(mAuctionPOJO, Auction.class)).willReturn(mAuction);
+
+        // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 
         assertEquals(mAuction, mAuctionService.addAuction(mAuctionPOJO));

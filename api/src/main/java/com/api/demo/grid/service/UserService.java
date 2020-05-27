@@ -65,10 +65,6 @@ public class UserService {
         return userSaved;
     }
 
-    private User convertToEntity(UserDTO userDto) {
-        return mModelMapper.map(userDto, User.class);
-    }
-
     public UserInfoProxy getUserInfo(String username) throws UserNotFoundException {
         User user = mRepository.findByUsername(username);
 
@@ -85,4 +81,8 @@ public class UserService {
         return user;
     }
 
+
+    private User convertToEntity(UserDTO userDto) {
+        return mModelMapper.map(userDto, User.class);
+    }
 }
