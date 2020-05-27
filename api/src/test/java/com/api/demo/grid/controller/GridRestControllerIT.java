@@ -293,7 +293,7 @@ class GridRestControllerIT {
                 .param("id", "" + game.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lowestPrice", is(2.4)))
+                .andExpect(jsonPath("$.bestSell.price", is(2.4)))
                 .andExpect(jsonPath("$.platforms[0]", is("ps4")))
         ;
     }

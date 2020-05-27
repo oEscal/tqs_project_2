@@ -31,6 +31,7 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
+    @JsonIgnore
     private String rKey;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -39,7 +40,7 @@ public class GameKey {
     @EqualsAndHashCode.Exclude
     private Game game;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Sell sell;
