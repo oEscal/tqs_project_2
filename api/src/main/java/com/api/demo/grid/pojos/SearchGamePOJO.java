@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.util.Arrays;
 import java.util.Objects;
 
-@AllArgsConstructor
 @Setter
 @Getter
 public class SearchGamePOJO {
@@ -46,5 +45,21 @@ public class SearchGamePOJO {
         result = 31 * result + Arrays.hashCode(genres);
         result = 31 * result + Arrays.hashCode(plataforms);
         return result;
+    }
+
+    public String[] getPlataforms(){
+        return this.plataforms.clone();
+    }
+
+    public void setPlataforms(String[] plataforms){
+        this.plataforms = plataforms.clone();
+    }
+
+    public String[] getGenres(){
+        return this.genres.clone();
+    }
+
+    public void setGenres(String[] genres){
+        this.genres = genres.clone();
     }
 }
