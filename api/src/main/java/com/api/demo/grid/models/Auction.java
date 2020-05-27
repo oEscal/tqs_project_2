@@ -49,7 +49,7 @@ public class Auction {
     @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 

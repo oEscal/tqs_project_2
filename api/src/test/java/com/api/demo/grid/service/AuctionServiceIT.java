@@ -9,15 +9,19 @@ import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.repository.AuctionRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.text.SimpleDateFormat;
 
@@ -28,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuctionServiceIT {
 
     @Autowired
@@ -106,11 +111,6 @@ public class AuctionServiceIT {
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
-    }
-
-    @AfterEach
-    void afterEach() {
-        mAuctionRepository.deleteAll();
     }
 
 

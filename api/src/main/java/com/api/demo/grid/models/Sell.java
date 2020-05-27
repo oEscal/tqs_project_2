@@ -40,7 +40,7 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
