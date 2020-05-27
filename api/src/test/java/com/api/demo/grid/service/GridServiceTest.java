@@ -1,8 +1,27 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.*;
-import com.api.demo.grid.pojos.*;
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.models.Developer;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.ReviewGame;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GameKeyPOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.ReviewGamePOJO;
+import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.repository.DeveloperRepository;
+import com.api.demo.grid.repository.GameGenreRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.utils.Pagination;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +34,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.sql.SQLDataException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
