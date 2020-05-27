@@ -1,8 +1,27 @@
 package com.api.demo.grid.service;
 
-import com.api.demo.grid.models.*;
-import com.api.demo.grid.pojos.*;
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.exception.GameNotFoundException;
+import com.api.demo.grid.models.Developer;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameGenre;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GameKeyPOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SearchGamePOJO;
+import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.repository.DeveloperRepository;
+import com.api.demo.grid.repository.GameGenreRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,7 +33,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,6 +78,13 @@ public class GridServiceImpl implements GridService {
     public Page<Game> getAllGames(int page) {
         Page<Game> games = mGameRepository.findAll(PageRequest.of(page, 18));
         return games;
+    }
+
+    @Override
+    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException{
+        Optional<Game> game = mGameRepository.findById(gameId);
+        if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
+        return mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
     }
 
     @Override

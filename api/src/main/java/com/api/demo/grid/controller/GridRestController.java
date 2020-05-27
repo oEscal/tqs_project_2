@@ -1,4 +1,5 @@
 package com.api.demo.grid.controller;
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -90,6 +91,15 @@ public class GridRestController {
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
 
+    @GetMapping("/sell-listing")
+    public ResponseEntity<Page<Sell>> getListingsByGame(@RequestParam long gameId, @RequestParam int page){
+        try{
+            return new ResponseEntity<>(gridService.getAllSellListings(gameId, page), HttpStatus.OK);
+        } catch (GameNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found in Database");
+        }
+    }
+    
     @PostMapping("/search")
     public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
         return ResponseEntity.ok(gridService.pageSearchGames(searchGamePOJO));
@@ -128,7 +138,7 @@ public class GridRestController {
         return new ResponseEntity<>(gameKey, HttpStatus.OK);
     }
 
-    @PostMapping("/sell-listing")
+    @PostMapping("/add-sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
         Sell sell = gridService.saveSell(sellPOJO);
         if (sell == null) {
