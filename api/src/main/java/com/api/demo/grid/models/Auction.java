@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -52,10 +53,12 @@ public class Auction {
 
     @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)", nullable = false)
     @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date startDate;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date endDate;
 
     @Column(nullable = false)

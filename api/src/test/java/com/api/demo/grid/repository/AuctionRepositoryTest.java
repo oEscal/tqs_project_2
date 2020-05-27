@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import javax.validation.ConstraintViolationException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
@@ -89,5 +90,35 @@ class AuctionRepositoryTest {
     void whenAuctionGameKeyExists_receiveCorrectAuction() {
 
         assertEquals(mAuction, mAuctionRepository.findByGameKey_rKey(mGameKeyRKey));
+    }
+
+    @Test
+    void whenAuctionGameKeyNotExists_receiveNothing() {
+
+        assertNull(mAuctionRepository.findByGameKey_rKey("test_key"));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetPastAuctionEndDate_setIsUnsuccessful() {
+
+        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
+
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mAuction));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetStartDate_setIsUnsuccessful() {
+
+        mAuction.setStartDate((new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999")));
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mAuction));
+    }
+
+    @Test
+    void whenSetAuctionNegativePrice_setIsUnsuccessful() {
+
+        mAuction.setPrice(-10.3);
+        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mAuction));
     }
 }
