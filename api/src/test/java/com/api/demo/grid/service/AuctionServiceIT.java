@@ -9,8 +9,7 @@ import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
-import com.api.demo.grid.repository.AuctionRepository;
-import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.*;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +35,15 @@ public class AuctionServiceIT {
 
     @Autowired
     private SellRepository mSellRepository;
+
+    @Autowired
+    private UserRepository mUserRepository;
+
+    @Autowired
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private GameRepository mGameRepository;
 
     @Autowired
     private AuctionService mAuctionService;
@@ -109,6 +117,11 @@ public class AuctionServiceIT {
     @Test
     @SneakyThrows
     void whenSetExistentAuctionGameKey_setIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
 
         // first insertion
         mAuctionService.addAuction(mAuctionPOJO);
