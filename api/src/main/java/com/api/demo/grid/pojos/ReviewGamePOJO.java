@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
 @Getter
@@ -34,7 +36,7 @@ public class ReviewGamePOJO {
         this.date = (date == null) ? new Date() : date;
     }
 
-    public Date getDate() { return (date == null) ? (Date) new Date().clone() : date; }
+    public Date getDate() { return (date == null) ? (Date) new Date().clone() : new Date(date.getTime()); }
 
     public void setDate(Date date){ this.date = (date == null) ? this.date : date; }
 
