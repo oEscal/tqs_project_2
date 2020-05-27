@@ -1,6 +1,7 @@
 package com.api.demo.grid.pojos;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class AuctionPOJO {
     // game key
     private String gameKey;
 
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date endDate;
 
     private double price;
