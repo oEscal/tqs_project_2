@@ -1,6 +1,7 @@
 package com.api.demo.grid.controller;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -13,6 +14,7 @@ import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.service.GridService;
@@ -93,6 +95,20 @@ public class GridRestController {
         return new ResponseEntity<>(gameList, HttpStatus.OK);
     }
 
+    @GetMapping("/sell-listing")
+    public ResponseEntity<Page<Sell>> getListingsByGame(@RequestParam long gameId, @RequestParam int page){
+        try{
+            return new ResponseEntity<>(mGridService.getAllSellListings(gameId, page), HttpStatus.OK);
+        } catch (GameNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found in Database");
+        }
+    }
+    
+    @PostMapping("/search")
+    public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
+        return ResponseEntity.ok(mGridService.pageSearchGames(searchGamePOJO));
+    }
+
     @PostMapping("/add-game")
     public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
         Game game = mGridService.saveGame(gamePOJO);
@@ -126,7 +142,7 @@ public class GridRestController {
         return new ResponseEntity<>(gameKey, HttpStatus.OK);
     }
 
-    @PostMapping("/sell-listing")
+    @PostMapping("/add-sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
         Sell sell = mGridService.saveSell(sellPOJO);
         if (sell == null){

@@ -10,6 +10,7 @@ import com.api.demo.grid.models.Publisher;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.BuyListingsPOJO;
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
@@ -24,13 +25,17 @@ import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.PublisherRepository;
 import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,6 +47,8 @@ import java.util.HashSet;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -178,6 +185,34 @@ class GridRestControllerIT {
     }
 
     @Test
+    void whenRequestSellListings_ReturnPagedListings() throws Exception {
+        Game game = new Game();
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+        Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+        mSellRepository.save(sell);
+        mMockMvc.perform(get("/grid/sell-listing")
+                .param("gameId", String.valueOf(game.getId()))
+                .param("page", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+        ;
+    }
+
+    @Test
+    void whenRequestSellListings_AndSearchIsInvalid_ThrowException() throws Exception {
+
+        mMockMvc.perform(get("/grid/sell-listing")
+                .param("gameId", "1")
+                .param("page", "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Game not found in Database"));
+
+    }
+
+    @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
 
@@ -228,7 +263,7 @@ class GridRestControllerIT {
         mGameKeyRepository.save(gameKey);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
-        mMockMvc.perform(post("/grid/sell-listing")
+        mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -251,7 +286,7 @@ class GridRestControllerIT {
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setPrice(2.4);
         mSellPOJO.setGameKey("key");
-        mMockMvc.perform(post("/grid/sell-listing")
+        mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -271,7 +306,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception{
 
-        mMockMvc.perform(post("/grid/sell-listing")
+        mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())

@@ -34,7 +34,7 @@ public class GameKey {
     @JsonIgnore
     private String rKey;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
