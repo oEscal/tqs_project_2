@@ -59,8 +59,7 @@ public class GridServiceImpl implements GridService {
     public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException{
         Optional<Game> game = mGameRepository.findById(gameId);
         if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
-        Page<Sell> sells = mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
-        return sells;
+        return mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
     }
 
     @Override
