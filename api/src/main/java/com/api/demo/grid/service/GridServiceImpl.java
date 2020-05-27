@@ -31,12 +31,6 @@ public class GridServiceImpl implements GridService {
     private GameRepository mGameRepository;
 
     @Autowired
-    private GameKeyRepository mGameKeyRepository;
-
-    @Autowired
-    private SellRepository mSellRepository;
-
-    @Autowired
     private UserRepository mUserRepository;
 
     @Override
@@ -149,40 +143,6 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
-    public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
-        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
-        if (game.isEmpty()) return null;
-        Game realGame = game.get();
-
-        GameKey gameKey = new GameKey();
-        gameKey.setRKey(gameKeyPOJO.getKey());
-        gameKey.setGame(realGame);
-        gameKey.setRetailer(gameKeyPOJO.getRetailer());
-        gameKey.setPlatform(gameKeyPOJO.getPlatform());
-        this.mGameKeyRepository.save(gameKey);
-        return gameKey;
-    }
-
-    @Override
-    public Sell saveSell(SellPOJO sellPOJO) {
-        Optional<User> user = this.mUserRepository.findById(sellPOJO.getUserId());
-        if (user.isEmpty()) return null;
-        User realUser = user.get();
-
-        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
-        if (gameKey.isEmpty()) return null;
-        GameKey realGameKey = gameKey.get();
-
-        Sell sell = new Sell();
-        sell.setUser(realUser);
-        sell.setGameKey(realGameKey);
-        sell.setPrice(sellPOJO.getPrice());
-        sell.setDate(sellPOJO.getDate());
-        this.mSellRepository.save(sell);
-        return sell;
-    }
-
-    @Override
     public Set<Game> addWishListByUserID(long gameID, long userID) {
         Optional<User> user = this.mUserRepository.findById(userID);
         if (user.isEmpty()) return null;
@@ -201,11 +161,6 @@ public class GridServiceImpl implements GridService {
         this.mUserRepository.save(realUser);
         this.mGameRepository.save(realGame);
         return wishList;
-    }
-
-    @Override
-    public Sell deleteSell(long sellId){
-        return null;
     }
 
 }

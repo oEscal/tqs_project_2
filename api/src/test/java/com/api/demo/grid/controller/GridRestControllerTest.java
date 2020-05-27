@@ -1,5 +1,6 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -16,6 +17,7 @@ import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.utils.Pagination;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -33,6 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -424,6 +427,104 @@ class GridRestControllerTest {
                 .param("game_id", String.valueOf(1))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingForValidUsername_andIsSeller_getValidPrivateInfo(){
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
+                .thenReturn(mSell);
+        Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
+
+        Mockito.when(mUserRepository.findByUsername("username1"))
+                .thenReturn(mUser);
+
+
+        mMockMvc.perform(get("/grid/private/user-info")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("username", "username1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.country", is(mCountry1)))
+                .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
+                .andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
+                .andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
+                .andExpect(jsonPath("$.wishList[0].name", is("wish")))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingForValidUsername_andIsAdmin_getValidPrivateInfo(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser2);
+        Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
+        mUser2.setAdmin(true);
+
+        Mockito.when(mUserRepository.findByUsername("spring"))
+                .thenReturn(mUser2);
+
+        mMockMvc.perform(get("/grid/private/user-info")
+                .with(httpBasic("spring", mPassword1))
+                .param("username", "username1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.country", is(mCountry1)))
+                .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
+                .andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
+                .andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
+                .andExpect(jsonPath("$.wishList[0].name", is("wish")))
+        ;
+        //TODO check for wishlist, buys and reviews once endpoints are done
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingForValidUsername_andIsNotUserNorAdmin_getException(){
+
+        Mockito.when(mUserRepository.findByUsername("spring"))
+                .thenReturn(mUser2);
+        Mockito.when(mMockUserService.getUser("spring"))
+                .thenReturn(mUser2);
+
+        Mockito.when(mMockUserService.getUser("username1")).thenReturn(mUser);
+
+        mMockMvc.perform(get("/grid/private/user-info")
+                .with(httpBasic("spring", mPassword1))
+                .param("username", "username1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason(is("You are not allowed to see this user's private info")))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
+        mUser2.setAdmin(true);
+        Mockito.when(mMockUserService.getUser("spring"))
+                .thenReturn(mUser2);
+
+        Mockito.when(mMockUserService.getFullUserInfo(Mockito.anyString()))
+                .thenThrow(new UserNotFoundException("Username not found in the database"));
+
+        Mockito.when(mUserRepository.findByUsername("spring"))
+                .thenReturn(mUser2);
+
+        mMockMvc.perform(get("/grid/private/user-info")
+                .with(httpBasic("spring", mPassword1))
+                .param("username", "user")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason(is("Username not found in the database")))
+        ;
+
     }
 
 

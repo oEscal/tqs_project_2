@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.ListingNotFoundException;
 import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.*;
 import org.springframework.data.domain.Page;
@@ -20,8 +21,5 @@ public interface GridService {
     Publisher savePublisher(PublisherPOJO publisherPOJO);
     Developer saveDeveloper(DeveloperPOJO developerPOJO);
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
-    GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
-    Sell saveSell(SellPOJO sellPOJO);
     Set<Game> addWishListByUserID(long gameID, long userID);
-    Sell deleteSell(long sellId);
 }
