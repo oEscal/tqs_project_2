@@ -536,6 +536,55 @@ class GridRestControllerTest {
     }
 
 
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidGameReviews_ReturnSuccess() throws Exception {
+        Game game = new Game();
+        game.setId(1L);
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        ReviewGame review = new ReviewGame();
+        review.setComment("comment");
+        review.setScore(1);
+        review.setAuthor(user);
+        review.setGame(game);
+        review.setDate(mReviewGamePOJO.getDate());
+
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(review);
+
+
+        Mockito.when(mGridService.getGameReviews(Mockito.anyLong())).thenReturn(reviews);
+
+        mMockMvc.perform(get("/grid/game-review")
+                .param("game_id", String.valueOf(game.getId()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].comment",is(review.getComment())))
+                .andExpect(jsonPath("$[0].score",is(review.getScore())))
+                .andExpect(jsonPath("$[0].game.id", is((int) game.getId())));
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidGameReviews_ReturnException() throws Exception {
+        Mockito.when(mGridService.getGameReviews(Mockito.anyLong())).thenReturn(null);
+
+        mMockMvc.perform(get("/grid/game-review")
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

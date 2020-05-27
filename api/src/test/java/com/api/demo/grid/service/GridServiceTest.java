@@ -15,11 +15,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import org.springframework.security.test.context.support.WithMockUser;
+
 
 import java.util.*;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -552,6 +556,40 @@ class GridServiceTest {
 
         assertNull(reviews);
 
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidGameReviews_ReturnReviews() {
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(reviewGame);
+
+        long gameID = game.getId();
+        game.setReviews(reviews);
+
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(game));
+
+        Set<ReviewGame> expected = gridService.getGameReviews(gameID);
+
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+        assertEquals(expected, reviews);
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidGameReviews_ReturnNULL() {
+        long gameID = game.getId();
+
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.empty());
+
+        Set<ReviewGame> expected = gridService.getGameReviews(gameID);
+
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+        assertNull(expected);
     }
 
 

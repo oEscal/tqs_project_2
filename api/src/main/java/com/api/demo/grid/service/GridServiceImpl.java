@@ -291,4 +291,13 @@ public class GridServiceImpl implements GridService {
         return targetReviews;
     }
 
+    @Override
+    public Set<ReviewGame> getGameReviews(long gameID) {
+        Optional<Game> game = this.mGameRepository.findById(gameID);
+        if (game.isEmpty()) return null;
+
+        Set<ReviewGame> reviews = game.get().getReviews();
+        return reviews == null ? new HashSet<>() : reviews;
+    }
+
 }
