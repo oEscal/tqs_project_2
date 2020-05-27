@@ -149,15 +149,16 @@ class GameSearch extends Component {
     }
 
     async search(changePage) {
+        await this.setState({ gamesLoaded: false })
+
         if (changePage) {
             var body = this.state.cacheRequest
             body["page"] = this.state.curPage
 
             await this.setState({
-                gamesLoaded: false,
                 cacheRequest: body
             })
-            
+
 
             // Proceed to login
             await fetch(baseURL + "grid/search", {
@@ -187,7 +188,7 @@ class GameSearch extends Component {
 
 
                     } else { // Successful Login
-                        this.setState({ games: data.content})
+                        this.setState({ games: data.content })
                     }
                 })
                 .catch(error => {
@@ -200,10 +201,6 @@ class GameSearch extends Component {
                         toastId: "errorThreeToast"
                     });
                 });
-
-            await this.setState({
-                gamesLoaded: true,
-            })
 
         } else {
             var name = document.getElementById("name").value
@@ -245,7 +242,6 @@ class GameSearch extends Component {
 
             if (!error) {
                 await this.setState({
-                    gamesLoaded: false,
                     curPage: 1
                 })
 
@@ -325,12 +321,10 @@ class GameSearch extends Component {
                             toastId: "errorThreeToast"
                         });
                     });
-
-                await this.setState({
-                    gamesLoaded: true,
-                })
             }
         }
+
+        await this.setState({ gamesLoaded: true })
 
     }
 
@@ -352,10 +346,10 @@ class GameSearch extends Component {
 
         window.scrollTo(0, 0)
 
-        if(this.state.cacheRequest != null){
+        if (this.state.cacheRequest != null) {
             await this.search(true)
 
-        }else{
+        } else {
             await this.allGames()
         }
 
@@ -369,7 +363,7 @@ class GameSearch extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                    <div className="animated fadeOut animated" id="firstLoad" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
@@ -530,7 +524,7 @@ class GameSearch extends Component {
                                                 </h6>
                                                 <CustomInput
                                                     labelText="From"
-                                                    id="from"
+                                                    id="priceFrom"
                                                     formControlProps={{
                                                         fullWidth: false
                                                     }}
@@ -538,7 +532,7 @@ class GameSearch extends Component {
                                                 <span style={{ marginRight: "5px", marginLeft: "5px" }}></span>
                                                 <CustomInput
                                                     labelText="To"
-                                                    id="to"
+                                                    id="priceTo"
                                                     formControlProps={{
                                                         fullWidth: false
                                                     }}
@@ -1085,22 +1079,11 @@ class GameSearch extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={9}>
                                                     <span>
-                                                        <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Games <span style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>({this.state.noGames} products)</span>
+                                                        <h2 id="numberOfProducts" style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>Games <span style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>({this.state.noGames} products)</span>
                                                         </h2>
                                                     </span>
                                                 </GridItem>
-                                                <GridItem xs={12} sm={12} md={3}>
-                                                    <div style={{ color: "#000", padding: "12px 0" }}>
-                                                        <Select
-                                                            className="basic-single"
-                                                            isSearchable={false}
-                                                            classNamePrefix="select"
-                                                            name="color"
-                                                            defaultValue={{ "value": "DATE", "label": "Newer First" }}
-                                                            options={[{ "value": "DATE", "label": "Newer First" }, { "value": "REVERSE_DATE", "label": "Older First" }, { "value": "ALPHABETICAL", "label": "Alphabetical" }, { "value": "PRICE", "label": "Lowest Price to Highest" }, { "value": "PRICE_REVERSE", "label": "Highest Price to Lowest" }]}
-                                                        />
-                                                    </div>
-                                                </GridItem>
+                                        
                                             </GridContainer>
                                             <hr style={{ color: "#999", opacity: "0.4" }}></hr>
                                         </div>
@@ -1129,28 +1112,6 @@ class GameSearch extends Component {
                                                     id="name"
                                                     formControlProps={{
                                                         fullWidth: true
-                                                    }}
-                                                />
-                                            </div>
-                                        </ExpansionPanelDetails>
-                                        <ExpansionPanelDetails>
-                                            <div style={{ textAlign: "left", width: "100%" }}>
-                                                <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px", marginBottom: "0px" }}>
-                                                    Price Range
-                                                </h6>
-                                                <CustomInput
-                                                    labelText="From"
-                                                    id="from"
-                                                    formControlProps={{
-                                                        fullWidth: false
-                                                    }}
-                                                />
-                                                <span style={{ marginRight: "5px", marginLeft: "5px" }}></span>
-                                                <CustomInput
-                                                    labelText="To"
-                                                    id="to"
-                                                    formControlProps={{
-                                                        fullWidth: false
                                                     }}
                                                 />
                                             </div>

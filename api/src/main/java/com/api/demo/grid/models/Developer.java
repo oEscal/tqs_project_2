@@ -33,7 +33,7 @@ public class Developer {
     @Column(unique=true)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
     @EqualsAndHashCode.Exclude
     @JsonIgnore

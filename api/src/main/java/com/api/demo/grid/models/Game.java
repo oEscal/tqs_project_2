@@ -48,18 +48,18 @@ public class Game {
     @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
     @JsonIgnore
@@ -74,7 +74,7 @@ public class Game {
     @ToString.Exclude
     private Set<ReviewGame> reviews;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
