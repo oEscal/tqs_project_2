@@ -137,7 +137,6 @@ class UserInfoControllerTest {
     }
     @Test
     @SneakyThrows
-    @WithMockUser(username = "username1")
     void whenSearchingForValidUsername_andIsUser_getValidPrivateInfo(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
@@ -160,7 +159,6 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
     void whenSearchingForValidUsername_andIsAdmin_getValidPrivateInfo(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser2);
@@ -186,14 +184,13 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
-    void whenSearchingForValidUsername_andIsNotUserNorAdmin_getException(){
+    void whenSearchingForValidUsername_andIsNotTheOwnerNorAdmin_getException(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser2);
         Mockito.when(mMockUserService.getFullUserInfo("username1")).thenReturn(mUser);
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic("spring", mPassword1))
-                .param("username", "user")
+                .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("You are not allowed to see this user's private info")))
@@ -203,7 +200,6 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
     void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
         Mockito.when(mMockUserService.getUser("spring"))
                 .thenReturn(mUser2);
