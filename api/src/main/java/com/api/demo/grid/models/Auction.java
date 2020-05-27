@@ -51,7 +51,7 @@ public class Auction {
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @Temporal(TemporalType.DATE)
     private Date startDate;
 
