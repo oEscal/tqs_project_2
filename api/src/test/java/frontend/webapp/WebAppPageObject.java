@@ -24,6 +24,8 @@ public class WebAppPageObject {
         driver = new FirefoxDriver();
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
+
+        driver.manage().window().maximize();
     }
 
     public void tear() {
@@ -64,13 +66,17 @@ public class WebAppPageObject {
         return driver.findElement(By.id(id)).getText().equals(text);
     }
 
+    public String getText(String id) {
+        return driver.findElement(By.id(id)).getText();
+    }
+
     // Check if an element exists
-    public boolean checkExistance(String id){
-        return driver.findElements( By.id(id) ).size() != 0;
+    public boolean checkExistance(String id) {
+        return driver.findElements(By.id(id)).size() != 0;
     }
 
     // Wait for a specified amount of seconds
-    public void waitSeconds(int seconds){
+    public void waitSeconds(int seconds) {
         driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
     }
 
@@ -90,7 +96,7 @@ public class WebAppPageObject {
     // Pick the selected value from a select box
     public void pickSelect(int val, String id) {
         driver.findElement(By.id(id)).click();
-        driver.findElement(By.id("react-select-2-option-"+val)).click();
+        driver.findElement(By.id("react-select-2-option-" + val)).click();
     }
 
     // Click button given by id
@@ -98,12 +104,19 @@ public class WebAppPageObject {
         driver.findElement(By.id(id)).sendKeys(Keys.SPACE);
     }
 
-    // Scroll to element
-    public void scrollToTop(){
-        JavascriptExecutor js = (JavascriptExecutor)driver;
+    public void clickCard() {
+        driver.findElement(By.cssSelector(".MuiGrid-root:nth-child(1) > a .MuiCardMedia-root")).click();
+    }
+
+    public void scrollToTop() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollTo(0,0)");
     }
 
+    public void scrollToElement(String id) {
+        WebElement element = driver.findElement(By.id(id));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
 
     // Wait for an element to disappear
     public void waitForLoad(String id) {
@@ -118,5 +131,11 @@ public class WebAppPageObject {
         } catch (NoSuchElementException e) {
             return;
         }
+    }
+
+    //Somewhy the platform select refused to behave soooo...
+    public void clickPlatform(){
+        driver.findElement(By.cssSelector(".select__value-container")).click();
+        driver.findElement(By.id("react-select-3-option-0")).click();
     }
 }

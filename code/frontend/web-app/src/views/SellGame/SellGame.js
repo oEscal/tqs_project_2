@@ -490,7 +490,7 @@ class SellGame extends Component {
         if (this.state.newKey) {
             key = <div style={{ marginTop: "25px", color: "black" }}>
                 <AsyncSelect
-                    placeholder="Game*"
+                    placeholder="Game"
                     id="game"
                     components={makeAnimated()}
                     defaultOptions
@@ -501,7 +501,7 @@ class SellGame extends Component {
                     cacheOptions
                 />
                 <CustomInput
-                    labelText="Game Key*"
+                    labelText="Game Key"
                     id="key"
                     formControlProps={{
                         fullWidth: true
@@ -633,8 +633,6 @@ class SellGame extends Component {
                                                         id="price"
                                                         formControlProps={{
                                                             fullWidth: true,
-                                                            required: true,
-
                                                         }}
                                                         inputProps={{
                                                             endAdornment: (
