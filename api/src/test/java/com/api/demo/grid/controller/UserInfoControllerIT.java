@@ -148,8 +148,7 @@ class UserInfoControllerIT {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "username1")
-    void whenSearchingForValidUsername_andIsUser_getValidPrivateInfo(){
+    void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo(){
         mGameRepo.save(mGame);
 
         mMockMvc.perform(get("/grid/private/user-info")
@@ -171,7 +170,6 @@ class UserInfoControllerIT {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
     void whenSearchingForValidUsername_andIsAdmin_getValidPrivateInfo(){
         mGameRepo.save(mGame);
 
@@ -197,8 +195,7 @@ class UserInfoControllerIT {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
-    void whenSearchingForValidUsername_andIsNotUserNorAdmin_getException(){
+    void whenSearchingForValidUsername_andIsNotOwnerNorAdmin_getException(){
         mGameRepo.save(mGame);
         mUserRepo.save(mUser2);
 
@@ -214,8 +211,7 @@ class UserInfoControllerIT {
 
     @Test
     @SneakyThrows
-    @WithMockUser(username = "spring")
-    void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
+    void whenSearchingForInvalidUsername_andIsOwnerOrAdmin_getException(){
         mUser2.setAdmin(true);
         mUserRepo.save(mUser2);
 

@@ -80,12 +80,6 @@ function CustomDrawerContent({
               />
             );
           })}
-
-          <DrawerCustomItem
-            title="Logout"
-            navigation={navigation}
-            focused={state.index === 6 ? true : false}
-          />
         </View>
       </Block>
 

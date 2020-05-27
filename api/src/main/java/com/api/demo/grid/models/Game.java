@@ -27,6 +27,7 @@ import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -117,15 +118,15 @@ public class Game {
         return (foundPrice)? bestSell:null;
     }
 
-    public String[] getPlatforms(){
-        if (gameKeys == null || gameKeys.isEmpty()) return new String[0];
-        ArrayList<String> gamePlatforms = new ArrayList<>();
+    public List<String> getPlatforms(){
+        if (gameKeys == null || gameKeys.isEmpty()) return new ArrayList<>();
+        List<String> gamePlatforms = new ArrayList<>();
         String platform;
         for (GameKey gameKey : gameKeys){
             platform = gameKey.getPlatform();
             if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
         }
-        return gamePlatforms.toArray(new String[gamePlatforms.size()]);
+        return gamePlatforms;
     }
 
     public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
