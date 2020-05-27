@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
@@ -49,7 +50,6 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Long id;
 
     /***
@@ -75,11 +75,19 @@ public class User {
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
-    
+
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
+    @JsonFormat(pattern="dd/MM/yyyy")
+    @Temporal(TemporalType.DATE)
+    private Date startDate = new Date();
+
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;
 
     private String photoUrl;
+
+    @Column(columnDefinition = "LONGTEXT default 'This user has no description'")
+    private String description;
 
     /***
      *  User's credit card info
@@ -104,74 +112,62 @@ public class User {
      ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviewUsers;
+    private Set<ReviewUser> reviewedUsers;
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviewedUsers;
+    private Set<ReviewUser> reviewUsers;
 
     //The reviews directed to the users
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReportReviewGame> reportsOnGameReview;
 
     //The reports this user has issued on user reviews
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReportReviewUser> reportsOnUserReview;
 
     //The reports this user has received
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "report_from_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReportUser> reportsThisUser;
 
     //The reports this user has issued on users
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "report_to_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<ReportUser> reportsOnUser;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Auction> auctions;
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
 
@@ -185,10 +181,20 @@ public class User {
         return null;
     }
 
+    public String getBirthDateStr(){
+        if (birthDate != null) return new SimpleDateFormat("dd/MM/yyyy").format(birthDate);
+        return null;
+    }
+
     public void setBirthDate(Date birthDate) {
         if (birthDate != null) {
             this.birthDate = (Date) birthDate.clone();
         }
+    }
+
+    public String getStartDateStr(){
+        if (startDate != null) return new SimpleDateFormat("dd/MM/yyyy").format(startDate);
+        return null;
     }
 
     public Date getCreditCardExpirationDate() {

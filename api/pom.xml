@@ -233,6 +233,7 @@
 				<configuration>
 					<skipTests>true</skipTests>
 					<excludes>**/GridRestControllerIT.*</excludes>
+					<excludes>**/UserInfoControllerIT.*</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -282,6 +283,7 @@
 						<include>**/Test</include>
 					</includes>
 					<excludes>**/GridRestControllerIT.*</excludes>
+					<excludes>**/UserInfoControllerIT.*</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
