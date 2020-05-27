@@ -11,15 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
+import java.sql.SQLDataException;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -57,6 +54,9 @@ class GridServiceTest {
     private Publisher publisher;
     private User user;
     private GameKey gameKey;
+    private ReviewGame reviewGame;
+
+    private static final Date now = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
 
     @BeforeEach
     void setUp() {
@@ -83,12 +83,22 @@ class GridServiceTest {
         game.setGameGenres(new HashSet<>(Arrays.asList(gameGenre)));
         game.setDevelopers(new HashSet<>(Arrays.asList(developer)));
         game.setPublisher(publisher);
+        game.setReviews(new HashSet<>());
 
         user = new User();
         user.setId(6L);
+        user.setReviewGames(new HashSet<>());
 
         gameKey = new GameKey();
         gameKey.setId(7L);
+
+        reviewGame = new ReviewGame();
+
+        reviewGame.setComment("comment");
+        reviewGame.setScore(1);
+        reviewGame.setAuthor(user);
+        reviewGame.setGame(game);
+        reviewGame.setDate(now);
 
     }
 
@@ -406,5 +416,80 @@ class GridServiceTest {
 
 
         assertEquals(expected, games);
+    }
+
+    @Test
+    void whenPostingValidGameReview_ReturnReviews() {
+        long userID = 1L;
+        long gameID = 1L;
+
+        Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(game));
+
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
+        Set<ReviewGame> expected = new HashSet<>();
+        expected.add(reviewGame);
+
+        Set<ReviewGame> reviewGames = gridService.addGameReview(review);
+
+
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+        assertEquals(expected,reviewGames);
+    }
+
+    @Test
+    void whenPostingInvalidUserGameReview_ReturnNULL() {
+        long userID = 1L;
+
+
+        Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.empty());
+
+
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
+
+        Set<ReviewGame> reviewGames = gridService.addGameReview(review);
+
+
+        Mockito.verify(mockUserRepo, Mockito.times(1)).findById(userID);
+
+
+        assertNull(reviewGames);
+    }
+
+    @Test
+    void whenPostingInvalidGameGameReview_ReturnNULL() {
+        long gameID = 1L;
+        long userID = 1L;
+
+        Mockito.when(mockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(user));
+        Mockito.when(mockGameRepo.findById(gameID)).thenReturn(Optional.empty());
+
+
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
+
+        Set<ReviewGame> reviewGames = gridService.addGameReview(review);
+
+
+        Mockito.verify(mockGameRepo, Mockito.times(1)).findById(gameID);
+
+
+        assertNull(reviewGames);
+    }
+
+    @Test
+    void whenPostingRepeatedGameReview_ReturnNULL() {
+
+
+        Mockito.when(mockUserRepo.save(Mockito.any(User.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(mockGameRepo.save(Mockito.any(Game.class))).thenThrow(DataIntegrityViolationException.class);
+
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
+
+        Set<ReviewGame> reviewGames = gridService.addGameReview(review);
+
+
+        assertNull(reviewGames);
     }
 }

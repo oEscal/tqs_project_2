@@ -236,10 +236,13 @@ public class GridServiceImpl implements GridService {
         realUser.setReviewGames(userGameReviews);
         realGame.setReviews(gameReviews);
 
-
-        this.mGameRepository.save(realGame);
-        this.mUserRepository.save(realUser);
-
+        try {
+            this.mGameRepository.save(realGame);
+            this.mUserRepository.save(realUser);
+        }
+        catch (Exception e){
+            return  null;
+        }
         return gameReviews;
     }
 

@@ -52,10 +52,12 @@ public class ReviewGame {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
+
     private User author;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id", nullable = false)
+
     private Game game;
 
 
@@ -66,4 +68,8 @@ public class ReviewGame {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    //public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
+//
+    //public long getGameId() { return (game == null)? 0:game.getId(); }
 }

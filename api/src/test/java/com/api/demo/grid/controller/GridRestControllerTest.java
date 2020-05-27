@@ -18,8 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -54,6 +54,7 @@ class GridRestControllerTest {
     private DeveloperPOJO mDeveloperPOJO;
     private SellPOJO mSellPOJO;
     private GameKeyPOJO mGameKeyPOJO;
+    private ReviewGamePOJO mReviewGamePOJO;
 
     @BeforeEach
     void setUp() {
@@ -101,6 +102,7 @@ class GridRestControllerTest {
 
         mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
         mGameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
+        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
     }
 
     @Test
@@ -276,10 +278,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGameGenre(Mockito.any(GameGenrePOJO.class))).thenReturn(mGameGenre);
-        mMockMvc.perform(post("/grid/genre")
+        mMockMvc.perform(post("/grid/add-genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -288,10 +290,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidPub_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.savePublisher(Mockito.any(PublisherPOJO.class))).thenReturn(mPublisher);
-        mMockMvc.perform(post("/grid/publisher")
+        mMockMvc.perform(post("/grid/add-publisher")
                 .content(asJsonString(mPublisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -299,10 +301,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidDeveloper_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveDeveloper(Mockito.any(DeveloperPOJO.class))).thenReturn(mDeveloper);
-        mMockMvc.perform(post("/grid/developer")
+        mMockMvc.perform(post("/grid/add-developer")
                 .content(asJsonString(mDeveloperPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -310,10 +312,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGame_ReturnValidResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(mGame);
-        mMockMvc.perform(post("/grid/game")
+        mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -321,10 +323,10 @@ class GridRestControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "spring")
+    @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
         Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
-        mMockMvc.perform(post("/grid/game")
+        mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -413,6 +415,63 @@ class GridRestControllerTest {
                 .param("game_id", String.valueOf(1))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
+    }
+
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidGameReview_ReturnSuccess() throws Exception {
+        Game game = new Game();
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        mReviewGamePOJO.setAuthor(1);
+        mReviewGamePOJO.setGame(1);
+
+        ReviewGame review = new ReviewGame();
+
+        review.setComment(mReviewGamePOJO.getComment());
+        review.setScore(mReviewGamePOJO.getScore());
+        review.setAuthor(user);
+        review.setGame(game);
+        review.setDate(mReviewGamePOJO.getDate());
+
+
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(review);
+
+
+        Mockito.when(mGridService.addGameReview(Mockito.any(ReviewGamePOJO.class))).thenReturn(reviews);
+
+        mMockMvc.perform(post("/grid/add-game-review")
+                .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].comment", is(mReviewGamePOJO.getComment())))
+                .andExpect(jsonPath("$.[0].score", is(mReviewGamePOJO.getScore())))
+                .andExpect(jsonPath("$.[0].author.username", is(user.getUsername())));
+
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidGameReview_ReturnException() throws Exception {
+
+
+        Mockito.when(mGridService.addGameReview(Mockito.any(ReviewGamePOJO.class))).thenReturn(null);
+
+        mMockMvc.perform(post("/grid/add-game-review")
+                .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
     }
 
 

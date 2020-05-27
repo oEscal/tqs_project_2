@@ -38,7 +38,8 @@ class UserRepositoryTest {
             mEmail1 = "email1",
             mCountry1 = "country1",
             mPassword1 = "password1",
-            mBirthDateStr = "17/10/2010";
+            mBirthDateStr = "17/10/2010",
+            mStartDateStr = "25/05/2020";
 
     // credit card details limits
     private static final int CREDIT_CARD_NUMBER_MAX_LENGTH = 19;
@@ -62,6 +63,7 @@ class UserRepositoryTest {
         mUser1.setPassword(mPassword1);
         mUser1.setCountry(mCountry1);
         mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        mUser1.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mEntityManager.persistAndFlush(mUser1);
     }
@@ -87,6 +89,7 @@ class UserRepositoryTest {
         userExpected.setCountry(mCountry1);
         userExpected.setPassword(mPassword1);
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        userExpected.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         assertEquals(userExpected, mUserRepository.findByUsername(mUsername1));
     }
