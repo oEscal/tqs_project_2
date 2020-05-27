@@ -14,7 +14,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +104,6 @@ public class GridServiceImpl implements GridService {
 
 
         //Get Game genres
-        Set<GameGenre> gameGenreSet = new HashSet<>();
         Optional<GameGenre> gameGenre;
         for (String gameGenrePOJO : gamePOJO.getGameGenres()) {
             gameGenre = mGameGenreRepository.findByName(gameGenrePOJO);
