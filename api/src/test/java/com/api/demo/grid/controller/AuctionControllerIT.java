@@ -10,8 +10,6 @@ import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.UserRepository;
-import com.api.demo.grid.service.AuctionService;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,16 +51,10 @@ public class AuctionControllerIT {
     private AuctionRepository mAuctionRepository;
 
     @Autowired
-    private UserRepository mUserRepository;
-
-    @Autowired
     private GameKeyRepository mGameKeyRepository;
 
     @Autowired
     private GameRepository mGameRepository;
-
-    @Autowired
-    private AuctionService mAuctionService;
 
 
     private GameKey mGameKey;

@@ -42,6 +42,11 @@ public class AuctionService {
 
         String gameKeyStr = auctionPOJO.getGameKey();
 
+        // verify if there is a price
+        if (auctionPOJO.getPrice() == 0) {
+            throw new ExceptionDetails("The auction must begin in a price above 0");
+        }
+
         // verify if the game key is already in some auction
         if (this.getAuctionByGameKey(gameKeyStr) != null) {
             throw new ExceptionDetails("There is already an auction for that game key");
