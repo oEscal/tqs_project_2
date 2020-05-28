@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.exception.ListingNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
@@ -11,6 +12,7 @@ import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.utils.Pagination;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -151,5 +157,38 @@ public class ListingServiceTest {
                 ,() -> mListingService.deleteSell(8l));
         Mockito.verify(mMockSellRepo, Mockito.times(0))
                 .delete(Mockito.any(Sell.class));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingSell_ByGame_ReturnPage() {
+        List<Sell> gamesList = Arrays.asList(mSell1, mSell2);
+        Pagination<Sell> pagination = new Pagination<>(gamesList);
+        int page = 1;
+        int entriesPerPage = 6;
+        PageRequest pageRequest = PageRequest.of(page, entriesPerPage);
+
+        Page<Sell> sells = pagination.pageImpl(page, entriesPerPage);
+        Mockito.when(mMockGameRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mGame));
+        Mockito.when(mMockSellRepo.findAllByGames(1l, pageRequest)).thenReturn(sells);
+
+        assertEquals(sells, mGridService.getAllSellListings(1l, page));
+        Mockito.verify(mMockSellRepo, Mockito.times(1)).findAllByGames(1l, pageRequest);
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSearchingSell_andGameIsInvalid_ThrowsException(){
+        List<Sell> gamesList = Arrays.asList(mSell1, mSell2);
+        Pagination<Sell> pagination = new Pagination<>(gamesList);
+        int page = 1;
+        int entriesPerPage = 6;
+        PageRequest pageRequest = PageRequest.of(page, entriesPerPage);
+
+        Page<Sell> sells = pagination.pageImpl(page, entriesPerPage);
+        Mockito.when(mMockGameRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        Mockito.when(mMockSellRepo.findAllByGames(2l, pageRequest)).thenReturn(sells);
+
+        assertThrows(GameNotFoundException.class, () -> mGridService.getAllSellListings(2L, 1));
     }
 }

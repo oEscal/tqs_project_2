@@ -1,19 +1,22 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.exception.ListingNotFoundException;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Sell;
-import com.api.demo.grid.models.User;
+import com.api.demo.grid.exception.UnavailableListingException;
+import com.api.demo.grid.exception.UnsufficientFundsException;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +33,7 @@ public class ListingServiceImpl implements ListingService{
 
     @Autowired
     private GameRepository mGameRepository;
+    private BuyRepository mBuyRepository;
 
     @Override
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
@@ -72,5 +76,45 @@ public class ListingServiceImpl implements ListingService{
         Sell realSell = sell.get();
         this.mSellRepository.delete(realSell);
         return realSell;
+    }
+
+    @Override
+    public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO) throws UnavailableListingException,
+            UnsufficientFundsException {
+        List<Buy> buyList = new ArrayList<>();
+        double bill = 0;
+        Optional<Sell> sell;
+        Buy buy;
+        Optional<User> optionalUser = mUserRepository.findById(buyListingsPOJO.getUserId());
+        User user;
+        if (optionalUser.isEmpty()) return null;
+        user = optionalUser.get();
+        for (long sellId : buyListingsPOJO.getListingsId()){
+            sell = mSellRepository.findById(sellId);
+            if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
+            else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
+                    "This listing has been bought by another user");
+            buy = new Buy();
+            buy.setDate(new Date());
+            buy.setSell(sell.get());
+            buyList.add(buy);
+            bill += sell.get().getPrice();
+        }
+        if (buyListingsPOJO.isWithFunds()) {
+            if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
+            user.payWithFunds(bill);
+        }
+        for (Buy buy1: buyList) {
+            user.addBuy(buy1);
+            mBuyRepository.save(buy1);
+        }
+        return buyList;
+    }
+
+    @Override
+    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException {
+        Optional<Game> game = mGameRepository.findById(gameId);
+        if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
+        return mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
     }
 }
