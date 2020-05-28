@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.text.ParseException;
@@ -56,6 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class GridRestControllerIT {
 
     @Autowired
@@ -118,15 +120,6 @@ class GridRestControllerIT {
 
         mBuyListingsPOJO = new BuyListingsPOJO();
 
-        mReviewUserRepository.deleteAll();
-        mReviewGameRepository.deleteAll();
-        mGameGenreRepository.deleteAll();
-        mPublisherRepository.deleteAll();
-        mGameKeyRepository.deleteAll();
-        mBuyRepository.deleteAll();
-        mGameRepository.deleteAll();
-        mUserRepository.deleteAll();
-        mSellRepository.deleteAll();
     }
 
     @Test
@@ -140,7 +133,7 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
 
         assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
-
+        assertTrue(false);
     }
 
     @Test
@@ -207,6 +200,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
         ;
+
     }
 
     @Test
@@ -345,6 +339,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
         ;
+
     }
 
     @Test
@@ -380,7 +375,6 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("This listing has been bought by another user"));
-
     }
 
     @Test
@@ -434,6 +428,7 @@ class GridRestControllerIT {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("This user doesn't have enough funds"))
         ;
+
     }
     /*
     @Test

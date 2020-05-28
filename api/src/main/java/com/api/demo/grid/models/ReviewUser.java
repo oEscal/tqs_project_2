@@ -59,11 +59,11 @@ public class ReviewUser {
 
 
     public Date getDate() {
-        return (Date) date.clone();
+        return date;
     }
 
     public void setDate(Date date) {
-        this.date = (Date) date.clone();
+        this.date = date;
     }
 
 }
