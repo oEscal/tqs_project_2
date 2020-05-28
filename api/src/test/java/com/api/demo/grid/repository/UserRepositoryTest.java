@@ -164,6 +164,7 @@ class UserRepositoryTest {
         mUser1.setCreditCardCSC(RandomStringUtils.randomNumeric(CREDIT_CARD_CSC_MIN_LENGTH));
         mEntityManager.persistAndFlush(mUser1);
 
+        assertEquals(mUser1, mUserRepository.findById(mUser1.getId()).get());
         assertEquals(CREDIT_CARD_CSC_MIN_LENGTH,
                 mUserRepository.findByUsername(mUsername1).getCreditCardCSC().length());
     }
