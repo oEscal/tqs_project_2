@@ -235,6 +235,7 @@
 					<excludes>
 						<exclude>**/UserInfoControllerIT.*</exclude>
 						<exclude>**/GridRestControllerIT.*</exclude>
+						<exclude>**frontend/webapp/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -286,7 +287,8 @@
 					</includes>
 					<excludes>
 						<exclude>**/UserInfoControllerIT.*</exclude>
-						<exclude>**/GridRestControllerIT.*</exclude>
+						<exclude>**/GridRestControllerIT.*</exclude
+						<exclude>**frontend/webapp/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
