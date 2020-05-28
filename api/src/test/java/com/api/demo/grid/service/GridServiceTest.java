@@ -69,16 +69,14 @@ class GridServiceTest {
     private UserRepository mMockUserRepo;
 
     @InjectMocks
-    private GridServiceImpl gridService;
+    private GridServiceImpl mGridService;
 
-    private Game game;
-    private Game game2;
-    private GameGenre gameGenre;
-    private Developer developer;
-    private Publisher publisher;
-    private User user;
-    private GameKey gameKey;
-    private Sell sell;
+    private Game mGame;
+    private Game mGame2;
+    private GameGenre mGameGenre;
+    private Developer mDeveloper;
+    private Publisher mPublisher;
+    private User mUser;
 
     @BeforeEach
     public void setUp(){
@@ -108,23 +106,6 @@ class GridServiceTest {
 
         mUser = new User();
         mUser.setId(6L);
-
-        mBuyer = new User();
-        mBuyer.setId(11l);
-
-        mGameKey = new GameKey();
-        mGameKey.setRKey("key1");
-        mGameKey.setId(7L);
-
-        mSell1 = new Sell();
-        mSell1.setGameKey(mGameKey);
-        mSell1.setUser(mUser);
-        mSell1.setId(8l);
-        mSell1.setPrice(5.3);
-
-        sell = new Sell();
-        sell.setId(8l);
-        sell.setGameKey(gameKey);
     }
 
     @Test

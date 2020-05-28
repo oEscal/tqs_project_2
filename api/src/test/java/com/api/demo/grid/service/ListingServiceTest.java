@@ -52,7 +52,9 @@ public class ListingServiceTest {
     private Game mGame;
     private User mUser;
     private GameKey mGameKey;
-    private Sell mSell;
+    private GameKey mGameKey2;
+    private Sell mSell1;
+    private Sell mSell2;
 
     @BeforeEach
     void setUp() {
@@ -66,9 +68,16 @@ public class ListingServiceTest {
         mGameKey = new GameKey();
         mGameKey.setId(3L);
 
-        mSell = new Sell();
-        mSell.setId(4L);
-        mSell.setGameKey(mGameKey);
+        mGameKey2 = new GameKey();
+        mGameKey2.setId(5L);
+
+        mSell1 = new Sell();
+        mSell1.setId(4L);
+        mSell1.setGameKey(mGameKey);
+
+        mSell2 = new Sell();
+        mSell2.setId(6l);
+        mSell2.setGameKey(mGameKey2);
     }
 
     @Test
@@ -141,9 +150,9 @@ public class ListingServiceTest {
     @SneakyThrows
     void whenDeletingValidSellListing_DeleteSuccessful_AndReturnSell(){
         Mockito.when(mMockSellRepo.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(mSell));
+                .thenReturn(Optional.ofNullable(mSell1));
 
-        assertEquals(mSell, mListingService.deleteSell(8l));
+        assertEquals(mSell1, mListingService.deleteSell(8l));
         Mockito.verify(mMockSellRepo, Mockito.times(1))
                 .delete(Mockito.any(Sell.class));
     }
@@ -172,7 +181,7 @@ public class ListingServiceTest {
         Mockito.when(mMockGameRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mGame));
         Mockito.when(mMockSellRepo.findAllByGames(1l, pageRequest)).thenReturn(sells);
 
-        assertEquals(sells, mGridService.getAllSellListings(1l, page));
+        assertEquals(sells, mListingService.getAllSellListings(1l, page));
         Mockito.verify(mMockSellRepo, Mockito.times(1)).findAllByGames(1l, pageRequest);
     }
 
@@ -189,6 +198,6 @@ public class ListingServiceTest {
         Mockito.when(mMockGameRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         Mockito.when(mMockSellRepo.findAllByGames(2l, pageRequest)).thenReturn(sells);
 
-        assertThrows(GameNotFoundException.class, () -> mGridService.getAllSellListings(2L, 1));
+        assertThrows(GameNotFoundException.class, () -> mListingService.getAllSellListings(2L, 1));
     }
 }

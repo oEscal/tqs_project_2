@@ -39,10 +39,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,7 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -79,9 +76,6 @@ class GridRestControllerTest {
     private GamePOJO mGamePOJO;
     private PublisherPOJO mPublisherPOJO;
     private DeveloperPOJO mDeveloperPOJO;
-    private SellPOJO mSellPOJO;
-    private GameKeyPOJO mGameKeyPOJO;
-    private BuyListingsPOJO mBuyListingsPOJO;
     private SearchGamePOJO mSearchGamePOJO;
 
     @BeforeEach
@@ -114,36 +108,18 @@ class GridRestControllerTest {
         mGamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre")));
         mGamePOJO.setPublisher("publisher");
 
-        mUser = new User();
-        mUser.setId(2L);
-
-        mGameKey = new GameKey();
-        mGameKey.setRKey("key");
-        mGameKey.setGame(mGame);
-        mGameKey.setId(3L);
-
-        mSell = new Sell();
-        mSell.setId(4L);
-        mSell.setGameKey(mGameKey);
-        mSell.setUser(mUser);
-        mSell.setDate(new Date());
-
-        mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
-        mGameKeyPOJO = new GameKeyPOJO("key", 1L, "steam", "ps3");
-
-        mBuyer = new User();
-        mBuyer.setId(5L);
-
-        mBuy = new Buy();
-        mBuy.setSell(mSell);
-        mBuy.setUser(mBuyer);
-        mBuy.setDate(new Date());
-        mBuy.setId(6l);
-
-        long[] buyList = {6};
-        mBuyListingsPOJO = new BuyListingsPOJO(5l, buyList, false);
-        
         mSearchGamePOJO = new SearchGamePOJO();
+    }
+
+    @Test
+    @WithMockUser(username = "spring", authorities = "ADMIN")
+    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
+        Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
+        mMockMvc.perform(post("/grid/add-game")
+                .content(asJsonString(mGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Game"));
     }
 
     @Test
@@ -215,40 +191,6 @@ class GridRestControllerTest {
                 .andExpect(jsonPath("$.id", is(1)));
 
         Mockito.verify(mGridService, Mockito.times(1)).getGameById(anyLong());
-    }
-
-    @Test
-    void whenRequestSellListings_ReturnPagedListings() throws Exception {
-        Pagination<Sell> pagination = new Pagination<>(Arrays.asList(mSell));
-        Page<Sell> sells = pagination.pageImpl(1, 1);
-
-        int page = 1;
-        Mockito.when(mGridService.getAllSellListings(1, page)).thenReturn(sells);
-
-        mMockMvc.perform(get("/grid/sell-listing")
-                .param("gameId", String.valueOf(1))
-                .param("page", String.valueOf(page))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].id", is(4)));
-
-        Mockito.verify(mGridService, Mockito.times(1)).getAllSellListings(anyLong(), anyInt());
-    }
-
-    @Test
-    void whenRequestSellListings_AndSearchIsInvalid_ThrowException() throws Exception {
-        int page = 1;
-        Mockito.when(mGridService.getAllSellListings(1, page))
-                .thenThrow(new GameNotFoundException("Game not found in the database"));
-
-        mMockMvc.perform(get("/grid/sell-listing")
-                .param("gameId", String.valueOf(1))
-                .param("page", String.valueOf(page))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("Game not found in Database"));
-
     }
 
     @Test
