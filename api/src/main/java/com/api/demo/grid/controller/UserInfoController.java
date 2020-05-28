@@ -36,6 +36,7 @@ public class UserInfoController {
         if (user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
         }
+
         if (!value.equals(username) && !user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "You are not allowed to see this user's private info");

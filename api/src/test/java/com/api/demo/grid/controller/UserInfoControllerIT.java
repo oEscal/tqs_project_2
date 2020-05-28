@@ -17,9 +17,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
+
+
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -29,7 +30,6 @@ import java.util.HashSet;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -149,27 +149,27 @@ class UserInfoControllerIT {
     /*
     @Test
     @SneakyThrows
-    void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo(){
-        mGameRepo.save(mGame);
+    void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo() throws Exception {
+        mUserRepo.save(mUser);
 
         mMockMvc.perform(get("/grid/private/user-info")
                 .with(httpBasic(mUsername1, mPassword1))
-                .param("username", "username1")
+                .param("username", mUsername1)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username", is(mUsername1)))
-                .andExpect(jsonPath("$.name", is(mName1)))
-                .andExpect(jsonPath("$.country", is(mCountry1)))
-                .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
-                .andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
-                .andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
-                .andExpect(jsonPath("$.wishList[0].name", is("wish")))
-        ;
+                .andExpect(status().isOk());
+                //.andExpect(jsonPath("$.username", is(mUsername1)))
+                //.andExpect(jsonPath("$.name", is(mName1)))
+                //.andExpect(jsonPath("$.country", is(mCountry1)))
+                //.andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
+                //.andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
+                //.andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
+                //.andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
+                //.andExpect(jsonPath("$.wishList[0].name", is("wish")));
+
+
         //TODO check for wishlist, buys and reviews once endpoints are done
     }
-    */
-
+     */
 
     /*
     @Test
