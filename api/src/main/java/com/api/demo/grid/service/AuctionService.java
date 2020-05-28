@@ -52,12 +52,21 @@ public class AuctionService {
             throw new ExceptionDetails("There is already a sell for that game key");
         }
 
+        // verify the auctioneer exists
         User auctioneer = mUserRepository.findByUsername(auctionPOJO.getAuctioneer());
-        GameKey gameKey = null;
+        if (auctioneer == null) {
+            throw new ExceptionDetails("The Auctioneer doesn't exists");
+        }
 
+        GameKey gameKey = null;
         Optional<GameKey> possibleGameKey = mGameKeyRepository.findByrKey(gameKeyStr);
         if (possibleGameKey.isPresent()) {
             gameKey = possibleGameKey.get();
+        }
+
+        // verify if the game key exists
+        if (gameKey == null) {
+            throw new ExceptionDetails("The Game key doesn't exists");
         }
 
         Auction auctionSave = new Auction();
