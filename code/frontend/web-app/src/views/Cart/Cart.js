@@ -40,392 +40,134 @@ class Cart extends Component {
         super(props);
 
         this.state = {
-            price: 5.99,
-            quantity: 1,
-            classicModal: false
+            price: 0,
+            quantity: 0,
+            items: []
         };
     }
 
 
-    updateQuantity = (e) => {
+    componentDidMount(){
+        if (global.cart == null || global.cart.games == []) {
+
+        } else {
+            this.getItems()
+        }
+    
+    }
+
+    getItems() {
+        const { classes } = this.props;
+
+        var style = { margin: "12px 0", float: 'left' };
+        var items = []
+        var sum_price = 0
+        var sum_items = 0
+
+        for (var i = 0; i < global.cart.games.length; i++) {
+            var game = global.cart.games[i]
+            sum_items++
+            sum_price += game.price
+            items.push(
+                <GridItem xs={12} sm={12} md={12} style={style}>
+                    <Card style={{ width: "100%" }}>
+                        <CardHeader
+                            title={
+                                <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                    From seller <span style={{ color: 'black', fontWeight: "bold" }}>{game.gameKey.retailer}</span>
+                                </h6>
+                            }
+                            avatar={
+                                <Avatar aria-label="recipe" className={classes.avatar}>
+                                    {game.gameKey.retailer[0]}
+                                </Avatar>
+                            }
+                            action={
+                                <IconButton aria-label="settings" onClick={() => this.removeFromCart(game)}>
+                                    <CloseIcon />
+                                </IconButton>
+                            }
+                        >
+                        </CardHeader>
+                        <CardActionArea>
+                            <CardMedia
+                                component="img"
+                                height="185px"
+                                image={game.gameKey.gamePhoto}
+                            />
+                            <CardContent>
+                                <div style={{ textAlign: "left", height: "30px" }}>
+                                    <h6 style={{
+                                        fontWeight: "bold",
+                                        color: "#3b3e48",
+                                        fontSize: "15px",
+                                        paddingTop: "0 0",
+                                        marginTop: "0px"
+                                    }}>
+                                        {game.gameKey.gameName}
+                                    </h6>
+                                </div>
+
+                                <div style={{ textAlign: "left" }}>
+                                    <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                        Platform: <span style={{ fontWeight: "bold" }}>{game.gameKey.platform}</span>
+                                    </h6>
+                                </div>
+                                <div style={{ textAlign: "left" }}>
+                                    <h6 style={{
+                                        color: "#3b3e48",
+                                        fontSize: "15px",
+                                        paddingTop: "0 0",
+                                        marginTop: "0px"
+                                    }}>
+                                        Price <span
+                                            style={{
+                                                fontWeight: "bolder",
+                                                color: "#f44336",
+                                                fontSize: "17px"
+                                            }}> {game.price} €</span>
+                                    </h6>
+                                </div>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </GridItem>
+            )
+        }
+
         this.setState({
-            quantity: e.target.value
-        });
-    };
+            price: sum_price,
+            quantity: sum_items,
+            items: items
+        })
+    }
 
+    async removeFromCart(game) {
+        await this.setState({ doneLoading: false })
 
-    getPrice = () => {
-        let value = (this.state.price * this.state.quantity).toFixed(2);
-        return value > 0 ? value : 0;
-    };
+        var cart = []
+        if (global.cart != null) {
+            for (var i = 0; i < global.cart.games.length; i++) {
+                var foundGame = global.cart.games[i]
+                if (game.id != foundGame.id) {
+                    cart.push(foundGame)
+                }
+            }
+        }
 
-    setClassicModal = (v) => {
-        this.setState({
-            classicModal: v
-        });
-    };
+        await localStorage.setItem('cart', JSON.stringify({ "games": cart }));
+        global.cart = await JSON.parse(localStorage.getItem('cart'))
 
-    transition = React.forwardRef(function Transition(props, ref) {
-        return <Slide direction="down" ref={ref} {...props} />;
-    });
+        await this.getGameListings()
 
+        this.getItems()
 
-    renderModal() {
-        const useStyles = withStyles(stylesjs);
-        const classes = useStyles(Cart);
-
-        var items = [];
-
-
-        var text = "";
-        var image = image4;
-
-
-        return (
-            <Dialog
-                classes={{
-                    root: classes.center,
-                    paper: classes.modal
-                }}
-                open={this.state.classicModal}
-                TransitionComponent={this.transition}
-                keepMounted
-                onClose={() => this.setClassicModal(false)}
-                aria-labelledby="classic-modal-slide-title"
-                aria-describedby="classic-modal-slide-description"
-            >
-                <DialogTitle
-                    id="classic-modal-slide-title"
-                    disableTypography
-                    className={classes.modalHeader}
-                >
-                    <IconButton
-                        className={classes.modalCloseButton}
-                        key="close"
-                        aria-label="Close"
-                        color="inherit"
-                        onClick={() => this.setClassicModal(false)}
-                        style={{ "float": "right" }}
-                    >
-                        <Close className={classes.modalClose} />
-                    </IconButton>
-                    <h3 style={{ color: 'black' }} className={classes.modalTitle}>Price: xxxx</h3>
-                </DialogTitle>
-
-                <DialogContent
-                    id="classic-modal-slide-description"
-                    className={classes.modalBody}
-                >
-                    <hr style={{ color: "#999", opacity: "0.4" }}></hr>
-
-                    <GridContainer xs={12} sm={12} md={12}>
-                        <GridItem xs={4} sm={4} md={4}>
-                            <a
-                                style={
-                                    {
-                                        "background-color": "#fff",
-                                        "border": "1px solid #d4d4d4",
-                                        "border-radius": "3px",
-                                        cursor: "pointer",
-                                        display: "inline-block",
-                                        height: "145px",
-                                        margin: "0 11px 20px",
-                                        opacity: "1",
-                                        padding: "20px 8px",
-                                        "text-align": "center",
-                                        transition: "opacity .2s linear",
-                                        "vertical-align": "top",
-                                        width: "145px",
-                                    }
-                                }
-
-                            >
-
-                                <div class=".box" style={{
-                                    height: "50px",
-                                    margin: "12px auto 10px",
-                                    position: "relative",
-                                    width: "95px",
-                                }}>
-                                    <img
-                                        style={{
-                                            bottom: "0",
-                                            height: "auto",
-                                            left: "0",
-                                            margin: "auto",
-                                            "max-height": "100%",
-                                            "max-width": "100%",
-                                            right: "0",
-                                            top: "0",
-                                            width: "auto"
-                                        }}
-
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
-                                </div>
-                                <h4 style={{
-                                    color: "#444",
-                                    display: "block",
-                                    "font-weight": "500",
-                                    "line-height": "1em",
-                                }} className="title">PayPal</h4>
-
-                            </a>
-
-                        </GridItem>
-                        <GridItem xs={4} sm={4} md={4}>
-                            <a
-                                style={
-                                    {
-                                        "background-color": "#fff",
-                                        "border": "1px solid #d4d4d4",
-                                        "border-radius": "3px",
-                                        cursor: "pointer",
-                                        display: "inline-block",
-                                        height: "145px",
-                                        margin: "0 11px 20px",
-                                        opacity: "1",
-                                        padding: "20px 8px",
-                                        "text-align": "center",
-                                        transition: "opacity .2s linear",
-                                        "vertical-align": "top",
-                                        width: "145px",
-                                    }
-                                }
-
-                            >
-
-                                <div class=".box" style={{
-                                    height: "50px",
-                                    margin: "12px auto 10px",
-                                    position: "relative",
-                                    width: "95px",
-                                }}>
-                                    <img
-                                        style={{
-                                            bottom: "0",
-                                            height: "auto",
-                                            left: "0",
-                                            margin: "auto",
-                                            "max-height": "100%",
-                                            "max-width": "100%",
-                                            right: "0",
-                                            top: "0",
-                                            width: "auto"
-                                        }}
-
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
-                                </div>
-                                <h4 style={{
-                                    color: "#444",
-                                    display: "block",
-                                    "font-weight": "500",
-                                    "line-height": "1em",
-                                }} className="title">PayPal</h4>
-
-                            </a>
-
-                        </GridItem>
-                        <GridItem xs={4} sm={4} md={4}>
-                            <a
-                                style={
-                                    {
-                                        "background-color": "#fff",
-                                        "border": "1px solid #d4d4d4",
-                                        "border-radius": "3px",
-                                        cursor: "pointer",
-                                        display: "inline-block",
-                                        height: "145px",
-                                        margin: "0 11px 20px",
-                                        opacity: "1",
-                                        padding: "20px 8px",
-                                        "text-align": "center",
-                                        transition: "opacity .2s linear",
-                                        "vertical-align": "top",
-                                        width: "145px",
-                                    }
-                                }
-
-                            >
-
-                                <div class=".box" style={{
-                                    height: "50px",
-                                    margin: "12px auto 10px",
-                                    position: "relative",
-                                    width: "95px",
-                                }}>
-                                    <img
-                                        style={{
-                                            bottom: "0",
-                                            height: "auto",
-                                            left: "0",
-                                            margin: "auto",
-                                            "max-height": "100%",
-                                            "max-width": "100%",
-                                            right: "0",
-                                            top: "0",
-                                            width: "auto"
-                                        }}
-
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
-                                </div>
-                                <h4 style={{
-                                    color: "#444",
-                                    display: "block",
-                                    "font-weight": "500",
-                                    "line-height": "1em",
-                                }} className="title">PayPal</h4>
-
-                            </a>
-
-                        </GridItem>
-                        <GridItem xs={4} sm={4} md={4}>
-                            <a
-                                style={
-                                    {
-                                        "background-color": "#fff",
-                                        "border": "1px solid #d4d4d4",
-                                        "border-radius": "3px",
-                                        cursor: "pointer",
-                                        display: "inline-block",
-                                        height: "145px",
-                                        margin: "0 11px 20px",
-                                        opacity: "1",
-                                        padding: "20px 8px",
-                                        "text-align": "center",
-                                        transition: "opacity .2s linear",
-                                        "vertical-align": "top",
-                                        width: "145px",
-                                    }
-                                }
-
-                            >
-
-                                <div class=".box" style={{
-                                    height: "50px",
-                                    margin: "12px auto 10px",
-                                    position: "relative",
-                                    width: "95px",
-                                }}>
-                                    <img
-                                        style={{
-                                            bottom: "0",
-                                            height: "auto",
-                                            left: "0",
-                                            margin: "auto",
-                                            "max-height": "100%",
-                                            "max-width": "100%",
-                                            right: "0",
-                                            top: "0",
-                                            width: "auto"
-                                        }}
-
-                                        src="https://checkout.pay.g2a.com/03274.png" alt="Paypal" />
-                                </div>
-                                <h4 style={{
-                                    color: "#444",
-                                    display: "block",
-                                    "font-weight": "500",
-                                    "line-height": "1em",
-                                }} className="title">PayPal</h4>
-
-                            </a>
-
-                        </GridItem>
-
-
-                    </GridContainer>
-
-
-                </DialogContent>
-                <DialogActions className={classes.modalFooter}>
-                    <Button color="transparent" simple>
-                        Pay
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-        )
+        this.setState({ doneLoading: true })
     }
 
     render() {
         const { classes } = this.props;
 
-        var items = [];
-        if (global.cart == null || global.cart.games == []) {
-
-        } else {
-            var style = { margin: "12px 0", float: 'left' };
-
-            for (var i = 0; i < global.cart.games.length; i++) {
-                var game = global.cart.games[i]
-                items.push(
-                    <GridItem xs={12} sm={12} md={12} style={style}>
-                        <Card style={{ width: "100%" }}>
-                            <CardHeader
-                                title={
-                                    <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                        From seller <span style={{ color: 'black', fontWeight: "bold" }}>{game.gameKey.retailer}</span>
-                                    </h6>
-                                }
-                                avatar={
-                                    <Avatar aria-label="recipe" className={classes.avatar}>
-                                        {game.gameKey.retailer[0]}
-                                    </Avatar>
-                                }
-                                action={
-                                    <IconButton aria-label="settings">
-                                        <CloseIcon />
-                                    </IconButton>
-                                }
-                            >
-                            </CardHeader>
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    height="185px"
-                                    image={game.coverUrl}
-                                />
-                                <CardContent>
-                                    <div style={{ textAlign: "left", height: "30px" }}>
-                                        <h6 style={{
-                                            fontWeight: "bold",
-                                            color: "#3b3e48",
-                                            fontSize: "15px",
-                                            paddingTop: "0 0",
-                                            marginTop: "0px"
-                                        }}>
-                                            {game.gameKey.gameName}
-                                        </h6>
-                                    </div>
-                                   
-                                    <div style={{ textAlign: "left" }}>
-                                        <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            Platform: <span style={{ fontWeight: "bold" }}>{game.gameKey.platform}</span>
-                                        </h6>
-                                    </div>
-                                    <div style={{ textAlign: "left" }}>
-                                        <h6 style={{
-                                            color: "#3b3e48",
-                                            fontSize: "15px",
-                                            paddingTop: "0 0",
-                                            marginTop: "0px"
-                                        }}>
-                                            Price <span
-                                                style={{
-                                                    fontWeight: "bolder",
-                                                    color: "#f44336",
-                                                    fontSize: "17px"
-                                                }}> {game.price} €</span>
-                                        </h6>
-                                    </div>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </GridItem>
-                )
-
-            }
-        }
 
         return (
             <div>
@@ -463,7 +205,7 @@ class Cart extends Component {
                         <StickyContainer
                             style={{ padding: "5px 0", "vertical-align": "top", display: "flex", height: "100%" }}>
                             <GridContainer xs={12} sm={12} md={8} style={{ flex: "1" }}>
-                                {items}
+                                {this.state.items}
 
                             </GridContainer>
                             <GridContainer xs={12} sm={12} md={4}
@@ -473,8 +215,8 @@ class Cart extends Component {
                                         {({ style }) => (
                                             <Card>
                                                 <CardHeader
-                                                    title="Total Price: xxxx"
-                                                    subheader="Items: xxxx"
+                                                    title={"Total Price: " + this.state.price + "€"}
+                                                    subheader={"Items: " + this.state.quantity}
                                                 >
 
                                                 </CardHeader>
@@ -493,8 +235,7 @@ class Cart extends Component {
                         </StickyContainer>
                     </div>
                 </div>
-                {this.renderModal()}
-            </div>
+            </div >
         )
     }
 }
