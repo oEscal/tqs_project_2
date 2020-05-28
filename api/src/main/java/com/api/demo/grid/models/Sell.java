@@ -40,7 +40,7 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
@@ -49,7 +49,7 @@ public class Sell {
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -101,5 +101,10 @@ public class Sell {
     public long getUserId() {
         if (user == null) return -1L;
         return this.user.getId();
+    }
+
+    public void setPurchased(Buy buy){
+        if (Objects.equals(buy, purchased)) return;
+        
     }
 }
