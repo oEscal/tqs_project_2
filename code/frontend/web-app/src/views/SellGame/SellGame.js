@@ -371,7 +371,7 @@ class SellGame extends Component {
                             "date": d.toISOString()
                         }
                         // Create selling
-                        fetch(baseURL + "grid/sell-listing", {
+                        fetch(baseURL + "grid/add-sell-listing", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
