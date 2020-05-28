@@ -277,19 +277,19 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.22.0</version>
-				<configuration>
-					<includes>
-						<include>**/*IT</include>
-						<include>**/Test</include>
-					</includes>
-					<excludes>
-						<exclude>**/UserInfoControllerIT.*</exclude>
-						<exclude>**/GridRestControllerIT.*</exclude>
-					</excludes>
-				</configuration>
+				<version>2.18.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 

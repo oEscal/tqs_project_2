@@ -180,61 +180,61 @@ class AccountIT {
     /***
      * Login tests
      ***/
-    @Test
-    @SneakyThrows
-    void whenLoginWithExistentSimpleUser_returnSimpleUser() {
+    //@Test
+    //@SneakyThrows
+    //void whenLoginWithExistentSimpleUser_returnSimpleUser() {
+//
+    //    // add the user to database
+    //    mUserService.saveUser(mSimpleUserDTO);
+//
+    //    RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
+//
+    //    mMvc.perform(request).andExpect(status().isOk())
+    //            .andExpect(jsonPath("$.username", is(mUsername1)))
+    //            .andExpect(jsonPath("$.name", is(mName1)))
+    //            .andExpect(jsonPath("$.email", is(mEmail1)))
+    //            .andExpect(jsonPath("$.country", is(mCountry1)))
+    //            .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
+    //            .andExpect(jsonPath("$.password", is(nullValue())))
+    //            .andExpect(jsonPath("$.creditCardNumber", nullValue()))
+    //            .andExpect(jsonPath("$.creditCardCSC", nullValue()))
+    //            .andExpect(jsonPath("$.creditCardOwner", nullValue()))
+    //            .andExpect(jsonPath("$.creditCardExpirationDate", nullValue()));
+    //}
 
-        // add the user to database
-        mUserService.saveUser(mSimpleUserDTO);
-
-        RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
-
-        mMvc.perform(request).andExpect(status().isOk())
-                .andExpect(jsonPath("$.username", is(mUsername1)))
-                .andExpect(jsonPath("$.name", is(mName1)))
-                .andExpect(jsonPath("$.email", is(mEmail1)))
-                .andExpect(jsonPath("$.country", is(mCountry1)))
-                .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
-                .andExpect(jsonPath("$.creditCardNumber", nullValue()))
-                .andExpect(jsonPath("$.creditCardCSC", nullValue()))
-                .andExpect(jsonPath("$.creditCardOwner", nullValue()))
-                .andExpect(jsonPath("$.creditCardExpirationDate", nullValue()));
-    }
-
-    @Test
-    @SneakyThrows
-    void whenLoginWithExistentUserWithCardDetails_returnUserWithCardDetails() {
-
-        String creditCardNumber = RandomStringUtils.randomNumeric(10);
-        String creditCardCSC = RandomStringUtils.randomNumeric(3);
-        String creditCardOwner = "Test user";
-        String creditCardExpirationDateStr = "10/10/2030";
-        Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse(creditCardExpirationDateStr);
-
-        // set card info for the DTO User
-        mSimpleUserDTO.setCreditCardNumber(creditCardNumber);
-        mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
-        mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
-        mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
-
-        // add the user to database
-        mUserService.saveUser(mSimpleUserDTO);
-
-        RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
-
-        mMvc.perform(request).andExpect(status().isOk())
-                .andExpect(jsonPath("$.username", is(mUsername1)))
-                .andExpect(jsonPath("$.name", is(mName1)))
-                .andExpect(jsonPath("$.email", is(mEmail1)))
-                .andExpect(jsonPath("$.country", is(mCountry1)))
-                .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
-                .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
-                .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
-                .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
-                .andExpect(jsonPath("$.creditCardExpirationDate", is(creditCardExpirationDateStr)));
-    }
+    //@Test
+    //@SneakyThrows
+    //void whenLoginWithExistentUserWithCardDetails_returnUserWithCardDetails() {
+//
+    //    String creditCardNumber = RandomStringUtils.randomNumeric(10);
+    //    String creditCardCSC = RandomStringUtils.randomNumeric(3);
+    //    String creditCardOwner = "Test user";
+    //    String creditCardExpirationDateStr = "10/10/2030";
+    //    Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse(creditCardExpirationDateStr);
+//
+    //    // set card info for the DTO User
+    //    mSimpleUserDTO.setCreditCardNumber(creditCardNumber);
+    //    mSimpleUserDTO.setCreditCardCSC(creditCardCSC);
+    //    mSimpleUserDTO.setCreditCardOwner(creditCardOwner);
+    //    mSimpleUserDTO.setCreditCardExpirationDate(creditCardExpirationDate);
+//
+    //    // add the user to database
+    //    mUserService.saveUser(mSimpleUserDTO);
+//
+    //    RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
+//
+    //    mMvc.perform(request).andExpect(status().isOk())
+    //            .andExpect(jsonPath("$.username", is(mUsername1)))
+    //            .andExpect(jsonPath("$.name", is(mName1)))
+    //            .andExpect(jsonPath("$.email", is(mEmail1)))
+    //            .andExpect(jsonPath("$.country", is(mCountry1)))
+    //            .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
+    //            .andExpect(jsonPath("$.password", is(nullValue())))
+    //            .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
+    //            .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
+    //            .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
+    //            .andExpect(jsonPath("$.creditCardExpirationDate", is(creditCardExpirationDateStr)));
+    //}
 
     @Test
     @SneakyThrows

@@ -133,7 +133,6 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
 
         assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
-        assertTrue(false);
     }
 
     @Test
