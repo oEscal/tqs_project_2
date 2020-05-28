@@ -174,6 +174,7 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
 
+    @Column(columnDefinition = "FLOAT   DEFAULT 0.00")
     private double funds = 0;
 
     // because lombok doesnt support get and set params of Date type with security (clone)

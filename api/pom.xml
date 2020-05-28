@@ -235,6 +235,7 @@
 					<excludes>
 						<exclude>**/UserInfoControllerIT.*</exclude>
 						<exclude>**/GridRestControllerIT.*</exclude>
+						<exclude>**frontend/webapp/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -279,15 +280,18 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.18.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
+				<version>2.22.0</version>
+				<configuration>
+				<!--
+					<includes>
+						<include>**/*IT</include>
+						<include>**/Test</include>
+					</includes>
+				-->
+					<excludes>
+						<exclude>**frontend/webapp/**</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 
 		</plugins>

@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/grid")
+@CrossOrigin
 public class UserInfoController {
 
     @Autowired

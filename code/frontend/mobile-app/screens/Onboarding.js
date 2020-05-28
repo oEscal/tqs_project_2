@@ -125,8 +125,8 @@ export default class Onboarding extends React.Component {
         <StatusBar barStyle="light-content" />
         <Block flex center>
           <ImageBackground
-            source={require('../assets/img/bg.png')}
-            style={{ height: height, width: width, marginTop: '-55%', zIndex: 1 }}
+            source={require('../assets/img/mobile_background.png')}
+            style={{ height: height, width: width, zIndex: 1 }}
           />
         </Block>
         <Block flex space="between" style={styles.padded}>
