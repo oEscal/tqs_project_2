@@ -208,7 +208,7 @@ public class AuctionControllerIT {
         RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
-        mMvc.perform(request).andExpect(status().isBadRequest());
+        mMvc.perform(request).andExpect(status().is4xxClientError());
         assertEquals(0, mAuctionRepository.findAll().size());
     }
 
