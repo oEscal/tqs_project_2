@@ -39,6 +39,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -134,6 +135,7 @@ class GridServiceTest {
 
         mUser = new User();
         mUser.setId(6L);
+        mUser.setUsername("user1");
         mUser.setReviewGames(new HashSet<>());
         mUser.setReviewedUsers(new HashSet<>());
         mUser.setReviewUsers(new HashSet<>());
@@ -167,6 +169,7 @@ class GridServiceTest {
 
         mUser2 = new User();
         mUser2.setId(1L);
+        mUser2.setUsername("user2");
         mUser2.setBirthDate(now);
         mUser2.setReviewGames(new HashSet<>());
         mUser2.setReviewedUsers(new HashSet<>());
@@ -174,7 +177,7 @@ class GridServiceTest {
 
         mReviewGame = new ReviewGame();
         mReviewGame.setComment("comment");
-        mReviewGame.setScore(1);
+        mReviewGame.setScore(2);
         mReviewGame.setAuthor(mUser);
         mReviewGame.setGame(mGame);
         mReviewGame.setDate(now);
@@ -754,12 +757,11 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
         Mockito.when(mMockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(mGame));
 
-        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 2, null, 1, 1, now);
         Set<ReviewGame> expected = new HashSet<>();
         expected.add(mReviewGame);
 
         Set<ReviewGame> reviewGames = mGridService.addGameReview(review);
-
 
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
         Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(gameID);
@@ -845,8 +847,10 @@ class GridServiceTest {
 
     }
 
+
+
     @Test
-    void whenPostingSameIDUserReview_ReturnReviews() {
+    void whenPostingSameIDUserReviewAuthorIsNull_ReturnReviews() {
         long authorID = 1L;
         long targetID = 1L;
 
@@ -856,6 +860,23 @@ class GridServiceTest {
 
         assertNull(reviews);
 
+    }
+
+
+    @Test
+    void whenPostingValidUserReviewTargetIsNull_ReturnException() {
+        long authorID = 1;
+        long targetID = 2;
+
+        Mockito.when(mMockUserRepo.findById(authorID)).thenReturn(Optional.ofNullable(mUser));
+
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
+
+        Set<ReviewUser> reviews = mGridService.addUserReview(review);
+
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(authorID);
+
+        assertNull(reviews);
     }
 
 
@@ -878,6 +899,18 @@ class GridServiceTest {
         assertEquals(expected, reviewsPage.pageImpl(1, 18));
     }
 
+    @Test
+    void whenGetValidGameReviewsIsNull_ReturnEmpty() {
+        long gameID = mGame.getId();
+        Mockito.when(mMockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(mGame));
+
+        Page<ReviewGame> expected = mGridService.getGameReviews(gameID, 1);
+
+        Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(gameID);
+
+        assertEquals(expected.getContent().size(), 0);
+    }
+
 
     @Test
     void whenGetInvalidGameReviews_ReturnNULL() {
@@ -898,11 +931,17 @@ class GridServiceTest {
     void whenGetValidUserReviews_ReturnReviews() {
         long userID = mUser.getId();
         mReviewGame.setId(1);
+        mReviewUser.setId(1);
 
         Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
 
         Set<ReviewGame> reviews = new HashSet<>();
         reviews.add(mReviewGame);
+
+        Set<ReviewUser> reviewUsers = new HashSet<>();
+        reviewUsers.add(mReviewUser);
+
+        mUser.setReviewedUsers(reviewUsers);
         mUser.setReviewGames(reviews);
 
         Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
@@ -912,6 +951,13 @@ class GridServiceTest {
         Date date = mReviewGame.getDate();
         reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
 
+
+        id = mReviewUser.getId();
+        comment = mReviewUser.getComment();
+        score = mReviewUser.getScore();
+        date = mReviewUser.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+
         Page<ReviewJoiner> expected = mGridService.getUserReviews(userID, 0);
 
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
@@ -920,6 +966,23 @@ class GridServiceTest {
 
         assertEquals(expected.toString(), pagination.pageImpl(0, 18).toString());
 
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidUserReviewsReviewsIsNull_ReturnEmpty() {
+        long userID = mUser.getId();
+        mReviewGame.setId(1);
+        mReviewUser.setId(1);
+
+        Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
+
+        Page<ReviewJoiner> expected = mGridService.getUserReviews(userID, 0);
+
+        Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
+
+        assertEquals(expected.getContent().size(), 0);
     }
 
 
@@ -941,13 +1004,20 @@ class GridServiceTest {
     @WithMockUser(username = "spring")
     void whenGetValidAllUserReviews_ReturnReviews() {
         long userID = mUser.getId();
+
         mReviewGame.setId(1);
+        mReviewUser.setId(1);
 
-        Set<ReviewGame> reviews = new HashSet<>();
-        reviews.add(mReviewGame);
-        mUser.setReviewGames(reviews);
+        Set<ReviewGame> reviewsGames = new HashSet<>();
+        reviewsGames.add(mReviewGame);
+        mUser.setReviewGames(reviewsGames);
 
-        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviews));
+        Set<ReviewUser> reviewUsers = new HashSet<>();
+        reviewUsers.add(mReviewUser);
+        mUser.setReviewedUsers(reviewUsers);
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviewsGames));
+        Mockito.when(mMockReviewUserRepo.findAll()).thenReturn(new ArrayList<>(reviewUsers));
 
         Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
         long id = mReviewGame.getId();
@@ -956,6 +1026,12 @@ class GridServiceTest {
         Date date = mReviewGame.getDate();
         reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
 
+        id = mReviewUser.getId();
+        comment = mReviewUser.getComment();
+        score = mReviewUser.getScore();
+        date = mReviewUser.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+
         Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
 
         Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
@@ -963,6 +1039,139 @@ class GridServiceTest {
         Pagination<ReviewJoiner> pagination = new Pagination<>(new ArrayList<>(reviewsJoiner));
 
         assertEquals(expected.toString(), pagination.pageImpl(0, 18).toString());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviewsScoreSorted_ReturnReviews() {
+
+        mReviewGame.setId(1);
+        mReviewUser.setId(1);
+
+        Set<ReviewGame> reviewsGames = new HashSet<>();
+        reviewsGames.add(mReviewGame);
+        mUser.setReviewGames(reviewsGames);
+
+        Set<ReviewUser> reviewUsers = new HashSet<>();
+        reviewUsers.add(mReviewUser);
+        mUser.setReviewedUsers(reviewUsers);
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviewsGames));
+        Mockito.when(mMockReviewUserRepo.findAll()).thenReturn(new ArrayList<>(reviewUsers));
+
+        Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
+        long id = mReviewGame.getId();
+        String comment = mReviewGame.getComment();
+        int score = mReviewGame.getScore();
+        Date date = mReviewGame.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+
+        id = mReviewUser.getId();
+        comment = mReviewUser.getComment();
+        score = mReviewUser.getScore();
+        date = mReviewUser.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
+
+        Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
+
+        List<ReviewJoiner> data = expected.getContent();
+
+        ReviewJoiner first = data.get(0);
+        ReviewJoiner last = data.get(1);
+
+        assertTrue(first.getScore() > last.getScore());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviewsScoreUser_ReturnReviews() {
+
+        mReviewGame.setId(1);
+        mReviewUser.setId(1);
+
+        Set<ReviewGame> reviewsGames = new HashSet<>();
+        reviewsGames.add(mReviewGame);
+        mUser.setReviewGames(reviewsGames);
+
+        Set<ReviewUser> reviewUsers = new HashSet<>();
+        reviewUsers.add(mReviewUser);
+        mUser.setReviewedUsers(reviewUsers);
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviewsGames));
+        Mockito.when(mMockReviewUserRepo.findAll()).thenReturn(new ArrayList<>(reviewUsers));
+
+        Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
+        long id = mReviewGame.getId();
+        String comment = mReviewGame.getComment();
+        int score = mReviewGame.getScore();
+        Date date = mReviewGame.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+
+        mReviewUser.setAuthor(mUser2);
+        mReviewUser.setTarget(mUser);
+        id = mReviewUser.getId();
+        comment = mReviewUser.getComment();
+        score = mReviewUser.getScore();
+        date = mReviewUser.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser2, mUser));
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "user");
+
+        Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
+
+        List<ReviewJoiner> data = expected.getContent();
+
+        ReviewJoiner first = data.get(0);
+        ReviewJoiner last = data.get(1);
+
+        assertEquals(first.getAuthor().getUsername().compareTo(last.getAuthor().getUsername()), -1);
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviewsScoreDate_ReturnReviews() {
+
+        mReviewGame.setId(1);
+        mReviewUser.setId(1);
+
+        Set<ReviewGame> reviewsGames = new HashSet<>();
+        reviewsGames.add(mReviewGame);
+        mUser.setReviewGames(reviewsGames);
+
+        Set<ReviewUser> reviewUsers = new HashSet<>();
+        reviewUsers.add(mReviewUser);
+        mUser.setReviewedUsers(reviewUsers);
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviewsGames));
+        Mockito.when(mMockReviewUserRepo.findAll()).thenReturn(new ArrayList<>(reviewUsers));
+
+        Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
+        mReviewGame.setDate(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime());
+        long id = mReviewGame.getId();
+        String comment = mReviewGame.getComment();
+        int score = mReviewGame.getScore();
+        Date date = mReviewGame.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+
+        mReviewUser.setDate(new GregorianCalendar(2018, Calendar.JANUARY, 1).getTime());
+        id = mReviewUser.getId();
+        comment = mReviewUser.getComment();
+        score = mReviewUser.getScore();
+        date = mReviewUser.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "date");
+
+        Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
+
+        List<ReviewJoiner> data = expected.getContent();
+
+        ReviewJoiner first = data.get(0);
+        ReviewJoiner last = data.get(1);
+
+        assertEquals(first.getDate().compareTo(last.getDate()), -1);
     }
 
     @Test
