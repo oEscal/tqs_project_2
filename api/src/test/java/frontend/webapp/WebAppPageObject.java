@@ -132,4 +132,10 @@ public class WebAppPageObject {
             return;
         }
     }
+
+    //Somewhy the platform select refused to behave soooo...
+    public void clickPlatform(){
+        driver.findElement(By.cssSelector(".select__value-container")).click();
+        driver.findElement(By.id("react-select-3-option-0")).click();
+    }
 }
