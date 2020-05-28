@@ -24,11 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -52,22 +48,22 @@ public class Game {
     @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "publisher_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    private Set<Developer> developers;
+    private Set<Developer> developers = new HashSet<>();
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
@@ -78,7 +74,7 @@ public class Game {
     @ToString.Exclude
     private Set<ReviewGame> reviews;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
@@ -140,5 +136,23 @@ public class Game {
             count++;
         }
         return devNames;
+    }
+
+    public void setPublisher(Publisher publisher){
+        if (Objects.equals(this.publisher, publisher)) return;
+        this.publisher = publisher;
+        publisher.addGame(this);
+    }
+
+    public void addGenre(GameGenre gameGenre) {
+        if (this.gameGenres.contains(gameGenre)) return;
+        this.gameGenres.add(gameGenre);
+        gameGenre.addGame(this);
+    }
+
+    public void addDeveloper(Developer developer) {
+        if (this.developers.contains(developer)) return;
+        this.developers.add(developer);
+        developer.addGame(this);
     }
 }
