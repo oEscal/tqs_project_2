@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
-import lombok.AccessLevel;
 
 import java.util.Objects;
 import javax.persistence.*;
@@ -31,7 +30,6 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
-    @JsonIgnore
     private String rKey;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -55,6 +53,11 @@ public class GameKey {
     private String retailer;
 
     private String platform;
+
+    @JsonIgnore
+    public String getrKey(){
+        return this.rKey;
+    }
 
     public void setGame(Game game) {
         //prevent endless loop
@@ -90,5 +93,11 @@ public class GameKey {
     public String getGameName(){
         if (game == null) return "";
         return this.game.getName();
+    }
+
+    @EqualsAndHashCode.Include
+    public String getGamePhoto(){
+        if (game == null) return "";
+        return this.game.getCoverUrl();
     }
 }
