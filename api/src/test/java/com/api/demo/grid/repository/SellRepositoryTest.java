@@ -89,6 +89,9 @@ class SellRepositoryTest {
         GameKey gameKey2 = new GameKey();
         gameKey2.setGame(game);
 
+        mEntityManager.persistAndFlush(gameKey);
+        mEntityManager.persistAndFlush(gameKey2);
+
         Sell sell1 = new Sell();
         sell1.setGameKey(gameKey);
         Sell sell2 = new Sell();
