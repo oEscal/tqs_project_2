@@ -104,4 +104,10 @@ public class GameKey {
         if (auction != null)
             auction.setGameKey(this);
     }
+    
+    @EqualsAndHashCode.Include
+    public String getGameName(){
+        if (game == null) return "";
+        return this.game.getName();
+    }
 }

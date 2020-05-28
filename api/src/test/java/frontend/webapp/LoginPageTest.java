@@ -60,8 +60,8 @@ public class LoginPageTest {
     //Check that when a correct input is fed, we get moved to the homepage and are logged in
     // NOTE: This requires the BD to have this user...
     public void whenValidCredentials_thenRedirectToHome_andLogin() {
-        String username = "ola";
-        String password = "adeus";
+        String username = "admin";
+        String password = "admin";
         controller.writeInput(username,"username");
         controller.writeInput(password,"password");
 
