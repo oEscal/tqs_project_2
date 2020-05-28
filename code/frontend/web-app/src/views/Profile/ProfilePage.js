@@ -432,7 +432,7 @@ class ProfilePage extends Component {
                                                         <TableBody>
                                                             {this.state.info.sells.map((row) => (
                                                                 <TableRow hover key={row.name}>
-                                                                    <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.platform}</TableCell>
+                                                                    <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.gameName}</TableCell>
                                                                     <TableCell align="left">{row.gameKey.platform}</TableCell>
                                                                     <TableCell align="left">{row.gameKey.rkey}</TableCell>
                                                                     <TableCell align="left">{row.price}€</TableCell>
