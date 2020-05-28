@@ -11,4 +11,13 @@ public class AuctionJson {
                 "\"price\": " + price + "\n" +
                 "}";
     }
+
+    public static String addAuctionJson (String auctioneer, String gameKey, String endDate) {
+
+        return "{\n" +
+                "\"auctioneer\": \"" + auctioneer + "\",\n" +
+                "\"gameKey\": \"" + gameKey + "\",\n" +
+                "\"endDate\": \"" + endDate + "\"\n" +
+                "}";
+    }
 }

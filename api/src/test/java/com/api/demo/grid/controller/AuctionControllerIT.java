@@ -147,4 +147,76 @@ public class AuctionControllerIT {
                 .andExpect(jsonPath("$.price", is(mPrice)));
         assertEquals(1, mAuctionRepository.findAll().size());
     }
+
+    @Test
+    @SneakyThrows
+    void whenCreateAuctionWithoutPrice_creationIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, mEndDate);
+
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
+
+        mMvc.perform(request).andExpect(status().isBadRequest());
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenCreateAuctionWithoutGameKey_creationIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        mAuctionJson = addAuctionJson(mAuctioneerUsername, null, mEndDate, mPrice);
+
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
+
+        mMvc.perform(request).andExpect(status().isBadRequest());
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenCreateAuctionWithoutEndDate_creationIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, null, mPrice);
+
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
+
+        mMvc.perform(request).andExpect(status().isBadRequest());
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenCreateAuctionWithoutAuctioneer_creationIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        mAuctionJson = addAuctionJson(null, mGameKeyRKey, mEndDate, mPrice);
+
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
+
+        mMvc.perform(request).andExpect(status().isBadRequest());
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
 }
