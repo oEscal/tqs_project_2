@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+
 @Repository
 public interface SellRepository extends JpaRepository<Sell, Long> {
     Optional<Sell> findById(long id);

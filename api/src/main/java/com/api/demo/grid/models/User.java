@@ -9,8 +9,6 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,6 +18,19 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;

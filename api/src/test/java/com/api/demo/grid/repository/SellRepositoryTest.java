@@ -7,7 +7,6 @@ import com.api.demo.grid.models.User;
 import com.api.demo.grid.utils.Pagination;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -21,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @DataJpaTest
 class SellRepositoryTest {
@@ -108,5 +109,31 @@ class SellRepositoryTest {
         Page<Sell> sells = pagination.pageImpl(page, entriesPerPage);
 
         assertEquals(sells, mRepository.findAllByGames(game.getId(), pageRequest));
+    }
+
+    @Test
+    void whenSearchSellByExistentKey_receiveSell(){
+
+        String gameKeyStr = "game_key_test";
+
+        Game game = new Game();
+        game.setName("game");
+        mEntityManager.persistAndFlush(game);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+        gameKey.setRKey(gameKeyStr);
+        mEntityManager.persistAndFlush(gameKey);
+
+        Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+
+        assertEquals(sell, mRepository.findByGameKey_rKey(gameKeyStr));
+    }
+
+    @Test
+    void whenSearchSellByNonExistentKey_receiveNull(){
+
+        assertNull(mRepository.findByGameKey_rKey("game_key_test"));
     }
 }
