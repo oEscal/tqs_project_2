@@ -58,10 +58,10 @@ public class Auction {
     @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 
-    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT NOW()", nullable = false)
+    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)", nullable = false)
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd/MM/yyyy")
-    private Date startDate = new Date();
+    private Date startDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)

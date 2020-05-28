@@ -79,6 +79,7 @@ public class AuctionService {
         auctionSave.setGameKey(gameKey);
         auctionSave.setPrice(auctionPOJO.getPrice());
         auctionSave.setEndDate(auctionPOJO.getEndDate());
+
         return mAuctionRepository.save(auctionSave);
     }
 }

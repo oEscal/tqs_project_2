@@ -21,7 +21,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/grid")
 @CrossOrigin
-public class    AuctionController {
+public class AuctionController {
 
     @Autowired
     private AuctionService mAuctionService;
