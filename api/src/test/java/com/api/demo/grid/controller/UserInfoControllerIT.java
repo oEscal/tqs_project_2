@@ -169,7 +169,7 @@ class UserInfoControllerIT {
         //TODO check for wishlist, buys and reviews once endpoints are done
     }
     */
-    
+
 
     /*
     @Test

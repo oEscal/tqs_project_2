@@ -273,6 +273,19 @@ class GridRestControllerTest {
 
     @Test
     @WithMockUser(username = "spring")
+    void whenRequestInvalidName_ReturnException() throws Exception {
+        Mockito.when(mGridService.getAllGamesByName("game")).thenReturn(null);
+
+        mMockMvc.perform(get("/grid/name")
+                .param("name", "game")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+        Mockito.verify(mGridService, Mockito.times(1)).getAllGamesByName(Mockito.anyString());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
     void whenRequestDev_ReturnValidGames() throws Exception {
         Mockito.when(mGridService.getAllGamesByDev("dev")).thenReturn(Arrays.asList(mGame));
 
