@@ -235,7 +235,7 @@ class ProfilePage extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
-                        <div style={{ padding: "5px 0", paddingTop:"150px" }}>
+                        <div style={{ padding: "5px 0", paddingTop: "150px" }}>
                             <GridContainer xs={12} sm={12} md={11}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <div style={{ textAlign: "center" }}>
@@ -252,370 +252,384 @@ class ProfilePage extends Component {
         } else {
 
             var info = <div></div>
-            if (!this.state.public) {
-                info = <GridItem xs={12} sm={12} md={12}>
-                    <NavPills
-                        color="rose"
-                        tabs={[
-                            {
-                                tabButton: "Reviews",
-                                tabIcon: "far fa-comment-alt",
-                                tabContent: (
-                                    <div>
+            if (this.state.info != null) {
+                if (!this.state.public) {
+                    info = <GridItem xs={12} sm={12} md={12}>
+                        <NavPills
+                            color="rose"
+                            tabs={[
+                                {
+                                    tabButton: "Reviews",
+                                    tabIcon: "far fa-comment-alt",
+                                    tabContent: (
                                         <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
-                                            </h2>
-                                            </span>
-                                        </div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
+                                                </h2>
+                                                </span>
+                                            </div>
 
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.reviewUsers.length == 0 ?
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.reviewUsers.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like no one's reviewed this user yet...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left">{row.author.username}</TableCell>
+                                                                        <TableCell align="left">{row.score}</TableCell>
+                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "Game Reviews",
+                                    tabIcon: "fas fa-gamepad",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Game Reviews
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.reviewUsers.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like you haven't reviewed any games yet...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left">{row.game.name}</TableCell>
+                                                                        <TableCell align="left">{row.score}</TableCell>
+                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "User Reviews",
+                                    tabIcon: "fas fa-users",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My User Reviews
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.reviewUsers.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like you haven't reviewed any users yet...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left">{row.game.name}</TableCell>
+                                                                        <TableCell align="left">{row.score}</TableCell>
+                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "Library",
+                                    tabIcon: "fas fa-key",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Games
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.buys.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like you haven't bought any games...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.buys.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "Sales",
+                                    tabIcon: "fas fa-money-bill-wave",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.sells.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like you haven't sold any games...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.sells.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.gameName}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.platform}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.rkey}</TableCell>
+                                                                        <TableCell align="left">{row.price}€</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        {row.purchased ?
+                                                                            <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
+                                                                        }
+                                                                        {row.purchased ?
+                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+                                                                                <Button
+                                                                                    size="md"
+                                                                                    style={{ backgroundColor: "#ff3ea0" }}
+                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                >
+                                                                                    <i class="fas fa-times"></i> Cancel Sale
+                                                                        </Button>
+                                                                            </TableCell>
+                                                                        }
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "Auctions",
+                                    tabIcon: "fas fa-gavel",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Auctions
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.auctions.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like you haven't put any games for auction...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.auctions.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.platform}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.platform}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.rkey}</TableCell>
+                                                                        <TableCell align="left">{row.price}€</TableCell>
+                                                                        <TableCell align="left">Started {row.date}</TableCell>
+                                                                        <TableCell align="left">Ends {row.date}</TableCell>
+                                                                        {row.purchased ?
+                                                                            <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
+                                                                        }
+                                                                        {row.purchased ?
+                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+                                                                                <Button
+                                                                                    size="md"
+                                                                                    style={{ backgroundColor: "#ff3ea0" }}
+                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                >
+                                                                                    <i class="fas fa-times"></i> Cancel Auction
+                                                                        </Button>
+                                                                            </TableCell>
+                                                                        }
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    tabButton: "Payment Info",
+                                    tabIcon: "fas fa-credit-card",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Credit Card
+                                                </h2>
+                                                </span>
+                                            </div>
+                                            {this.state.info.creditCardNumber == null ?
                                                 <div style={{ textAlign: "left" }}>
                                                     <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like no one's reviewed this user yet...
-                                            </h3>
+                                                        Oops, seems like you haven't registered a credit card yet...
+                                                </h3>
                                                 </div> :
                                                 <TableContainer component={Paper}>
                                                     <Table style={{ width: "100%" }} aria-label="simple table">
                                                         <TableBody>
-                                                            {this.state.info.reviewUsers.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left">{row.author.username}</TableCell>
-                                                                    <TableCell align="left">{row.score}</TableCell>
-                                                                    <TableCell align="left">{row.comment}</TableCell>
-                                                                    <TableCell align="left">{row.date}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
-
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "Game Reviews",
-                                tabIcon: "fas fa-gamepad",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Game Reviews
-                                            </h2>
-                                            </span>
-                                        </div>
-
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.reviewUsers.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like you haven't reviewed any games yet...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.reviewUsers.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left">{row.game.name}</TableCell>
-                                                                    <TableCell align="left">{row.score}</TableCell>
-                                                                    <TableCell align="left">{row.comment}</TableCell>
-                                                                    <TableCell align="left">{row.date}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
-
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "User Reviews",
-                                tabIcon: "fas fa-users",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My User Reviews
-                                            </h2>
-                                            </span>
-                                        </div>
-
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.reviewUsers.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like you haven't reviewed any users yet...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.reviewUsers.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left">{row.game.name}</TableCell>
-                                                                    <TableCell align="left">{row.score}</TableCell>
-                                                                    <TableCell align="left">{row.comment}</TableCell>
-                                                                    <TableCell align="left">{row.date}</TableCell>
-                                                                </TableRow>
-                                                            ))}
+                                                            <TableRow hover key="cardInfo">
+                                                                <TableCell align="left" style={{ fontWeight: "bold" }}>{this.state.info.creditCardNumber}</TableCell>
+                                                                <TableCell align="left">{this.state.info.creditCardCSC}</TableCell>
+                                                                <TableCell align="left">{this.state.info.creditCardOwner}</TableCell>
+                                                                <TableCell align="left">{this.state.info.creditCardExpirationDate}</TableCell>
+                                                            </TableRow>
                                                         </TableBody>
                                                     </Table>
                                                 </TableContainer>
                                             }
                                         </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "Library",
-                                tabIcon: "fas fa-key",
-                                tabContent: (
-                                    <div>
+                                    )
+                                },
+                            ]}
+                        />
+                    </GridItem>
+                } else {
+                    info = <GridItem xs={12} sm={12} md={12}>
+                        <NavPills
+                            color="rose"
+                            tabs={[
+                                {
+                                    tabButton: "Reviews",
+                                    tabIcon: "far fa-comment-alt",
+                                    tabContent: (
                                         <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Games
-                                            </h2>
-                                            </span>
-                                        </div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
+                                                </h2>
+                                                </span>
+                                            </div>
 
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.buys.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like you haven't bought any games...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.buys.map((row) => (
-                                                                <TableRow hover key={row.name}>
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.reviewUsers.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Oops, seems like no one's reviewed this user yet...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left">{row.author.username}</TableCell>
+                                                                        <TableCell align="left">{row.score}</TableCell>
+                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
 
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "Sales",
-                                tabIcon: "fas fa-money-bill-wave",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
-                                            </h2>
-                                            </span>
-                                        </div>
+                                    )
+                                }
+                            ]}
+                        />
+                    </GridItem>
+                }
 
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.sells.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like you haven't sold any games...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.sells.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.gameName}</TableCell>
-                                                                    <TableCell align="left">{row.gameKey.platform}</TableCell>
-                                                                    <TableCell align="left">{row.gameKey.rkey}</TableCell>
-                                                                    <TableCell align="left">{row.price}€</TableCell>
-                                                                    <TableCell align="left">{row.date}</TableCell>
-                                                                    {row.purchased ?
-                                                                        <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
-                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
-                                                                    }
-                                                                    {row.purchased ?
-                                                                        null :
-                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-                                                                            <Button
-                                                                                size="md"
-                                                                                style={{ backgroundColor: "#ff3ea0" }}
-                                                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                            >
-                                                                                <i class="fas fa-times"></i> Cancel Sale
-                                                                    </Button>
-                                                                        </TableCell>
-                                                                    }
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "Auctions",
-                                tabIcon: "fas fa-gavel",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Auctions
-                                            </h2>
-                                            </span>
-                                        </div>
+                var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
 
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.auctions.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like you haven't put any games for auction...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.auctions.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.platform}</TableCell>
-                                                                    <TableCell align="left">{row.gameKey.platform}</TableCell>
-                                                                    <TableCell align="left">{row.gameKey.rkey}</TableCell>
-                                                                    <TableCell align="left">{row.price}€</TableCell>
-                                                                    <TableCell align="left">Started {row.date}</TableCell>
-                                                                    <TableCell align="left">Ends {row.date}</TableCell>
-                                                                    {row.purchased ?
-                                                                        <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
-                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
-                                                                    }
-                                                                    {row.purchased ?
-                                                                        null :
-                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-                                                                            <Button
-                                                                                size="md"
-                                                                                style={{ backgroundColor: "#ff3ea0" }}
-                                                                                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                            >
-                                                                                <i class="fas fa-times"></i> Cancel Auction
-                                                                    </Button>
-                                                                        </TableCell>
-                                                                    }
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabButton: "Payment Info",
-                                tabIcon: "fas fa-credit-card",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Credit Card
-                                            </h2>
-                                            </span>
-                                        </div>
-                                        {this.state.info.creditCardNumber == null ?
-                                            <div style={{ textAlign: "left" }}>
-                                                <h3 style={{ color: "#999" }}>
-                                                    Oops, seems like you haven't registered a credit card yet...
-                                            </h3>
-                                            </div> :
-                                            <TableContainer component={Paper}>
-                                                <Table style={{ width: "100%" }} aria-label="simple table">
-                                                    <TableBody>
-                                                        <TableRow hover key="cardInfo">
-                                                            <TableCell align="left" style={{ fontWeight: "bold" }}>{this.info.creditCardNumber}</TableCell>
-                                                            <TableCell align="left">{this.info.creditCardCSC}</TableCell>
-                                                            <TableCell align="left">{this.info.creditCardOwner}</TableCell>
-                                                            <TableCell align="left">{this.info.creditCardExpirationDate}</TableCell>
-                                                        </TableRow>
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
-                                        }
-                                    </div>
-                                )
-                            },
-                        ]}
-                    />
-                </GridItem>
+                if (this.state.info.score > 0 && this.state.info.score <= 1) {
+                    score = <span style={{ color: "red" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
+                } else if (this.state.info.score < 4) {
+                    score = <span style={{ color: "#fc926e" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
+                } else if (this.state.info.score <= 5) {
+                    score = <span style={{ color: "#4ec884" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
+                }
             } else {
-                info = <GridItem xs={12} sm={12} md={12}>
-                    <NavPills
-                        color="rose"
-                        tabs={[
-                            {
-                                tabButton: "Reviews",
-                                tabIcon: "far fa-comment-alt",
-                                tabContent: (
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
-                                            </h2>
-                                            </span>
-                                        </div>
-
-                                        <div style={{ marginTop: "10px", width: "99%" }}>
-                                            {this.state.info.reviewUsers.length == 0 ?
-                                                <div style={{ textAlign: "left" }}>
-                                                    <h3 style={{ color: "#999" }}>
-                                                        Oops, seems like no one's reviewed this user yet...
-                                            </h3>
-                                                </div> :
-                                                <TableContainer component={Paper}>
-                                                    <Table style={{ width: "100%" }} aria-label="simple table">
-                                                        <TableBody>
-                                                            {this.state.info.reviewUsers.map((row) => (
-                                                                <TableRow hover key={row.name}>
-                                                                    <TableCell align="left">{row.author.username}</TableCell>
-                                                                    <TableCell align="left">{row.score}</TableCell>
-                                                                    <TableCell align="left">{row.comment}</TableCell>
-                                                                    <TableCell align="left">{row.date}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            }
-
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        ]}
-                    />
-                </GridItem>
-            }
-
-            var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
-
-            if (this.state.info.score > 0 && this.state.info.score <= 1) {
-                score = <span style={{ color: "red" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
-            }else if(this.state.info.score < 4){
-                score = <span style={{ color: "#fc926e" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
-            }else if(this.state.info.score <=5){
-                score = <span style={{ color: "#4ec884" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
+                info = <div style={{ padding: "5px 0", paddingTop: "150px" }}>
+                    <GridContainer xs={12} sm={12} md={11}>
+                        <GridItem xs={12} sm={12} md={12}>
+                            <div style={{ textAlign: "center" }}>
+                                <h3 style={{ color: "#999" }}>
+                                    Loading...
+                            </h3>
+                            </div>
+                        </GridItem>
+                    </GridContainer>
+                </div>
             }
 
             return (
