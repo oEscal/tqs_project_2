@@ -27,6 +27,10 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
 
+import FormControl from "@material-ui/core/FormControl";
+// react plugin for creating date-time-picker
+import Datetime from "react-datetime";
+
 import Close from "@material-ui/icons/Close";
 import stylesjs from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
 import "./cart.css";
@@ -35,6 +39,19 @@ import "./cart.css";
 import baseURL from '../../variables/baseURL'
 import global from "../../variables/global";
 
+// Loading Animation
+import FadeIn from "react-fade-in";
+import Lottie from "react-lottie";
+import * as loadingAnim from "assets/animations/loading_anim.json";
+
+import {
+    Link,
+    Redirect
+} from "react-router-dom";
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
+
 class Cart extends Component {
     constructor(props) {
         super(props);
@@ -42,18 +59,40 @@ class Cart extends Component {
         this.state = {
             price: 0,
             quantity: 0,
-            items: []
+            items: [],
+            animationOptions: {
+                loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
+                    preserveAspectRatio: "xMidYMid slice"
+                }
+            },
+            redirectLogin: false,
+            redirectGames: false,
+            doneLoading: false
         };
     }
 
 
-    componentDidMount(){
+    async componentDidMount() {
+        await this.setState({ doneLoading: false })
         if (global.cart == null || global.cart.games == []) {
 
         } else {
             this.getItems()
         }
-    
+
+        await this.setState({ doneLoading: true })
+    }
+
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
+    }
+
+    renderRedirectProfile = () => {
+        if (this.redirectGames) {
+            return <Redirect to={'/user/' + this.state.redirectProfile} />
+        }
     }
 
     getItems() {
@@ -70,7 +109,9 @@ class Cart extends Component {
             sum_price += game.price
             items.push(
                 <GridItem xs={12} sm={12} md={12} style={style}>
+
                     <Card style={{ width: "100%" }}>
+
                         <CardHeader
                             title={
                                 <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
@@ -90,45 +131,49 @@ class Cart extends Component {
                         >
                         </CardHeader>
                         <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                height="185px"
-                                image={game.gameKey.gamePhoto}
-                            />
-                            <CardContent>
-                                <div style={{ textAlign: "left", height: "30px" }}>
-                                    <h6 style={{
-                                        fontWeight: "bold",
-                                        color: "#3b3e48",
-                                        fontSize: "15px",
-                                        paddingTop: "0 0",
-                                        marginTop: "0px"
-                                    }}>
-                                        {game.gameKey.gameName}
-                                    </h6>
-                                </div>
+                            <Link to={"/games/info/" + game.gameKey.gameId}>
 
-                                <div style={{ textAlign: "left" }}>
-                                    <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                        Platform: <span style={{ fontWeight: "bold" }}>{game.gameKey.platform}</span>
-                                    </h6>
-                                </div>
-                                <div style={{ textAlign: "left" }}>
-                                    <h6 style={{
-                                        color: "#3b3e48",
-                                        fontSize: "15px",
-                                        paddingTop: "0 0",
-                                        marginTop: "0px"
-                                    }}>
-                                        Price <span
-                                            style={{
-                                                fontWeight: "bolder",
-                                                color: "#f44336",
-                                                fontSize: "17px"
-                                            }}> {game.price} €</span>
-                                    </h6>
-                                </div>
-                            </CardContent>
+                                <CardMedia
+                                    component="img"
+                                    height="185px"
+                                    image={game.gameKey.gamePhoto}
+                                />
+
+                                <CardContent>
+                                    <div style={{ textAlign: "left", height: "30px" }}>
+                                        <h6 style={{
+                                            fontWeight: "bold",
+                                            color: "#3b3e48",
+                                            fontSize: "15px",
+                                            paddingTop: "0 0",
+                                            marginTop: "0px"
+                                        }}>
+                                            {game.gameKey.gameName}
+                                        </h6>
+                                    </div>
+
+                                    <div style={{ textAlign: "left" }}>
+                                        <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                            Platform: <span style={{ fontWeight: "bold" }}>{game.gameKey.platform}</span>
+                                        </h6>
+                                    </div>
+                                    <div style={{ textAlign: "left" }}>
+                                        <h6 style={{
+                                            color: "#3b3e48",
+                                            fontSize: "15px",
+                                            paddingTop: "0 0",
+                                            marginTop: "0px"
+                                        }}>
+                                            Price <span
+                                                style={{
+                                                    fontWeight: "bolder",
+                                                    color: "#f44336",
+                                                    fontSize: "17px"
+                                                }}> {game.price} €</span>
+                                        </h6>
+                                    </div>
+                                </CardContent>
+                            </Link>
                         </CardActionArea>
                     </Card>
                 </GridItem>
@@ -158,20 +203,138 @@ class Cart extends Component {
         await localStorage.setItem('cart', JSON.stringify({ "games": cart }));
         global.cart = await JSON.parse(localStorage.getItem('cart'))
 
-        await this.getGameListings()
-
         this.getItems()
 
         this.setState({ doneLoading: true })
     }
 
+    async buyWithWallet() {
+
+    }
+
+    async buyWithCard() {
+
+    }
+
+    async buyWithNewCard() {
+        var cardNumber = document.getElementById("cardNumber").value
+        var cardName = document.getElementById("cardName").value
+        var cardCVC = document.getElementById("cardCVC").value
+        var expiration = document.getElementById("cardExpiration").value
+
+        var error = false
+
+        if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '') {
+            toast.error('Oops, you have to specify all card fields!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardAll"
+            });
+            error = true
+        } else {
+            cardNumber = null
+            cardCVC = null
+            expiration = null
+            cardName = null
+        }
+
+        if (!error && expiration != null) {
+            var tempExpiration = expiration.split("/")
+            if (tempExpiration.length != 3) {
+                toast.error('Please use a valid expiration date...', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorCardExpiration"
+                });
+                error = true
+            } else {
+                expiration = tempExpiration[1] + "/" + tempExpiration[0] + "/" + tempExpiration[2]
+            }
+        }
+
+        if (!error && cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
+            toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardCVC"
+            });
+            error = true
+        }
+    }
+
     render() {
         const { classes } = this.props;
 
+        if (!this.state.doneLoading) {
+            return (
+                <div>
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+
+                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                        <FadeIn>
+                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                        </FadeIn>
+                    </div>
+                </div>
+            )
+        }
+
+        var today = Datetime.moment()
+        var valid = function (current) {
+            return current.isAfter(today);
+        };
+
+        var extraPaymentOptions = null
+
+        if (global.user != null) {
+            extraPaymentOptions = [
+                <hr style={{ opacity: 0.2, color: "#fc3196" }} />,
+                <div style={{ "textAlign": "center" }}>
+                    <Button color="primary" 
+                        style={{ marginTop: "30px", width:"100%", backgroundColor:"#ed6f62" }}
+                        onClick={() => this.buyWithWallet(true)}>Buy with Wallet</Button>
+                </div>,
+
+                <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />,
+                <div style={{ "textAlign": "center" }}>
+                    <Button color="primary" 
+                        style={{ marginTop: "30px", width:"100%", backgroundColor:"#ed6f62" }}
+                        onClick={() => this.buyWithCard()}>Buy with Card</Button>
+                </div>
+
+            ]
+        }
 
         return (
             <div>
                 <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+                {this.renderRedirectLogin()}
+                {this.renderRedirectProfile()}
+
+                <ToastContainer
+                    position="top-center"
+                    autoClose={2500}
+                    hideProgressBar={false}
+                    transition={Flip}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnVisibilityChange
+                    draggable
+                    pauseOnHover
+                />
 
                 <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
@@ -188,8 +351,7 @@ class Cart extends Component {
                                                         fontWeight: "bolder",
                                                         marginTop: "0px",
                                                         padding: "0 0"
-                                                    }}>Cart <span
-                                                        style={{ color: "#999", fontSize: "15px", fontWeight: "normal" }}>(xxxxx products)</span>
+                                                    }}>Cart
                                                     </h2>
                                                 </span>
                                             </GridItem>
@@ -208,27 +370,90 @@ class Cart extends Component {
                                 {this.state.items}
 
                             </GridContainer>
-                            <GridContainer xs={12} sm={12} md={4}
-                                style={{ flex: "1", float: "right", "padding-left": "30px" }}>
-                                <GridItem xs={12} sm={12} md={12}>
-                                    <Sticky>
-                                        {({ style }) => (
-                                            <Card>
-                                                <CardHeader
-                                                    title={"Total Price: " + this.state.price + "€"}
-                                                    subheader={"Items: " + this.state.quantity}
-                                                >
+                            <GridContainer xs={12} sm={12} md={4}>
+                                <GridItem xs={2} sm={2} md={2}></GridItem>
+                                <GridItem xs={10} sm={10} md={10}>
+                                    <Card>
+                                        <CardHeader
+                                            title={
+                                                <span>
+                                                    Total Price: <span
+                                                        style={{
+                                                            fontWeight: "bolder",
+                                                            color: "#f44336",
+                                                        }}> {this.state.price} €</span>
+                                                </span>
+                                            }
+                                            subheader={"Items: " + this.state.quantity}
+                                        >
 
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div style={{ "textAlign": "center" }}>
-                                                        <Button color="primary" round
-                                                            onClick={() => this.setClassicModal(true)}>Continue to
-                                                            payment</Button>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>)}
-                                    </Sticky>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {extraPaymentOptions}
+
+                                            <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />
+
+                                            <CustomInput
+                                                labelText="Card Number"
+                                                id="cardNumber"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    type: "text",
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            <i class="fas fa-credit-card" />
+                                                        </InputAdornment>
+                                                    )
+                                                }}
+                                            />
+
+                                            <CustomInput
+                                                labelText="Card Owner's Full Name"
+                                                id="cardName"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    type: "text",
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            <i class="fas fa-signature"></i>
+                                                        </InputAdornment>
+                                                    )
+                                                }}
+                                            />
+
+                                            <CustomInput
+                                                labelText="CVC"
+                                                id="cardCVC"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    type: "text"
+                                                }}
+                                            />
+
+                                            <div style={{ marginTop: "20px" }}>
+                                                <FormControl fullWidth>
+                                                    <Datetime
+                                                        timeFormat={false}
+                                                        inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
+                                                        isValidDate={valid}
+                                                    />
+                                                </FormControl>
+                                            </div>
+
+                                            <div style={{ "textAlign": "center" }}>
+                                                <Button color="primary"
+                                                    style={{ marginTop: "30px", width:"100%", backgroundColor: "#ed6f62" }}
+
+                                                    onClick={() => this.buyWithNewCard(true)}>Buy with new Card</Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </GridItem>
 
                             </GridContainer>
