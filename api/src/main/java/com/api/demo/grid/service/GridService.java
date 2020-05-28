@@ -23,6 +23,7 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -49,4 +50,5 @@ public interface GridService {
     Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);
     Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO);
     Page<ReviewGame> getGameReviews(long gameID,int page);
+    Page<ReviewJoiner> getUserReviews(long userID, int page);
 }
