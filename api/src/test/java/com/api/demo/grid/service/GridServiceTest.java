@@ -848,7 +848,6 @@ class GridServiceTest {
     }
 
 
-
     @Test
     void whenPostingSameIDUserReviewAuthorIsNull_ReturnReviews() {
         long authorID = 1L;
@@ -908,7 +907,7 @@ class GridServiceTest {
 
         Mockito.verify(mMockGameRepo, Mockito.times(1)).findById(gameID);
 
-        assertEquals(expected.getContent().size(), 0);
+        assertEquals(0, expected.getContent().size());
     }
 
 
@@ -982,7 +981,7 @@ class GridServiceTest {
 
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
 
-        assertEquals(expected.getContent().size(), 0);
+        assertEquals(0, expected.getContent().size());
     }
 
 
