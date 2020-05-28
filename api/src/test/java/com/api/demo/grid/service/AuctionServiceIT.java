@@ -127,7 +127,7 @@ public class AuctionServiceIT {
         mAuctionService.addAuction(mAuctionPOJO);
 
         // second insertion
-        mAuction.setPrice(2000);
+        mAuctionPOJO.setPrice(2000);
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
         assertEquals(1, mAuctionRepository.findAll().size());
     }

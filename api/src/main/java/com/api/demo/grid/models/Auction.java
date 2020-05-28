@@ -40,7 +40,7 @@ public class Auction {
     @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 

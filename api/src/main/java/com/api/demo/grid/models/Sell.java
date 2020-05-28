@@ -60,6 +60,7 @@ public class Sell {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+
     public void setUser(User user) {
         //prevent endless loop
         if (sameAsFormer(user)) return ;
