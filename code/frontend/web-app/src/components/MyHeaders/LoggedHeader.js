@@ -129,7 +129,6 @@ export default function SectionNavbars(props) {
             color="transparent"
           >
             <i class="fas fa-wallet"></i>
-            {console.log(user)}
             {user.funds} €
               </Button>
         </Link>

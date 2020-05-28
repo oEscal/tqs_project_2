@@ -205,12 +205,14 @@ class GameSearch extends Component {
         } else {
             var name = document.getElementById("name").value
             var priceFrom = document.getElementById("priceFrom").value
-            var priceTo = document.getElementById("priceTo").textContent
+            var priceTo = document.getElementById("priceTo").value
 
             var genres = []
             var platforms = []
             window.scrollTo(0, 0)
 
+            console.log(priceFrom)
+            console.log(priceTo)
 
             for (var i = 0; i < 19; i++) {
                 if (document.getElementById('genre_' + i).checked) {
