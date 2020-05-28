@@ -2,8 +2,6 @@ package com.api.demo.grid.controller;
 
 
 import com.api.demo.grid.exception.ForbiddenException;
-import com.api.demo.grid.models.Auction;
-import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.proxy.AuctionProxy;
 import com.api.demo.grid.service.AuctionService;

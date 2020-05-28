@@ -2,14 +2,11 @@ package com.api.demo.grid.proxy;
 
 
 import com.api.demo.grid.models.Auction;
-import com.api.demo.grid.models.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 @Getter
