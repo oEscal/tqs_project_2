@@ -148,6 +148,6 @@ public class AuctionServiceIT {
 
         // second insertion
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
-        assertEquals(1, mAuctionRepository.findAll().size());
+        assertEquals(0, mAuctionRepository.findAll().size());
     }
 }

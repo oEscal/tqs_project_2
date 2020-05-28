@@ -8,6 +8,7 @@ import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class AuctionService {
     @Autowired
     private GameKeyRepository mGameKeyRepository;
 
+    @Autowired
+    private SellRepository mSellRepository;
+
 
     public Auction getAuctionByGameKey(String key) {
         return mAuctionRepository.findByGameKey_rKey(key);
@@ -38,7 +42,12 @@ public class AuctionService {
 
         // verify if the game key is already in some auction
         if (this.getAuctionByGameKey(auctionPOJO.getGameKey()) != null) {
-            throw new ExceptionDetails("There is already a auction for that game key");
+            throw new ExceptionDetails("There is already an auction for that game key");
+        }
+
+        // verify if the game key is already in some sell
+        if (this.mSellRepository.findByGameKey_rKey(auctionPOJO.getGameKey()) != null) {
+            throw new ExceptionDetails("There is already a sell for that game key");
         }
 
         User auctioneer = mUserRepository.findByUsername(auctionPOJO.getAuctioneer());
