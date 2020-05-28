@@ -54,7 +54,6 @@ public class AuctionServiceIT {
     private AuctionService mAuctionService;
 
 
-    private Auction mAuction;
     private GameKey mGameKey;
     private Game mGame;
     private User mAuctioneer;
@@ -147,6 +146,31 @@ public class AuctionServiceIT {
         mSellRepository.save(sell);
 
         // second insertion
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetAuctionWithNonExistentAuctioneer_setIsUnsuccessful() {
+
+        // save game and game key
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetAuctionWithNonExistentGameKey_setIsUnsuccessful() {
+
+        // save auctioneer
+        mUserRepository.save(mAuctioneer);
+
+
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
         assertEquals(0, mAuctionRepository.findAll().size());
     }
