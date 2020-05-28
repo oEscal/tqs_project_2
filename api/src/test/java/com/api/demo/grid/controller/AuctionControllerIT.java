@@ -219,4 +219,27 @@ public class AuctionControllerIT {
         mMvc.perform(request).andExpect(status().isBadRequest());
         assertEquals(0, mAuctionRepository.findAll().size());
     }
+
+    @Test
+    @SneakyThrows
+    void whenCreateAuctionWithAuctioneerDifferentFromAuthenticatedUser_creationIsUnsuccessful() {
+
+        // create fake auctioneer
+        String fakeAuctioneerUsername = "fake_username";
+        UserDTO fakeAuctioneer = new UserDTO(fakeAuctioneerUsername, mAuctioneerName, "fake_email", mAuctioneerCountry,
+                mAuctioneerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
+
+        // save auctioneer, fake auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mUserService.saveUser(fakeAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(fakeAuctioneerUsername, mAuctioneerPassword));
+
+        mMvc.perform(request).andExpect(status().isForbidden());
+        assertEquals(0, mAuctionRepository.findAll().size());
+    }
 }
