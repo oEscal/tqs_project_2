@@ -715,6 +715,19 @@ class GridRestControllerTest {
 
     @Test
     @WithMockUser(username = "spring")
+    void whenGetInvalidGameReviews2_ReturnException() throws Exception {
+
+        Mockito.when(mGridService.getGameReviews(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
+
+        mMockMvc.perform(get("/grid/game-review")
+                .param("game_id", "1")
+                .param("page", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
     void whenGetInvalidPageGameReviews_ReturnException() throws Exception {
         Game game = new Game();
         game.setId(1L);
