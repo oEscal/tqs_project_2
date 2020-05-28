@@ -351,110 +351,82 @@ class Cart extends Component {
         const { classes } = this.props;
 
         var items = [];
-        for (var i = 0; i < 6; i++) {
+        if (global.cart == null || global.cart.games == []) {
+
+        } else {
             var style = { margin: "12px 0", float: 'left' };
-            var text = "";
-            var image = null;
 
-            if (i == 0) {
-                style = {}
-            }
-            if (i % 2 == 0) {
-                text = "NHS: Heat"
-                image = image4
-            } else {
-                text = "No Man's Sky: Beyond"
-                image = image1
-            }
-
-            items.push(
-                <GridItem xs={12} sm={12} md={12} style={style}>
-                    <Card style={{ width: "100%" }}>
-                        <CardHeader
-                            title={
-                                <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                    From seller <span style={{ color: 'black', fontWeight: "bold" }}>Jonas Pistolas</span>
-                                </h6>
-                            }
-                            avatar={
-                                <Avatar aria-label="recipe" className={classes.avatar}>
-                                    R
-                                </Avatar>
-                            }
-                            action={
-                                <IconButton aria-label="settings">
-                                    <CloseIcon />
-                                </IconButton>
-                            }
-                        >
-                        </CardHeader>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                height="185px"
-                                image={image}
-                            />
-                            <CardContent>
-                                <div style={{ textAlign: "left", height: "30px" }}>
-                                    <h6 style={{
-                                        fontWeight: "bold",
-                                        color: "#3b3e48",
-                                        fontSize: "15px",
-                                        paddingTop: "0 0",
-                                        marginTop: "0px"
-                                    }}>
-                                        {text}
-                                    </h6>
-                                </div>
-                                <div style={{ textAlign: "left" }}>
-
-                                    <CustomInput
-
-                                        labelText="Quantity"
-                                        id="quantity"
-                                        formControlProps={{}}
-                                        inputProps={{
-                                            type: "number",
-                                            value: this.state.quantity,
-                                            precision: 2,
-                                            min: 0,
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <VideogameAssetIcon className={classes.inputIconsColor} />
-                                                </InputAdornment>
-                                            ),
-                                            onChange: this.updateQuantity,
-                                        }}
-                                    />
-
-
-                                </div>
-                                <div style={{ textAlign: "left" }}>
+            for (var i = 0; i < global.cart.games.length; i++) {
+                var game = global.cart.games[i]
+                items.push(
+                    <GridItem xs={12} sm={12} md={12} style={style}>
+                        <Card style={{ width: "100%" }}>
+                            <CardHeader
+                                title={
                                     <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
-                                        Delivery: <span style={{ fontWeight: "bold" }}>Instant access</span>
+                                        From seller <span style={{ color: 'black', fontWeight: "bold" }}>{game.gameKey.retailer}</span>
                                     </h6>
-                                </div>
-                                <div style={{ textAlign: "left" }}>
-                                    <h6 style={{
-                                        color: "#3b3e48",
-                                        fontSize: "15px",
-                                        paddingTop: "0 0",
-                                        marginTop: "0px"
-                                    }}>
-                                        Price <span
-                                            style={{
-                                                fontWeight: "bolder",
-                                                color: "#f44336",
-                                                fontSize: "17px"
-                                            }}> {this.getPrice()} €</span>
-                                    </h6>
-                                </div>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
-                </GridItem>
-            )
+                                }
+                                avatar={
+                                    <Avatar aria-label="recipe" className={classes.avatar}>
+                                        {game.gameKey.retailer[0]}
+                                    </Avatar>
+                                }
+                                action={
+                                    <IconButton aria-label="settings">
+                                        <CloseIcon />
+                                    </IconButton>
+                                }
+                            >
+                            </CardHeader>
+                            <CardActionArea>
+                                <CardMedia
+                                    component="img"
+                                    height="185px"
+                                    image={game.coverUrl}
+                                />
+                                <CardContent>
+                                    <div style={{ textAlign: "left", height: "30px" }}>
+                                        <h6 style={{
+                                            fontWeight: "bold",
+                                            color: "#3b3e48",
+                                            fontSize: "15px",
+                                            paddingTop: "0 0",
+                                            marginTop: "0px"
+                                        }}>
+                                            {game.gameKey.gameName}
+                                        </h6>
+                                    </div>
+                                   
+                                    <div style={{ textAlign: "left" }}>
+                                        <h6 style={{ color: "#999", fontSize: "11px", paddingTop: "0 0", marginTop: "0px" }}>
+                                            Platform: <span style={{ fontWeight: "bold" }}>{game.gameKey.platform}</span>
+                                        </h6>
+                                    </div>
+                                    <div style={{ textAlign: "left" }}>
+                                        <h6 style={{
+                                            color: "#3b3e48",
+                                            fontSize: "15px",
+                                            paddingTop: "0 0",
+                                            marginTop: "0px"
+                                        }}>
+                                            Price <span
+                                                style={{
+                                                    fontWeight: "bolder",
+                                                    color: "#f44336",
+                                                    fontSize: "17px"
+                                                }}> {game.price} €</span>
+                                        </h6>
+                                    </div>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </GridItem>
+                )
+
+            }
         }
+
         return (
             <div>
                 <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
