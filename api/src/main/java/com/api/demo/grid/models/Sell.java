@@ -40,7 +40,7 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
@@ -60,6 +60,7 @@ public class Sell {
     @EqualsAndHashCode.Exclude
     @Temporal(TemporalType.DATE)
     private Date date;
+
 
     public void setUser(User user) {
         //prevent endless loop

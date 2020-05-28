@@ -46,10 +46,6 @@ public class Buy {
     @ToString.Exclude
     private Sell sell;
 
-    @OneToOne
-    @ToString.Exclude
-    private Auction auction;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -111,7 +107,7 @@ public class Buy {
     
     public String getGamerKey(){
         if (sell != null) return sell.getGameKey().getRKey();
-        if (auction != null) return auction.getGameKey().getRKey();
+
         return null;
     }
 }
