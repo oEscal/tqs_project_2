@@ -30,7 +30,8 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
-    private String rKey;
+    @JsonIgnore
+    private String realKey;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
@@ -53,11 +54,6 @@ public class GameKey {
     private String retailer;
 
     private String platform;
-
-    @JsonIgnore
-    public String getrKey(){
-        return this.rKey;
-    }
 
     public void setGame(Game game) {
         //prevent endless loop
