@@ -1,18 +1,18 @@
-package com.api.demo.grid.service;
+package com.api.demo.grid.controller;
 
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.service.AuctionService;
+import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,25 +20,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.text.SimpleDateFormat;
 
+import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class AuctionServiceIT {
+public class AuctionControllerIT {
+
+    @Autowired
+    private MockMvc mMvc;
+
+    @Autowired
+    private UserService mUserService;
 
     @Autowired
     private AuctionRepository mAuctionRepository;
-
-    @Autowired
-    private SellRepository mSellRepository;
 
     @Autowired
     private UserRepository mUserRepository;
@@ -56,6 +68,7 @@ public class AuctionServiceIT {
     private GameKey mGameKey;
     private Game mGame;
     private User mAuctioneer;
+    private UserDTO mAuctioneerDTO;
 
     private AuctionPOJO mAuctionPOJO;
 
@@ -75,11 +88,13 @@ public class AuctionServiceIT {
     private String mGameName = "game1",
             mGameKeyRKey = "game_key1";
 
+    // auction json
+    private String mAuctionJson;
+
 
     @BeforeEach
     @SneakyThrows
     void setup() {
-
         // create auctioneer
         mAuctioneer = new User();
         mAuctioneer.setUsername(mAuctioneerUsername);
@@ -89,6 +104,10 @@ public class AuctionServiceIT {
         mAuctioneer.setCountry(mAuctioneerCountry);
         mAuctioneer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
         mAuctioneer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerStartDateStr));
+
+        // create dto auctioneer
+        this.mAuctioneerDTO = new UserDTO(mAuctioneerUsername, mAuctioneerName, mAuctioneerEmail, mAuctioneerCountry,
+                mAuctioneerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
 
         // create game
         mGame = new Game();
@@ -102,68 +121,30 @@ public class AuctionServiceIT {
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // auction json
+        mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, mEndDate, mPrice);
     }
 
 
     @Test
     @SneakyThrows
-    void whenSetExistentAuctionGameKey_setIsUnsuccessful() {
+    void whenCreateCompleteFormAuction_creationIsSuccessful() {
 
         // save auctioneer, game and game key
-        mUserRepository.save(mAuctioneer);
+        mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
-        // first insertion
-        mAuctionService.addAuction(mAuctionPOJO);
+        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+                .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
-        // second insertion
-        mAuctionPOJO.setPrice(2000);
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.auctioneer", is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.buyer", is(nullValue())))
+                .andExpect(jsonPath("$.gameKey", is(mGameKeyRKey)))
+                .andExpect(jsonPath("$.endDate", is(mEndDate)))
+                .andExpect(jsonPath("$.price", is(mPrice)));
         assertEquals(1, mAuctionRepository.findAll().size());
-    }
-
-    @Test
-    @SneakyThrows
-    void whenSetAuctionOfSameSellGameKey_setIsUnsuccessful() {
-
-        // save auctioneer, game and game key
-        mUserRepository.save(mAuctioneer);
-        mGameRepository.save(mGame);
-        mGameKeyRepository.save(mGameKey);
-
-        // insert game key on sell
-        Sell sell = new Sell();
-        sell.setGameKey(mGameKey);
-        mSellRepository.save(sell);
-
-        // second insertion
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
-        assertEquals(0, mAuctionRepository.findAll().size());
-    }
-
-    @Test
-    @SneakyThrows
-    void whenSetAuctionWithNonExistentAuctioneer_setIsUnsuccessful() {
-
-        // save game and game key
-        mGameRepository.save(mGame);
-        mGameKeyRepository.save(mGameKey);
-
-
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
-        assertEquals(0, mAuctionRepository.findAll().size());
-    }
-
-    @Test
-    @SneakyThrows
-    void whenSetAuctionWithNonExistentGameKey_setIsUnsuccessful() {
-
-        // save auctioneer
-        mUserRepository.save(mAuctioneer);
-
-
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
-        assertEquals(0, mAuctionRepository.findAll().size());
     }
 }
