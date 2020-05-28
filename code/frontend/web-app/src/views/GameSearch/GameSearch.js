@@ -345,9 +345,6 @@ class GameSearch extends Component {
         })
 
         window.scrollTo(0, 0)
-<<<<<<< HEAD
-        await this.allGames()
-=======
 
         if (this.state.cacheRequest != null) {
             await this.search(true)
@@ -355,7 +352,6 @@ class GameSearch extends Component {
         } else {
             await this.allGames()
         }
->>>>>>> 724baf358f7db067fc3ee3d7318a1f0c584bfc01
 
     };
 
