@@ -1,13 +1,10 @@
 package com.api.demo.grid.controller;
 
-<<<<<<< HEAD
 import com.api.demo.grid.exception.UserNotFoundException;
-=======
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.Buy;
->>>>>>> master
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
@@ -416,123 +413,6 @@ class GridRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGamePOJO.getName())));
     }
-
-    @Test
-    @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
-        Mockito.when(mGridService.saveGame(Mockito.any(GamePOJO.class))).thenReturn(null);
-        mMockMvc.perform(post("/grid/add-game")
-                .content(asJsonString(mGamePOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("Could not save Game"));
-    }
-
-<<<<<<< HEAD
-
-=======
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
-        Mockito.when(mGridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(mGameKey);
-        mMockMvc.perform(post("/grid/gamekey")
-                .content(asJsonString(mGameKeyPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rkey", is("key")))
-                .andExpect(jsonPath("$.gameId", is(1)))
-        ;
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingInvalidGameKey_Return404Exception() throws Exception{
-        Mockito.when(mGridService.saveGameKey(Mockito.any(GameKeyPOJO.class))).thenReturn(null);
-        mMockMvc.perform(post("/grid/gamekey")
-                .content(asJsonString(mGameKeyPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("Could not save Game Key"))
-        ;
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
-        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(mSell);
-        mMockMvc.perform(post("/grid/add-sell-listing")
-                .content(asJsonString(mSellPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(4)))
-                .andExpect(jsonPath("$.userId", is(2)))
-                ;
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingInvalidSellListing_Return404Exception() throws Exception{
-        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(null);
-        mMockMvc.perform(post("/grid/add-sell-listing")
-                .content(asJsonString(mSellPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("Could not save Sell Listing"))
-        ;
-    }
-    
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidBuylisting_ReturnBuyList() throws Exception{
-        Mockito.when(mGridService.saveBuy(Mockito.any(BuyListingsPOJO.class))).thenReturn(Arrays.asList(mBuy));
-        mMockMvc.perform(post("/grid/buy-listing")
-                .content(asJsonString(mBuyListingsPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.*", hasSize(1)))
-        ;
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception{
-        Mockito.when(mGridService.saveBuy(Mockito.any(BuyListingsPOJO.class)))
-                .thenThrow(new UnavailableListingException("This listing has been bought by another user"));
-        mMockMvc.perform(post("/grid/buy-listing")
-                .content(asJsonString(mBuyListingsPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("This listing has been bought by another user"))
-        ;
-        System.out.println();
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception{
-        Mockito.when(mGridService.saveBuy(Mockito.any(BuyListingsPOJO.class)))
-                .thenThrow(new UnavailableListingException("This listing has been removed by the user"));
-        mMockMvc.perform(post("/grid/buy-listing")
-                .content(asJsonString(mBuyListingsPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("This listing has been removed by the user"))
-        ;
-    }
-
-    @Test
-    @WithMockUser(username="spring")
-    void whenPostingValidBuylisting_AndUserHasNoFunds_ThrowException() throws Exception{
-        Mockito.when(mGridService.saveBuy(Mockito.any(BuyListingsPOJO.class)))
-                .thenThrow(new UnsufficientFundsException("This user doesn't have enough funds"));
-        mMockMvc.perform(post("/grid/buy-listing")
-                .content(asJsonString(mBuyListingsPOJO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("This user doesn't have enough funds"))
-        ;
-    }
->>>>>>> master
 
     @Test
     @WithMockUser(username="spring")

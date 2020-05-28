@@ -36,7 +36,7 @@ public class ListingsController {
         return new ResponseEntity<>(gameKey, HttpStatus.OK);
     }
 
-    @PostMapping("/sell-listing")
+    @PostMapping("/add-sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
         Sell sell = mListingService.saveSell(sellPOJO);
         if (sell == null) {
