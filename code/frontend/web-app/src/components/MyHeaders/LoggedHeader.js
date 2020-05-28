@@ -41,7 +41,7 @@ export default function SectionNavbars(props) {
   const { user, cart, heightChange, height } = props;
 
   var cartIcon
-  if (cart == []) {
+  if (global.cart == null || global.cart.games.length == 0 ) {
     cartIcon = <i class="fas fa-shopping-cart"></i>
   } else {
     cartIcon = <i class="fas fa-cart-arrow-down" style={{ color: "#fd24ac" }}></i>

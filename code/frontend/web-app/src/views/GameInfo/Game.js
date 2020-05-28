@@ -231,8 +231,52 @@ class Game extends Component {
                         })
                     }
 
+                    var content = []
+
+                    data.content.forEach(sell => {
+                        var listing = sell
+
+                        var inCart = false
+                        console.log(global.cart.games)
+                        if (global.cart != null) {
+                            for (var i = 0; i < global.cart.games.length; i++) {
+                                var game = global.cart.games[i]
+
+                                console.log(game)
+                                if (listing.id == game.id) {
+                                    inCart = true
+                                    break
+                                }
+                            }
+                        }
+
+                        if (!inCart) {
+                            listing['cart'] = <Button
+                                size="md"
+                                style={{ backgroundColor: "#4ec884" }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => this.addToCart(sell)}
+                            >
+                                <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                        </Button>
+                        } else {
+                            listing['cart'] = <Button
+                                size="md"
+                                style={{ backgroundColor: "#ff3ea0" }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => this.removeFromCart(sell)}
+                            >
+                                <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                    </Button>
+                        }
+
+                        content.push(listing)
+                    })
+
                     this.setState({
-                        sellListings: data.content
+                        sellListings: content
                     })
                 }
             })
@@ -322,6 +366,43 @@ class Game extends Component {
 
     }
 
+    async addToCart(game) {
+        await this.setState({ doneLoading: false })
+
+        var cart = []
+        if (global.cart != null) {
+            cart = global.cart.games
+        }
+        cart.push(game)
+        localStorage.setItem('cart', JSON.stringify({ "games": cart }));
+        global.cart = JSON.parse(localStorage.getItem('cart'))
+
+        await this.getGameListings()
+
+        this.setState({ doneLoading: true })
+    }
+
+    async removeFromCart(game) {
+        await this.setState({ doneLoading: false })
+
+        var cart = []
+        if (global.cart != null) {
+            for (var i = 0; i < global.cart.games.length; i++) {
+                var foundGame = global.cart.games[i]
+                if (game.id != foundGame.id) {
+                    cart.push(foundGame)
+                }
+            }
+        }
+
+        await localStorage.setItem('cart', JSON.stringify({ "games": cart }));
+        global.cart = await JSON.parse(localStorage.getItem('cart'))
+
+        await this.getGameListings()
+
+        this.setState({ doneLoading: true })
+    }
+
     async componentDidMount() {
         window.scrollTo(0, 0)
         await this.getGameInfo()
@@ -342,8 +423,9 @@ class Game extends Component {
     }
 
     goToProfile = (profile) => {
-        this.setState({redirectProfile: profile})
+        this.setState({ redirectProfile: profile })
     }
+
 
 
     render() {
@@ -470,15 +552,7 @@ class Game extends Component {
                                                 </span>
                                             </TableCell>
                                             <TableCell align="right">
-                                                <Button
-                                                    size="md"
-                                                    style={{ backgroundColor: "#4ec884" }}
-                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                                            </Button>
+                                                {row.cart}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -525,6 +599,51 @@ class Game extends Component {
                 </div>
             </GridItem>
             if (this.state.game.bestSell != null) {
+                var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
+
+                if (this.state.game.bestSell.id == -1) {
+                    score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
+                }
+                else if (this.state.game.bestSell.id > 0 && this.state.game.bestSell.id <= 1) {
+                    score = <span style={{ color: "red" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                } else if (this.state.game.bestSell.id < 4) {
+                    score = <span style={{ color: "#fc926e" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                } else if (this.state.game.bestSell.id <= 5) {
+                    score = <span style={{ color: "#4ec884" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                }
+
+                var button = null
+                var inCart = false
+                for (var i = 0; i < global.cart.games.length; i++) {
+                    var foundGame = global.cart.games[i]
+                    if (this.state.game.bestSell.id == foundGame.id) {
+                        inCart = true;
+                        break
+                    }
+                }
+
+                if (!inCart) {
+                    button = <Button
+                        size="md"
+                        style={{ backgroundColor: "#4ec884", width: "100%" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => this.addToCart(this.state.game.bestSell)}
+                    >
+                        <i class="fas fa-cart-arrow-down"></i> Add to Cart
+            </Button>
+                } else {
+                    button = <Button
+                        size="md"
+                        style={{ backgroundColor: "#ff3ea0", width: "100%" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => this.removeFromCart(this.state.game.bestSell)}
+                    >
+                        <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                </Button>
+                }
+
                 bestPrice = <GridItem xs={12} sm={12} md={2}>
                     <div style={{ textAlign: "left", marginTop: "30px" }}>
                         <span style={{ color: "#999", fontSize: "12px" }}>
@@ -537,9 +656,7 @@ class Game extends Component {
                         </span>
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                            4 <i class="far fa-star"></i>
-                        </span>
+                        {score}
                         <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
                             Grid Score
                             </span>
@@ -575,15 +692,7 @@ class Game extends Component {
                     </div>
 
                     <div style={{ textAlign: "left", marginTop: "5px" }}>
-                        <Button
-                            size="md"
-                            style={{ backgroundColor: "#4ec884", width: "100%" }}
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                            </Button>
+                       {button}
                         <Button
                             size="md"
                             style={{ backgroundColor: "#1598a7", width: "100%" }}

@@ -195,16 +195,12 @@ class ProfilePage extends Component {
     }
 
     async componentDidMount() {
-        if (global.user.username == this.props.match.params.user) {
+        if (global.user != null && global.user.username == this.props.match.params.user) {
             await this.getPrivateUserInfo()
         } else {
             await this.getPublicUserInfo()
         }
 
-        console.log(this.state.info)
-        console.log(this.state.public)
-        console.log(global.user.username)
-        console.log(this.props.match.params.user)
         this.setState({ doneLoading: true })
     }
 

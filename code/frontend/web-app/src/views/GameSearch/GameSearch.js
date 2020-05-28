@@ -492,7 +492,7 @@ class GameSearch extends Component {
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
-                        <div className={"search"} style={{ position: "absolute", top: "200px", right: "25px", zIndex: "1" }}>
+                        <div className={"search"} style={{ position: "absolute", top: "200px", right: "25px", zIndex: "100" }}>
                             <GridContainer xs={12} sm={12} md={12}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Card style={{ height: "100%", width: "400px", float: "right" }}>
