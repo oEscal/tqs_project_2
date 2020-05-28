@@ -105,6 +105,5 @@ class SellRepositoryTest {
         Page<Sell> sells = pagination.pageImpl(page, entriesPerPage);
 
         assertEquals(sells, mRepository.findAllByGames(game.getId(), pageRequest));
-
     }
 }

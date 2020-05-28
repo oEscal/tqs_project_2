@@ -40,20 +40,22 @@ public class AuctionService {
     @SneakyThrows
     public Auction addAuction(AuctionPOJO auctionPOJO) {
 
+        String gameKeyStr = auctionPOJO.getGameKey();
+
         // verify if the game key is already in some auction
-        if (this.getAuctionByGameKey(auctionPOJO.getGameKey()) != null) {
+        if (this.getAuctionByGameKey(gameKeyStr) != null) {
             throw new ExceptionDetails("There is already an auction for that game key");
         }
 
         // verify if the game key is already in some sell
-        if (this.mSellRepository.findByGameKey_rKey(auctionPOJO.getGameKey()) != null) {
+        if (this.mSellRepository.findByGameKey_rKey(gameKeyStr) != null) {
             throw new ExceptionDetails("There is already a sell for that game key");
         }
 
         User auctioneer = mUserRepository.findByUsername(auctionPOJO.getAuctioneer());
         GameKey gameKey = null;
 
-        Optional<GameKey> possibleGameKey = mGameKeyRepository.findByrKey(auctionPOJO.getGameKey());
+        Optional<GameKey> possibleGameKey = mGameKeyRepository.findByrKey(gameKeyStr);
         if (possibleGameKey.isPresent()) {
             gameKey = possibleGameKey.get();
         }

@@ -7,6 +7,7 @@ import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,9 @@ class AuctionServiceTest {
 
     @Mock(lenient = true)
     private GameKeyRepository mGameKeyRepository;
+
+    @Mock(lenient = true)
+    private SellRepository mSellRepository;
 
     @InjectMocks
     private AuctionService mAuctionService;
@@ -136,6 +140,9 @@ class AuctionServiceTest {
         // mock game key repository
         given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
+        // mock sell repository
+        given(mSellRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(null);
+
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 
@@ -150,6 +157,9 @@ class AuctionServiceTest {
 
         // mock game key repository
         given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
+
+        // mock sell repository
+        given(mSellRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(null);
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
