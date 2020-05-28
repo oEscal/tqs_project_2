@@ -80,7 +80,7 @@ public class WebAppPageObject {
         driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
     }
 
-    // Write value into an input box
+    // Write value into an iScreenshot from 2020-05-28 11-23-58nput box
     public void writeInput(@Nullable String val, String id) {
         if (val != null) {
             driver.findElement(By.id(id)).click();
