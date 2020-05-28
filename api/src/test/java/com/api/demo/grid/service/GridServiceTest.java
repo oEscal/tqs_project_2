@@ -24,15 +24,7 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.BuyRepository;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
-import com.api.demo.grid.repository.ReviewUserRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.repository.*;
 import com.api.demo.grid.utils.Pagination;
 import com.api.demo.grid.utils.ReviewJoiner;
 import lombok.SneakyThrows;
@@ -46,10 +38,7 @@ import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -61,8 +50,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -92,6 +79,9 @@ class GridServiceTest {
 
     @Mock(lenient = true)
     private ReviewUserRepository mMockReviewUserRepo;
+
+    @Mock(lenient = true)
+    private ReviewGameRepository mMockReviewGameRepo;
 
     @InjectMocks
     private GridServiceImpl mGridService;
@@ -905,7 +895,7 @@ class GridServiceTest {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenGetValidUserReviews_ReturnReviews() throws Exception {
+    void whenGetValidUserReviews_ReturnReviews() {
         long userID = mUser.getId();
         mReviewGame.setId(1);
 
@@ -935,7 +925,7 @@ class GridServiceTest {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenGetInvalidUserReviews_ReturnNULL() throws Exception {
+    void whenGetInvalidUserReviews_ReturnNULL() {
         long userID = mUser.getId();
 
         Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.empty());
@@ -945,8 +935,60 @@ class GridServiceTest {
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(userID);
 
         assertNull(expected);
+    }
 
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviews_ReturnReviews() {
+        long userID = mUser.getId();
+        mReviewGame.setId(1);
 
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(mReviewGame);
+        mUser.setReviewGames(reviews);
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>(reviews));
+
+        Set<ReviewJoiner> reviewsJoiner = new HashSet<>();
+        long id = mReviewGame.getId();
+        String comment = mReviewGame.getComment();
+        int score = mReviewGame.getScore();
+        Date date = mReviewGame.getDate();
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
+
+        Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>(new ArrayList<>(reviewsJoiner));
+
+        assertEquals(expected.toString(), pagination.pageImpl(0, 18).toString());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviews_ReturnEmpty() {
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>());
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
+
+        Mockito.verify(mMockReviewGameRepo, Mockito.times(1)).findAll();
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>(new ArrayList<>());
+
+        assertEquals(expected.toString(), pagination.pageImpl(0, 18).toString());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviews_ReturnNULL() {
+
+        Mockito.when(mMockReviewGameRepo.findAll()).thenReturn(new ArrayList<>());
+
+        Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "incorrect");
+
+        assertNull(expected);
     }
 
 

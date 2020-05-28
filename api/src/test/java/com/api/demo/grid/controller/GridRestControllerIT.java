@@ -747,6 +747,64 @@ class GridRestControllerIT {
     }
 
 
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviews_ReturnSuccess() throws Exception {
+        Game game = new Game();
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        ReviewGame review = new ReviewGame();
+        review.setComment("comment");
+        review.setScore(1);
+        review.setAuthor(user);
+        review.setGame(game);
+        review.setDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(review);
+
+        user.setReviewGames(reviews);
+
+        this.mUserRepository.save(user);
+
+
+        mMockMvc.perform(get("/grid/all-reviews")
+                .param("page", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].comment", is(review.getComment())))
+                .andExpect(jsonPath("$.content.[0].score", is(review.getScore())));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidAllUserReviews_ReturnSuccessEmpty() throws Exception {
+        mMockMvc.perform(get("/grid/all-reviews")
+                .param("page", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(0)));
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidAllUserReviews_ReturnException() throws Exception {
+
+        mMockMvc.perform(get("/grid/all-reviews")
+                .param("page", "0")
+                .param("sort","incorrect")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

@@ -31,8 +31,9 @@ public class UserInfoController {
                                                    @RequestParam("username") String username){
         String value = ControllerUtils.getUserFromAuth(auth);
         User user = mUserService.getUser(value);
+
         if (user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
         }
         if (!value.equals(username) && !user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,

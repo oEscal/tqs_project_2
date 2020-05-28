@@ -54,13 +54,13 @@ public class GridRestController {
     @Autowired
     private GridService mGridService;
 
-    @GetMapping(value="/all", params = { "page" })
-    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page){
+    @GetMapping(value = "/all", params = {"page"})
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page) {
         return ResponseEntity.ok(mGridService.getAllGames(page));
     }
 
     @GetMapping("/game")
-    public ResponseEntity<Game> getGameInfo(@RequestParam long id){
+    public ResponseEntity<Game> getGameInfo(@RequestParam long id) {
         Game gameResponse = mGridService.getGameById(id);
         if (gameResponse == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + id);
@@ -69,7 +69,7 @@ public class GridRestController {
     }
 
     @GetMapping("/genre")
-    public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre){
+    public ResponseEntity<List<Game>> getGameByGenre(@RequestParam String genre) {
         List<Game> gameList = mGridService.getAllGamesWithGenre(genre);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + genre);
@@ -78,7 +78,7 @@ public class GridRestController {
     }
 
     @GetMapping("/name")
-    public ResponseEntity<List<Game>> getGameByName(@RequestParam String name){
+    public ResponseEntity<List<Game>> getGameByName(@RequestParam String name) {
         List<Game> gameList = mGridService.getAllGamesByName(name);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + name);
@@ -87,7 +87,7 @@ public class GridRestController {
     }
 
     @GetMapping("/developer")
-    public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev){
+    public ResponseEntity<List<Game>> getGameByDev(@RequestParam String dev) {
         List<Game> gameList = mGridService.getAllGamesByDev(dev);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + dev);
@@ -96,7 +96,7 @@ public class GridRestController {
     }
 
     @GetMapping("/publisher")
-    public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub){
+    public ResponseEntity<List<Game>> getGameByPub(@RequestParam String pub) {
         List<Game> gameList = mGridService.getAllGamesByPublisher(pub);
         if (gameList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ERROR + pub);
@@ -105,45 +105,45 @@ public class GridRestController {
     }
 
     @GetMapping("/sell-listing")
-    public ResponseEntity<Page<Sell>> getListingsByGame(@RequestParam long gameId, @RequestParam int page){
-        try{
+    public ResponseEntity<Page<Sell>> getListingsByGame(@RequestParam long gameId, @RequestParam int page) {
+        try {
             return new ResponseEntity<>(mGridService.getAllSellListings(gameId, page), HttpStatus.OK);
-        } catch (GameNotFoundException e){
+        } catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found in Database");
         }
     }
-    
+
     @PostMapping("/search")
-    public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO){
+    public ResponseEntity<Page<Game>> getGamesFromSearch(@RequestBody SearchGamePOJO searchGamePOJO) {
         return ResponseEntity.ok(mGridService.pageSearchGames(searchGamePOJO));
     }
 
     @PostMapping("/add-game")
-    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO){
+    public ResponseEntity<Game> saveGame(@RequestBody GamePOJO gamePOJO) {
         Game game = mGridService.saveGame(gamePOJO);
-        if (game == null){
+        if (game == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game");
         }
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
     @PostMapping("/add-genre")
-    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO){
+    public ResponseEntity<GameGenre> saveGameGenre(@RequestBody GameGenrePOJO gameGenrePOJO) {
         return new ResponseEntity<>(mGridService.saveGameGenre(gameGenrePOJO), HttpStatus.OK);
     }
 
     @PostMapping("/add-publisher")
-    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO){
+    public ResponseEntity<Publisher> savePublisher(@RequestBody PublisherPOJO publisherPOJO) {
         return new ResponseEntity<>(mGridService.savePublisher(publisherPOJO), HttpStatus.OK);
     }
 
     @PostMapping("/add-developer")
-    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO){
+    public ResponseEntity<Developer> saveDeveloper(@RequestBody DeveloperPOJO developerPOJO) {
         return new ResponseEntity<>(mGridService.saveDeveloper(developerPOJO), HttpStatus.OK);
     }
 
     @PostMapping("/gamekey")
-    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO){
+    public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO) {
         GameKey gameKey = mGridService.saveGameKey(gameKeyPOJO);
         if (gameKey == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game Key");
@@ -152,16 +152,16 @@ public class GridRestController {
     }
 
     @PostMapping("/add-sell-listing")
-    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO){
+    public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
         Sell sell = mGridService.saveSell(sellPOJO);
-        if (sell == null){
+        if (sell == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }
         return new ResponseEntity<>(sell, HttpStatus.OK);
     }
 
     @PostMapping("/buy-listing")
-    public ResponseEntity<List<Buy>> saveBuy(@RequestBody @Valid BuyListingsPOJO buyListingsPOJO){
+    public ResponseEntity<List<Buy>> saveBuy(@RequestBody @Valid BuyListingsPOJO buyListingsPOJO) {
         List<Buy> buys;
         try {
             buys = mGridService.saveBuy(buyListingsPOJO);
@@ -170,7 +170,7 @@ public class GridRestController {
         }
         return new ResponseEntity<>(buys, HttpStatus.OK);
     }
-    
+
     @PostMapping(value = "/add-wish-list", params = {"game_id", "user_id"})
     public ResponseEntity<Set<Game>> addWishList(@RequestParam("game_id") long gameID, @RequestParam("user_id") long userID) {
         Set<Game> games = mGridService.addWishListByUserID(gameID, userID);
@@ -199,7 +199,7 @@ public class GridRestController {
     }
 
     @GetMapping(value = "/game-review", params = {"game_id", "page"})
-    public ResponseEntity<Page<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID,@RequestParam("page") int page) {
+    public ResponseEntity<Page<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID, @RequestParam("page") int page) {
         Page<ReviewGame> reviews = mGridService.getGameReviews(gameID, page);
         if (reviews == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain game review");
@@ -212,6 +212,15 @@ public class GridRestController {
         Page<ReviewJoiner> reviews = mGridService.getUserReviews(userID, page);
         if (reviews == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain user review");
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all-reviews")
+    public ResponseEntity<Page<ReviewJoiner>> allReviews(@RequestParam(value = "page") int page,
+                                                         @RequestParam(value = "sort", required = false, defaultValue = "score") String sort) {
+        Page<ReviewJoiner> reviews = mGridService.getAllReviews(page, sort);
+        if (reviews == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain all reviews");
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 

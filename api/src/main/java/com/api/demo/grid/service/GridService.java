@@ -51,4 +51,5 @@ public interface GridService {
     Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO);
     Page<ReviewGame> getGameReviews(long gameID,int page);
     Page<ReviewJoiner> getUserReviews(long userID, int page);
+    Page<ReviewJoiner> getAllReviews(int page, String sort);
 }

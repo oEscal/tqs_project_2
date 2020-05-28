@@ -50,6 +50,9 @@ public class GridServiceImpl implements GridService {
     @Autowired
     private ReviewUserRepository mReviewUserRepository;
 
+    @Autowired
+    private ReviewGameRepository mReviewGameRepository;
+
     private SearchGamePOJO mPreviousGamePojo;
 
     private List<Game> mPreviousSearch;
@@ -70,7 +73,7 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
-    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException{
+    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException {
         Optional<Game> game = mGameRepository.findById(gameId);
         if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
         return mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
@@ -211,7 +214,7 @@ public class GridServiceImpl implements GridService {
         User user;
         if (optionalUser.isEmpty()) return null;
         user = optionalUser.get();
-        for (long sellId : buyListingsPOJO.getListingsId()){
+        for (long sellId : buyListingsPOJO.getListingsId()) {
             sell = mSellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
             else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
@@ -226,7 +229,7 @@ public class GridServiceImpl implements GridService {
             if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
             user.payWithFunds(bill);
         }
-        for (Buy buy1: buyList) {
+        for (Buy buy1 : buyList) {
             user.addBuy(buy1);
             mBuyRepository.save(buy1);
         }
@@ -246,8 +249,8 @@ public class GridServiceImpl implements GridService {
         String[] genres = searchGamePOJO.getGenres();
         Optional<GameGenre> genre;
         ArrayList<GameGenre> realGenres = new ArrayList<>();
-        if (genres.length > 0){
-            for (String gen: genres){
+        if (genres.length > 0) {
+            for (String gen : genres) {
                 genre = this.mGameGenreRepository.findByName(gen);
                 if (genre.isEmpty()) continue;
                 realGenres.add(genre.get());
@@ -256,31 +259,31 @@ public class GridServiceImpl implements GridService {
         }
         //Filter by platform
         String[] platforms = searchGamePOJO.getPlataforms();
-        if (platforms.length > 0){
+        if (platforms.length > 0) {
             games.removeIf(game -> !CollectionUtils.containsAny(game.getPlatforms(), Arrays.asList(platforms)));
         }
 
         double begin = searchGamePOJO.getStartPrice();
         double end = searchGamePOJO.getEndPrice();
-        if (begin != 0 && end > begin){
+        if (begin != 0 && end > begin) {
             games.removeIf(game -> game.getBestSell().getPrice() <= begin || game.getBestSell().getPrice() >= end);
-        } else if (begin != 0){
+        } else if (begin != 0) {
             games.removeIf(game -> game.getBestSell().getPrice() <= begin);
         }
         return games;
     }
 
     @Override
-    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO){
-        if (!searchGamePOJO.equals(mPreviousGamePojo)){
+    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO) {
+        if (!searchGamePOJO.equals(mPreviousGamePojo)) {
             mPreviousGamePojo = searchGamePOJO;
             mPreviousSearch = searchGames(searchGamePOJO);
         }
         int page = searchGamePOJO.getPage();
         Pageable pageable = PageRequest.of(page, 18);
         long start = pageable.getOffset();
-        long end = (start + 18 > mPreviousSearch.size())? mPreviousSearch.size():start+18;
-        return new PageImpl<>(mPreviousSearch.subList((int)start,(int) end),
+        long end = (start + 18 > mPreviousSearch.size()) ? mPreviousSearch.size() : start + 18;
+        return new PageImpl<>(mPreviousSearch.subList((int) start, (int) end),
                 PageRequest.of(page, 18), mPreviousSearch.size());
     }
 
@@ -399,7 +402,7 @@ public class GridServiceImpl implements GridService {
         Pagination<ReviewGame> pagination = new Pagination<>();
 
 
-        return pagination.convertToPage(reviewsList, page,18);
+        return pagination.convertToPage(reviewsList, page, 18);
     }
 
     @Override
@@ -441,7 +444,60 @@ public class GridServiceImpl implements GridService {
 
         Pagination<ReviewJoiner> pagination = new Pagination<>();
 
-        return pagination.convertToPage(reviews, page,18);
+        return pagination.convertToPage(reviews, page, 18);
+    }
+
+    @Override
+    public Page<ReviewJoiner> getAllReviews(int page, String sort) {
+        List<ReviewJoiner> reviews = new ArrayList<>();
+
+        List<String> sortedKeywords = Arrays.asList("score", "user", "date");
+        if (!sortedKeywords.contains(sort)) return null;
+
+        List<ReviewUser> userReviews = mReviewUserRepository.findAll();
+        for (ReviewUser currentReview : userReviews) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportUser> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            User target = currentReview.getTarget();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+        }
+
+        List<ReviewGame> userGames = mReviewGameRepository.findAll();
+        for (ReviewGame currentReview : userGames) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportReviewGame> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            Game game = currentReview.getGame();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+        }
+
+
+        reviews.sort(new Comparator<ReviewJoiner>() {
+            @Override
+            public int compare(ReviewJoiner t1, ReviewJoiner t2) {
+               if(sort.equalsIgnoreCase("score")) {
+                    return t2.getScore() - t1.getScore();
+
+               } else if(sort.equalsIgnoreCase("user")){
+                   return t1.getAuthor().getUsername().compareTo(t2.getAuthor().getUsername());
+
+               }else if(sort.equalsIgnoreCase("date")){
+                    return t1.getDate().compareTo(t2.getDate());
+
+               }
+                return 0;
+            }
+        });
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>();
+        return pagination.convertToPage(reviews, page, 18);
     }
 
 }
