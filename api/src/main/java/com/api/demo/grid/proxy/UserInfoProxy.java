@@ -33,7 +33,7 @@ public class UserInfoProxy {
         this.birthDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getBirthDate());
         this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getStartDate());
         this.listings = (user.getSells() == null)? new ArrayList<>():new ArrayList<>(user.getSells());
-        this.reviews = (user.getReviews() == null)? new ArrayList<>(): new ArrayList<>(user.getReviews());
+        this.reviews = (user.getReviewUsers() == null)? new ArrayList<>(): new ArrayList<>(user.getReviewUsers());
     }
 
     public double getScore(){

@@ -4,23 +4,26 @@ import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
 
+import com.api.demo.grid.models.Buy;
 import com.api.demo.grid.models.Developer;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.ReviewGame;
+import com.api.demo.grid.models.ReviewUser;
 import com.api.demo.grid.models.Sell;
-import com.api.demo.grid.models.Buy;
 
+import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.ReviewGamePOJO;
+import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.pojos.BuyListingsPOJO;
-
 import com.api.demo.grid.service.GridService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,4 +178,33 @@ public class GridRestController {
 
         return new ResponseEntity<>(games, HttpStatus.OK);
     }
+
+    @PostMapping(value = "/add-game-review")
+    public ResponseEntity<Set<ReviewGame>> addGameReview(@RequestBody ReviewGamePOJO reviewGamePOJO) {
+        Set<ReviewGame> reviewGames = mGridService.addGameReview(reviewGamePOJO);
+        if (reviewGames == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add game review");
+
+        return new ResponseEntity<>(reviewGames, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add-user-review")
+    public ResponseEntity<Set<ReviewUser>> addUserReview(@RequestBody ReviewUserPOJO reviewUserPOJO) {
+        Set<ReviewUser> reviewUsers = mGridService.addUserReview(reviewUserPOJO);
+        if (reviewUsers == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add user review");
+
+        return new ResponseEntity<>(reviewUsers, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/game-review", params = {"game_id", "page"})
+    public ResponseEntity<Page<ReviewGame>> gameReviews(@RequestParam("game_id") long gameID,@RequestParam("page") int page) {
+        Page<ReviewGame> reviews = mGridService.getGameReviews(gameID, page);
+        if (reviews == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not obtain game review");
+
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
+
 }

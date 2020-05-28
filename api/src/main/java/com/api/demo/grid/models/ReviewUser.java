@@ -9,24 +9,14 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Date;
 import java.util.Set;
 
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
@@ -34,32 +24,37 @@ import java.util.Set;
 @EqualsAndHashCode
 @JsonSerialize
 @SuppressFBWarnings
+@Table(
+        uniqueConstraints =
+                {@UniqueConstraint(columnNames = {"review_from_user_id", "review_to_user_id"})}
+)
 public class ReviewUser {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
+    @Column(nullable = false)
     private String comment;
 
     @Min(0)
-    @Min(5)
+    @Max(5)
+    @Column(nullable = false)
     private int score;
 
     @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
     private Date date;
 
     @OneToMany
     private Set<ReportUser> reports;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_from_user_id")
-    @JsonIgnore
+    @JoinColumn(name = "review_from_user_id", nullable = false)
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_to_user_id")
-    @JsonIgnore
+    @JoinColumn(name = "review_to_user_id", nullable = false)
     private User target;
 
 
@@ -71,7 +66,4 @@ public class ReviewUser {
         this.date = (Date) date.clone();
     }
 
-    public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
-
-    public long getTargetId() { return (target == null)? 0:target.getId(); }
 }

@@ -7,35 +7,31 @@ import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.ReviewGame;
+import com.api.demo.grid.models.ReviewUser;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+
 import com.api.demo.grid.pojos.BuyListingsPOJO;
-import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.ReviewGamePOJO;
+import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.BuyRepository;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
-import com.api.demo.grid.utils.Pagination;
+
+import com.api.demo.grid.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,11 +40,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -87,6 +83,12 @@ class GridRestControllerIT {
     private BuyRepository mBuyRepository;
 
     @Autowired
+    private ReviewUserRepository mReviewUserRepository;
+
+    @Autowired
+    private ReviewGameRepository mReviewGameRepository;
+
+    @Autowired
     private MockMvc mMockMvc;
 
     private GameGenrePOJO mGameGenrePOJO;
@@ -96,10 +98,12 @@ class GridRestControllerIT {
     private SellPOJO mSellPOJO;
     private GameKeyPOJO mGameKeyPOJO;
     private BuyListingsPOJO mBuyListingsPOJO;
+    private ReviewGamePOJO mReviewGamePOJO;
+    private ReviewUserPOJO mReviewUserPOJO;
     private static int mNumberUser = 0;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         mGameGenrePOJO = new GameGenrePOJO("genre", "");
         mPublisherPOJO = new PublisherPOJO("publisher", "");
         mDeveloperPOJO = new DeveloperPOJO("developer");
@@ -109,20 +113,25 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("publisher");
         mGameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
         mSellPOJO = new SellPOJO("key", 6L, 2.3, null);
+        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
+        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
 
         mBuyListingsPOJO = new BuyListingsPOJO();
-        mUserRepository.deleteAll();
-        mGameRepository.deleteAll();
+
+        mReviewUserRepository.deleteAll();
+        mReviewGameRepository.deleteAll();
         mGameGenreRepository.deleteAll();
         mPublisherRepository.deleteAll();
         mGameKeyRepository.deleteAll();
-        mSellRepository.deleteAll();
         mBuyRepository.deleteAll();
+        mGameRepository.deleteAll();
+        mUserRepository.deleteAll();
+        mSellRepository.deleteAll();
     }
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingValidGenre_ReturnValidResponse() throws Exception{
+    void whenPostingValidGenre_ReturnValidResponse() throws Exception {
 
         mMockMvc.perform(post("/grid/add-genre")
                 .content(asJsonString(mGameGenrePOJO))
@@ -136,7 +145,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingValidPub_ReturnValidResponse() throws Exception{
+    void whenPostingValidPub_ReturnValidResponse() throws Exception {
         mMockMvc.perform(post("/grid/add-publisher")
                 .content(asJsonString(mPublisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -148,7 +157,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception{
+    void whenPostingValidDeveloper_ReturnValidResponse() throws Exception {
         mMockMvc.perform(post("/grid/add-developer")
                 .content(asJsonString(mDeveloperPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -159,7 +168,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingValidGame_ReturnValidResponse() throws Exception{
+    void whenPostingValidGame_ReturnValidResponse() throws Exception {
         Developer developer = new Developer();
         developer.setName("dev");
         mDeveloperRepository.save(developer);
@@ -214,7 +223,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
-    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception{
+    void whenPostingInvalidGame_ReturnErrorResponse() throws Exception {
 
         mGamePOJO.setPublisher(null);
 
@@ -228,7 +237,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception{
+    void whenPostingValidGameKey_ReturnValidGameKeyObject() throws Exception {
         Game game = new Game();
         mGameRepository.save(game);
         mGameKeyPOJO.setGameId(game.getId());
@@ -243,7 +252,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingInvalidGameKey_Return404Exception() throws Exception{
+    void whenPostingInvalidGameKey_Return404Exception() throws Exception {
         mGameKeyPOJO.setGameId(-1);
         mMockMvc.perform(post("/grid/gamekey")
                 .content(asJsonString(mGameKeyPOJO))
@@ -255,7 +264,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception{
+    void whenPostingValidSellListing_ReturnValidSellObject() throws Exception {
         User user = createUser();
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
@@ -274,7 +283,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception{
+    void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception {
         Game game = new Game();
         GameKey gameKey = new GameKey();
         gameKey.setRKey("key");
@@ -304,7 +313,7 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingInvalidSellListing_Return404Exception() throws Exception{
+    void whenPostingInvalidSellListing_Return404Exception() throws Exception {
 
         mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
@@ -315,11 +324,13 @@ class GridRestControllerIT {
     }
 
     @Test
-    void whenPostingValidBuylisting_ReturnBuyList() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidBuylisting_ReturnBuyList() throws Exception {
         User seller = createUser();
-        mUserRepository.save(seller);
+        //mUserRepository.save(seller);
         Sell sell = new Sell();
-        sell.setUser(mUserRepository.findById(seller.getId()).get());
+        sell.setUser(seller);
+        sell.setGameKey(new GameKey());
         mSellRepository.save(sell);
         User buyer = createUser();
         mUserRepository.save(buyer);
@@ -337,44 +348,51 @@ class GridRestControllerIT {
     }
 
     @Test
-    void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception {
         User seller = createUser();
-        mUserRepository.save(seller);
+        //mUserRepository.save(seller);
         Sell sell = new Sell();
         sell.setUser(seller);
-        mSellRepository.save(sell);
+        sell.setGameKey(new GameKey());
+
+
         User buyer = createUser();
         mUserRepository.save(buyer);
 
         Buy buy = new Buy();
-        mBuyRepository.save(buy);
         sell.setPurchased(buy);
+
+        mSellRepository.save(sell);
 
         Buy buy1 = new Buy();
         buy1.setUser(buyer);
         mBuyRepository.save(buy1);
 
+
         long[] listingId = {sell.getId()};
         mBuyListingsPOJO.setListingsId(listingId);
         mBuyListingsPOJO.setUserId(buyer.getId());
         mBuyListingsPOJO.setWithFunds(false);
+
         mMockMvc.perform(post("/grid/buy-listing")
                 .content(asJsonString(mBuyListingsPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("This listing has been bought by another user"))
-        ;
-        System.out.println();
+                .andExpect(status().reason("This listing has been bought by another user"));
+
     }
 
     @Test
-    void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception{
+    @WithMockUser(username = "spring")
+    void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception {
         User seller = createUser();
-        mUserRepository.save(seller);
+        //mUserRepository.save(seller);
         User buyer = createUser();
         mUserRepository.save(buyer);
         Sell sell = new Sell();
-        sell.setUser(mUserRepository.findById(seller.getId()).get());
+        sell.setUser(seller);
+        sell.setGameKey(new GameKey());
         mSellRepository.save(sell);
 
         long[] listingId = {sell.getId()};
@@ -392,15 +410,19 @@ class GridRestControllerIT {
     }
 
     @Test
-    void whenPostingValidBuylisting_AndUserHasNoFunds_ThrowException() throws Exception{
-        User seller = createUser();
-        mUserRepository.save(seller);
+    @WithMockUser(username = "spring")
+    void whenPostingValidBuylisting_AndUserHasNoFunds_ThrowException() throws Exception {
         User buyer = createUser();
         buyer.setFunds(0);
         mUserRepository.save(buyer);
+
+        User seller = createUser();
         Sell sell = new Sell();
-        sell.setUser(mUserRepository.findById(seller.getId()).get());
+        sell.setUser(seller);
+        sell.setPrice(1);
+        sell.setGameKey(new GameKey());
         mSellRepository.save(sell);
+
         long[] listingId = {sell.getId()};
         mBuyListingsPOJO.setListingsId(listingId);
         mBuyListingsPOJO.setUserId(buyer.getId());
@@ -438,17 +460,250 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.[0].id", is((int)game.getId())));
     }
     */
-    
+
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingInvalidWishList_ReturnException() throws  Exception {
+    void whenPostingInvalidWishList_ReturnException() throws Exception {
         mMockMvc.perform(post("/grid/add-wish-list")
                 .param("user_id", String.valueOf(1))
                 .param("game_id", String.valueOf(1))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidGameReview_ReturnSuccess() throws Exception {
+        Game game = new Game();
+        mGameRepository.save(game);
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        mUserRepository.save(user);
+
+        mReviewGamePOJO.setAuthor(user.getId());
+        mReviewGamePOJO.setGame(game.getId());
+
+        mMockMvc.perform(post("/grid/add-game-review")
+                .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].comment", is(mReviewGamePOJO.getComment())))
+                .andExpect(jsonPath("$.[0].score", is(mReviewGamePOJO.getScore())))
+                .andExpect(jsonPath("$.[0].author.username", is(user.getUsername())));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingRepeatedGameReview_ReturnException() throws Exception {
+        Game game = new Game();
+        game.setReviews(new HashSet<ReviewGame>());
+        User user = new User();
+        user.setReviewGames(new HashSet<ReviewGame>());
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBuys(new HashSet<>());
+        user.setReportsOnGameReview(new HashSet<>());
+        user.setReportsOnUser(new HashSet<>());
+        user.setReportsOnUserReview(new HashSet<>());
+        user.setReportsThisUser(new HashSet<>());
+        user.setReviewUsers(new HashSet<>());
+        user.setReviewedUsers(new HashSet<>());
+        user.setReviewUsers(new HashSet<>());
+        user.setAuctions(new HashSet<>());
+        user.setSells(new HashSet<>());
+        user.setWishList(new HashSet<>());
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+
+        mReviewGamePOJO.setAuthor(1);
+        mReviewGamePOJO.setGame(1);
+
+        Set<ReviewGame> gameReviews = game.getReviews();
+        Set<ReviewGame> userGameReviews = user.getReviewGames();
+
+
+        ReviewGame review = new ReviewGame();
+        review.setComment(mReviewGamePOJO.getComment());
+        review.setScore(mReviewGamePOJO.getScore());
+        review.setAuthor(user);
+        review.setGame(game);
+        review.setDate(mReviewGamePOJO.getDate());
+
+        gameReviews.add(review);
+        userGameReviews.add(review);
+
+        user.setReviewGames(userGameReviews);
+        game.setReviews(gameReviews);
+
+        mGameRepository.save(game);
+        mUserRepository.save(user);
+
+
+        mMockMvc.perform(post("/grid/add-game-review")
+                .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidGameReview_ReturnException() throws Exception {
+
+        mMockMvc.perform(post("/grid/add-game-review")
+                .content(asJsonString(mReviewGamePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingValidUserReview_ReturnSuccess() throws Exception {
+        User author = new User();
+        author.setUsername("mUsername1");
+        author.setName("mName1");
+        author.setEmail("mEmail1");
+        author.setPassword("mPassword1");
+        author.setCountry("mCountry1");
+        author.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        User target = new User();
+        target.setUsername("mUsername2");
+        target.setName("mName2");
+        target.setEmail("mEmail2");
+        target.setPassword("mPassword2");
+        target.setCountry("mCountry2");
+        target.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+
+        this.mUserRepository.save(author);
+        this.mUserRepository.save(target);
+
+        mReviewUserPOJO.setAuthor(author.getId());
+        mReviewUserPOJO.setTarget(target.getId());
+
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].comment", is(mReviewUserPOJO.getComment())))
+                .andExpect(jsonPath("$[0].score", is(mReviewUserPOJO.getScore())))
+                .andExpect(jsonPath("$[0].author.username", is(author.getUsername())));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingRepeatedUserReview_ReturnException() throws Exception {
+        User author = new User();
+        author.setUsername("mUsername1");
+        author.setName("mName1");
+        author.setEmail("mEmail1");
+        author.setPassword("mPassword1");
+        author.setCountry("mCountry1");
+        author.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        User target = new User();
+        target.setUsername("mUsername2");
+        target.setName("mName2");
+        target.setEmail("mEmail2");
+        target.setPassword("mPassword2");
+        target.setCountry("mCountry2");
+        target.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+
+        mReviewUserPOJO.setAuthor(1);
+        mReviewUserPOJO.setTarget(2);
+
+        ReviewUser review = new ReviewUser();
+
+        review.setComment(mReviewUserPOJO.getComment());
+        review.setScore(mReviewUserPOJO.getScore());
+        review.setAuthor(author);
+        review.setTarget(target);
+        review.setDate(mReviewUserPOJO.getDate());
+
+
+        this.mUserRepository.save(author);
+        this.mUserRepository.save(target);
+        this.mReviewUserRepository.save(review);
+
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidUserReview_ReturnException() throws Exception {
+        mReviewUserPOJO.setAuthor(1);
+        mReviewUserPOJO.setTarget(2);
+        mMockMvc.perform(post("/grid/add-user-review")
+                .content(asJsonString(mReviewUserPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetValidGameReviews_ReturnSuccess() throws Exception {
+        Game game = new Game();
+        User user = new User();
+        user.setUsername("mUsername1");
+        user.setName("mName1");
+        user.setEmail("mEmail1");
+        user.setPassword("mPassword1");
+        user.setCountry("mCountry1");
+        user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        ReviewGame review = new ReviewGame();
+        review.setComment("comment");
+        review.setScore(1);
+        review.setAuthor(user);
+        review.setGame(game);
+        review.setDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+
+        Set<ReviewGame> reviews = new HashSet<>();
+        reviews.add(review);
+
+        game.setReviews(reviews);
+
+        this.mGameRepository.save(game);
+
+
+        mMockMvc.perform(get("/grid/game-review")
+                .param("game_id", String.valueOf(game.getId()))
+                .param("page", "0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].comment", is(review.getComment())))
+                .andExpect(jsonPath("$.content.[0].score", is(review.getScore())))
+                .andExpect(jsonPath("$.content.[0].game.id", is((int) game.getId())));
+    }
+
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGetInvalidGameReviews_ReturnException() throws Exception {
+
+        mMockMvc.perform(get("/grid/game-review")
+                .param("game_id", String.valueOf(1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {

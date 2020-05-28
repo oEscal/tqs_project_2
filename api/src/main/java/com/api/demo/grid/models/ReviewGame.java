@@ -8,26 +8,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
+import javax.persistence.*;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Date;
 import java.util.Set;
 
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
@@ -35,32 +26,37 @@ import java.util.Set;
 @EqualsAndHashCode
 @JsonSerialize
 @SuppressFBWarnings
+@Table(
+        uniqueConstraints =
+                {@UniqueConstraint(columnNames = {"user_id", "game_id"})}
+)
 public class ReviewGame {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
+    @Column(nullable = false)
     private String comment;
 
     @Min(0)
-    @Min(5)
+    @Max(5)
+    @Column(nullable = false)
     private int score;
 
     @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
     private Date date;
 
     @OneToMany
     private Set<ReportReviewGame> reports;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "game_id")
-    @JsonIgnore
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
 
@@ -72,7 +68,4 @@ public class ReviewGame {
         this.date = (Date) date.clone();
     }
 
-    public long getAuthorId(){ return (author == null)? 0:this.author.getId(); }
-
-    public long getGameId() { return (game == null)? 0:game.getId(); }
 }

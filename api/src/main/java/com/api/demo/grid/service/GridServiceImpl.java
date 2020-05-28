@@ -4,30 +4,10 @@ import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
 
-import com.api.demo.grid.models.Buy;
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.models.Sell;
-import com.api.demo.grid.models.User;
-import com.api.demo.grid.pojos.BuyListingsPOJO;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GameKeyPOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.pojos.SearchGamePOJO;
-import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.BuyRepository;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pagination.Pagination;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,12 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService {
@@ -70,6 +45,9 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private BuyRepository mBuyRepository;
+
+    @Autowired
+    private ReviewUserRepository mReviewUserRepository;
 
     private SearchGamePOJO mPreviousGamePojo;
 
@@ -323,6 +301,104 @@ public class GridServiceImpl implements GridService {
         this.mUserRepository.save(realUser);
         this.mGameRepository.save(realGame);
         return wishList;
+    }
+
+    @Override
+    public Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO) {
+        Optional<User> user = this.mUserRepository.findById(reviewGamePOJO.getAuthor());
+        if (user.isEmpty()) return null;
+
+        Optional<Game> game = this.mGameRepository.findById(reviewGamePOJO.getGame());
+        if (game.isEmpty()) return null;
+
+
+        User realUser = user.get();
+        Game realGame = game.get();
+
+        Set<ReviewGame> gameReviews = realGame.getReviews();
+        Set<ReviewGame> userGameReviews = realUser.getReviewGames();
+
+
+        ReviewGame review = new ReviewGame();
+
+        review.setComment(reviewGamePOJO.getComment());
+        review.setScore(reviewGamePOJO.getScore());
+        review.setAuthor(realUser);
+        review.setGame(realGame);
+        review.setDate(reviewGamePOJO.getDate());
+
+        gameReviews.add(review);
+        userGameReviews.add(review);
+
+        realUser.setReviewGames(userGameReviews);
+        realGame.setReviews(gameReviews);
+
+        try {
+            this.mGameRepository.save(realGame);
+            this.mUserRepository.save(realUser);
+        } catch (Exception e) {
+            return null;
+        }
+        return gameReviews;
+    }
+
+    @Override
+    public Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO) {
+        long authorID = reviewUserPOJO.getAuthor();
+        long targetID = reviewUserPOJO.getTarget();
+
+        if (authorID == targetID) return null;
+
+        Optional<User> author = this.mUserRepository.findById(authorID);
+        if (author.isEmpty()) return null;
+
+        Optional<User> target = this.mUserRepository.findById(targetID);
+        if (target.isEmpty()) return null;
+
+
+        User realAuthor = author.get();
+        User realTarget = target.get();
+
+        Set<ReviewUser> authorReviews = realAuthor.getReviewedUsers();
+        Set<ReviewUser> targetReviews = realTarget.getReviewUsers();
+
+        ReviewUser review = new ReviewUser();
+
+        review.setComment(reviewUserPOJO.getComment());
+        review.setScore(reviewUserPOJO.getScore());
+        review.setAuthor(realAuthor);
+        review.setTarget(realTarget);
+        review.setDate(reviewUserPOJO.getDate());
+
+        authorReviews.add(review);
+        targetReviews.add(review);
+
+        realAuthor.setReviewedUsers(authorReviews);
+        realTarget.setReviewUsers(targetReviews);
+
+        try {
+            this.mReviewUserRepository.save(review);
+        } catch (Exception e) {
+            return null;
+        }
+
+        return targetReviews;
+    }
+
+    @Override
+    public Page<ReviewGame> getGameReviews(long gameID, int page) {
+        Optional<Game> game = this.mGameRepository.findById(gameID);
+        if (game.isEmpty()) return null;
+
+        Set<ReviewGame> reviews = game.get().getReviews();
+        reviews = (reviews == null) ? new HashSet<>() : reviews;
+        List<ReviewGame> reviewsList = new ArrayList<>();
+        reviewsList.addAll(reviews);
+
+        Pagination<ReviewGame> pagination = new Pagination<>();
+
+
+        return pagination.convertToPage(reviewsList, page,18);
     }
 
 }
