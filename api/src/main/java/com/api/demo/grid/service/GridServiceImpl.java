@@ -479,21 +479,18 @@ public class GridServiceImpl implements GridService {
         }
 
 
-        reviews.sort(new Comparator<ReviewJoiner>() {
-            @Override
-            public int compare(ReviewJoiner t1, ReviewJoiner t2) {
-               if(sort.equalsIgnoreCase("score")) {
-                    return t2.getScore() - t1.getScore();
+        reviews.sort((t1, t2) -> {
+            if (sort.equalsIgnoreCase("score")) {
+                return t2.getScore() - t1.getScore();
 
-               } else if(sort.equalsIgnoreCase("user")){
-                   return t1.getAuthor().getUsername().compareTo(t2.getAuthor().getUsername());
+            } else if (sort.equalsIgnoreCase("user")) {
+                return t1.getAuthor().getUsername().compareTo(t2.getAuthor().getUsername());
 
-               }else if(sort.equalsIgnoreCase("date")){
-                    return t1.getDate().compareTo(t2.getDate());
+            } else if (sort.equalsIgnoreCase("date")) {
+                return t1.getDate().compareTo(t2.getDate());
 
-               }
-                return 0;
             }
+            return 0;
         });
 
         Pagination<ReviewJoiner> pagination = new Pagination<>();

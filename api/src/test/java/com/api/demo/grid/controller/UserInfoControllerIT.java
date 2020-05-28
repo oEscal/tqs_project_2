@@ -113,7 +113,7 @@ class UserInfoControllerIT {
         mGameKeyRepo.deleteAll();
         mSellRepo.deleteAll();
     }
-    /*
+
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
@@ -146,6 +146,7 @@ class UserInfoControllerIT {
         ;
     }
 
+    /*
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo(){
@@ -167,7 +168,10 @@ class UserInfoControllerIT {
         ;
         //TODO check for wishlist, buys and reviews once endpoints are done
     }
+    */
+    
 
+    /*
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsAdmin_getValidPrivateInfo(){
@@ -192,6 +196,8 @@ class UserInfoControllerIT {
         ;
         //TODO check for wishlist, buys and reviews once endpoints are done
     }
+    *
+     */
 
     @Test
     @SneakyThrows
@@ -224,5 +230,5 @@ class UserInfoControllerIT {
         ;
 
     }
-     */
+
 }

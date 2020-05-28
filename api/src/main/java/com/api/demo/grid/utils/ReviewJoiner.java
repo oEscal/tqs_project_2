@@ -31,7 +31,7 @@ public class ReviewJoiner {
         this.id = id;
         this.comment = comment;
         this.score = score;
-        this.date = date;
+        this.date = (date == null) ? new Date() : (Date) date.clone();
         this.reportsUser = reports;
         this.author = author;
         this.target = target;
@@ -42,12 +42,15 @@ public class ReviewJoiner {
         this.id = id;
         this.comment = comment;
         this.score = score;
-        this.date = date;
+        this.date = (date == null) ? new Date() : (Date) date.clone();
         this.reportsGame = reports;
         this.author = author;
         this.game = game;
         this.isGameReview = true;
     }
 
+    public Date getDate() { return (Date) this.date.clone(); }
+
+    public void setDate(Date date){ this.date = (Date) date.clone();}
 
 }
