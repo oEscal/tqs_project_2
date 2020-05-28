@@ -110,8 +110,9 @@ public class Auction {
 
         this.auctioneer = auctioneer;
 
-        if (auctioneer != null)
+        if (auctioneer != null) {
             auctioneer.addAuctionCreated(this);
+        }
     }
 
     public void setGameKey(GameKey gameKey) {
@@ -119,7 +120,8 @@ public class Auction {
 
         this.gameKey = gameKey;
 
-        if (gameKey != null)
+        if (gameKey != null) {
             gameKey.setAuction(this);
+        }
     }
 }

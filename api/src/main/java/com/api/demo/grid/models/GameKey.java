@@ -101,8 +101,9 @@ public class GameKey {
 
         this.auction = auction;
 
-        if (auction != null)
+        if (auction != null) {
             auction.setGameKey(this);
+        }
     }
     
     @EqualsAndHashCode.Include

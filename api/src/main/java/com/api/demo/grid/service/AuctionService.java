@@ -43,7 +43,7 @@ public class AuctionService {
         String gameKeyStr = auctionPOJO.getGameKey();
 
         // verify if there is a price
-        if (auctionPOJO.getPrice() == 0) {
+        if (auctionPOJO.getPrice() <= 0) {
             throw new ExceptionDetails("The auction must begin in a price above 0");
         }
 
@@ -63,14 +63,13 @@ public class AuctionService {
             throw new ExceptionDetails("The Auctioneer doesn't exists");
         }
 
-        GameKey gameKey = null;
+        GameKey gameKey;
         Optional<GameKey> possibleGameKey = mGameKeyRepository.findByrKey(gameKeyStr);
-        if (possibleGameKey.isPresent()) {
-            gameKey = possibleGameKey.get();
-        }
 
         // verify if the game key exists
-        if (gameKey == null) {
+        if (possibleGameKey.isPresent()) {
+            gameKey = possibleGameKey.get();
+        } else {
             throw new ExceptionDetails("The Game key doesn't exists");
         }
 
