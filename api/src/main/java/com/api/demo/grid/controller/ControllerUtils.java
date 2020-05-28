@@ -5,7 +5,7 @@ import java.util.Base64;
 
 public class ControllerUtils {
 
-    public ControllerUtils() {
+    private ControllerUtils() {
     }
 
     public static String getUserFromAuth(String auth){
