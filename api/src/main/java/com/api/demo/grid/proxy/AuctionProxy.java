@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -27,11 +28,9 @@ public class AuctionProxy {
     // game key
     private String gameKey;
 
-    @JsonFormat(pattern="dd/MM/yyyy")
-    private Date startDate;
+    private String startDate;
 
-    @JsonFormat(pattern="dd/MM/yyyy")
-    private Date endDate;
+    private String endDate;
 
     private double price;
 
@@ -41,8 +40,8 @@ public class AuctionProxy {
         this.auctioneer = auction.getAuctioneer().getUsername();
         this.buyer = (auction.getBuyer() == null) ? null : auction.getBuyer().getUsername();
         this.gameKey = auction.getGameKey().getRKey();
-        this.startDate = (Date) auction.getStartDate().clone();
-        this.endDate = (Date) auction.getEndDate().clone();
+        this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getStartDate());
+        this.endDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getEndDate());
         this.price = auction.getPrice();
     }
 }
