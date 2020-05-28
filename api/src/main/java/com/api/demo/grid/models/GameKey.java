@@ -94,4 +94,10 @@ public class GameKey {
         if (game == null) return -1L;
         return this.game.getId();
     }
+
+    @EqualsAndHashCode.Include
+    public String getGameName(){
+        if (game == null) return "";
+        return this.game.getName();
+    }
 }
