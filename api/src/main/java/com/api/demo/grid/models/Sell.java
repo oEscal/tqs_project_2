@@ -40,12 +40,13 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "buy_id")
+    @EqualsAndHashCode.Exclude
     private Buy purchased;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -90,11 +91,12 @@ public class Sell {
     }
 
     public Date getDate() {
+        if (date == null) return null;
         return (Date) date.clone();
     }
 
     public void setDate(Date date) {
-        this.date = (Date) date.clone();
+        if (date != null) this.date = (Date) date.clone();
     }
 
     public long getUserId() {

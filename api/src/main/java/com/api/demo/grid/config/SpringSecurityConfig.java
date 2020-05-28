@@ -30,6 +30,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/name",
             "/grid/developer",
             "/grid/publisher",
+            "/grid/sell-listing",
             "/grid/search",
             "/grid/public/user-info",
     };
