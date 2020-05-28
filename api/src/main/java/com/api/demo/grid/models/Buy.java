@@ -110,8 +110,8 @@ public class Buy {
     }
     
     public String getGamerKey(){
-        if (sell != null) return sell.getGameKey().getRKey();
-        if (auction != null) return auction.getGameKey().getRKey();
+        if (sell != null) return sell.getGameKey().getRealKey();
+        if (auction != null) return auction.getGameKey().getRealKey();
         return null;
     }
 }

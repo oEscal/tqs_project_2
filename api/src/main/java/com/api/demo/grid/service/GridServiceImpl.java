@@ -194,7 +194,7 @@ public class GridServiceImpl implements GridService {
         Game realGame = game.get();
 
         GameKey gameKey = new GameKey();
-        gameKey.setRKey(gameKeyPOJO.getKey());
+        gameKey.setRealKey(gameKeyPOJO.getKey());
         gameKey.setGame(realGame);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
@@ -208,7 +208,7 @@ public class GridServiceImpl implements GridService {
         if (user.isEmpty()) return null;
         User realUser = user.get();
 
-        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByRealKey(sellPOJO.getGameKey());
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
 

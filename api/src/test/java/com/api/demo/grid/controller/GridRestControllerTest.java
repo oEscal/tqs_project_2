@@ -115,7 +115,7 @@ class GridRestControllerTest {
         mUser.setId(2L);
 
         mGameKey = new GameKey();
-        mGameKey.setRKey("key");
+        mGameKey.setRealKey("key");
         mGameKey.setGame(mGame);
         mGameKey.setId(3L);
 
@@ -430,7 +430,6 @@ class GridRestControllerTest {
                 .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rkey", is("key")))
                 .andExpect(jsonPath("$.gameId", is(1)))
         ;
     }

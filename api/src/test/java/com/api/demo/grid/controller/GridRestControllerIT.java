@@ -259,7 +259,7 @@ class GridRestControllerIT {
         User user = createUser();
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         mGameKeyRepository.save(gameKey);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
@@ -277,7 +277,7 @@ class GridRestControllerIT {
     void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception{
         Game game = new Game();
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         gameKey.setPlatform("ps4");
         gameKey.setGame(game);
         mGameRepository.save(game);

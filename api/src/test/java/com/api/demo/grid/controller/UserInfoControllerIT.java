@@ -100,7 +100,7 @@ class UserInfoControllerIT {
 
         mGameKey = new GameKey();
         mGameKey.setGame(mGame);
-        mGameKey.setRKey("key");
+        mGameKey.setRealKey("key");
 
         mSell = new Sell();
         mSell.setGameKey(mGameKey);
