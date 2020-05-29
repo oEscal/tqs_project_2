@@ -307,7 +307,7 @@ class Cart extends Component {
                 gameIds.push(global.cart.games[i].id)
             }
 
-            var user = null
+            var user = -1
             if (global.user != null) {
                 user = global.user.id
             }
