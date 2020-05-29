@@ -3,7 +3,11 @@ package com.api.demo.grid.service;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.exception.ExceptionDetails;
-import com.api.demo.grid.models.*;
+import com.api.demo.grid.models.Auction;
+import com.api.demo.grid.models.Game;
+import com.api.demo.grid.models.GameKey;
+import com.api.demo.grid.models.Sell;
+import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
@@ -53,7 +57,8 @@ class AuctionServiceIT {
     private GameKey mGameKey;
     private Game mGame;
     private User mAuctioneer,
-            mBuyer;
+            mBuyer1,
+            mBuyer2;
 
     private AuctionPOJO mAuctionPOJO;
 
@@ -69,14 +74,23 @@ class AuctionServiceIT {
             mAuctioneerBirthDateStr = "17/10/2010",
             mAuctioneerStartDateStr = "25/05/2020";
 
-    // buyer info
-    private String mBuyerUsername = "buyer1",
-            mBuyerName = "name1",
-            mBuyerEmail = "buyer_email1",
-            mBuyerCountry = "country1",
-            mBuyerPassword = "password1",
-            mBuyerBirthDateStr = "17/10/2010",
-            mBuyerStartDateStr = "25/05/2020";
+    // buyer 1 info
+    private String mBuyer1Username = "buyer1",
+            mBuyer1Name = "name1",
+            mBuyer1Email = "buyer_email1",
+            mBuyer1Country = "country1",
+            mBuyer1Password = "password1",
+            mBuyer1BirthDateStr = "17/10/2010",
+            mBuyer1StartDateStr = "25/05/2020";
+
+    // buyer 2 info
+    private String mBuyer2Username = "buyer2",
+            mBuyer2Name = "name2",
+            mBuyer2Email = "buyer_email2",
+            mBuyer2Country = "country1",
+            mBuyer2Password = "password1",
+            mBuyer2BirthDateStr = "17/10/2010",
+            mBuyer2StartDateStr = "25/05/2020";
 
     // game info
     private String mGameName = "game1",
@@ -97,15 +111,25 @@ class AuctionServiceIT {
         mAuctioneer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
         mAuctioneer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerStartDateStr));
 
-        // create buyer
-        mBuyer = new User();
-        mBuyer.setUsername(mBuyerUsername);
-        mBuyer.setName(mBuyerName);
-        mBuyer.setEmail(mBuyerEmail);
-        mBuyer.setPassword(mBuyerPassword);
-        mBuyer.setCountry(mBuyerCountry);
-        mBuyer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
-        mBuyer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerStartDateStr));
+        // create buyer 1
+        mBuyer1 = new User();
+        mBuyer1.setUsername(mBuyer1Username);
+        mBuyer1.setName(mBuyer1Name);
+        mBuyer1.setEmail(mBuyer1Email);
+        mBuyer1.setPassword(mBuyer1Password);
+        mBuyer1.setCountry(mBuyer1Country);
+        mBuyer1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyer1BirthDateStr));
+        mBuyer1.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyer1StartDateStr));
+
+        // create buyer 2
+        mBuyer2 = new User();
+        mBuyer2.setUsername(mBuyer2Username);
+        mBuyer2.setName(mBuyer2Name);
+        mBuyer2.setEmail(mBuyer2Email);
+        mBuyer2.setPassword(mBuyer2Password);
+        mBuyer2.setCountry(mBuyer2Country);
+        mBuyer2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyer2BirthDateStr));
+        mBuyer2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyer2StartDateStr));
 
         // create game
         mGame = new Game();
@@ -117,10 +141,6 @@ class AuctionServiceIT {
         mGameKey.setGame(mGame);
 
         // set auction pojo
-        mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
-                new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
-
-        // set buyer pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
     }
@@ -197,23 +217,53 @@ class AuctionServiceIT {
      ***/
     @Test
     @SneakyThrows
-    void whenSetBidUpperThanCurrentPrice_setIsSuccessful() {
+    void whenSetBidUpperThanInitialtPrice_setIsSuccessful() {
 
         // save auctioneer, buyer, game and game key
         mUserRepository.save(mAuctioneer);
-        mUserRepository.save(mBuyer);
+        mUserRepository.save(mBuyer1);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        Auction resultantAuction = mAuctionService.addBidding(mBuyerUsername, mPrice + 1.3);
+        double newPrice = 1.3;
+        Auction resultantAuction = mAuctionService.addBidding(mBuyer1Username, newPrice);
 
         // verify the buyer
-        assertEquals(mBuyerUsername, resultantAuction.getBuyer().getUsername());
+        assertEquals(mBuyer1Username, resultantAuction.getBuyer().getUsername());
 
         // verify price
-        assertEquals(mPrice, resultantAuction.getPrice());
+        assertEquals(newPrice, resultantAuction.getPrice());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetBidUpperThanCurrentPriceFromOtherUser_setIsSuccessful() {
+
+        // save auctioneer, buyer 1, buyer 2, game and game key
+        mUserRepository.save(mAuctioneer);
+        mUserRepository.save(mBuyer1);
+        mUserRepository.save(mBuyer2);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        // first bid
+        mAuctionService.addBidding(mBuyer1Username, mPrice + 1.3);
+
+        // second bid
+        Auction resultantAuction = mAuctionService.addBidding(mBuyer1Username, mPrice + 2.5);
+
+        double newPrice = 2.5;
+
+        // verify the buyer
+        assertEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());
+
+        // verify price
+        assertEquals(newPrice, resultantAuction.getPrice());
     }
 }
