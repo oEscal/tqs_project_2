@@ -26,6 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -217,7 +218,7 @@ class AuctionServiceIT {
      ***/
     @Test
     @SneakyThrows
-    void whenSetBidUpperThanInitialtPrice_setIsSuccessful() {
+    void whenSetBidUpperThanInitialPrice_setIsSuccessful() {
 
         // save auctioneer, buyer, game and game key
         mUserRepository.save(mAuctioneer);
@@ -228,7 +229,7 @@ class AuctionServiceIT {
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        double newPrice = 1.3;
+        double newPrice = mPrice + 1.3;
         Auction resultantAuction = mAuctionService.addBidding(mBuyer1Username, newPrice);
 
         // verify the buyer
@@ -258,12 +259,36 @@ class AuctionServiceIT {
         // second bid
         Auction resultantAuction = mAuctionService.addBidding(mBuyer1Username, mPrice + 2.5);
 
-        double newPrice = 2.5;
+        double newPrice = mPrice + 2.5;
 
         // verify the buyer
         assertEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());
 
         // verify price
         assertEquals(newPrice, resultantAuction.getPrice());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetBidLowerThanCurrentPrice_setIsUnSuccessful() {
+
+        // save auctioneer, buyer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mUserRepository.save(mBuyer1);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mPrice - 1.3));
+
+        Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
+
+        // verify the buyer
+        assertNotEquals(mBuyer1Username, resultantAuction.getBuyer().getUsername());
+
+        // verify price
+        assertEquals(mPrice, resultantAuction.getPrice());
     }
 }
