@@ -116,4 +116,15 @@ public class Buy {
 
         return null;
     }
+
+    public String getGameName(){
+        if (sell != null) return sell.getGameKey().getGameName();
+        return null;
+    }
+
+    public String getGamePhoto(){
+        if (sell != null) return sell.getGameKey().getGamePhoto();
+        return null;
+    }
+
 }
