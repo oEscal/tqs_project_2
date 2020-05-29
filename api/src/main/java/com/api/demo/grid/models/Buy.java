@@ -127,4 +127,9 @@ public class Buy {
         return null;
     }
 
+    public long getGameId(){
+        if (sell != null) return sell.getGameKey().getGame().getId();
+        return -1l;
+    }
+
 }
