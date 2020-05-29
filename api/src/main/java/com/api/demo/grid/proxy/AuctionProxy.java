@@ -36,7 +36,7 @@ public class AuctionProxy {
         this.id = auction.getId();
         this.auctioneer = auction.getAuctioneer().getUsername();
         this.buyer = (auction.getBuyer() == null) ? null : auction.getBuyer().getUsername();
-        this.gameKey = auction.getGameKey().getRKey();
+        this.gameKey = auction.getGameKey().getRealKey();
         this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getStartDate());
         this.endDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getEndDate());
         this.price = auction.getPrice();

@@ -18,5 +18,5 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
     @Query("Select s from Sell s where s.gameKey.game.id = ?1 and s.purchased IS NULL")
     Page<Sell> findAllByGames(Long game, Pageable pageable);
 
-    Sell findByGameKey_rKey(String rKey);
+    Sell findByGameKey_RealKey(String rKey);
 }

@@ -91,7 +91,7 @@ public class Sell {
     }
 
     public void setPurchased(Buy purchased) {
-        if (Objects.equals(purchased, this.purchased) return;
+        if (Objects.equals(purchased, this.purchased)) return;
         this.purchased = purchased;
         purchased.setSell(this);
     }

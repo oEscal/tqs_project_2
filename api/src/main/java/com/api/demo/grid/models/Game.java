@@ -110,7 +110,7 @@ public class Game {
         Sell bestSell = new Sell();
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
-            if (gameKey.getSell() != null && gameKey.getSell().getBuy() == null){
+            if (gameKey.getSell() != null && gameKey.getSell().getPurchased() == null){
                 if (!foundPrice || bestSell.getPrice() > gameKey.getSell().getPrice()) {
                     bestSell = gameKey.getSell();
                 }
