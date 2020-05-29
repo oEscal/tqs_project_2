@@ -161,7 +161,6 @@ class AuctionServiceTest {
         // mock sell repository
         given(mSellRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(null);
 
-        System.out.println(mAuction);
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 

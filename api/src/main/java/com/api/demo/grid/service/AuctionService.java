@@ -81,4 +81,8 @@ public class AuctionService {
 
         return mAuctionRepository.save(auctionSave);
     }
+
+    public Auction addBidding(String user, double price) {
+        return null;
+    }
 }

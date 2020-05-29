@@ -3,10 +3,7 @@ package com.api.demo.grid.service;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.exception.ExceptionDetails;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Sell;
-import com.api.demo.grid.models.User;
+import com.api.demo.grid.models.*;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
@@ -55,7 +52,8 @@ class AuctionServiceIT {
 
     private GameKey mGameKey;
     private Game mGame;
-    private User mAuctioneer;
+    private User mAuctioneer,
+            mBuyer;
 
     private AuctionPOJO mAuctionPOJO;
 
@@ -70,6 +68,15 @@ class AuctionServiceIT {
             mAuctioneerPassword = "password1",
             mAuctioneerBirthDateStr = "17/10/2010",
             mAuctioneerStartDateStr = "25/05/2020";
+
+    // buyer info
+    private String mBuyerUsername = "buyer1",
+            mBuyerName = "name1",
+            mBuyerEmail = "buyer_email1",
+            mBuyerCountry = "country1",
+            mBuyerPassword = "password1",
+            mBuyerBirthDateStr = "17/10/2010",
+            mBuyerStartDateStr = "25/05/2020";
 
     // game info
     private String mGameName = "game1",
@@ -90,6 +97,16 @@ class AuctionServiceIT {
         mAuctioneer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
         mAuctioneer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerStartDateStr));
 
+        // create buyer
+        mBuyer = new User();
+        mBuyer.setUsername(mBuyerUsername);
+        mBuyer.setName(mBuyerName);
+        mBuyer.setEmail(mBuyerEmail);
+        mBuyer.setPassword(mBuyerPassword);
+        mBuyer.setCountry(mBuyerCountry);
+        mBuyer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
+        mBuyer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerStartDateStr));
+
         // create game
         mGame = new Game();
         mGame.setName(mGameName);
@@ -102,9 +119,16 @@ class AuctionServiceIT {
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // set buyer pojo
+        mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
     }
 
 
+    /***
+     *  Add Auction
+     ***/
     @Test
     @SneakyThrows
     void whenSetExistentAuctionGameKey_setIsUnsuccessful() {
@@ -165,5 +189,31 @@ class AuctionServiceIT {
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addAuction(mAuctionPOJO));
         assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+
+    /***
+     *  Add Bid
+     ***/
+    @Test
+    @SneakyThrows
+    void whenSetBidUpperThanCurrentPrice_setIsSuccessful() {
+
+        // save auctioneer, buyer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mUserRepository.save(mBuyer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        Auction resultantAuction = mAuctionService.addBidding(mBuyerUsername, mPrice + 1.3);
+
+        // verify the buyer
+        assertEquals(mBuyerUsername, resultantAuction.getBuyer().getUsername());
+
+        // verify price
+        assertEquals(mPrice, resultantAuction.getPrice());
     }
 }
