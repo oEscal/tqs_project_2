@@ -116,7 +116,7 @@ class Cart extends Component {
             items.push(
                 <GridItem xs={12} sm={12} md={12} style={style}>
 
-                    <Card style={{ width: "100%" }}>
+                    <Card style={{ width: "100%" }} id={"cartItem" + i}>
 
                         <CardHeader
                             title={
@@ -130,7 +130,7 @@ class Cart extends Component {
                                 </Avatar>
                             }
                             action={
-                                <IconButton aria-label="settings" onClick={() => this.removeFromCart(game)}>
+                                <IconButton aria-label="settings" id={"removeFromCartButton" + i} onClick={() => this.removeFromCart(game)}>
                                     <CloseIcon />
                                 </IconButton>
                             }
@@ -225,7 +225,7 @@ class Cart extends Component {
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                toastId: "errorCardAll"
+                toastId: "errorFunds"
             });
         }
 
@@ -253,12 +253,7 @@ class Cart extends Component {
                 toastId: "errorCardAll"
             });
             error = true
-        } else {
-            cardNumber = null
-            cardCVC = null
-            expiration = null
-            cardName = null
-        }
+        } 
 
         if (!error && expiration != null) {
             var tempExpiration = expiration.split("/")
@@ -278,7 +273,8 @@ class Cart extends Component {
             }
         }
 
-        if (!error && cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
+
+        if (!error && (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3))) {
             toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -295,6 +291,49 @@ class Cart extends Component {
             this.confirmBuy(false)
         }
     }
+
+    async buyWithCard() {
+        var error = false
+
+        if (global.user != null) {
+            var cardNumber = global.user.creditCardNumber
+            var cardName = global.user.creditCardOwner
+            var cardCVC = global.user.creditCardCSC
+            var expiration = global.user.creditCardExpirationDate
+
+
+            if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '' || cardNumber == null || cardCVC == null || expiration == null || cardName == null) {
+                toast.error('Oops, seems like you haven\'t registered a credit card to your account!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorCardNon"
+                });
+                error = true
+            }
+
+        } else {
+            toast.error('Oops, seems like you\'re not logged in...How did you manage that?', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardAccount"
+            });
+            error = true
+        }
+
+        if (!error) {
+            this.confirmBuy(false)
+        }
+
+    }
+
 
     async confirmBuy(withFunds) {
         if (global.cart != null && global.cart.games.length > 0) {
@@ -422,7 +461,7 @@ class Cart extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                    <div className="animated fadeOut animated" id="firstLoad" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
@@ -444,17 +483,109 @@ class Cart extends Component {
                 <div style={{ "textAlign": "center" }}>
                     <Button color="primary"
                         style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
-                        onClick={() => this.buyWithWallet(true)}>Buy with Wallet</Button>
+                        onClick={() => this.buyWithWallet(true)} id="buyWithWallet">Buy with Wallet</Button>
                 </div>,
 
                 <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />,
                 <div style={{ "textAlign": "center" }}>
                     <Button color="primary"
                         style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
-                        onClick={() => this.confirmBuy(false)}>Buy with Card</Button>
+                        onClick={() => this.buyWithCard()} id="buyWithCard">Buy with Card</Button>
                 </div>
 
             ]
+        }
+
+        var payment = null
+        if (this.state.items != null && this.state.items.length != 0) {
+            payment = <GridContainer xs={12} sm={12} md={4} id="paymentStuff">
+                <GridItem xs={2} sm={2} md={2}></GridItem>
+                <GridItem xs={10} sm={10} md={10}>
+                    <Card>
+                        <CardHeader
+                            title={
+                                <span>
+                                    Total Price: <span
+                                        style={{
+                                            fontWeight: "bolder",
+                                            color: "#f44336",
+                                        }}> {this.state.price} €</span>
+                                </span>
+                            }
+                            subheader={"Items: " + this.state.quantity}
+                        >
+
+                        </CardHeader>
+                        <CardContent>
+                            {extraPaymentOptions}
+
+                            <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />
+
+                            <CustomInput
+                                labelText="Card Number"
+                                id="cardNumber"
+                                formControlProps={{
+                                    fullWidth: true
+                                }}
+                                inputProps={{
+                                    type: "text",
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <i class="fas fa-credit-card" />
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
+
+                            <div>
+                                <FormControl fullWidth>
+                                    <Datetime
+                                        timeFormat={false}
+                                        inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
+                                        isValidDate={valid}
+                                    />
+                                </FormControl>
+                            </div>
+
+                            <CustomInput
+                                labelText="Card Owner's Full Name"
+                                id="cardName"
+                                formControlProps={{
+                                    fullWidth: true
+                                }}
+                                inputProps={{
+                                    type: "text",
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <i class="fas fa-signature"></i>
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
+
+                            <CustomInput
+                                labelText="CVC"
+                                id="cardCVC"
+                                formControlProps={{
+                                    fullWidth: true
+                                }}
+                                inputProps={{
+                                    type: "text",
+                                    
+                                }}
+                            />
+
+                            <div style={{ "textAlign": "center" }}>
+                                <Button color="primary"
+                                    style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
+
+                                    onClick={() => this.buyWithNewCard(true)} id="buyWithNewCard">Buy with new Card</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridItem>
+
+            </GridContainer>
         }
 
         return (
@@ -510,93 +641,7 @@ class Cart extends Component {
                                 {this.state.items}
 
                             </GridContainer>
-                            <GridContainer xs={12} sm={12} md={4}>
-                                <GridItem xs={2} sm={2} md={2}></GridItem>
-                                <GridItem xs={10} sm={10} md={10}>
-                                    <Card>
-                                        <CardHeader
-                                            title={
-                                                <span>
-                                                    Total Price: <span
-                                                        style={{
-                                                            fontWeight: "bolder",
-                                                            color: "#f44336",
-                                                        }}> {this.state.price} €</span>
-                                                </span>
-                                            }
-                                            subheader={"Items: " + this.state.quantity}
-                                        >
-
-                                        </CardHeader>
-                                        <CardContent>
-                                            {extraPaymentOptions}
-
-                                            <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />
-
-                                            <CustomInput
-                                                labelText="Card Number"
-                                                id="cardNumber"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    type: "text",
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            <i class="fas fa-credit-card" />
-                                                        </InputAdornment>
-                                                    )
-                                                }}
-                                            />
-
-                                            <CustomInput
-                                                labelText="Card Owner's Full Name"
-                                                id="cardName"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    type: "text",
-                                                    endAdornment: (
-                                                        <InputAdornment position="end">
-                                                            <i class="fas fa-signature"></i>
-                                                        </InputAdornment>
-                                                    )
-                                                }}
-                                            />
-
-                                            <CustomInput
-                                                labelText="CVC"
-                                                id="cardCVC"
-                                                formControlProps={{
-                                                    fullWidth: true
-                                                }}
-                                                inputProps={{
-                                                    type: "text"
-                                                }}
-                                            />
-
-                                            <div style={{ marginTop: "20px" }}>
-                                                <FormControl fullWidth>
-                                                    <Datetime
-                                                        timeFormat={false}
-                                                        inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
-                                                        isValidDate={valid}
-                                                    />
-                                                </FormControl>
-                                            </div>
-
-                                            <div style={{ "textAlign": "center" }}>
-                                                <Button color="primary"
-                                                    style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
-
-                                                    onClick={() => this.buyWithNewCard(true)}>Buy with new Card</Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </GridItem>
-
-                            </GridContainer>
+                            {payment}
                         </StickyContainer>
                     </div>
                 </div>

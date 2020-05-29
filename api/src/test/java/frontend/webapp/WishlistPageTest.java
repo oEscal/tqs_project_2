@@ -14,18 +14,6 @@ public class WishlistPageTest {
     @BeforeEach
     public void setUp() {
         controller = new WebAppPageObject();
-
-        //Login
-        controller.navigate("http://localhost:" + port + "/login-page");
-        String username = "admin";
-        String password = "admin";
-        controller.writeInput(username,"username");
-        controller.writeInput(password,"password");
-
-        controller.clickButton("confirm");
-
-        controller.waitForLoad("processing");
-        controller.navigate("http://localhost:" + port + "/wishlist");
     }
 
     @AfterEach
@@ -37,6 +25,9 @@ public class WishlistPageTest {
     @Test
     //Needs user to have the first game wishlisted
     public void whenClickingGameOnWishlist_goToGame() {
+        controller.login(port);
+        this.addToWishlist();
+
         controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
@@ -46,5 +37,18 @@ public class WishlistPageTest {
         String url = "http://localhost:" + port + "/games/info/1";
         assertTrue(controller.checkURL(url));
     }
+
+
+
+    private void addToWishlist(){
+        controller.navigate("http://localhost:" + port + "/games/info/1");
+
+        controller.waitForLoad("firstLoad");
+        controller.clickButton("wishlistButton");
+        controller.waitForLoad("processing");
+
+        controller.navigate("http://localhost:" + port + "/wishlist");
+    }
+
 
 }

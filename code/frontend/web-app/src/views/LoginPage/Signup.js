@@ -104,7 +104,7 @@ class Signup extends Component {
     var error = false
 
     if (name == "" || username == "" || birthday == "" || pass == "" || email == "" || country == "Country*") {
-      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday, email and password!', {
+      toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday, email, password and country!', {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -208,7 +208,7 @@ class Signup extends Component {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        toastId: "errorCardCVC"
+        toastId: "errorCardNumber"
       });
       error = true
     }

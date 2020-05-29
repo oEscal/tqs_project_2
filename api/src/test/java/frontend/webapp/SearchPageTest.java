@@ -42,7 +42,8 @@ public class SearchPageTest {
 
     @Test
     public void whenInvalidPriceSearch_showError() {
-        controller.scrollToElement("priceFrom");
+        controller.waitForLoad("firstLoad");
+        controller.scrollToTop();
         controller.writeInput("oof", "priceFrom");
 
         controller.scrollToElement("confirm");

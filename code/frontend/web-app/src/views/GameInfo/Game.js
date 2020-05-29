@@ -162,7 +162,7 @@ class Game extends Component {
                     })
                     allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
                     data["allDevelopers"] = allDevelopers
-                  
+
 
                     var allGenres = ""
                     data.gameGenres.forEach(genre => {
@@ -240,8 +240,12 @@ class Game extends Component {
 
                     var content = []
 
+                    var co = -1
+
                     data.content.forEach(sell => {
                         var listing = sell
+
+                        co++
 
                         var inCart = false
                         if (global.cart != null) {
@@ -262,7 +266,7 @@ class Game extends Component {
                                     style={{ backgroundColor: "#4ec884" }}
                                     target="_blank"
                                     rel="noopener noreferrer"
-
+                                    id={"addToCartButton" + co}
                                     onClick={() => this.addToCart(sell)}
                                 >
                                     <i class="fas fa-cart-arrow-down"></i> Add to Cart
@@ -274,6 +278,8 @@ class Game extends Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={() => this.removeFromCart(sell)}
+                                    id={"removeFromCartButton" + co}
+
                                 >
                                     <i class="fas fa-cart-arrow-down"></i> Remove from Cart
                             </Button>
@@ -286,6 +292,7 @@ class Game extends Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     disabled
+                                    id="addToCartButton"
                                 >
                                     <i class="fas fa-cart-arrow-down"></i> Add to Cart
                             </Button>
@@ -296,6 +303,7 @@ class Game extends Component {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     disabled
+                                    id="removeFromCartButton"
                                 >
                                     <i class="fas fa-cart-arrow-down"></i> Remove from Cart
                             </Button>
@@ -480,7 +488,7 @@ class Game extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                    <div className="animated fadeOut animated" id="firstLoad" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
@@ -614,19 +622,38 @@ class Game extends Component {
             var gameHeader = null
             var gameInfo = null
 
-            var bestPrice = <GridItem xs={12} sm={12} md={2}>
+            var bestPrice
+            if (global.user != null) {
+                bestPrice = <GridItem xs={12} sm={12} md={2}>
+                    <div style={{ textAlign: "left", paddingTop: "15px" }}>
+                        <Button
+                            size="md"
+                            style={{ backgroundColor: "#1598a7", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => this.addToWishlist()}
+                            id="wishlistButton"
+                        >
+                            <i class="far fa-heart"></i> Add to Wishlist
+                    </Button>
+                    </div>
+                </GridItem>
+            } else {
+                bestPrice = <GridItem xs={12} sm={12} md={2}>
                 <div style={{ textAlign: "left", paddingTop: "15px" }}>
                     <Button
                         size="md"
                         style={{ backgroundColor: "#1598a7", width: "100%" }}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => this.addToWishlist()}
+                        disabled
+                        id="wishlistButton"
                     >
                         <i class="far fa-heart"></i> Add to Wishlist
                     </Button>
                 </div>
             </GridItem>
+            }
             if (this.state.game.bestSell != null) {
                 var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
 
@@ -661,6 +688,7 @@ class Game extends Component {
                             style={{ backgroundColor: "#4ec884", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
+                            id="addToCartButtonBest"
 
                             onClick={() => this.addToCart(this.state.game.bestSell)}
                         >
@@ -672,6 +700,7 @@ class Game extends Component {
                             style={{ backgroundColor: "#ff3ea0", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
+                            id="removeFromCartButtonBest"
                             onClick={() => this.removeFromCart(this.state.game.bestSell)}
                         >
                             <i class="fas fa-cart-arrow-down"></i> Remove from Cart
@@ -683,6 +712,7 @@ class Game extends Component {
                         style={{ backgroundColor: "#1598a7", width: "100%" }}
                         target="_blank"
                         rel="noopener noreferrer"
+                        id="wishlistButton"
                         onClick={() => this.addToWishlist()}
                     >
                         <i class="far fa-heart"></i> Add to Wishlist
@@ -694,6 +724,7 @@ class Game extends Component {
                             style={{ backgroundColor: "#4ec884", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
+                            id="addToCartButtonBest"
                             disabled
                         >
                             <i class="fas fa-cart-arrow-down"></i> Add to Cart
@@ -704,6 +735,7 @@ class Game extends Component {
                             style={{ backgroundColor: "#ff3ea0", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
+                            id="removeFromCartButtonBest"
                             disabled
                         >
                             <i class="fas fa-cart-arrow-down"></i> Remove from Cart
@@ -716,6 +748,7 @@ class Game extends Component {
                         target="_blank"
                         rel="noopener noreferrer"
                         disabled
+                        id="wishlistButton"
                     >
                         <i class="far fa-heart"></i> Add to Wishlist
                     </Button>

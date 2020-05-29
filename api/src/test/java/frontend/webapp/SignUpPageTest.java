@@ -37,7 +37,7 @@ public class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkVisibility("errorMinimum"));
-        assertTrue(controller.checkText("errorMinimum", "Oops, you've got to specify, at least, a name, username, birthday, email and password!"));
+        assertTrue(controller.checkText("errorMinimum", "Oops, you've got to specify, at least, a name, username, birthday, email, password and country!"));
     }
 
     @Test
@@ -209,6 +209,67 @@ public class SignUpPageTest {
         assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 digits!"));
     }
 
+
+    @Test
+    public void whenCardNumberHasNumbersNLetters_thenErrorMessage() {
+        controller.writeInput("o4f", "cardNumber");
+
+        controller.waitSeconds(5);
+        controller.clickButton("confirm");
+
+        controller.waitForLoad("processing");
+        controller.waitSeconds(2);
+
+        assertTrue(controller.checkExistance("errorCardNumber"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+    }
+
+    @Test
+    public void whenCardNumberHasLetters_thenErrorMessage() {
+        //////////
+        controller.writeInput("of", "cardNumber");
+
+        controller.waitSeconds(5);
+        controller.clickButton("confirm");
+
+        controller.waitForLoad("processing");
+        controller.waitSeconds(2);
+
+        assertTrue(controller.checkExistance("errorCardNumber"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+    }
+
+    @Test
+    public void whenCardNumberHasBadLength_thenErrorMessage() {
+        //////////
+        controller.writeInput("123", "cardNumber");
+
+        controller.waitSeconds(5);
+        controller.clickButton("confirm");
+
+        controller.waitForLoad("processing");
+        controller.waitSeconds(2);
+
+        assertTrue(controller.checkExistance("errorCardNumber"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+
+        //////////
+    }
+
+    @Test
+    public void whenGoodCardNumber_thenNoErrorMessage() {
+        controller.writeInput("1234567890", "cardNumber");
+
+        controller.waitSeconds(5);
+        controller.clickButton("confirm");
+
+        controller.waitForLoad("processing");
+        controller.waitSeconds(2);
+
+        assertFalse(controller.checkExistance("errorCardNumber"));
+
+    }
+
     @Test
     //Check that when an invalid expiration date is given an error is displayed
     public void whenInvalidExpirationDate_thenErrorMessage() {
@@ -226,8 +287,8 @@ public class SignUpPageTest {
     @Test
     //Needs the user ola adeus to exist in the DB
     public void whenUserAlreadyExists_thenError() {
-        controller.writeInput("ola", "name");
-        controller.writeInput("ola", "username");
+        controller.writeInput("admin", "name");
+        controller.writeInput("admin", "username");
         controller.pickSelect(52, "country");
         controller.writeInput("04/04/1999", "birthday");
         controller.writeInput("ola@oof.com", "email");
