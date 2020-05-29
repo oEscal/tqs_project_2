@@ -270,7 +270,7 @@ class AuctionServiceIT {
 
     @Test
     @SneakyThrows
-    void whenSetBidLowerThanCurrentPrice_setIsUnSuccessful() {
+    void whenSetBidLowerThanCurrentPrice_setIsUnsuccessful() {
 
         // save auctioneer, buyer, game and game key
         mUserRepository.save(mAuctioneer);
@@ -282,6 +282,30 @@ class AuctionServiceIT {
         mAuctionService.addAuction(mAuctionPOJO);
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mPrice - 1.3));
+
+        Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
+
+        // verify the buyer
+        assertNotEquals(mBuyer1Username, resultantAuction.getBuyer().getUsername());
+
+        // verify price
+        assertEquals(mPrice, resultantAuction.getPrice());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetBidEqualsCurrentPrice_setIsUnsuccessful() {
+
+        // save auctioneer, buyer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mUserRepository.save(mBuyer1);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mPrice));
 
         Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
 
