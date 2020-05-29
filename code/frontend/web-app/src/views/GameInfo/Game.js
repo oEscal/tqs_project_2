@@ -237,7 +237,6 @@ class Game extends Component {
                         var listing = sell
 
                         var inCart = false
-                        console.log(global.cart.games)
                         if (global.cart != null) {
                             for (var i = 0; i < global.cart.games.length; i++) {
                                 var game = global.cart.games[i]
@@ -614,11 +613,13 @@ class Game extends Component {
 
                 var button = null
                 var inCart = false
-                for (var i = 0; i < global.cart.games.length; i++) {
-                    var foundGame = global.cart.games[i]
-                    if (this.state.game.bestSell.id == foundGame.id) {
-                        inCart = true;
-                        break
+                if (global.cart != null) {
+                    for (var i = 0; i < global.cart.games.length; i++) {
+                        var foundGame = global.cart.games[i]
+                        if (this.state.game.bestSell.id == foundGame.id) {
+                            inCart = true;
+                            break
+                        }
                     }
                 }
 
@@ -692,7 +693,7 @@ class Game extends Component {
                     </div>
 
                     <div style={{ textAlign: "left", marginTop: "5px" }}>
-                       {button}
+                        {button}
                         <Button
                             size="md"
                             style={{ backgroundColor: "#1598a7", width: "100%" }}

@@ -67,7 +67,9 @@ class Cart extends Component {
             },
             redirectLogin: false,
             redirectGames: false,
-            doneLoading: false
+            doneLoading: false,
+
+            boughtKeys: null
         };
     }
 
@@ -89,9 +91,13 @@ class Cart extends Component {
         }
     }
 
-    renderRedirectProfile = () => {
-        if (this.redirectGames) {
-            return <Redirect to={'/user/' + this.state.redirectProfile} />
+    renderRedirectReceipt = () => {
+        if (this.state.redirectGames) {
+            return <Redirect
+                to={{
+                    pathname: '/cart/receipt',
+                    state: { games: this.state.boughtKeys }
+                }} />
         }
     }
 
@@ -209,11 +215,23 @@ class Cart extends Component {
     }
 
     async buyWithWallet() {
+        var error = false
+        if (global.user == null || parseFloat(global.user.funds) < parseFloat(this.state.price)) {
+            error = true
+            toast.error('Oops, you don\'t have enough funds in your wallet! Either add more funds or pick another payment method!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardAll"
+            });
+        }
 
-    }
-
-    async buyWithCard() {
-
+        if (!error) {
+            this.confirmBuy(true)
+        }
     }
 
     async buyWithNewCard() {
@@ -272,6 +290,128 @@ class Cart extends Component {
             });
             error = true
         }
+
+        if (!error) {
+            this.confirmBuy(false)
+        }
+    }
+
+    async confirmBuy(withFunds) {
+        if (global.cart != null && global.cart.games.length > 0) {
+            await this.setState({
+                doneLoading: false,
+            })
+
+            var gameIds = []
+            for (var i = 0; i < global.cart.games.length; i++) {
+                gameIds.push(global.cart.games[i].id)
+            }
+
+            var user = null
+            if (global.user != null) {
+                user = global.user.id
+            }
+
+            var body = {
+                "listingsId": gameIds,
+                "userId": user,
+                "withFunds": withFunds
+            }
+
+            var success = true
+
+            var login_info = null
+            if (global.user != null) {
+                login_info = global.user.token
+            }
+
+
+            await fetch(baseURL + "grid/buy-listing", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: login_info
+                },
+                body: JSON.stringify(body)
+            })
+                .then(response => {
+                    if (response.status === 401 || response.status === 404 || response.status === 400) {
+                        return response
+                    } else if (response.status === 200) {
+                        return response.json()
+                    }
+                    else throw new Error(response.status);
+                })
+                .then(data => {
+                    console.log(data)
+                    if (data.status === 401) { // Wrong token
+                        localStorage.setItem('loggedUser', null);
+                        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                        this.setState({
+                            redirectLogin: true
+                        })
+
+                    } else if (data.status === 404) { // Game not available
+                        toast.error('Oh no, one of the games you were trying to buy is no longer available...next time be faster!', {
+                            position: "top-center",
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+
+                        //update cart
+
+                        success = false
+
+                    } else if (data.status === 400) { // No funds
+                        toast.error('Oops, you don\'t have enough funds in your wallet! Either add more funds or pick another payment method!', {
+                            position: "top-center",
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+
+                        //update cart
+                        localStorage.setItem('cart', JSON.stringify({ "games": [] }));
+                        global.cart = JSON.parse(localStorage.getItem('cart'))
+
+                        success = false
+
+                    } else { // Successful 
+                        localStorage.setItem('cart', JSON.stringify({ "games": [] }));
+                        global.cart = JSON.parse(localStorage.getItem('cart'))
+
+                        this.setState({
+                            boughtKeys: data
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+
+                    toast.error('Sorry, an unexpected error has occurred!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                });
+
+            console.log(success)
+            await this.setState({
+                doneLoading: true,
+                redirectGames: success
+            })
+
+            if (!success) {
+                this.getItems()
+            }
+
+        }
     }
 
     render() {
@@ -302,16 +442,16 @@ class Cart extends Component {
             extraPaymentOptions = [
                 <hr style={{ opacity: 0.2, color: "#fc3196" }} />,
                 <div style={{ "textAlign": "center" }}>
-                    <Button color="primary" 
-                        style={{ marginTop: "30px", width:"100%", backgroundColor:"#ed6f62" }}
+                    <Button color="primary"
+                        style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
                         onClick={() => this.buyWithWallet(true)}>Buy with Wallet</Button>
                 </div>,
 
                 <hr style={{ opacity: 0.2, color: "#fc3196", marginTop: "30px" }} />,
                 <div style={{ "textAlign": "center" }}>
-                    <Button color="primary" 
-                        style={{ marginTop: "30px", width:"100%", backgroundColor:"#ed6f62" }}
-                        onClick={() => this.buyWithCard()}>Buy with Card</Button>
+                    <Button color="primary"
+                        style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
+                        onClick={() => this.confirmBuy(false)}>Buy with Card</Button>
                 </div>
 
             ]
@@ -321,7 +461,7 @@ class Cart extends Component {
             <div>
                 <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                 {this.renderRedirectLogin()}
-                {this.renderRedirectProfile()}
+                {this.renderRedirectReceipt()}
 
                 <ToastContainer
                     position="top-center"
@@ -448,7 +588,7 @@ class Cart extends Component {
 
                                             <div style={{ "textAlign": "center" }}>
                                                 <Button color="primary"
-                                                    style={{ marginTop: "30px", width:"100%", backgroundColor: "#ed6f62" }}
+                                                    style={{ marginTop: "30px", width: "100%", backgroundColor: "#ed6f62" }}
 
                                                     onClick={() => this.buyWithNewCard(true)}>Buy with new Card</Button>
                                             </div>

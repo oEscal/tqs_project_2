@@ -1,4 +1,4 @@
-    
+
 import React, { Component } from 'react';
 import classNames from "classnames";
 
@@ -159,13 +159,18 @@ class GameSearch extends Component {
                 cacheRequest: body
             })
 
+            var login_info = null
+            if (global.user != null) {
+                login_info = global.user.token
+            }
+
 
             // Proceed to login
             await fetch(baseURL + "grid/search", {
                 method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
+                    Authorization: login_info
                 },
                 body: JSON.stringify(this.state.cacheRequest)
             })
@@ -272,14 +277,18 @@ class GameSearch extends Component {
                     body["platforms"] = platforms
                 }
 
-                console.log(body)
+                var login_info = null
+                if (global.user != null) {
+                    login_info = global.user.token
+                }
+
 
                 // Proceed to login
                 await fetch(baseURL + "grid/search", {
                     method: "POST",
                     headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json",
+                        Authorization: login_info
                     },
                     body: JSON.stringify(body)
                 })
@@ -1092,7 +1101,7 @@ class GameSearch extends Component {
                                                         </h2>
                                                     </span>
                                                 </GridItem>
-                                        
+
                                             </GridContainer>
                                             <hr style={{ color: "#999", opacity: "0.4" }}></hr>
                                         </div>
