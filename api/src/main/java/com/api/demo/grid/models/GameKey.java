@@ -10,7 +10,17 @@ import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @Entity
@@ -45,7 +55,7 @@ public class GameKey {
     @EqualsAndHashCode.Exclude
     private Sell sell;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -54,6 +64,7 @@ public class GameKey {
     private String retailer;
 
     private String platform;
+
 
     public void setGame(Game game) {
         //prevent endless loop
@@ -85,6 +96,16 @@ public class GameKey {
         return this.game.getId();
     }
 
+    public void setAuction(Auction auction) {
+        if(Objects.equals(this.auction, auction)) return;
+
+        this.auction = auction;
+
+        if (auction != null) {
+            auction.setGameKey(this);
+        }
+    }
+    
     @EqualsAndHashCode.Include
     public String getGameName(){
         if (game == null) return "";

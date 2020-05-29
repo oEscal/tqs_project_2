@@ -24,7 +24,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 
 @Entity
@@ -72,7 +77,7 @@ public class Game {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<ReviewGame> reviews;
+    private Set<ReviewGame> reviews = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
@@ -85,6 +90,7 @@ public class Game {
     private Set<User> userWish;
 
     private String coverUrl;
+
 
     public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
@@ -104,7 +110,7 @@ public class Game {
         Sell bestSell = new Sell();
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
-            if (gameKey.getSell() != null){
+            if (gameKey.getSell() != null && gameKey.getSell().getBuy() == null){
                 if (!foundPrice || bestSell.getPrice() > gameKey.getSell().getPrice()) {
                     bestSell = gameKey.getSell();
                 }

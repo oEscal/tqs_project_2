@@ -46,10 +46,6 @@ public class Buy {
     @ToString.Exclude
     private Sell sell;
 
-    @OneToOne
-    @ToString.Exclude
-    private Auction auction;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -82,6 +78,12 @@ public class Buy {
         if (date != null) this.date = (Date) date.clone();
     }
 
+    public void setSell(Sell sell) {
+        if (Objects.equals(this.sell, sell)) return;
+        this.sell = sell;
+        sell.setPurchased(this);
+    }
+
     @ToString.Include
     public long getUserId() {
         if (user == null) return -1L;
@@ -111,7 +113,7 @@ public class Buy {
     
     public String getGamerKey(){
         if (sell != null) return sell.getGameKey().getRealKey();
-        if (auction != null) return auction.getGameKey().getRealKey();
+
         return null;
     }
 }

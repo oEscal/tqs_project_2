@@ -10,16 +10,20 @@ import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
+import com.api.demo.grid.models.ReviewGame;
+import com.api.demo.grid.models.ReviewUser;
 import com.api.demo.grid.models.Sell;
-
 import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
 import com.api.demo.grid.pojos.GameKeyPOJO;
 import com.api.demo.grid.pojos.GamePOJO;
 import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.pojos.ReviewGamePOJO;
+import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -43,4 +47,9 @@ public interface GridService {
     Sell saveSell(SellPOJO sellPOJO);
     List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo) throws UnavailableListingException, UnsufficientFundsException;
     Set<Game> addWishListByUserID(long gameID, long userID);
+    Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);
+    Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO);
+    Page<ReviewGame> getGameReviews(long gameID,int page);
+    Page<ReviewJoiner> getUserReviews(long userID, int page);
+    Page<ReviewJoiner> getAllReviews(int page, String sort);
 }

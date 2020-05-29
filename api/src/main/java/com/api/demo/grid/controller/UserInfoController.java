@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+
 @RestController
 @RequestMapping("/grid")
 @CrossOrigin
@@ -32,9 +33,11 @@ public class UserInfoController {
                                                    @RequestParam("username") String username){
         String value = ControllerUtils.getUserFromAuth(auth);
         User user = mUserService.getUser(value);
+
         if (user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
         }
+
         if (!value.equals(username) && !user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "You are not allowed to see this user's private info");

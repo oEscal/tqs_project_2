@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -7,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +23,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Entity
@@ -36,43 +44,84 @@ public class Auction {
 
     @Id
     @GeneratedValue( strategy= GenerationType.AUTO )
-    private int id;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "auctioneer_user_id", nullable = false)
+    private User auctioneer;
 
-    @OneToOne
-    @JoinColumn(name = "game_key_id")
+    @ManyToOne
+    @JoinColumn(name = "auction_buyer_user_id")
+    private User buyer;
+
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "game_key_id", nullable = false)
     private GameKey gameKey;
 
-    @OneToOne
-    @JoinColumn(name = "buy_id")
-    @EqualsAndHashCode.Exclude
-    private Buy purchased;
-
-    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATE DEFAULT (CURRENT_DATE)", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date startDate;
+    @JsonFormat(pattern="dd/MM/yyyy")
+    private Date startDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
+    @Future
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date endDate;
 
+    @Column(nullable = false)
+    @Min(0)
     private double price;
 
+
     public Date getEndDate() {
-        return (Date) endDate.clone();
+        if (endDate != null) {
+            return (Date) endDate.clone();
+        }
+        return null;
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = (Date) endDate.clone();
+        if (endDate != null) {
+            this.endDate = (Date) endDate.clone();
+        } else {
+            this.endDate = null;
+        }
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = (Date) startDate.clone();
+        if (startDate != null) {
+            this.startDate = (Date) startDate.clone();
+        } else {
+            this.startDate = null;
+        }
     }
 
     public Date getStartDate() {
-        return (Date) startDate.clone();
+        if (startDate != null) {
+            return (Date) startDate.clone();
+        }
+        return null;
+    }
+
+    @Transactional
+    public void setAuctioneer(User auctioneer) {
+        if (Objects.equals(this.auctioneer, auctioneer)) return;
+
+        this.auctioneer = auctioneer;
+
+        if (auctioneer != null) {
+            auctioneer.addAuctionCreated(this);
+        }
+    }
+
+    public void setGameKey(GameKey gameKey) {
+        if (Objects.equals(this.gameKey, gameKey)) return;
+
+        this.gameKey = gameKey;
+
+        if (gameKey != null) {
+            gameKey.setAuction(this);
+        }
     }
 }

@@ -4,9 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class ControllerUtils {
-    private ControllerUtils(){
 
+    private ControllerUtils() {
     }
+
     public static String getUserFromAuth(String auth){
         String base64Credentials = auth.substring("Basic".length()).trim();
         byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);

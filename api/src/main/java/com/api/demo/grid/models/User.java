@@ -10,24 +10,28 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinColumn;
-
-import javax.persistence.CascadeType;
-import javax.persistence.GenerationType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
@@ -113,24 +117,26 @@ public class User {
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewedUsers;
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewUsers;
 
-    //The reviews directed to the users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -158,12 +164,22 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "auctioneer_user_id")
     @EqualsAndHashCode.Exclude
-    private Set<Auction> auctions;
+    @ToString.Exclude
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<Auction> auctionsCreated = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auction_buyer_user_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Auction> auctionsWon = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -225,6 +241,15 @@ public class User {
         sell.setUser(this);
     }
 
+    @Transactional
+    public void addAuctionCreated(Auction auction) {
+        if (this.auctionsCreated.contains(auction)) return;
+
+        this.auctionsCreated.add(auction);
+
+        auction.setAuctioneer(this);
+    }
+    
     public void addBuy(Buy aboutToBuy) {
         if (this.buys == null) this.buys = new HashSet<>();
 
