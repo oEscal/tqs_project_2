@@ -103,7 +103,7 @@ class Signup extends Component {
 
     var error = false
 
-    if (name == "" || username == "" || birthday == "" || pass == "" || email == "") {
+    if (name == "" || username == "" || birthday == "" || pass == "" || email == "" || country == "Country*") {
       toast.error('Oops, you\'ve got to specify, at least, a name, username, birthday, email and password!', {
         position: "top-center",
         autoClose: 5000,
@@ -199,6 +199,20 @@ class Signup extends Component {
         expiration = tempExpiration[1] + "/" + tempExpiration[0] + "/" + tempExpiration[2]
       }
     }
+
+    if (cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 9)) {
+      toast.error('Oops, the credit card number must contain only numbers and have at least 9 digits!', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorCardCVC"
+      });
+      error = true
+    }
+
 
     if (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
       toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {

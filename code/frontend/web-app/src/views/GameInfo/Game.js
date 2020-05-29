@@ -162,6 +162,7 @@ class Game extends Component {
                     })
                     allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
                     data["allDevelopers"] = allDevelopers
+                  
 
                     var allGenres = ""
                     data.gameGenres.forEach(genre => {
@@ -657,7 +658,7 @@ class Game extends Component {
                     if (!inCart) {
                         button = <Button
                             size="md"
-                            style={{ backgroundColor: "#4ec884" }}
+                            style={{ backgroundColor: "#4ec884", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
 
@@ -668,7 +669,7 @@ class Game extends Component {
                     } else {
                         button = <Button
                             size="md"
-                            style={{ backgroundColor: "#ff3ea0" }}
+                            style={{ backgroundColor: "#ff3ea0", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={() => this.removeFromCart(this.state.game.bestSell)}
@@ -690,7 +691,7 @@ class Game extends Component {
                     if (!inCart) {
                         button = <Button
                             size="md"
-                            style={{ backgroundColor: "#4ec884" }}
+                            style={{ backgroundColor: "#4ec884", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
                             disabled
@@ -700,7 +701,7 @@ class Game extends Component {
                     } else {
                         button = <Button
                             size="md"
-                            style={{ backgroundColor: "#ff3ea0" }}
+                            style={{ backgroundColor: "#ff3ea0", width: "100%" }}
                             target="_blank"
                             rel="noopener noreferrer"
                             disabled
@@ -763,8 +764,8 @@ class Game extends Component {
 
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
-                            ( {this.state.game.bestSell.gameKey.platform} Key )
+                        <span style={{ color: "#3b3e48", fontSize: "18", fontWeight: "bolder" }}>
+                            ({this.state.game.bestSell.gameKey.platform} Key)
                             </span>
                     </div>
 
@@ -941,7 +942,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.publisherName}
+                                            {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -1081,7 +1082,7 @@ class Game extends Component {
 
                                     <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allDevelopers}
+                                            {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
