@@ -147,36 +147,34 @@ class Receipt extends Component {
             for (var i = 0; i < this.state.games.length; i++) {
                 var game = this.state.games[i]
                 boughtItems.push(<GridItem xs={12} sm={12} md={12}>
-                    <Link to={"/games/info/" + game.id}>
+                    <Card style={{ height: "375px", width: "100%", marginTop: "20px" }}>
+                        <Link to={"/games/info/" + game.id}>
+                            <CardMedia
+                                component="img"
+                                height="200px"
+                                image={game.coverUrl}
+                            />
+                        </Link >
 
-                        <Card style={{ height: "375px", width: "100%" }}>
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    height="185px"
-                                    image={game.coverUrl}
-                                />
-                                <CardContent >
-                                    <div style={{ textAlign: "left", height: "105px" }}>
-                                        <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            {game.name}
-                                        </h6>
-                                    </div>
-                                    <div style={{ textAlign: "left" }}>
-                                        <h1 style={{ color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                            <span style={{
-                                                background: "rgb(253,27,163)",
-                                                background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
-                                                WebkitBackgroundClip: "text",
-                                                WebkitTextFillColor: "transparent",
-                                            }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> {game.key}</span>
-                                        </h1>
-                                    </div>
-                    
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Link >
+                        <CardContent >
+                            <div style={{ textAlign: "left", height: "90px" }}>
+                                <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
+                                    {game.name}
+                                </h6>
+                            </div>
+                            <div style={{ textAlign: "left" }}>
+                                <h3 style={{ color: "#3b3e48", paddingTop: "0 0", marginTop: "0px" }}>
+                                    <span style={{
+                                        background: "rgb(253,27,163)",
+                                        background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                        WebkitBackgroundClip: "text",
+                                        WebkitTextFillColor: "transparent",
+                                    }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> {game.key}</span>
+                                </h3>
+                            </div>
+
+                        </CardContent>
+                    </Card>
                 </GridItem>)
             }
 
@@ -233,8 +231,8 @@ class Receipt extends Component {
                                 </GridContainer>
                             </div>
 
-                            <div style={{}}>
-                                <GridContainer xs={12} sm={12} md={12}>
+                            <div style={{ padding: "20px 0" }}>
+                                <GridContainer>
                                     {boughtItems}
                                 </GridContainer>
                             </div>
