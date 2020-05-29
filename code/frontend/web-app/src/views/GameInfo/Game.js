@@ -183,6 +183,14 @@ class Game extends Component {
             })
             .catch(error => {
                 console.log(error)
+                toast.error('Sorry, an unexpected error has occurred while loading that game\'s information...', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
                 this.setState({ redirectGames: true })
             });
 
@@ -415,6 +423,12 @@ class Game extends Component {
         }
     }
 
+    renderRedirectGames = () => {
+        if (this.state.redirectGames) {
+            return <Redirect to='/games' />
+        }
+    }
+
     renderRedirectProfile = () => {
         if (this.state.redirectProfile != null && this.state.redirectProfile != "") {
             return <Redirect to={'/user/' + this.state.redirectProfile} />
@@ -433,17 +447,13 @@ class Game extends Component {
         if (this.state.redirectGames) {
             return (
                 <div>
-                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
-
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
-                        <FadeIn>
-                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
-                        </FadeIn>
-                    </div>
+                    {this.renderRedirectLogin()}
+                    {this.renderRedirectProfile()}
+                    {this.renderRedirectGames()}
                 </div>
             )
-        }
 
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -1028,6 +1038,7 @@ class Game extends Component {
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     {this.renderRedirectLogin()}
                     {this.renderRedirectProfile()}
+                    {this.renderRedirectGames()}
 
                     <ToastContainer
                         position="top-center"
