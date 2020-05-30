@@ -290,7 +290,7 @@ class AuctionServiceIT {
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer2Username,
                 mGameKeyRKey, newPrice - 1.3));
 
-        Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
+        Auction resultantAuction = mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey);
 
         // verify the buyer
         assertNotEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());
@@ -320,7 +320,7 @@ class AuctionServiceIT {
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer2Username, mGameKeyRKey, newPrice));
 
-        Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
+        Auction resultantAuction = mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey);
 
         // verify the buyer
         assertNotEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());

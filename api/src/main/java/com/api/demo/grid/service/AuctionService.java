@@ -87,7 +87,7 @@ public class AuctionService {
     @SneakyThrows
     public Auction addBidding(String user, String gameKey, double price) {
 
-        Auction auction = mAuctionRepository.findByGameKey_rKey(gameKey);
+        Auction auction = mAuctionRepository.findByGameKey_RealKey(gameKey);
         User buyer = mUserRepository.findByUsername(user);
 
         // verify the buyer exists
