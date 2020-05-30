@@ -38,8 +38,7 @@ public class AuctionService {
         return mAuctionRepository.findByGameKey_RealKey(key);
     }
 
-    @SneakyThrows
-    public Auction addAuction(AuctionPOJO auctionPOJO) {
+    public Auction addAuction(AuctionPOJO auctionPOJO) throws ExceptionDetails {
 
         String gameKeyStr = auctionPOJO.getGameKey();
 
@@ -84,8 +83,7 @@ public class AuctionService {
     }
 
     @Transactional
-    @SneakyThrows
-    public Auction addBidding(String user, String gameKey, double price) {
+    public Auction addBidding(String user, String gameKey, double price) throws ExceptionDetails {
 
         Auction auction = mAuctionRepository.findByGameKey_RealKey(gameKey);
         User buyer = mUserRepository.findByUsername(user);

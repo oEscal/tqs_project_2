@@ -311,6 +311,9 @@ class AuctionControllerIT {
                 .andExpect(jsonPath("$.gameKey", is(nullValue())))
                 .andExpect(jsonPath("$.endDate", is(mEndDate)))
                 .andExpect(jsonPath("$.price", is(newPrice)));
+
+        // verify if there is an auction on the buyer side
+        assertEquals(1, mUserService.getUser(mAuctioneerUsername).getAuctionsWon().size());
     }
 
     @Test
