@@ -132,4 +132,14 @@ public class Buy {
         return -1l;
     }
 
+    public long getSellerId(){
+        if (sell != null) return sell.getUserId();
+        return -1L;
+    }
+
+    public String getSellerName(){
+        if (sell != null) return sell.getUser().getUsername();
+        return "";
+    }
+
 }

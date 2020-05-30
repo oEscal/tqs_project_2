@@ -565,7 +565,10 @@ class GridRestControllerTest {
     @WithMockUser(username = "spring")
     void whenPostingValidGameReview_ReturnSuccess() throws Exception {
         Game game = new Game();
+        game.setName("game");
+        game.setId(1L);
         User user = new User();
+        user.setId(2L);
         user.setUsername("mUsername1");
         user.setName("mName1");
         user.setEmail("mEmail1");
@@ -709,7 +712,7 @@ class GridRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.[0].comment", is(review.getComment())))
                 .andExpect(jsonPath("$.content.[0].score", is(review.getScore())))
-                .andExpect(jsonPath("$.content.[0].game.id", is((int) game.getId())));
+                .andExpect(jsonPath("$.content.[0].gameId", is((int) game.getId())));
     }
 
     @Test
