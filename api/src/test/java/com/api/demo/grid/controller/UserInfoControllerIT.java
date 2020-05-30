@@ -18,14 +18,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-
-
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserInfoControllerIT {
     @Autowired
     private MockMvc mMockMvc;
@@ -66,16 +68,19 @@ class UserInfoControllerIT {
             mBirthDateStr = "17/10/2010",
             mStartDateStr = "25/05/2020",
             mPhotoUrl = "photo.jpg";
+    private BCryptPasswordEncoder mPasswordEncoder;
 
     @BeforeEach
     @SneakyThrows
     void setup(){
+        mPasswordEncoder = new BCryptPasswordEncoder();
+
         mUser = new User();
         mUser.setUsername(mUsername1);
         mUser.setName(mName1);
         mUser.setEmail(mEmail1);
         mUser.setCountry(mCountry1);
-        mUser.setPassword(mPassword1);
+        mUser.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser.setPhotoUrl(mPhotoUrl);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
@@ -85,7 +90,7 @@ class UserInfoControllerIT {
         mUser2.setName("admin");
         mUser2.setEmail(mEmail1 + "2");
         mUser2.setCountry(mCountry1);
-        mUser2.setPassword(mPassword1);
+        mUser2.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser2.setPhotoUrl(mPhotoUrl);
         mUser2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         mUser2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
@@ -104,23 +109,19 @@ class UserInfoControllerIT {
         mSell = new Sell();
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
-
-        mUserRepo.deleteAll();
-        mGameRepo.deleteAll();
-        mGameKeyRepo.deleteAll();
-        mSellRepo.deleteAll();
     }
 
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
         mUserRepo.save(mUser);
-        mGameRepo.save(mGame);
+
         mGameKey.setGame(mGame);
-        mGameKeyRepo.save(mGameKey);
-        mSell.setUser(mUser);
+
         mSell.setGameKey(mGameKey);
-        mSellRepo.save(mSell);
+        mGameRepo.save(mGame);
+        mSell.setUser(mUser);
+        mUserRepo.save(mUser);
 
         mMockMvc.perform(get("/grid/public/user-info")
                 .param("username", mUsername1)
@@ -149,7 +150,7 @@ class UserInfoControllerIT {
         ;
     }
 
-    /*
+
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo() throws Exception {
@@ -159,26 +160,24 @@ class UserInfoControllerIT {
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("username", mUsername1)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-                //.andExpect(jsonPath("$.username", is(mUsername1)))
-                //.andExpect(jsonPath("$.name", is(mName1)))
-                //.andExpect(jsonPath("$.country", is(mCountry1)))
-                //.andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
-                //.andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
-                //.andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
-                //.andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
-                //.andExpect(jsonPath("$.wishList[0].name", is("wish")));
-
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(mUsername1)))
+                .andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(jsonPath("$.country", is(mCountry1)))
+                .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
+                .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
+                .andExpect(jsonPath("$.wishList[0].name", is("wish")))
+                ;
 
         //TODO check for wishlist, buys and reviews once endpoints are done
     }
-     */
 
-    /*
+
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsAdmin_getValidPrivateInfo(){
         mGameRepo.save(mGame);
+        mUserRepo.save(mUser);
 
         mUser2.setAdmin(true);
         mUserRepo.save(mUser2);
@@ -193,19 +192,14 @@ class UserInfoControllerIT {
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDateStr", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.startDateStr", is(mStartDateStr)))
-                .andExpect(jsonPath("$.sells[0].id", is((int)mSell.getId())))
-                .andExpect(jsonPath("$.sells[0].gameKey.id", is((int)mGameKey.getId())))
                 .andExpect(jsonPath("$.wishList[0].name", is("wish")))
         ;
-        //TODO check for wishlist, buys and reviews once endpoints are done
     }
-    *
-     */
+
 
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_andIsNotOwnerNorAdmin_getException(){
-        mGameRepo.save(mGame);
         mUserRepo.save(mUser2);
 
         mMockMvc.perform(get("/grid/private/user-info")
@@ -213,7 +207,7 @@ class UserInfoControllerIT {
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                //.andExpect(status().reason(is("You are not allowed to see this user's private info")))
+                .andExpect(status().reason(is("You are not allowed to see this user's private info")))
         ;
 
     }
@@ -228,8 +222,8 @@ class UserInfoControllerIT {
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
-                //.andExpect(status().reason(is("Username not found in the database")))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason(is("Username not found in the database")))
         ;
 
     }

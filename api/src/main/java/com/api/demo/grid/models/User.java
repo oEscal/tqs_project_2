@@ -133,29 +133,6 @@ public class User {
     @ToString.Exclude
     private Set<ReviewUser> reviewUsers = new HashSet<>();
 
-
-    //The reports this user has issued on game reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewGame> reportsOnGameReview;
-
-    //The reports this user has issued on user reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewUser> reportsOnUserReview;
-
-    //The reports this user has received
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_from_user_id")
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsThisUser;
-
-    //The reports this user has issued on users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_to_user_id")
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsOnUser;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
@@ -173,7 +150,7 @@ public class User {
     @ToString.Exclude
     private Set<Auction> auctionsWon = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
@@ -183,7 +160,7 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
 
-    @Column(columnDefinition = "FLOAT   DEFAULT 0.00")
+    @Column(columnDefinition = "FLOAT DEFAULT 0.00")
     private double funds = 0;
 
     // because lombok doesnt support get and set params of Date type with security (clone)

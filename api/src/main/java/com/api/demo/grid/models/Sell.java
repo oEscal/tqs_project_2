@@ -9,18 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
@@ -40,16 +29,16 @@ public class Sell {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "game_key_id")
     private GameKey gameKey;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "buy_id")
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -58,8 +47,9 @@ public class Sell {
     private double price;
 
     @EqualsAndHashCode.Exclude
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private Date date = new Date();
 
 
     public void setUser(User user) {

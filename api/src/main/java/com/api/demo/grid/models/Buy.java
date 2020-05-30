@@ -10,17 +10,7 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
@@ -52,8 +42,9 @@ public class Buy {
     @ToString.Exclude
     private User user;
 
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private Date date = new Date();
 
     @Transactional
     public void setUser(User user) {

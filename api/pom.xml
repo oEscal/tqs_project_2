@@ -233,8 +233,6 @@
                 <configuration>
                     <skipTests>true</skipTests>
                     <excludes>
-                        <exclude>**/UserInfoControllerIT.*</exclude>
-                        <exclude>**/GridRestControllerIT.*</exclude>
                         <exclude>**frontend/webapp/**</exclude>
                     </excludes>
                 </configuration>
@@ -289,8 +287,6 @@
                     </includes>
 
                     <excludes>
-                        <exclude>**/UserInfoControllerIT.*</exclude>
-                        <exclude>**/GridRestControllerIT.*</exclude>
                         <exclude>**frontend/webapp/**</exclude>
                     </excludes>
                 </configuration>
