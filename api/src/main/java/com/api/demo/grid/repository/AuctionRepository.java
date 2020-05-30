@@ -9,5 +9,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
-    Auction findByGameKey_rKey(String rKey);
+    Auction findByGameKey_RealKey(String rKey);
 }

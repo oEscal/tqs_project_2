@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface SellRepository extends JpaRepository<Sell, Long> {
     Optional<Sell> findById(long id);
     Optional<Sell> findByGameKey(GameKey key);
-    @Query("Select s from Sell s where s.gameKey.game.id = ?1")
+    @Query("Select s from Sell s where s.gameKey.game.id = ?1 and s.purchased IS NULL")
     Page<Sell> findAllByGames(Long game, Pageable pageable);
 
-    Sell findByGameKey_rKey(String rKey);
+    Sell findByGameKey_RealKey(String rKey);
 }

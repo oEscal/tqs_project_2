@@ -92,7 +92,7 @@ class UserInfoControllerTest {
         mGame.setName("nam");
         mGameKey = new GameKey();
         mGameKey.setGame(mGame);
-        mGameKey.setRKey("key");
+        mGameKey.setRealKey("key");
         mGameKey.setId(1l);
         mSell = new Sell();
         mSell.setId(2l);

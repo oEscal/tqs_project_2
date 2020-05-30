@@ -36,6 +36,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 class GridRestControllerIT {
 
     @Autowired
@@ -189,9 +191,12 @@ class GridRestControllerIT {
     @Test
     void whenRequestSellListings_ReturnPagedListings() throws Exception {
         Game game = new Game();
+        mGameRepository.save(game);
+
         GameKey gameKey = new GameKey();
         gameKey.setGame(game);
         mGameKeyRepository.save(gameKey);
+
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
         mSellRepository.save(sell);
@@ -240,7 +245,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rkey", is("key")))
+                .andExpect(jsonPath("$.platform", is("ps3")))
                 .andExpect(jsonPath("$.gameId", is(Math.toIntExact(game.getId()))))
         ;
     }
@@ -263,7 +268,7 @@ class GridRestControllerIT {
         User user = createUser();
         mUserRepository.save(user);
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         mGameKeyRepository.save(gameKey);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
@@ -271,7 +276,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameKey.rkey", is("key")))
+                .andExpect(jsonPath("$.gameKey.id", is(Math.toIntExact(gameKey.getId()))))
                 .andExpect(jsonPath("$.userId", is(Math.toIntExact(user.getId()))))
         ;
     }
@@ -280,13 +285,17 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingValidSellListing_AndAskingGame_ReturnLowestPriceAndPlatformUsed() throws Exception {
         Game game = new Game();
+        mGameRepository.save(game);
+
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         gameKey.setPlatform("ps4");
         gameKey.setGame(game);
-        mGameRepository.save(game);
+        mGameKeyRepository.save(gameKey);
+
         User user = createUser();
         mUserRepository.save(user);
+
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setPrice(2.4);
         mSellPOJO.setGameKey("key");
@@ -322,15 +331,25 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingValidBuylisting_ReturnBuyList() throws Exception {
         User seller = createUser();
-        //mUserRepository.save(seller);
+        mUserRepository.save(seller);
+
+        Game game = new Game();
+        game.setName("game");
+        game.setCoverUrl("cover.jpg");
+        mGameRepository.save(game);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
+
         Sell sell = new Sell();
         sell.setUser(seller);
-        GameKey gameKey = new GameKey();
-        mGameKeyRepository.save(gameKey);
         sell.setGameKey(gameKey);
         mSellRepository.save(sell);
+
         User buyer = createUser();
         mUserRepository.save(buyer);
+
         long[] listingId = {sell.getId()};
         mBuyListingsPOJO.setListingsId(listingId);
         mBuyListingsPOJO.setUserId(buyer.getId());
@@ -341,7 +360,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
-        ;
+                ;
 
     }
 
@@ -349,10 +368,11 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception {
         User seller = createUser();
-        //mUserRepository.save(seller);
+        mUserRepository.save(seller);
+
         Sell sell = new Sell();
         sell.setUser(seller);
-        //sell.setGameKey(new GameKey());
+        sell.setGameKey(new GameKey());
 
         User buyer = createUser();
         mUserRepository.save(buyer);
@@ -493,7 +513,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].comment", is(mReviewGamePOJO.getComment())))
                 .andExpect(jsonPath("$.[0].score", is(mReviewGamePOJO.getScore())))
-                .andExpect(jsonPath("$.[0].author.username", is(user.getUsername())));
+                .andExpect(jsonPath("$.[0].authorUsername", is(user.getUsername())));
     }
 
     /*
@@ -587,7 +607,8 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].comment", is(mReviewUserPOJO.getComment())))
                 .andExpect(jsonPath("$[0].score", is(mReviewUserPOJO.getScore())))
-                .andExpect(jsonPath("$[0].author.username", is(author.getUsername())));
+                .andExpect(jsonPath("$[0].authorUsername", is(author.getUsername())))
+                .andExpect(jsonPath("$[0].targetUsername", is(target.getUsername())));
     }
 
     @Test
@@ -679,7 +700,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.[0].comment", is(review.getComment())))
                 .andExpect(jsonPath("$.content.[0].score", is(review.getScore())))
-                .andExpect(jsonPath("$.content.[0].game.id", is((int) game.getId())));
+                .andExpect(jsonPath("$.content.[0].gameId", is((int) game.getId())));
     }
 
 

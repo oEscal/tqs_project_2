@@ -60,14 +60,12 @@ public class Game {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "publisher_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Set<Developer> developers = new HashSet<>();
 
     @Temporal(TemporalType.DATE)
@@ -110,7 +108,7 @@ public class Game {
         Sell bestSell = new Sell();
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
-            if (gameKey.getSell() != null){
+            if (gameKey.getSell() != null && gameKey.getSell().getPurchased() == null){
                 if (!foundPrice || bestSell.getPrice() > gameKey.getSell().getPrice()) {
                     bestSell = gameKey.getSell();
                 }
@@ -129,19 +127,6 @@ public class Game {
             if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
         }
         return gamePlatforms;
-    }
-
-    public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
-
-    public String[] getDeveloperNames() {
-        if (developers == null || developers.size()==0) return new String[0];
-        String[] devNames = new String[developers.size()];
-        int count = 0;
-        for (Developer developer : developers){
-            devNames[count] = developer.getName();
-            count++;
-        }
-        return devNames;
     }
 
     public void setPublisher(Publisher publisher){

@@ -9,6 +9,7 @@ import com.api.demo.grid.models.Publisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,8 @@ public interface GameRepository extends JpaRepository<Game, Long>  {
     List<Game> findAllByGameGenresContains(GameGenre gameGenre);
     List<Game> findAllByPublisher(Publisher publisher);
     List<Game> findAllByDevelopersContaining(Developer developer);
+
+    @Query("Select g from Game g where g.id = ?1")
     Optional<Game> findById(Long id);
     List<Game> findAllByNameContaining(String name);
 }

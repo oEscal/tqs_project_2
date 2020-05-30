@@ -35,7 +35,7 @@ public class AuctionService {
 
 
     public Auction getAuctionByGameKey(String key) {
-        return mAuctionRepository.findByGameKey_rKey(key);
+        return mAuctionRepository.findByGameKey_RealKey(key);
     }
 
     @SneakyThrows
@@ -54,7 +54,7 @@ public class AuctionService {
         }
 
         // verify if the game key is already in some sell
-        if (this.mSellRepository.findByGameKey_rKey(gameKeyStr) != null) {
+        if (this.mSellRepository.findByGameKey_RealKey(gameKeyStr) != null) {
             throw new ExceptionDetails("There is already a sell for that game key");
         }
 
@@ -65,7 +65,7 @@ public class AuctionService {
         }
 
         GameKey gameKey;
-        Optional<GameKey> possibleGameKey = mGameKeyRepository.findByrKey(gameKeyStr);
+        Optional<GameKey> possibleGameKey = mGameKeyRepository.findByRealKey(gameKeyStr);
 
         // verify if the game key exists
         if (possibleGameKey.isPresent()) {

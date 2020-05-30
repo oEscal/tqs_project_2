@@ -1,4 +1,4 @@
-    
+
 import React, { Component } from 'react';
 import classNames from "classnames";
 
@@ -159,13 +159,18 @@ class GameSearch extends Component {
                 cacheRequest: body
             })
 
+            var login_info = null
+            if (global.user != null) {
+                login_info = global.user.token
+            }
+
 
             // Proceed to login
             await fetch(baseURL + "grid/search", {
                 method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
+                    Authorization: login_info
                 },
                 body: JSON.stringify(this.state.cacheRequest)
             })
@@ -205,12 +210,14 @@ class GameSearch extends Component {
         } else {
             var name = document.getElementById("name").value
             var priceFrom = document.getElementById("priceFrom").value
-            var priceTo = document.getElementById("priceTo").textContent
+            var priceTo = document.getElementById("priceTo").value
 
             var genres = []
             var platforms = []
             window.scrollTo(0, 0)
 
+            console.log(priceFrom)
+            console.log(priceTo)
 
             for (var i = 0; i < 19; i++) {
                 if (document.getElementById('genre_' + i).checked) {
@@ -270,14 +277,18 @@ class GameSearch extends Component {
                     body["platforms"] = platforms
                 }
 
-                console.log(body)
+                var login_info = null
+                if (global.user != null) {
+                    login_info = global.user.token
+                }
+
 
                 // Proceed to login
                 await fetch(baseURL + "grid/search", {
                     method: "POST",
                     headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json",
+                        Authorization: login_info
                     },
                     body: JSON.stringify(body)
                 })
@@ -490,7 +501,7 @@ class GameSearch extends Component {
 
                     <div className={classNames(classes.main)} style={{ marginTop: "60px" }}>
 
-                        <div className={"search"} style={{ position: "absolute", top: "200px", right: "25px", zIndex: "1" }}>
+                        <div className={"search"} style={{ position: "absolute", top: "200px", right: "25px", zIndex: "100" }}>
                             <GridContainer xs={12} sm={12} md={12}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <Card style={{ height: "100%", width: "400px", float: "right" }}>
@@ -1090,7 +1101,7 @@ class GameSearch extends Component {
                                                         </h2>
                                                     </span>
                                                 </GridItem>
-                                        
+
                                             </GridContainer>
                                             <hr style={{ color: "#999", opacity: "0.4" }}></hr>
                                         </div>

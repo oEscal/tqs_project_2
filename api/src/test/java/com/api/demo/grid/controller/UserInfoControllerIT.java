@@ -99,14 +99,11 @@ class UserInfoControllerIT {
         mWishGame.setUserWish(new HashSet<>(Arrays.asList(mUser)));
 
         mGameKey = new GameKey();
-        mGameKey.setGame(mGame);
-        mGameKey.setRKey("key");
+        mGameKey.setRealKey("key");
 
         mSell = new Sell();
-        mSell.setGameKey(mGameKey);
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
-        mSell.setUser(mUser);
 
         mUserRepo.deleteAll();
         mGameRepo.deleteAll();
@@ -117,10 +114,16 @@ class UserInfoControllerIT {
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
+        mUserRepo.save(mUser);
         mGameRepo.save(mGame);
+        mGameKey.setGame(mGame);
+        mGameKeyRepo.save(mGameKey);
+        mSell.setUser(mUser);
+        mSell.setGameKey(mGameKey);
+        mSellRepo.save(mSell);
 
         mMockMvc.perform(get("/grid/public/user-info")
-                .param("username", "username1")
+                .param("username", mUsername1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is(mUsername1)))

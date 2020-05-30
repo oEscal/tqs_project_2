@@ -41,9 +41,9 @@ public class GameKey {
 
     @Column(unique = true)
     @JsonIgnore
-    private String rKey;
+    private String realKey;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "game_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -110,5 +110,11 @@ public class GameKey {
     public String getGameName(){
         if (game == null) return "";
         return this.game.getName();
+    }
+
+    @EqualsAndHashCode.Include
+    public String getGamePhoto(){
+        if (game == null) return "";
+        return this.game.getCoverUrl();
     }
 }

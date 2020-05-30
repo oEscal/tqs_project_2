@@ -73,7 +73,7 @@ class AuctionRepositoryTest {
 
         // create game key
         mGameKey = new GameKey();
-        mGameKey.setRKey(mGameKeyRKey);
+        mGameKey.setRealKey(mGameKeyRKey);
         mGameKey.setGame(mGame);
         mEntityManager.persistAndFlush(mGameKey);
 
@@ -90,13 +90,13 @@ class AuctionRepositoryTest {
     @Test
     void whenAuctionGameKeyExists_receiveCorrectAuction() {
 
-        assertEquals(mAuction, mAuctionRepository.findByGameKey_rKey(mGameKeyRKey));
+        assertEquals(mAuction, mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey));
     }
 
     @Test
     void whenAuctionGameKeyNotExists_receiveNothing() {
 
-        assertNull(mAuctionRepository.findByGameKey_rKey("test_key"));
+        assertNull(mAuctionRepository.findByGameKey_RealKey("test_key"));
     }
 
     // TODO -> see the error with the annotation @FUTURE

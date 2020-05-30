@@ -102,7 +102,6 @@ class ProfilePage extends Component {
             login_info = global.user.token
         }
 
-        // Get All Games
         await fetch(baseURL + "grid/private/user-info?username=" + this.props.match.params.user, {
             method: "GET",
             headers: {
@@ -195,16 +194,12 @@ class ProfilePage extends Component {
     }
 
     async componentDidMount() {
-        if (global.user.username == this.props.match.params.user) {
+        if (global.user != null && global.user.username == this.props.match.params.user) {
             await this.getPrivateUserInfo()
         } else {
             await this.getPublicUserInfo()
         }
 
-        console.log(this.state.info)
-        console.log(this.state.public)
-        console.log(global.user.username)
-        console.log(this.props.match.params.user)
         this.setState({ doneLoading: true })
     }
 
@@ -252,6 +247,7 @@ class ProfilePage extends Component {
         } else {
 
             var info = <div></div>
+
             if (this.state.info != null) {
                 if (!this.state.public) {
                     info = <GridItem xs={12} sm={12} md={12}>
@@ -310,7 +306,7 @@ class ProfilePage extends Component {
                                             </div>
 
                                             <div style={{ marginTop: "10px", width: "99%" }}>
-                                                {this.state.info.reviewUsers.length == 0 ?
+                                                {this.state.info.reviewGames.length == 0 ?
                                                     <div style={{ textAlign: "left" }}>
                                                         <h3 style={{ color: "#999" }}>
                                                             Oops, seems like you haven't reviewed any games yet...
@@ -319,7 +315,7 @@ class ProfilePage extends Component {
                                                     <TableContainer component={Paper}>
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
-                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                {this.state.info.reviewGames.map((row) => (
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left">{row.game.name}</TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
@@ -349,7 +345,7 @@ class ProfilePage extends Component {
                                             </div>
 
                                             <div style={{ marginTop: "10px", width: "99%" }}>
-                                                {this.state.info.reviewUsers.length == 0 ?
+                                                {this.state.info.reviewedUsers.length == 0 ?
                                                     <div style={{ textAlign: "left" }}>
                                                         <h3 style={{ color: "#999" }}>
                                                             Oops, seems like you haven't reviewed any users yet...
@@ -358,9 +354,9 @@ class ProfilePage extends Component {
                                                     <TableContainer component={Paper}>
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
-                                                                {this.state.info.reviewUsers.map((row) => (
+                                                                {this.state.info.reviewedUsers.map((row) => (
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.game.name}</TableCell>
+                                                                        <TableCell align="left">{row.author.username}</TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
                                                                         <TableCell align="left">{row.comment}</TableCell>
                                                                         <TableCell align="left">{row.date}</TableCell>
@@ -398,7 +394,19 @@ class ProfilePage extends Component {
                                                             <TableBody>
                                                                 {this.state.info.buys.map((row) => (
                                                                     <TableRow hover key={row.name}>
-
+                                                                        <TableCell align="left" style={{ fontWeight: "bolder" }}>
+                                                                            <Link to={"/game/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
+                                                                                <b>{row.gameName}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left" style={{ fontWeight: "bolder", color: "#f44336" }}>
+                                                                            <span style={{
+                                                                            background: "rgb(253,27,163)",
+                                                                            background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                                                            WebkitBackgroundClip: "text",
+                                                                            WebkitTextFillColor: "transparent",
+                                                                        }}><i class="fas fa-key"></i> </span><span style={{marginLeft:"5px"}}><b>{row.gamerKey}</b></span></TableCell>
+                                                                        <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -479,7 +487,7 @@ class ProfilePage extends Component {
                                             </div>
 
                                             <div style={{ marginTop: "10px", width: "99%" }}>
-                                                {this.state.info.auctions.length == 0 ?
+                                                {this.state.info.auctionsCreated.length == 0 ?
                                                     <div style={{ textAlign: "left" }}>
                                                         <h3 style={{ color: "#999" }}>
                                                             Oops, seems like you haven't put any games for auction...
@@ -488,7 +496,7 @@ class ProfilePage extends Component {
                                                     <TableContainer component={Paper}>
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
-                                                                {this.state.info.auctions.map((row) => (
+                                                                {this.state.info.auctionsCreated.map((row) => (
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.platform}</TableCell>
                                                                         <TableCell align="left">{row.gameKey.platform}</TableCell>
@@ -539,7 +547,7 @@ class ProfilePage extends Component {
                                                 <div style={{ textAlign: "left" }}>
                                                     <h3 style={{ color: "#999" }}>
                                                         Oops, seems like you haven't registered a credit card yet...
-                                                </h3>
+                                                    </h3>
                                                 </div> :
                                                 <TableContainer component={Paper}>
                                                     <Table style={{ width: "100%" }} aria-label="simple table">
@@ -603,7 +611,64 @@ class ProfilePage extends Component {
                                             </div>
                                         </div>
                                     )
-                                }
+                                },
+                                {
+                                    tabButton: "Sales",
+                                    tabIcon: "fas fa-money-bill-wave",
+                                    tabContent: (
+                                        <div>
+                                            <div>
+                                                <span>
+                                                    <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
+                                                </h2>
+                                                </span>
+                                            </div>
+
+                                            <div style={{ marginTop: "10px", width: "99%" }}>
+                                                {this.state.info.listings.length == 0 ?
+                                                    <div style={{ textAlign: "left" }}>
+                                                        <h3 style={{ color: "#999" }}>
+                                                            Hmmm, seems like this user isn't selling any games...
+                                                </h3>
+                                                    </div> :
+                                                    <TableContainer component={Paper}>
+                                                        <Table style={{ width: "100%" }} aria-label="simple table">
+                                                            <TableBody>
+                                                                {this.state.info.listings.map((row) => (
+                                                                    <TableRow hover key={row.name}>
+                                                                        <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.gameName}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.platform}</TableCell>
+                                                                        <TableCell align="left">{row.gameKey.rkey}</TableCell>
+                                                                        <TableCell align="left">{row.price}€</TableCell>
+                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        {row.purchased ?
+                                                                            <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
+                                                                        }
+                                                                        {row.purchased ?
+                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+                                                                                <Button
+                                                                                    size="md"
+                                                                                    style={{ backgroundColor: "#ff3ea0" }}
+                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                >
+                                                                                    <i class="fas fa-times"></i> Cancel Sale
+                                                                        </Button>
+                                                                            </TableCell>
+                                                                        }
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                },
                             ]}
                         />
                     </GridItem>
@@ -611,7 +676,10 @@ class ProfilePage extends Component {
 
                 var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
 
-                if (this.state.info.score > 0 && this.state.info.score <= 1) {
+                if (this.state.info.score == -1) {
+                    score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
+                }
+                else if (this.state.info.score > 0 && this.state.info.score <= 1) {
                     score = <span style={{ color: "red" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>
                 } else if (this.state.info.score < 4) {
                     score = <span style={{ color: "#fc926e" }}><b>{this.state.info.score} <i class="far fa-star"></i></b></span>

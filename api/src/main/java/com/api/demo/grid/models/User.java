@@ -1,7 +1,6 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
@@ -117,25 +116,22 @@ public class User {
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
-    private Set<ReviewGame> reviewGames;
+    private Set<ReviewGame> reviewGames = new HashSet<>();
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
-    private Set<ReviewUser> reviewedUsers;
+    private Set<ReviewUser> reviewedUsers = new HashSet<>();
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
-    private Set<ReviewUser> reviewUsers;
+    private Set<ReviewUser> reviewUsers = new HashSet<>();
 
 
     //The reports this user has issued on game reviews

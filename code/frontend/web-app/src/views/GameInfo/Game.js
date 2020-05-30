@@ -98,6 +98,11 @@ class Game extends Component {
 
         loadingSell: false,
         loadingAuctions: false,
+
+        sellListings: [],
+        listingsPage: 1,
+        noListingPages: 1,
+        noSells: 0
     }
 
     async getGameInfo() {
@@ -108,7 +113,6 @@ class Game extends Component {
 
         await this.setState({ gamesLoaded: false })
 
-        console.log(this.props.match.params.game)
         // Get All Games
         await fetch(baseURL + "grid/game?id=" + this.props.match.params.game, {
             method: "GET",
@@ -153,11 +157,12 @@ class Game extends Component {
                     data.description = description
 
                     var allDevelopers = ""
-                    data.developerNames.forEach(developer => {
-                        allDevelopers += developer + ", "
+                    data.developers.forEach(developer => {
+                        allDevelopers += developer.name + ", "
                     })
                     allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
                     data["allDevelopers"] = allDevelopers
+
 
                     var allGenres = ""
                     data.gameGenres.forEach(genre => {
@@ -178,14 +183,159 @@ class Game extends Component {
             })
             .catch(error => {
                 console.log(error)
+                toast.error('Sorry, an unexpected error has occurred while loading that game\'s information...', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
                 this.setState({ redirectGames: true })
             });
 
     }
 
+    async getGameListings() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ loadingSell: true })
+
+        // Get All Games
+        await fetch(baseURL + "grid/sell-listing?gameId=" + this.props.match.params.game + "&page=0" + (this.state.listingsPage - 1), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+
+                    if (data.first) {
+                        this.setState({
+                            noListingPages: data.totalPages,
+                            noSells: data.totalElements
+                        })
+                    }
+
+                    var content = []
+
+                    var co = -1
+
+                    data.content.forEach(sell => {
+                        var listing = sell
+
+                        co++
+
+                        var inCart = false
+                        if (global.cart != null) {
+                            for (var i = 0; i < global.cart.games.length; i++) {
+                                var game = global.cart.games[i]
+
+                                if (listing.id == game.id) {
+                                    inCart = true
+                                    break
+                                }
+                            }
+                        }
+
+                        if (global.user != null) {
+                            if (!inCart) {
+                                listing['cart'] = <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#4ec884" }}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    id={"addToCartButton" + co}
+                                    onClick={() => this.addToCart(sell)}
+                                >
+                                    <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                            </Button>
+                            } else {
+                                listing['cart'] = <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#ff3ea0" }}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => this.removeFromCart(sell)}
+                                    id={"removeFromCartButton" + co}
+
+                                >
+                                    <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                            </Button>
+                            }
+                        } else {
+                            if (!inCart) {
+                                listing['cart'] = <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#4ec884" }}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    disabled
+                                    id="addToCartButton"
+                                >
+                                    <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                            </Button>
+                            } else {
+                                listing['cart'] = <Button
+                                    size="md"
+                                    style={{ backgroundColor: "#ff3ea0" }}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    disabled
+                                    id="removeFromCartButton"
+                                >
+                                    <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                            </Button>
+                            }
+                        }
+
+                        content.push(listing)
+                    })
+
+                    this.setState({
+                        sellListings: content
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred while loading the sales for this game!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+            });
+
+        await this.setState({ loadingSell: false })
+
+
+    }
+
     async addToWishlist() {
-        console.log(global.user)
-        console.log(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id)
         var login_info = null
         if (global.user != null) {
             login_info = global.user.token
@@ -210,17 +360,19 @@ class Game extends Component {
                 else throw new Error(response.status);
             })
             .then(data => {
-                console.log(data)
 
                 if (data.status === 401) { // Wrong token
                     localStorage.setItem('loggedUser', null);
                     global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                     this.setState({
-                        doneLoading: true
+                        doneLoading: true,
+                        redirectLogin: true
                     })
 
                 } else {
+                    this.setState({ doneLoading: true })
+
                     toast.success('Game successfully added to your wishlist!', {
                         position: "top-center",
                         hideProgressBar: false,
@@ -234,6 +386,8 @@ class Game extends Component {
             })
             .catch(error => {
                 console.log(error)
+                this.setState({ doneLoading: true })
+
                 toast.error('Sorry, an unexpected error has occurred!', {
                     position: "top-center",
                     hideProgressBar: false,
@@ -244,13 +398,50 @@ class Game extends Component {
                 });
             });
 
-        await this.setState({ doneLoading: true })
 
+    }
+
+    async addToCart(game) {
+        await this.setState({ doneLoading: false })
+
+        var cart = []
+        if (global.cart != null) {
+            cart = global.cart.games
+        }
+        cart.push(game)
+        localStorage.setItem('cart', JSON.stringify({ "games": cart }));
+        global.cart = JSON.parse(localStorage.getItem('cart'))
+
+        await this.getGameListings()
+
+        this.setState({ doneLoading: true })
+    }
+
+    async removeFromCart(game) {
+        await this.setState({ doneLoading: false })
+
+        var cart = []
+        if (global.cart != null) {
+            for (var i = 0; i < global.cart.games.length; i++) {
+                var foundGame = global.cart.games[i]
+                if (game.id != foundGame.id) {
+                    cart.push(foundGame)
+                }
+            }
+        }
+
+        await localStorage.setItem('cart', JSON.stringify({ "games": cart }));
+        global.cart = await JSON.parse(localStorage.getItem('cart'))
+
+        await this.getGameListings()
+
+        this.setState({ doneLoading: true })
     }
 
     async componentDidMount() {
         window.scrollTo(0, 0)
         await this.getGameInfo()
+        await this.getGameListings()
         this.setState({ doneLoading: true })
     }
 
@@ -260,6 +451,23 @@ class Game extends Component {
         }
     }
 
+    renderRedirectGames = () => {
+        if (this.state.redirectGames) {
+            return <Redirect to='/games' />
+        }
+    }
+
+    renderRedirectProfile = () => {
+        if (this.state.redirectProfile != null && this.state.redirectProfile != "") {
+            return <Redirect to={'/user/' + this.state.redirectProfile} />
+        }
+    }
+
+    goToProfile = (profile) => {
+        this.setState({ redirectProfile: profile })
+    }
+
+
 
     render() {
         const { classes } = this.props;
@@ -267,24 +475,20 @@ class Game extends Component {
         if (this.state.redirectGames) {
             return (
                 <div>
-                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
-
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
-                        <FadeIn>
-                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
-                        </FadeIn>
-                    </div>
+                    {this.renderRedirectLogin()}
+                    {this.renderRedirectProfile()}
+                    {this.renderRedirectGames()}
                 </div>
             )
-        }
 
+        }
 
         if (!this.state.doneLoading) {
             return (
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                    <div className="animated fadeOut animated" id="firstLoad" style={{ width: "100%", marginTop: "15%" }}>
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
@@ -292,73 +496,6 @@ class Game extends Component {
                 </div>
             )
         } else {
-            const rows = [
-                {
-                    "seller": "Jonas_PP",
-                    "gridScore": <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                        4 <i class="far fa-star"></i>
-                    </span>,
-
-                    "price": <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
-                        5,99€
-                        </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Steam
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                    </Button>
-                },
-                {
-                    "seller": "Not_Jonas_PP",
-                    "gridScore": <span style={{ color: "#fb5a87", fontSize: "15px", fontWeight: "bolder" }}>
-                        2 <i class="far fa-star"></i>
-                    </span>,
-                    "price": <span style={{ color: "#f44336", fontSize: "23px", fontWeight: "bolder" }}>
-                        8,99€
-                    </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Epic Games Store
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                    </Button>
-                },
-                {
-                    "seller": "Oofington",
-                    "gridScore": <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                        3 <i class="far fa-star"></i>
-                    </span>,
-                    "price": <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
-                        12,99€
-                    </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Steam
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                    </Button>
-                }
-            ];
-
             const rows2 = [
                 {
                     "seller": "Jonas_PP",
@@ -423,24 +560,50 @@ class Game extends Component {
             }
 
             var sellListings = <div></div>
-            if (true) {
-                sellListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                    <TableContainer component={Paper}>
-                        <Table style={{ width: "100%" }} aria-label="simple table">
-                            <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow hover key={row.name}>
-                                        <TableCell align="left">{row.seller}</TableCell>
-                                        <TableCell align="left">{row.gridScore}</TableCell>
-                                        <TableCell align="left">{row.type}</TableCell>
-                                        <TableCell align="right">{row.price}</TableCell>
-                                        <TableCell align="right">{row.buy}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </GridItem>
+            if (!this.state.loadingSell) {
+                if (this.state.sellListings == null || this.state.sellListings.length == 0) {
+                    sellListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <div style={{ textAlign: "left" }}>
+                            <h3 style={{ color: "#999" }}>
+                                It seems like no one's selling this game at the moment :(
+                        </h3>
+                        </div>
+                    </GridItem>
+                } else {
+                    sellListings = [<GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <TableContainer component={Paper}>
+                            <Table style={{ width: "100%" }} aria-label="simple table">
+                                <TableBody>
+                                    {this.state.sellListings.map((row) => (
+                                        <TableRow hover key={row.name}>
+                                            <TableCell align="left">
+                                                <Link to={"/user/" + row.gameKey.retailer} style={{ color: "#ff3ea0" }} >
+                                                    <b><i class="far fa-user"></i> {row.gameKey.retailer}</b>
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell align="left">{row.score == -1 || row.score == null ? "UNRATED" : <b>row.score</b>} <b><i class="far fa-star"></i></b></TableCell>
+                                            <TableCell align="left"><b>{row.gameKey.platform}</b></TableCell>
+                                            <TableCell align="right">
+                                                <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
+                                                    {row.price}€
+                                                </span>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.cart}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </GridItem>]
+
+                    sellListings.push(<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
+                        <div style={{ margin: "auto", width: "40%" }}>
+                            <Pagination count={1} variant="outlined" shape="rounded" />
+                        </div>
+                    </GridItem>)
+                }
             } else {
                 sellListings = <div
                     className="animated fadeOut animated"
@@ -459,20 +622,139 @@ class Game extends Component {
             var gameHeader = null
             var gameInfo = null
 
-            var bestPrice = <GridItem xs={12} sm={12} md={2}>
+            var bestPrice
+            if (global.user != null) {
+                bestPrice = <GridItem xs={12} sm={12} md={2}>
+                    <div style={{ textAlign: "left", paddingTop: "15px" }}>
+                        <Button
+                            size="md"
+                            style={{ backgroundColor: "#1598a7", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => this.addToWishlist()}
+                            id="wishlistButton"
+                        >
+                            <i class="far fa-heart"></i> Add to Wishlist
+                    </Button>
+                    </div>
+                </GridItem>
+            } else {
+                bestPrice = <GridItem xs={12} sm={12} md={2}>
                 <div style={{ textAlign: "left", paddingTop: "15px" }}>
                     <Button
                         size="md"
                         style={{ backgroundColor: "#1598a7", width: "100%" }}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={() => this.addToWishlist()}
+                        disabled
+                        id="wishlistButton"
                     >
                         <i class="far fa-heart"></i> Add to Wishlist
                     </Button>
                 </div>
             </GridItem>
+            }
             if (this.state.game.bestSell != null) {
+                var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
+
+                if (this.state.game.bestSell.id == -1) {
+                    score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
+                }
+                else if (this.state.game.bestSell.id > 0 && this.state.game.bestSell.id <= 1) {
+                    score = <span style={{ color: "red" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                } else if (this.state.game.bestSell.id < 4) {
+                    score = <span style={{ color: "#fc926e" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                } else if (this.state.game.bestSell.id <= 5) {
+                    score = <span style={{ color: "#4ec884" }}><b>{this.state.game.bestSell.id} <i class="far fa-star"></i></b></span>
+                }
+
+                var button = null
+                var inCart = false
+                if (global.cart != null) {
+                    for (var i = 0; i < global.cart.games.length; i++) {
+                        var foundGame = global.cart.games[i]
+                        if (this.state.game.bestSell.id == foundGame.id) {
+                            inCart = true;
+                            break
+                        }
+                    }
+                }
+
+                var wishlist = null
+                if (global.user != null) {
+                    if (!inCart) {
+                        button = <Button
+                            size="md"
+                            style={{ backgroundColor: "#4ec884", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            id="addToCartButtonBest"
+
+                            onClick={() => this.addToCart(this.state.game.bestSell)}
+                        >
+                            <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                    </Button>
+                    } else {
+                        button = <Button
+                            size="md"
+                            style={{ backgroundColor: "#ff3ea0", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            id="removeFromCartButtonBest"
+                            onClick={() => this.removeFromCart(this.state.game.bestSell)}
+                        >
+                            <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                    </Button>
+                    }
+
+                    wishlist = <Button
+                        size="md"
+                        style={{ backgroundColor: "#1598a7", width: "100%" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        id="wishlistButton"
+                        onClick={() => this.addToWishlist()}
+                    >
+                        <i class="far fa-heart"></i> Add to Wishlist
+                    </Button>
+                } else {
+                    if (!inCart) {
+                        button = <Button
+                            size="md"
+                            style={{ backgroundColor: "#4ec884", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            id="addToCartButtonBest"
+                            disabled
+                        >
+                            <i class="fas fa-cart-arrow-down"></i> Add to Cart
+                    </Button>
+                    } else {
+                        button = <Button
+                            size="md"
+                            style={{ backgroundColor: "#ff3ea0", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            id="removeFromCartButtonBest"
+                            disabled
+                        >
+                            <i class="fas fa-cart-arrow-down"></i> Remove from Cart
+                    </Button>
+                    }
+
+                    wishlist = <Button
+                        size="md"
+                        style={{ backgroundColor: "#1598a7", width: "100%" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        disabled
+                        id="wishlistButton"
+                    >
+                        <i class="far fa-heart"></i> Add to Wishlist
+                    </Button>
+                }
+
+
                 bestPrice = <GridItem xs={12} sm={12} md={2}>
                     <div style={{ textAlign: "left", marginTop: "30px" }}>
                         <span style={{ color: "#999", fontSize: "12px" }}>
@@ -481,13 +763,11 @@ class Game extends Component {
                     </div>
                     <div style={{ textAlign: "left" }}>
                         <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                            Jonas_PP
-                            </span>
+                            {this.state.game.bestSell.gameKey.retailer}
+                        </span>
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                            4 <i class="far fa-star"></i>
-                        </span>
+                        {score}
                         <span style={{ color: "#999", fontSize: "15px", fontWeight: "bolder", marginLeft: "10px" }}>
                             Grid Score
                             </span>
@@ -497,7 +777,7 @@ class Game extends Component {
                             color="danger"
                             size="sm"
                             style={{ backgroundColor: "#ff3ea0" }}
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                            onClick={() => this.goToProfile(this.state.game.bestSell.gameKey.retailer)}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -512,35 +792,19 @@ class Game extends Component {
                     </div>
                     <div style={{ textAlign: "left" }}>
                         <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
-                            5,99€
+                            {this.state.game.bestSell.price}€
                             </span>
 
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#3b3e48", fontSize: "20", fontWeight: "bolder" }}>
-                            ( PC Key )
+                        <span style={{ color: "#3b3e48", fontSize: "18", fontWeight: "bolder" }}>
+                            ({this.state.game.bestSell.gameKey.platform} Key)
                             </span>
                     </div>
 
                     <div style={{ textAlign: "left", marginTop: "5px" }}>
-                        <Button
-                            size="md"
-                            style={{ backgroundColor: "#4ec884", width: "100%" }}
-                            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i class="fas fa-cart-arrow-down"></i> Add to Cart
-                            </Button>
-                        <Button
-                            size="md"
-                            style={{ backgroundColor: "#1598a7", width: "100%" }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => this.addToWishlist()}
-                        >
-                            <i class="far fa-heart"></i> Add to Wishlist
-                            </Button>
+                        {button}
+                        {wishlist}
                     </div>
                 </GridItem>
             }
@@ -711,7 +975,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.publisherName}
+                                            {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -851,7 +1115,7 @@ class Game extends Component {
 
                                     <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allDevelopers}
+                                            {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -865,6 +1129,9 @@ class Game extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
                     {this.renderRedirectLogin()}
+                    {this.renderRedirectProfile()}
+                    {this.renderRedirectGames()}
+
                     <ToastContainer
                         position="top-center"
                         autoClose={2500}
@@ -888,28 +1155,12 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <span>
-                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>3 Offers
+                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>{this.state.noSells} Offers
                                             </h2>
                                         </span>
                                     </GridItem>
-                                    <GridItem xs={12} sm={12} md={3}>
-                                        <div style={{ color: "#000", padding: "12px 0", width: "100%" }}>
-                                            <Select
-                                                className="basic-single"
-                                                classNamePrefix="select"
-                                                isSearchable={false}
-                                                name="color"
-                                                defaultValue={{ "value": "PRICE", "label": "Sort by Price" }}
-                                                options={[{ "value": "PRICE", "label": "Sort by Price" }, { "value": "DATE", "label": "Sort by Listing Date" }, { "value": "RATING", "label": "Sort by Seller Rating" }]}
-                                            />
-                                        </div>
-                                    </GridItem>
                                     {sellListings}
-                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
-                                        <div style={{ margin: "auto", width: "40%" }}>
-                                            <Pagination count={1} variant="outlined" shape="rounded" />
-                                        </div>
-                                    </GridItem>
+
                                 </GridContainer>
                             </div>
 

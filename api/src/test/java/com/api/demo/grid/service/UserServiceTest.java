@@ -322,7 +322,7 @@ class UserServiceTest {
     @Test
     void whenSearchingValidUser_getValidUserProxy() {
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         gameKey.setId(1l);
         Sell sell = new Sell();
         sell.setId(2l);
@@ -357,7 +357,7 @@ class UserServiceTest {
     void whenSearchingValidUser_andAmUser_getFullInformation() {
         //Added sell
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("key");
+        gameKey.setRealKey("key");
         gameKey.setId(1l);
         Sell sell = new Sell();
         sell.setId(2l);
