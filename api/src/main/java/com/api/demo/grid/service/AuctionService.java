@@ -103,6 +103,11 @@ public class AuctionService {
             throw new ExceptionDetails("The new buyer can't be the same as the current");
         }
 
+        // verify the buyer is the same as the auctioneer
+        if (auction.getAuctioneer().getUsername().equals(user)) {
+            throw new ExceptionDetails("The buyer can't be the same as the auctioneer");
+        }
+
         // verify the current price
         double currentPrice = auction.getPrice();
         if (currentPrice >= price) {
