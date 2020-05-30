@@ -3,6 +3,7 @@ package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.models.Auction;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import java.text.SimpleDateFormat;
 
 import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
+import static com.api.demo.grid.utils.BiddingJson.addBiddingJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,10 +59,13 @@ class AuctionControllerIT {
     private GameRepository mGameRepository;
 
 
+    private Auction mAuction;
     private GameKey mGameKey;
     private Game mGame;
-    private User mAuctioneer;
-    private UserDTO mAuctioneerDTO;
+    private User mAuctioneer,
+            mBuyer;
+    private UserDTO mAuctioneerDTO,
+            mBuyerDTO;
 
     private AuctionPOJO mAuctionPOJO;
 
@@ -76,12 +81,22 @@ class AuctionControllerIT {
             mAuctioneerBirthDateStr = "17/10/2010",
             mAuctioneerStartDateStr = "25/05/2020";
 
+    // buyer info
+    private String mBuyerUsername = "buyer1",
+            mBuyerName = "name1",
+            mBuyerEmail = "buyer_email1",
+            mBuyerCountry = "country1",
+            mBuyerPassword = "password1",
+            mBuyerBirthDateStr = "17/10/2010",
+            mBuyerStartDateStr = "25/05/2020";
+
     // game info
     private String mGameName = "game1",
             mGameKeyRKey = "game_key1";
 
     // auction json
-    private String mAuctionJson;
+    private String mAuctionJson,
+            mBiddingJson;
 
 
     @BeforeEach
@@ -97,9 +112,23 @@ class AuctionControllerIT {
         mAuctioneer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
         mAuctioneer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerStartDateStr));
 
-        // create dto auctioneer
-        this.mAuctioneerDTO = new UserDTO(mAuctioneerUsername, mAuctioneerName, mAuctioneerEmail, mAuctioneerCountry,
+        // create buyer
+        mBuyer = new User();
+        mBuyer.setUsername(mBuyerUsername);
+        mBuyer.setName(mBuyerName);
+        mBuyer.setEmail(mBuyerEmail);
+        mBuyer.setPassword(mBuyerPassword);
+        mBuyer.setCountry(mBuyerCountry);
+        mBuyer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
+        mBuyer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerStartDateStr));
+
+        // create auctioneer dto
+        mAuctioneerDTO = new UserDTO(mAuctioneerUsername, mAuctioneerName, mAuctioneerEmail, mAuctioneerCountry,
                 mAuctioneerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
+
+        // create buyer dto
+        mBuyerDTO = new UserDTO(mBuyerUsername, mBuyerName, mBuyerEmail, mBuyerCountry,
+                mBuyerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
 
         // create game
         mGame = new Game();
@@ -242,4 +271,39 @@ class AuctionControllerIT {
     /***
      *  Add Bid
      ***/
+    @Test
+    @SneakyThrows
+    void whenCreateCompleteBiddingAuction_creationIsSuccessful() {
+
+        // save save auctioneer, game and game key
+        mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // create auction
+        mAuction = new Auction();
+        mAuction.setAuctioneer(mAuctioneer);
+        mAuction.setGameKey(mGameKey);
+        mAuction.setPrice(mPrice);
+        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // save auction and buyer dto
+        mAuctionRepository.save(mAuction);
+        mUserService.saveUser(mBuyerDTO);
+
+        double newPrice = mPrice + 2.5;
+
+        // bidding json
+        mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
+
+        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+                .content(mBiddingJson).with(httpBasic(mBuyerUsername, mBuyerPassword));
+
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.auctioneer", is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.buyer", is(mBuyerUsername)))
+                .andExpect(jsonPath("$.gameKey", is(nullValue())))
+                .andExpect(jsonPath("$.endDate", is(mEndDate)))
+                .andExpect(jsonPath("$.price", is(newPrice)));
+    }
 }

@@ -3,6 +3,7 @@ package com.api.demo.grid.controller;
 
 import com.api.demo.grid.exception.ForbiddenException;
 import com.api.demo.grid.pojos.AuctionPOJO;
+import com.api.demo.grid.pojos.BiddingPOJO;
 import com.api.demo.grid.proxy.AuctionProxy;
 import com.api.demo.grid.service.AuctionService;
 import lombok.SneakyThrows;
@@ -39,9 +40,8 @@ public class AuctionController {
     @SneakyThrows
     @PostMapping("/create-bidding")
     public AuctionProxy createBidding(@RequestHeader("Authorization") String auth,
-                                      @RequestParam String user, @RequestParam String gameKey,
-                                      @RequestParam double price) {
+                                      @Valid @RequestBody BiddingPOJO bidding) {
 
-        return new AuctionProxy(mAuctionService.addBidding(user, gameKey, price));
+        return new AuctionProxy(mAuctionService.addBidding(bidding.getUser(), bidding.getGameKey(), bidding.getPrice()));
     }
 }

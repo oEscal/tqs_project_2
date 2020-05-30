@@ -13,6 +13,7 @@ import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -82,6 +83,7 @@ public class AuctionService {
         return mAuctionRepository.save(auctionSave);
     }
 
+    @Transactional
     @SneakyThrows
     public Auction addBidding(String user, String gameKey, double price) {
 
