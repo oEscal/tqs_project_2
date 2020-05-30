@@ -64,7 +64,7 @@ class AuctionServiceIT {
     private AuctionPOJO mAuctionPOJO;
 
     private double mPrice = 10.20;
-    private String mEndDate = "10/11/2020";
+    private String mEndDate = "10/11/2030";
 
     // auctioneer info
     private String mAuctioneerUsername = "username1",
@@ -257,7 +257,7 @@ class AuctionServiceIT {
         mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, mPrice + 1.3);
 
         // second bid
-        Auction resultantAuction = mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, mPrice + 2.5);
+        Auction resultantAuction = mAuctionService.addBidding(mBuyer2Username, mGameKeyRKey, mPrice + 2.5);
 
         double newPrice = mPrice + 2.5;
 
