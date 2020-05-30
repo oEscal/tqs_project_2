@@ -157,17 +157,6 @@ export default function SectionNavbars(props) {
   } else {
     content = [
       <ListItem className={classes.listItem}>
-        <Link to="/cart" style={{ color: "inherit" }}>
-          <Button
-            className={classes.navLink}
-            color="transparent"
-          >
-            {cartIcon}
-          </Button>
-        </Link>
-      </ListItem>,
-
-      <ListItem className={classes.listItem}>
         <Link to="/login-page" style={{ color: "inherit" }}>
           <Button
             className={classes.navLink}

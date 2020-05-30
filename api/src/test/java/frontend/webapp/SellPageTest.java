@@ -16,16 +16,10 @@ public class SellPageTest {
     public void setUp() {
         controller = new WebAppPageObject();
         //Login
-        controller.navigate("http://localhost:" + port + "/login-page");
-        String username = "admin";
-        String password = "admin";
-        controller.writeInput(username,"username");
-        controller.writeInput(password,"password");
-
-        controller.clickButton("confirm");
-
+        controller.login(port);
         controller.waitForLoad("processing");
         controller.navigate("http://localhost:" + port + "/sell-game");
+        controller.waitForLoad("firstLoad");
     }
 
     @AfterEach
@@ -38,7 +32,7 @@ public class SellPageTest {
     public void whenNoMinimumInput_thenErrorMessage() {
         controller.clickButton("confirm");
 
-        controller.waitForLoad("processing");
+        controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
         assertTrue(controller.checkVisibility("errorMinimum"));
@@ -53,26 +47,13 @@ public class SellPageTest {
         controller.waitSeconds(5);
         controller.clickButton("confirm");
 
-        controller.waitForLoad("processing");
+        controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorPrice"));
         assertTrue(controller.checkText("errorPrice", "You must specify a valid selling price!"));
     }
 
-    @Test
-    //Check that when an invalid expiration date is given an error is displayed
-    public void whenInvalidExpirationDate_thenErrorMessage() {
-        controller.writeInput("oof", "cardExpiration");
-
-        controller.clickButton("confirm");
-
-        controller.waitForLoad("processing");
-        controller.waitSeconds(1);
-
-        assertTrue(controller.checkExistance("errorCardExpiration"));
-        assertTrue(controller.checkText("errorCardExpiration", "Please use a valid expiration date..."));
-    }
 
     //Test when everything goes right
     @Test
@@ -87,8 +68,8 @@ public class SellPageTest {
 
         controller.clickButton("confirm");
 
-        controller.waitForLoad("processing");
-        controller.waitSeconds(5);
+        controller.waitForLoad("firstLoad");
+        controller.waitSeconds(2);
 
         assertFalse(controller.checkExistance("errorCardExpiration"));
         assertFalse(controller.checkExistance("errorMinimum"));

@@ -138,4 +138,17 @@ public class WebAppPageObject {
         driver.findElement(By.cssSelector(".select__value-container")).click();
         driver.findElement(By.id("react-select-3-option-0")).click();
     }
+
+    public void login(int port){
+        //Login
+        this.navigate("http://localhost:" + port + "/login-page");
+        String username = "admin";
+        String password = "admin";
+        this.writeInput(username,"username");
+        this.writeInput(password,"password");
+
+        this.clickButton("confirm");
+        this.waitForLoad("processing");
+
+    }
 }

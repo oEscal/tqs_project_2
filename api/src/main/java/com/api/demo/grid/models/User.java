@@ -117,7 +117,6 @@ public class User {
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
     private Set<ReviewGame> reviewGames;
 
@@ -125,7 +124,6 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
     private Set<ReviewUser> reviewedUsers;
 
@@ -133,7 +131,6 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     @ToString.Exclude
     private Set<ReviewUser> reviewUsers;
 

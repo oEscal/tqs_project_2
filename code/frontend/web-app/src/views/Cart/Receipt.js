@@ -148,18 +148,18 @@ class Receipt extends Component {
                 var game = this.state.games[i]
                 boughtItems.push(<GridItem xs={12} sm={12} md={12}>
                     <Card style={{ height: "375px", width: "100%", marginTop: "20px" }}>
-                        <Link to={"/games/info/" + game.id}>
+                        <Link to={"/games/info/" + game.gameId}>
                             <CardMedia
                                 component="img"
-                                height="200px"
-                                image={game.coverUrl}
+                                height="280px"
+                                image={game.gamePhoto}
                             />
                         </Link >
 
                         <CardContent >
-                            <div style={{ textAlign: "left", height: "90px" }}>
+                            <div style={{ textAlign: "left", height: "30px" }}>
                                 <h6 style={{ fontWeight: "bold", color: "#3b3e48", fontSize: "15px", paddingTop: "0 0", marginTop: "0px" }}>
-                                    {game.name}
+                                    {game.gameName}
                                 </h6>
                             </div>
                             <div style={{ textAlign: "left" }}>
@@ -169,7 +169,7 @@ class Receipt extends Component {
                                         background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
                                         WebkitBackgroundClip: "text",
                                         WebkitTextFillColor: "transparent",
-                                    }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", fontSize: "17px" }}> {game.key}</span>
+                                    }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", marginLeft:"10px" }}> {game.gamerKey}</span>
                                 </h3>
                             </div>
 
