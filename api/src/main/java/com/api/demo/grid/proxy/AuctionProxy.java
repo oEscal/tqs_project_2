@@ -41,4 +41,10 @@ public class AuctionProxy {
         this.endDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getEndDate());
         this.price = auction.getPrice();
     }
+
+    public AuctionProxy(Auction auction, boolean createBidding) {
+
+        this(auction);
+        if(createBidding) this.gameKey = null;
+    }
 }

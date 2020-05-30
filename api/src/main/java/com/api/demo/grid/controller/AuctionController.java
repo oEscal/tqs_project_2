@@ -42,6 +42,7 @@ public class AuctionController {
     public AuctionProxy createBidding(@RequestHeader("Authorization") String auth,
                                       @Valid @RequestBody BiddingPOJO bidding) {
 
-        return new AuctionProxy(mAuctionService.addBidding(bidding.getUser(), bidding.getGameKey(), bidding.getPrice()));
+        return new AuctionProxy(mAuctionService.addBidding(bidding.getUser(), bidding.getGameKey(), bidding.getPrice()),
+                true);
     }
 }
