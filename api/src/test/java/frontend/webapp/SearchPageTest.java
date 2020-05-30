@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class SearchPageTest {
-    /*
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -71,6 +70,4 @@ public class SearchPageTest {
         controller.scrollToTop();
         assertTrue(controller.checkText("numberOfProducts", noProducts));
     }
-
-     */
 }

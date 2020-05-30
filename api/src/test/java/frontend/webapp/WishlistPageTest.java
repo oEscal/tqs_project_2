@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WishlistPageTest {
-    /*
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -52,5 +51,4 @@ public class WishlistPageTest {
     }
 
 
-     */
 }
