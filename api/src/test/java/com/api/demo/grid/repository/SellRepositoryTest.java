@@ -122,18 +122,18 @@ class SellRepositoryTest {
 
         GameKey gameKey = new GameKey();
         gameKey.setGame(game);
-        gameKey.setRKey(gameKeyStr);
+        gameKey.setRealKey(gameKeyStr);
         mEntityManager.persistAndFlush(gameKey);
 
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
 
-        assertEquals(sell, mRepository.findByGameKey_rKey(gameKeyStr));
+        assertEquals(sell, mRepository.findByGameKey_RealKey(gameKeyStr));
     }
 
     @Test
     void whenSearchSellByNonExistentKey_receiveNull(){
 
-        assertNull(mRepository.findByGameKey_rKey("game_key_test"));
+        assertNull(mRepository.findByGameKey_RealKey("game_key_test"));
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Optional;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,17 +37,17 @@ class GameKeyRepositoryTest {
     @Test
     void whenFindByKey_GetKey(){
         GameKey gameKey = new GameKey();
-        gameKey.setRKey("k");
+        gameKey.setRealKey("k");
         pEntityManager.persistAndFlush(gameKey);
 
-        assertEquals("k", pRepository.findByrKey("k").get().getRKey());
+        assertEquals("k", pRepository.findByRealKey("k").get().getRealKey());
     }
 
     @Test
     void whenInvalidKey_ReceiveEmpty(){
         GameKey gameKey = pEntityManager.persistAndFlush(new GameKey());
 
-        assertEquals(Optional.empty(), pRepository.findByrKey("key"));
+        assertEquals(Optional.empty(), pRepository.findByRealKey("key"));
     }
 
     @Test

@@ -41,7 +41,7 @@ export default function SectionNavbars(props) {
   const { user, cart, heightChange, height } = props;
 
   var cartIcon
-  if (cart == []) {
+  if (global.cart == null || global.cart.games.length == 0 ) {
     cartIcon = <i class="fas fa-shopping-cart"></i>
   } else {
     cartIcon = <i class="fas fa-cart-arrow-down" style={{ color: "#fd24ac" }}></i>
@@ -129,7 +129,6 @@ export default function SectionNavbars(props) {
             color="transparent"
           >
             <i class="fas fa-wallet"></i>
-            {console.log(user)}
             {user.funds} €
               </Button>
         </Link>
@@ -157,17 +156,6 @@ export default function SectionNavbars(props) {
     ]
   } else {
     content = [
-      <ListItem className={classes.listItem}>
-        <Link to="/cart" style={{ color: "inherit" }}>
-          <Button
-            className={classes.navLink}
-            color="transparent"
-          >
-            {cartIcon}
-          </Button>
-        </Link>
-      </ListItem>,
-
       <ListItem className={classes.listItem}>
         <Link to="/login-page" style={{ color: "inherit" }}>
           <Button

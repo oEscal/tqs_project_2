@@ -49,7 +49,7 @@ public class Sell {
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -88,6 +88,12 @@ public class Sell {
 
     private boolean sameAsFormerGK(GameKey newGameKey) {
         return Objects.equals(newGameKey, gameKey);
+    }
+
+    public void setPurchased(Buy purchased) {
+        if (Objects.equals(purchased, this.purchased)) return;
+        this.purchased = purchased;
+        purchased.setSell(this);
     }
 
     public Date getDate() {

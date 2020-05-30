@@ -78,6 +78,12 @@ public class Buy {
         if (date != null) this.date = (Date) date.clone();
     }
 
+    public void setSell(Sell sell) {
+        if (Objects.equals(this.sell, sell)) return;
+        this.sell = sell;
+        sell.setPurchased(this);
+    }
+
     @ToString.Include
     public long getUserId() {
         if (user == null) return -1L;
@@ -106,8 +112,34 @@ public class Buy {
     }
     
     public String getGamerKey(){
-        if (sell != null) return sell.getGameKey().getRKey();
+        if (sell != null) return sell.getGameKey().getRealKey();
 
         return null;
     }
+
+    public String getGameName(){
+        if (sell != null) return sell.getGameKey().getGameName();
+        return null;
+    }
+
+    public String getGamePhoto(){
+        if (sell != null) return sell.getGameKey().getGamePhoto();
+        return null;
+    }
+
+    public long getGameId(){
+        if (sell != null) return sell.getGameKey().getGame().getId();
+        return -1l;
+    }
+
+    public long getSellerId(){
+        if (sell != null) return sell.getUserId();
+        return -1L;
+    }
+
+    public String getSellerName(){
+        if (sell != null) return sell.getUser().getUsername();
+        return "";
+    }
+
 }

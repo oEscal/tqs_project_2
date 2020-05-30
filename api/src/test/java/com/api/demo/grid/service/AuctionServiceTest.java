@@ -89,7 +89,7 @@ class AuctionServiceTest {
 
         // create game key
         mGameKey = new GameKey();
-        mGameKey.setRKey(mGameKeyRKey);
+        mGameKey.setRealKey(mGameKeyRKey);
         mGameKey.setGame(mGame);
 
         // create auction
@@ -116,7 +116,7 @@ class AuctionServiceTest {
     @Test
     void whenAuctionGameKeyExists_receiveCorrectAuction() {
 
-        given(mAuctionRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(mAuction);
+        given(mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(mAuction);
 
         assertEquals(mAuction, mAuctionService.getAuctionByGameKey(mGameKeyRKey));
     }
@@ -138,10 +138,10 @@ class AuctionServiceTest {
         given(mUserRepository.findByUsername(mAuctioneerUsername)).willReturn(mAuctioneer);
 
         // mock game key repository
-        given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
+        given(mGameKeyRepository.findByRealKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock sell repository
-        given(mSellRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(null);
+        given(mSellRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(null);
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
@@ -156,10 +156,10 @@ class AuctionServiceTest {
         given(mUserRepository.findByUsername(mAuctioneerUsername)).willReturn(mAuctioneer);
 
         // mock game key repository
-        given(mGameKeyRepository.findByrKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
+        given(mGameKeyRepository.findByRealKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock sell repository
-        given(mSellRepository.findByGameKey_rKey(mGameKeyRKey)).willReturn(null);
+        given(mSellRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(null);
 
         System.out.println(mAuction);
         // mock auction repository

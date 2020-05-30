@@ -107,7 +107,7 @@ class AuctionControllerIT {
 
         // create game key
         mGameKey = new GameKey();
-        mGameKey.setRKey(mGameKeyRKey);
+        mGameKey.setRealKey(mGameKeyRKey);
         mGameKey.setGame(mGame);
 
         // set auction pojo

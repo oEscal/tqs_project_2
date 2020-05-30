@@ -176,7 +176,7 @@ public class GridServiceImpl implements GridService {
         Game realGame = game.get();
 
         GameKey gameKey = new GameKey();
-        gameKey.setRKey(gameKeyPOJO.getKey());
+        gameKey.setRealKey(gameKeyPOJO.getKey());
         gameKey.setGame(realGame);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
@@ -190,7 +190,7 @@ public class GridServiceImpl implements GridService {
         if (user.isEmpty()) return null;
         User realUser = user.get();
 
-        Optional<GameKey> gameKey = this.mGameKeyRepository.findByrKey(sellPOJO.getGameKey());
+        Optional<GameKey> gameKey = this.mGameKeyRepository.findByRealKey(sellPOJO.getGameKey());
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
 
@@ -208,12 +208,14 @@ public class GridServiceImpl implements GridService {
             UnsufficientFundsException {
         List<Buy> buyList = new ArrayList<>();
         double bill = 0;
-        Optional<Sell> sell;
         Buy buy;
+
         Optional<User> optionalUser = mUserRepository.findById(buyListingsPOJO.getUserId());
         User user;
         if (optionalUser.isEmpty()) return null;
         user = optionalUser.get();
+
+        Optional<Sell> sell;
         for (long sellId : buyListingsPOJO.getListingsId()) {
             sell = mSellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
@@ -225,14 +227,17 @@ public class GridServiceImpl implements GridService {
             buyList.add(buy);
             bill += sell.get().getPrice();
         }
+
         if (buyListingsPOJO.isWithFunds()) {
             if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
             user.payWithFunds(bill);
         }
+
         for (Buy buy1 : buyList) {
             user.addBuy(buy1);
             mBuyRepository.save(buy1);
         }
+
         return buyList;
     }
 
@@ -265,6 +270,11 @@ public class GridServiceImpl implements GridService {
 
         double begin = searchGamePOJO.getStartPrice();
         double end = searchGamePOJO.getEndPrice();
+
+        if (begin != 0 || end != 0) {
+            games.removeIf(game -> game.getBestSell() == null);
+        }
+        
         if (begin != 0 && end > begin) {
             games.removeIf(game -> game.getBestSell().getPrice() <= begin || game.getBestSell().getPrice() >= end);
         } else if (begin != 0) {
