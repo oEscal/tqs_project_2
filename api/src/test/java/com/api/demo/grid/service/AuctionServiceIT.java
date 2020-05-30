@@ -329,7 +329,23 @@ class AuctionServiceIT {
         assertEquals(newPrice, resultantAuction.getPrice());
     }
 
+    @Test
+    @SneakyThrows
+    void whenSetBidUpperWithNonexistentUser_setIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        // verify the buyer
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
+                mPrice + 1.3));
+    }
+
     // TODO -> verify if the user making new bidding is the same as the current
-    // TODO -> verify if the buyer exists
     // TODO -> verify if the auction exists
 }
