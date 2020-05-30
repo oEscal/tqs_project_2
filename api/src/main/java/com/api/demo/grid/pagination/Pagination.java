@@ -15,9 +15,6 @@ public class Pagination<T> {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
-
-
-
         int total = data.size();
         int start = Math.toIntExact(pageRequest.getOffset());
         int end = Math.min((start + pageRequest.getPageSize()), total);
