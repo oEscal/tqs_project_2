@@ -382,4 +382,25 @@ class AuctionServiceIT {
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
                 newPrice + 1.3));
     }
+
+    @Test
+    @SneakyThrows
+    void whenSetBidWithSameBuyerAsAuctioneer_setIsUnsuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        double newPrice = mPrice + 2.5;
+
+        // first bid
+        mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, newPrice);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mAuctioneerUsername, mGameKeyRKey,
+                newPrice + 1.3));
+    }
 }
