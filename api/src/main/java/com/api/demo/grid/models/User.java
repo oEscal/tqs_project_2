@@ -168,10 +168,11 @@ public class User {
     @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsCreated = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_buyer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsWon = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
@@ -244,6 +245,15 @@ public class User {
         this.auctionsCreated.add(auction);
 
         auction.setAuctioneer(this);
+    }
+
+    @Transactional
+    public void addAuctionBought(Auction auction) {
+        if (this.auctionsWon.contains(auction)) return;
+
+        this.auctionsWon.add(auction);
+
+        auction.setBuyer(this);
     }
     
     public void addBuy(Buy aboutToBuy) {

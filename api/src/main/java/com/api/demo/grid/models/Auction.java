@@ -50,7 +50,7 @@ public class Auction {
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 
@@ -112,6 +112,17 @@ public class Auction {
 
         if (auctioneer != null) {
             auctioneer.addAuctionCreated(this);
+        }
+    }
+
+    @Transactional
+    public void setBuyer(User buyer) {
+        if (Objects.equals(this.buyer, buyer)) return;
+
+        this.buyer = buyer;
+
+        if (buyer != null) {
+            buyer.addAuctionBought(this);
         }
     }
 

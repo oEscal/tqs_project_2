@@ -82,7 +82,14 @@ public class AuctionService {
         return mAuctionRepository.save(auctionSave);
     }
 
-    public Auction addBidding(String user, double price) {
-        return null;
+    public Auction addBidding(String user, String gameKey, double price) {
+
+        Auction auction = mAuctionRepository.findByGameKey_rKey(gameKey);
+        User buyer = mUserRepository.findByUsername(user);
+
+        auction.setBuyer(buyer);
+        auction.setPrice(price);
+
+        return mAuctionRepository.save(auction);
     }
 }
