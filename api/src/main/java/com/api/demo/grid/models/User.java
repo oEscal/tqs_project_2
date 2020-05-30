@@ -1,6 +1,7 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
@@ -116,24 +117,26 @@ public class User {
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewGame> reviewGames;
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewedUsers;
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     private Set<ReviewUser> reviewUsers;
 
-    //The reviews directed to the users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviews;
 
     //The reports this user has issued on game reviews
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -177,6 +180,7 @@ public class User {
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)

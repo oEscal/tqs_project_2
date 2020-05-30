@@ -4,30 +4,11 @@ import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
 
-import com.api.demo.grid.models.Buy;
-import com.api.demo.grid.models.Developer;
-import com.api.demo.grid.models.Game;
-import com.api.demo.grid.models.GameGenre;
-import com.api.demo.grid.models.GameKey;
-import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.models.Sell;
-import com.api.demo.grid.models.User;
-import com.api.demo.grid.pojos.BuyListingsPOJO;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GameKeyPOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
-import com.api.demo.grid.pojos.SearchGamePOJO;
-import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.BuyRepository;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.models.*;
+import com.api.demo.grid.pagination.Pagination;
+import com.api.demo.grid.pojos.*;
+import com.api.demo.grid.repository.*;
+import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,12 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class GridServiceImpl implements GridService {
@@ -71,6 +47,12 @@ public class GridServiceImpl implements GridService {
     @Autowired
     private BuyRepository mBuyRepository;
 
+    @Autowired
+    private ReviewUserRepository mReviewUserRepository;
+
+    @Autowired
+    private ReviewGameRepository mReviewGameRepository;
+
     private SearchGamePOJO mPreviousGamePojo;
 
     private List<Game> mPreviousSearch;
@@ -91,7 +73,7 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
-    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException{
+    public Page<Sell> getAllSellListings(long gameId, int page) throws GameNotFoundException {
         Optional<Game> game = mGameRepository.findById(gameId);
         if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
         return mSellRepository.findAllByGames(gameId, PageRequest.of(page, 6));
@@ -232,7 +214,7 @@ public class GridServiceImpl implements GridService {
         User user;
         if (optionalUser.isEmpty()) return null;
         user = optionalUser.get();
-        for (long sellId : buyListingsPOJO.getListingsId()){
+        for (long sellId : buyListingsPOJO.getListingsId()) {
             sell = mSellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
             else if (sell.get().getPurchased() != null) throw new UnavailableListingException(
@@ -247,7 +229,7 @@ public class GridServiceImpl implements GridService {
             if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
             user.payWithFunds(bill);
         }
-        for (Buy buy1: buyList) {
+        for (Buy buy1 : buyList) {
             user.addBuy(buy1);
             mBuyRepository.save(buy1);
         }
@@ -267,8 +249,8 @@ public class GridServiceImpl implements GridService {
         String[] genres = searchGamePOJO.getGenres();
         Optional<GameGenre> genre;
         ArrayList<GameGenre> realGenres = new ArrayList<>();
-        if (genres.length > 0){
-            for (String gen: genres){
+        if (genres.length > 0) {
+            for (String gen : genres) {
                 genre = this.mGameGenreRepository.findByName(gen);
                 if (genre.isEmpty()) continue;
                 realGenres.add(genre.get());
@@ -277,31 +259,31 @@ public class GridServiceImpl implements GridService {
         }
         //Filter by platform
         String[] platforms = searchGamePOJO.getPlataforms();
-        if (platforms.length > 0){
+        if (platforms.length > 0) {
             games.removeIf(game -> !CollectionUtils.containsAny(game.getPlatforms(), Arrays.asList(platforms)));
         }
 
         double begin = searchGamePOJO.getStartPrice();
         double end = searchGamePOJO.getEndPrice();
-        if (begin != 0 && end > begin){
+        if (begin != 0 && end > begin) {
             games.removeIf(game -> game.getBestSell().getPrice() <= begin || game.getBestSell().getPrice() >= end);
-        } else if (begin != 0){
+        } else if (begin != 0) {
             games.removeIf(game -> game.getBestSell().getPrice() <= begin);
         }
         return games;
     }
 
     @Override
-    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO){
-        if (!searchGamePOJO.equals(mPreviousGamePojo)){
+    public Page<Game> pageSearchGames(SearchGamePOJO searchGamePOJO) {
+        if (!searchGamePOJO.equals(mPreviousGamePojo)) {
             mPreviousGamePojo = searchGamePOJO;
             mPreviousSearch = searchGames(searchGamePOJO);
         }
         int page = searchGamePOJO.getPage();
         Pageable pageable = PageRequest.of(page, 18);
         long start = pageable.getOffset();
-        long end = (start + 18 > mPreviousSearch.size())? mPreviousSearch.size():start+18;
-        return new PageImpl<>(mPreviousSearch.subList((int)start,(int) end),
+        long end = (start + 18 > mPreviousSearch.size()) ? mPreviousSearch.size() : start + 18;
+        return new PageImpl<>(mPreviousSearch.subList((int) start, (int) end),
                 PageRequest.of(page, 18), mPreviousSearch.size());
     }
 
@@ -323,6 +305,196 @@ public class GridServiceImpl implements GridService {
         this.mUserRepository.save(realUser);
         this.mGameRepository.save(realGame);
         return wishList;
+    }
+
+    @Override
+    public Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO) {
+        Optional<User> user = this.mUserRepository.findById(reviewGamePOJO.getAuthor());
+        if (user.isEmpty()) return null;
+
+        Optional<Game> game = this.mGameRepository.findById(reviewGamePOJO.getGame());
+        if (game.isEmpty()) return null;
+
+
+        User realUser = user.get();
+        Game realGame = game.get();
+
+        Set<ReviewGame> gameReviews = realGame.getReviews();
+        Set<ReviewGame> userGameReviews = realUser.getReviewGames();
+
+
+        ReviewGame review = new ReviewGame();
+
+        review.setComment(reviewGamePOJO.getComment());
+        review.setScore(reviewGamePOJO.getScore());
+        review.setAuthor(realUser);
+        review.setGame(realGame);
+        review.setDate(reviewGamePOJO.getDate());
+
+        gameReviews.add(review);
+        userGameReviews.add(review);
+
+        realUser.setReviewGames(userGameReviews);
+        realGame.setReviews(gameReviews);
+
+        try {
+            this.mGameRepository.save(realGame);
+            this.mUserRepository.save(realUser);
+        } catch (Exception e) {
+            return null;
+        }
+        return gameReviews;
+    }
+
+    @Override
+    public Set<ReviewUser> addUserReview(ReviewUserPOJO reviewUserPOJO) {
+        long authorID = reviewUserPOJO.getAuthor();
+        long targetID = reviewUserPOJO.getTarget();
+
+        if (authorID == targetID) return null;
+
+        Optional<User> author = this.mUserRepository.findById(authorID);
+        if (author.isEmpty()) return null;
+
+        Optional<User> target = this.mUserRepository.findById(targetID);
+        if (target.isEmpty()) return null;
+
+
+        User realAuthor = author.get();
+        User realTarget = target.get();
+
+        Set<ReviewUser> authorReviews = realAuthor.getReviewedUsers();
+        Set<ReviewUser> targetReviews = realTarget.getReviewUsers();
+
+        ReviewUser review = new ReviewUser();
+
+        review.setComment(reviewUserPOJO.getComment());
+        review.setScore(reviewUserPOJO.getScore());
+        review.setAuthor(realAuthor);
+        review.setTarget(realTarget);
+        review.setDate(reviewUserPOJO.getDate());
+
+        authorReviews.add(review);
+        targetReviews.add(review);
+
+        realAuthor.setReviewedUsers(authorReviews);
+        realTarget.setReviewUsers(targetReviews);
+
+        try {
+            this.mReviewUserRepository.save(review);
+        } catch (Exception e) {
+            return null;
+        }
+
+        return targetReviews;
+    }
+
+    @Override
+    public Page<ReviewGame> getGameReviews(long gameID, int page) {
+        Optional<Game> game = this.mGameRepository.findById(gameID);
+        if (game.isEmpty()) return null;
+
+        Set<ReviewGame> reviews = game.get().getReviews();
+        reviews = (reviews == null) ? new HashSet<>() : reviews;
+        List<ReviewGame> reviewsList = new ArrayList<>();
+        reviewsList.addAll(reviews);
+
+        Pagination<ReviewGame> pagination = new Pagination<>();
+
+
+        return pagination.convertToPage(reviewsList, page, 18);
+    }
+
+    @Override
+    public Page<ReviewJoiner> getUserReviews(long userID, int page) {
+        Optional<User> user = this.mUserRepository.findById(userID);
+        if (user.isEmpty()) return null;
+
+        User realUser = user.get();
+
+        Set<ReviewUser> reviewsUser = realUser.getReviewedUsers();
+        Set<ReviewGame> reviewsGame = realUser.getReviewGames();
+
+        reviewsUser = (reviewsUser == null) ? new HashSet<>() : reviewsUser;
+        reviewsGame = (reviewsGame == null) ? new HashSet<>() : reviewsGame;
+
+        List<ReviewJoiner> reviews = new ArrayList<>();
+
+        for (ReviewUser currentReview : reviewsUser) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportUser> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            User target = currentReview.getTarget();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+        }
+
+        for (ReviewGame currentReview : reviewsGame) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportReviewGame> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            Game game = currentReview.getGame();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+        }
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>();
+
+        return pagination.convertToPage(reviews, page, 18);
+    }
+
+    @Override
+    public Page<ReviewJoiner> getAllReviews(int page, String sort) {
+        List<ReviewJoiner> reviews = new ArrayList<>();
+
+        List<String> sortedKeywords = Arrays.asList("score", "user", "date");
+        if (!sortedKeywords.contains(sort)) return null;
+
+        List<ReviewUser> userReviews = mReviewUserRepository.findAll();
+        for (ReviewUser currentReview : userReviews) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportUser> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            User target = currentReview.getTarget();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+        }
+
+        List<ReviewGame> userGames = mReviewGameRepository.findAll();
+        for (ReviewGame currentReview : userGames) {
+            long id = currentReview.getId();
+            String comment = currentReview.getComment();
+            int score = currentReview.getScore();
+            Date date = currentReview.getDate();
+            Set<ReportReviewGame> reports = currentReview.getReports();
+            User author = currentReview.getAuthor();
+            Game game = currentReview.getGame();
+            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+        }
+
+
+        reviews.sort((t1, t2) -> {
+            if (sort.equalsIgnoreCase("score")) {
+                return t2.getScore() - t1.getScore();
+
+            } else if (sort.equalsIgnoreCase("user")) {
+                return t1.getAuthor().getUsername().compareTo(t2.getAuthor().getUsername());
+
+            } else if (sort.equalsIgnoreCase("date")) {
+                return t1.getDate().compareTo(t2.getDate());
+
+            }
+            return 0;
+        });
+
+        Pagination<ReviewJoiner> pagination = new Pagination<>();
+        return pagination.convertToPage(reviews, page, 18);
     }
 
 }

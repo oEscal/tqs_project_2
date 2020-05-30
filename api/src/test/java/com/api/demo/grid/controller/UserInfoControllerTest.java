@@ -224,11 +224,11 @@ class UserInfoControllerTest {
     @SneakyThrows
     void whenSearchingForInvalidUsername_andIsUserOrAdmin_getException(){
         mUser2.setAdmin(true);
-        Mockito.when(mMockUserService.getUser("spring"))
-                .thenReturn(mUser2);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(null);
 
-        Mockito.when(mMockUserService.getFullUserInfo(Mockito.anyString()))
-                .thenThrow(new UserNotFoundException("Username not found in the database"));
+        //Mockito.when(mMockUserService.getFullUserInfo(Mockito.anyString()))
+        //        .thenThrow(new UserNotFoundException("Username not found in the database"));
 
         Mockito.when(mUserRepository.findByUsername("spring"))
                 .thenReturn(mUser2);

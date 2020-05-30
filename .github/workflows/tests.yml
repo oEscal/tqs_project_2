@@ -12,4 +12,4 @@ jobs:
         java-version: '11'
     - name: Run tests
       run: |
-        cd api; mvn -B verify 
+        cd api; mvn -B verify -Dtest=com.api.demo.grid.** 
