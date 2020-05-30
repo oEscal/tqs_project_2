@@ -4,10 +4,63 @@ import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-n
 import { Block, Text, theme, Button, Icon } from 'galio-framework';
 
 import materialTheme from '../constants/Theme';
+import global from "../constants/global";
+import { AsyncStorage } from 'react-native';
 
 const { width } = Dimensions.get('screen');
 
 class ProductKey extends React.Component {
+  state = {
+    inCart: false
+  }
+
+  async componentDidMount() {
+    await this.setState({ inCart: !this.props.product.cart })
+  }
+
+  setCart = async (value) => {
+    var value = await AsyncStorage.setItem('cart', value)
+    return value
+  }
+
+  getCart = async () => {
+    var value = await AsyncStorage.getItem('cart')
+    return value
+  }
+
+
+  async addToCart(game) {
+    var cart = []
+    if (global.cart != null) {
+      cart = global.cart.games
+    }
+
+    cart.push(game)
+
+    await this.setCart(JSON.stringify({ "games": cart }))
+
+    global.cart = JSON.parse(await this.getCart())
+
+    await this.setState({ inCart: true })
+  }
+
+  async removeFromCart(game) {
+    var cart = []
+    if (global.cart != null) {
+      for (var i = 0; i < global.cart.games.length; i++) {
+        var foundGame = global.cart.games[i]
+        if (game.id != foundGame.id) {
+          cart.push(foundGame)
+        }
+      }
+    }
+
+    await this.setCart(JSON.stringify({ "games": cart }))
+    global.cart = JSON.parse(await this.getCart())
+
+    await this.setState({ inCart: false })
+  }
+
   render() {
     const { navigation, product, horizontal, full, style, priceColor, imageStyle, page } = this.props;
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
@@ -15,6 +68,31 @@ class ProductKey extends React.Component {
     var pageName = page
     if (pageName == null) {
       pageName = "GameInfo"
+    }
+
+    var button
+    if (!this.state.inCart) {
+      button = <Button
+        shadowless
+        style={styles.button}
+        color={materialTheme.COLORS.BUTTON_COLOR}
+        onPress={() => this.addToCart(product)}>
+        <Text color={"#fff"}>
+          <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
+        Add to Cart
+      </Text>
+      </Button>
+    } else {
+      button = <Button
+        shadowless
+        style={styles.button}
+        color={materialTheme.COLORS.ERROR}
+        onPress={() => this.removeFromCart(product)}>
+        <Text color={"#fff"}>
+          <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
+        Remove Cart
+      </Text>
+      </Button>
     }
 
     return (
@@ -26,23 +104,15 @@ class ProductKey extends React.Component {
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback>
           <Block flex space="between" style={styles.productDescription}>
-            <Text size={14} style={styles.productTitle}>Seller: {product.seller}</Text>
-            <Text size={10} muted={!priceColor} color={priceColor}>Seller's Greed Score:  {product.score}</Text>
+            <Text size={14} style={styles.productTitle}>Seller: {product.gameKey.retailer}</Text>
+            <Text size={10} muted={!priceColor} color={priceColor}>Grid Score:  {product.score}</Text>
+            <Text size={14} style={styles.productTitle}>for <Text color={"#f44336"}>{product.gameKey.platform}</Text></Text>
             <Text size={18} color={"#f44336"}>{product.price}€</Text>
           </Block>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback>
           <Block center>
-            <Button
-              shadowless
-              style={styles.button}
-              color={materialTheme.COLORS.BUTTON_COLOR}
-              onPress={() => navigation.navigate('App')}>
-              <Text color={"#fff"}>
-                <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
-                Add to Cart
-              </Text>
-            </Button>
+            {button}
           </Block>
         </TouchableWithoutFeedback>
       </Block >

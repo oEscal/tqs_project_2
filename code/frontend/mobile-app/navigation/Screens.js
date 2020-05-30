@@ -232,7 +232,7 @@ function AppStack(props) {
         component={SellStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <FontAwesome5 name="money-bill-wave" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+            <FontAwesome5 name="wallet" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />

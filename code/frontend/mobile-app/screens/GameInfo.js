@@ -15,15 +15,36 @@ export default class GameInfoScreen extends React.Component {
   state = {
     doneLoading: false,
     game: null,
-    error: false
+    error: false,
+
+    redirectLogin: false,
+    redirectGames: false,
+
+    loadingSell: false,
+    loadingAuctions: false,
+
+    sellListings: [],
+    listingsPage: 1,
+    noListingPages: 1,
+    noSells: 0
+  }
+
+  setUser = async (value) => {
+    var value = await AsyncStorage.setItem('loggedUser', value)
+  }
+
+  setCart = async (value) => {
+    var value = await AsyncStorage.setItem('cart', value)
+    return value
   }
 
   async getGameInfo() {
     var login_info = null
+
     if (global.user != null) {
       login_info = global.user.token
     }
-    
+
     // Get All Games
     await fetch(baseURL + "grid/game?id=" + this.props.route.params.game.id, {
       method: "GET",
@@ -42,8 +63,8 @@ export default class GameInfoScreen extends React.Component {
       })
       .then(data => {
         if (data.status === 401) { // Wrong token
-          AsyncStorage.setItem('loggedUser', null);
-          global.user = JSON.parse(AsyncStorage.getItem('loggedUser'))
+          this.setUser(null)
+          global.user = this.getUser()
 
           this.setState({
             redirectLogin: true
@@ -68,11 +89,12 @@ export default class GameInfoScreen extends React.Component {
           data.description = description
 
           var allDevelopers = ""
-          data.developerNames.forEach(developer => {
-            allDevelopers += developer + ", "
+          data.developers.forEach(developer => {
+            allDevelopers += developer.name + ", "
           })
           allDevelopers = allDevelopers.substring(0, allDevelopers.length - 2)
           data["allDevelopers"] = allDevelopers
+
 
           var allGenres = ""
           data.gameGenres.forEach(genre => {
@@ -98,13 +120,130 @@ export default class GameInfoScreen extends React.Component {
 
   }
 
+  getCart = async () => {
+    var value = await AsyncStorage.getItem('cart')
+    return value
+  }
+
+  async getGameListings() {
+    var login_info = null
+    if (global.user != null) {
+      login_info = global.user.token
+    }
+
+    await this.setState({ loadingSell: true })
+
+    global.cart = JSON.parse(await this.getCart())
+
+    // Get All Games
+    await fetch(baseURL + "grid/sell-listing?gameId=" + this.props.route.params.game.id + "&page=0" + (this.state.listingsPage - 1), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: login_info
+      }
+    })
+      .then(response => {
+        if (response.status === 401) {
+          return response
+        } else if (response.status === 200) {
+          return response.json()
+        }
+        else throw new Error(response.status);
+      })
+      .then(data => {
+        if (data.status === 401) { // Wrong token
+          this.setUser(null)
+          global.user = this.getUser()
+
+          this.setState({
+            redirectLogin: true
+          })
+
+        } else {
+          if (data.first) {
+            this.setState({
+              noListingPages: data.totalPages,
+              noSells: data.totalElements
+            })
+          }
+
+          var content = []
+
+          var co = -1
+
+          data.content.forEach(sell => {
+            var listing = sell
+
+            co++
+
+            var inCart = false
+
+            if (global.cart != null) {
+              for (var i = 0; i < global.cart.games.length; i++) {
+                var game = global.cart.games[i]
+
+                if (listing.id == game.id) {
+                  inCart = true
+                  break
+                }
+              }
+            }
+
+            if (!inCart) {
+              listing['cart'] = true
+            } else {
+              listing['cart'] = false
+            }
+
+            content.push(listing)
+          })
+
+          this.setState({
+            sellListings: content
+          })
+        }
+      })
+      .catch(error => {
+        this.setState({ error: true })
+
+      });
+
+    await this.setState({ loadingSell: false })
+
+
+  }
+
 
   async componentDidMount() {
     await this.getGameInfo()
+    await this.getGameListings()
+
     await this.setState({
       doneLoading: true
     })
   }
+
+  changePageForward = async () => {
+    var curPage = this.state.listingsPage
+    curPage++
+    await this.setState({
+      listingsPage: curPage
+    })
+
+    await this.getGameListings()
+  };
+
+  changePageBackward = async () => {
+    var curPage = this.state.listingsPage
+    curPage--
+    await this.setState({
+      listingsPage: curPage
+    })
+
+    await this.getGameListings()
+  };
+
 
   renderInfo = () => {
     const imageStyles = [styles.image, styles.fullImage];
@@ -135,49 +274,76 @@ export default class GameInfoScreen extends React.Component {
   }
 
   renderSells = () => {
-    var game = {
-      "id": 19,
-      "seller": "Jonas Pistolas",
-      "sellerId": 1,
-      "score": 5,
-      "price": 5,
-      "platform": "PC"
+
+    var games = []
+    if (this.state.sellListings == null || this.state.sellListings.length == 0) {
+      games = <Block flex left style={[styles.gameTitle3]}>
+        <Text size={18} >It seems like no one's selling this game at the moment :(</Text>
+      </Block>
+    } else if (this.state.loadingSell) {
+      games = <Block flex left style={[styles.gameTitle3]}>
+        <Text size={18} >Loading...</Text>
+      </Block>
+    } else {
+      games.push(<Block flex left style={[styles.gameTitle3]}>
+        <Text size={25} style={styles.hr}>{this.state.noSells} Offers</Text>
+      </Block>
+      )
+
+      for (var i = 0; i < this.state.sellListings.length; i += 2) {
+        games.push(<Block flex row style={[styles.gameTitle2]}>
+          <ProductKey product={this.state.sellListings[i]} style={{ marginRight: theme.SIZES.BASE }} />
+          {i + 1 <= this.state.sellListings.length ? <ProductKey product={this.state.sellListings[i + 1]} /> : null}
+        </Block>)
+      }
+
+      var back = null
+      var forward = null
+      if (this.state.listingsPage == 1) {
+        back = <Button shadowless style={[styles.tab, styles.divider]}>
+          <Block id="backPage" row middle>
+            <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#999" }} />
+            <Text size={16} style={styles.tabTitle} color={"#999"}>Previous Page</Text>
+          </Block>
+        </Button>
+      } else {
+        back = <Button id="backPage" shadowless style={[styles.tab, styles.divider]} onPress={() => this.changePageBackward()}>
+          <Block row middle>
+            <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#fd24ac" }} />
+            <Text size={16} style={styles.tabTitle} color={"#fd24ac"}>Previous Page</Text>
+          </Block>
+        </Button>
+      }
+
+      if (this.state.listingsPage == this.state.noListingPages) {
+        forward = <Button id="nextPage" shadowless style={styles.tab} >
+          <Block row middle>
+            <Text size={16} style={styles.tabTitle} color={"#999"}>Next Page</Text>
+            <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#999" }} />
+          </Block>
+        </Button>
+      } else {
+        forward = <Button id="nextPage" shadowless style={styles.tab} onPress={() => this.changePageForward()}>
+          <Block row middle>
+            <Text size={16} style={styles.tabTitle} color={"#fd24ac"}>Next Page</Text>
+            <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#fd24ac" }} />
+          </Block>
+        </Button>
+      }
+
+
+      games.push(<Block row flex middle>
+        {back}
+        {forward}
+      </Block>
+      )
     }
 
-    var forward = <Button shadowless style={styles.tab} >
-      <Block row middle>
-        <Text size={16} style={styles.tabTitle} color={"#999"}>Next Page</Text>
-        <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#999" }} />
-      </Block>
-    </Button>
-
-    var back = <Button shadowless style={[styles.tab, styles.divider]}>
-      <Block row middle>
-        <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#999" }} />
-        <Text size={16} style={styles.tabTitle} color={"#999"}>Previous Page</Text>
-      </Block>
-    </Button>
 
     return (
       <View>
-        <Block flex left style={[styles.gameTitle3]}>
-          <Text size={25} style={styles.hr}>Offers</Text>
-        </Block>
 
-        <Block flex row style={[styles.gameTitle2]}>
-          <ProductKey product={game} style={{ marginRight: theme.SIZES.BASE }} />
-          <ProductKey product={game} />
-        </Block>
-        <Block flex row style={[styles.gameTitle2]}>
-          <ProductKey product={game} style={{ marginRight: theme.SIZES.BASE }} />
-          <ProductKey product={game} />
-        </Block>
-
-        <Block row flex middle>
-          {back}
-          {forward}
-        </Block>
-
+        {games}
       </View>
     )
   }
@@ -282,7 +448,7 @@ export default class GameInfoScreen extends React.Component {
           <Text size={25} style={styles.hr7}>Publisher</Text>
         </Block>
         <Block flex left style={[styles.gameInfo]}>
-          <Text size={18} >{this.state.game.publisherName}</Text>
+          <Text size={18} >{this.state.game.publisher.name}</Text>
         </Block>
 
       </View>
@@ -306,7 +472,6 @@ export default class GameInfoScreen extends React.Component {
             contentContainerStyle={styles.products}>
             {this.renderInfo()}
             {this.renderSells()}
-            {this.renderAuctions()}
             {this.renderGameInfo()}
           </ScrollView>
         </Block>
@@ -418,7 +583,6 @@ const styles = StyleSheet.create({
     width: width - theme.SIZES.BASE * 3,
   },
   gameTitle: {
-    width: width,
     marginTop: 25,
     fontWeight: "bold",
     color: "#3b3e48"
@@ -429,17 +593,14 @@ const styles = StyleSheet.create({
     color: "#3b3e48"
   },
   gameTitle3: {
-    width: width,
     marginTop: 30,
     fontWeight: "bold",
     color: "#999"
   },
   gameInfoTitle: {
-    width: width,
     marginTop: 50,
   },
   gameInfo: {
-    width: width,
     marginTop: 15,
     color: "#3b3e48"
   },

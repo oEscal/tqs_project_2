@@ -13,8 +13,16 @@ class Product extends React.Component {
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
 
     var pageName = page
-    if(pageName == null){
+    if (pageName == null) {
       pageName = "GameInfo"
+    }
+
+    var forSale = null
+    if (product.bestSell == null) {
+      forSale = <Text size={13} muted={!priceColor} color={priceColor}>No one is selling this game</Text>
+    } else {
+      forSale = <Text size={13} color={priceColor}>As low as <Text color={"#f44336"}>{product.bestSell.price}€</Text></Text>
+
     }
 
     return (
@@ -28,7 +36,7 @@ class Product extends React.Component {
           <Block flex space="between" style={styles.productDescription}>
             <Text size={14} style={styles.productTitle}>{product.name}</Text>
             <Text size={10} muted={!priceColor} color={priceColor}>Release Date:  {product.releaseDate}</Text>
-            <Text size={13} muted={!priceColor} color={priceColor}>As low as {product.lowestPrice}€</Text>
+            {forSale}
           </Block>
         </TouchableWithoutFeedback>
       </Block>
