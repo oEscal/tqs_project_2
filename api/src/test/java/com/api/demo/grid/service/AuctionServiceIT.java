@@ -341,7 +341,6 @@ class AuctionServiceIT {
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        // verify the buyer
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
                 mPrice + 1.3));
     }
@@ -358,11 +357,29 @@ class AuctionServiceIT {
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        // verify the buyer
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
                 mPrice + 1.3));
     }
 
-    // TODO -> verify if the user making new bidding is the same as the current
-    // TODO -> verify if the auction exists
+    @Test
+    @SneakyThrows
+    void whenSetBidWithSameBuyerAsCurrent_setIsUnsuccessful() {
+
+        // save auctioneer, buyer 1, game and game key
+        mUserRepository.save(mAuctioneer);
+        mUserRepository.save(mBuyer1);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        double newPrice = mPrice + 2.5;
+
+        // first bid
+        mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, newPrice);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
+                newPrice + 1.3));
+    }
 }
