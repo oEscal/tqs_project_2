@@ -6,25 +6,25 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class WishlistPageTest {
+class WishlistPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
 
     @Test
     //Needs user to have the first game wishlisted
-    public void whenClickingGameOnWishlist_goToGame() {
+    void whenClickingGameOnWishlist_goToGame() {
         controller.login(port);
         this.addToWishlist();
 

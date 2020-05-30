@@ -12,25 +12,25 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SignUpPageTest {
+class SignUpPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
         controller.navigate("http://localhost:" + port + "/signup-page");
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
     @Test
     //Check that when the necessary input isn't fed, an error is displayed
-    public void whenNoMinimumInput_thenErrorMessage() {
+    void whenNoMinimumInput_thenErrorMessage() {
         controller.clickButton("confirm");
 
         controller.waitForLoad("processing");
@@ -42,7 +42,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when an invalid birthdate is given an error is displayed
-    public void whenInvalidBirthdate_thenErrorMessage() {
+    void whenInvalidBirthdate_thenErrorMessage() {
         controller.writeInput("oof", "birthday");
 
         controller.clickButton("confirm");
@@ -56,7 +56,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when an invalid email an error is shown
-    public void whenInvalidEmail_thenErrorMessage() {
+    void whenInvalidEmail_thenErrorMessage() {
         controller.writeInput("oof", "email");
 
         controller.waitSeconds(5);
@@ -118,7 +118,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when the passwords don't match an error is shown
-    public void whenDifferentPasswords_thenErrorMessage() {
+    void whenDifferentPasswords_thenErrorMessage() {
         controller.writeInput("oof", "pass");
         controller.writeInput("oops", "passConfirm");
 
@@ -133,7 +133,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when filling one of the card fields all fields are filled
-    public void whenNotFillingAllCardFields_thenErrorMessage() {
+    void whenNotFillingAllCardFields_thenErrorMessage() {
         controller.writeInput("55555555555555", "cardNumber");
 
         controller.waitSeconds(5);
@@ -184,7 +184,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when the CVC is less than 3 characters an error is thrown and when its non digits an error is also thrown
-    public void whenBadCVC_thenErrorMessage() {
+    void whenBadCVC_thenErrorMessage() {
         controller.writeInput("o4f", "cardCVC");
 
         controller.waitSeconds(5);
@@ -211,7 +211,7 @@ public class SignUpPageTest {
 
 
     @Test
-    public void whenCardNumberHasNumbersNLetters_thenErrorMessage() {
+    void whenCardNumberHasNumbersNLetters_thenErrorMessage() {
         controller.writeInput("o4f", "cardNumber");
 
         controller.waitSeconds(5);
@@ -225,7 +225,7 @@ public class SignUpPageTest {
     }
 
     @Test
-    public void whenCardNumberHasLetters_thenErrorMessage() {
+    void whenCardNumberHasLetters_thenErrorMessage() {
         //////////
         controller.writeInput("of", "cardNumber");
 
@@ -240,7 +240,7 @@ public class SignUpPageTest {
     }
 
     @Test
-    public void whenCardNumberHasBadLength_thenErrorMessage() {
+    void whenCardNumberHasBadLength_thenErrorMessage() {
         //////////
         controller.writeInput("123", "cardNumber");
 
@@ -257,7 +257,7 @@ public class SignUpPageTest {
     }
 
     @Test
-    public void whenGoodCardNumber_thenNoErrorMessage() {
+    void whenGoodCardNumber_thenNoErrorMessage() {
         controller.writeInput("1234567890", "cardNumber");
 
         controller.waitSeconds(5);
@@ -272,7 +272,7 @@ public class SignUpPageTest {
 
     @Test
     //Check that when an invalid expiration date is given an error is displayed
-    public void whenInvalidExpirationDate_thenErrorMessage() {
+    void whenInvalidExpirationDate_thenErrorMessage() {
         controller.writeInput("oof", "cardExpiration");
 
         controller.clickButton("confirm");
@@ -286,7 +286,7 @@ public class SignUpPageTest {
 
     @Test
     //Needs the user ola adeus to exist in the DB
-    public void whenUserAlreadyExists_thenError() {
+    void whenUserAlreadyExists_thenError() {
         controller.writeInput("admin", "name");
         controller.writeInput("admin", "username");
         controller.pickSelect(52, "country");
@@ -308,7 +308,7 @@ public class SignUpPageTest {
 
     //Test when everything goes right
     @Test
-    public void whenValidInput_thenRedirectToHome_andLogin() {
+    void whenValidInput_thenRedirectToHome_andLogin() {
         String randomString = this.randomString(10);
 
         controller.writeInput(randomString, "name");

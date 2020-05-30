@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SellPageTest {
+class SellPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
         //Login
         controller.login(port);
@@ -23,13 +23,13 @@ public class SellPageTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
     @Test
     //Check that when the necessary input isn't fed, an error is displayed
-    public void whenNoMinimumInput_thenErrorMessage() {
+    void whenNoMinimumInput_thenErrorMessage() {
         controller.clickButton("confirm");
 
         controller.waitForLoad("firstLoad");
@@ -41,7 +41,7 @@ public class SellPageTest {
 
     @Test
     //Check that when the Price is not a number
-    public void whenBadPrice_thenErrorMessage() {
+    void whenBadPrice_thenErrorMessage() {
         controller.writeInput("o4f", "price");
 
         controller.waitSeconds(5);
@@ -57,7 +57,7 @@ public class SellPageTest {
 
     //Test when everything goes right
     @Test
-    public void whenValidInput_thenNoError() {
+    void whenValidInput_thenNoError() {
         String randomString = this.randomString(10);
 
         controller.writeInput(randomString, "key");

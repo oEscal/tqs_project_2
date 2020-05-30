@@ -10,25 +10,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest(classes= DemoApplication.class)
-public class LoginPageTest {
+class LoginPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
         controller.navigate("http://localhost:" + port + "/login-page");
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
     @Test
     //Check that when no input is fed, an error is displayed
-    public void whenNoInput_thenErrorMessage() {
+    void whenNoInput_thenErrorMessage() {
         controller.clickButton("confirm");
 
         assertTrue(controller.checkVisibility("errorOne"));
@@ -40,7 +40,7 @@ public class LoginPageTest {
 
     @Test
     //Check that when no input is fed, an error is displayed
-    public void whenInvalidCredentials_thenErrorMessage() {
+    void whenInvalidCredentials_thenErrorMessage() {
         controller.writeInput("jonas","username");
         controller.writeInput("jonas","password");
 
@@ -58,7 +58,7 @@ public class LoginPageTest {
     @Test
     //Check that when a correct input is fed, we get moved to the homepage and are logged in
     // NOTE: This requires the BD to have this user...
-    public void whenValidCredentials_thenRedirectToHome_andLogin() {
+    void whenValidCredentials_thenRedirectToHome_andLogin() {
         String username = "admin";
         String password = "admin";
         controller.writeInput(username,"username");

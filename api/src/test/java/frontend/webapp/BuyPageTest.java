@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BuyPageTest {
+class BuyPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
         //Login
         controller.login(port);
@@ -29,12 +29,12 @@ public class BuyPageTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
     @Test
-    public void whenAddGame_showGameOnCart() {
+    void whenAddGame_showGameOnCart() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
         assertTrue(controller.checkExistance("cartItem0"));
@@ -42,7 +42,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenRemoveClickCart_thenRemoveFromCart() {
+    void whenRemoveClickCart_thenRemoveFromCart() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -54,7 +54,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenNoGames_dontShowPayment() {
+    void whenNoGames_dontShowPayment() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -69,7 +69,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenBuyWithRegisteredCard_andNoCard_showError() {
+    void whenBuyWithRegisteredCard_andNoCard_showError() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -81,7 +81,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenBuyWithNewCard_andNotAllFields_showError() {
+    void whenBuyWithNewCard_andNotAllFields_showError() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -93,7 +93,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenBuyWithNewCard_andInvalidCVC_showError() {
+    void whenBuyWithNewCard_andInvalidCVC_showError() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -111,7 +111,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenBuyWithNewCard_andInvalidExpiration_showError() {
+    void whenBuyWithNewCard_andInvalidExpiration_showError() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -129,7 +129,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenBuyWithWallet_andNoFunds_showError() {
+    void whenBuyWithWallet_andNoFunds_showError() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
@@ -141,7 +141,7 @@ public class BuyPageTest {
     }
 
     @Test
-    public void whenSuccessfulBuy_goToReceipt() {
+    void whenSuccessfulBuy_goToReceipt() {
         controller.navigate("http://localhost:" + port + "/cart");
         controller.waitForLoad("firstLoad");
 
