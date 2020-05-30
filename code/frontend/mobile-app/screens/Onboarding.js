@@ -93,7 +93,7 @@ export default class Onboarding extends React.Component {
             data["token"] = login_info
 
             this.setUser(JSON.stringify(data))
-          
+
             global.user = this.getUser()
 
             this.setState({
@@ -124,6 +124,12 @@ export default class Onboarding extends React.Component {
   }
 
   async componentDidMount() {
+    global.user = await this.setUser(null)
+    global.cart = await this.setCart(null)
+    this.props.navigation.addListener('focus', async () => {
+      global.user = await this.setUser(null)
+      global.cart = await this.setCart(null)
+    });
   }
 
   render() {

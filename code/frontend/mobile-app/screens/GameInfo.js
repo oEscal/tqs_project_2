@@ -10,6 +10,7 @@ const { width } = Dimensions.get('screen');
 import baseURL from '../constants/baseURL'
 import global from "../constants/global";
 import { AsyncStorage } from 'react-native';
+import Onboarding from './Onboarding';
 
 export default class GameInfoScreen extends React.Component {
   state = {
@@ -36,6 +37,11 @@ export default class GameInfoScreen extends React.Component {
   setCart = async (value) => {
     var value = await AsyncStorage.setItem('cart', value)
     return value
+  }
+
+  getUser = async () => {
+    var value = await AsyncStorage.getItem('loggedUser')
+    return JSON.parse(value)
   }
 
   async getGameInfo() {
@@ -69,6 +75,8 @@ export default class GameInfoScreen extends React.Component {
           this.setState({
             redirectLogin: true
           })
+
+          this.props.navigation.navigate("Onboarding")
 
         } else {
           var description = data.description
@@ -159,6 +167,7 @@ export default class GameInfoScreen extends React.Component {
           this.setState({
             redirectLogin: true
           })
+          this.props.navigation.navigate("Onboarding")
 
         } else {
           if (data.first) {
@@ -216,12 +225,29 @@ export default class GameInfoScreen extends React.Component {
 
 
   async componentDidMount() {
+    await this.setState({
+      doneLoading: false
+    })
+
     await this.getGameInfo()
     await this.getGameListings()
 
     await this.setState({
       doneLoading: true
     })
+    this.props.navigation.addListener('focus', async () => {
+      await this.setState({
+        doneLoading: false
+      })
+
+      await this.getGameInfo()
+      await this.getGameListings()
+
+      await this.setState({
+        doneLoading: true
+      })
+    });
+
   }
 
   changePageForward = async () => {
@@ -291,11 +317,23 @@ export default class GameInfoScreen extends React.Component {
       )
 
       for (var i = 0; i < this.state.sellListings.length; i += 2) {
+        var tempBlock = []
+
+        tempBlock.push(<ProductKey product={this.state.sellListings[i]} style={{ marginRight: theme.SIZES.BASE }} />
+        )
+
+        try {
+          tempBlock.push(<ProductKey product={this.state.sellListings[i + 1]} />
+          )
+        } catch (e) {
+
+        }
+
         games.push(<Block flex row style={[styles.gameTitle2]}>
-          <ProductKey product={this.state.sellListings[i]} style={{ marginRight: theme.SIZES.BASE }} />
-          {i + 1 <= this.state.sellListings.length ? <ProductKey product={this.state.sellListings[i + 1]} /> : null}
+          {tempBlock}
         </Block>)
       }
+
 
       var back = null
       var forward = null
@@ -342,7 +380,6 @@ export default class GameInfoScreen extends React.Component {
 
     return (
       <View>
-
         {games}
       </View>
     )

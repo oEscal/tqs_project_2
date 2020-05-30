@@ -62,7 +62,7 @@ class ProductKey extends React.Component {
   }
 
   render() {
-    const { navigation, product, horizontal, full, style, priceColor, imageStyle, page } = this.props;
+    const { navigation, product, horizontal, full, style, priceColor, imageStyle, page, showButtons } = this.props;
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
 
     var pageName = page
@@ -70,30 +70,33 @@ class ProductKey extends React.Component {
       pageName = "GameInfo"
     }
 
-    var button
-    if (!this.state.inCart) {
-      button = <Button
-        shadowless
-        style={styles.button}
-        color={materialTheme.COLORS.BUTTON_COLOR}
-        onPress={() => this.addToCart(product)}>
-        <Text color={"#fff"}>
-          <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
-        Add to Cart
-      </Text>
-      </Button>
-    } else {
-      button = <Button
-        shadowless
-        style={styles.button}
-        color={materialTheme.COLORS.ERROR}
-        onPress={() => this.removeFromCart(product)}>
-        <Text color={"#fff"}>
-          <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
-        Remove Cart
-      </Text>
-      </Button>
+    var button = null
+    if(showButtons == null || showButtons){
+      if (!this.state.inCart) {
+        button = <Button
+          shadowless
+          style={styles.button}
+          color={materialTheme.COLORS.BUTTON_COLOR}
+          onPress={() => this.addToCart(product)}>
+          <Text color={"#fff"}>
+            <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
+          Add to Cart
+        </Text>
+        </Button>
+      } else {
+        button = <Button
+          shadowless
+          style={styles.button}
+          color={materialTheme.COLORS.ERROR}
+          onPress={() => this.removeFromCart(product)}>
+          <Text color={"#fff"}>
+            <Icon size={16} name="shopping-cart" family="Feather" style={{ color: "#fff", paddingRight: 8 }} />
+          Remove Cart
+        </Text>
+        </Button>
+      }
     }
+   
 
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>

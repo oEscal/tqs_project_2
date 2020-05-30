@@ -7,6 +7,7 @@ import Drawer from './Drawer';
 import Header from './Header';
 import Switch from './Switch';
 import ProductKey from './ProductKey';
+import ProductBought from './ProductBought';
 
 
 export {
@@ -18,5 +19,6 @@ export {
   Drawer,
   Header,
   Switch,
-  ProductKey
+  ProductKey,
+  ProductBought
 };
