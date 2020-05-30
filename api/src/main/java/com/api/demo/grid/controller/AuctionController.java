@@ -42,6 +42,12 @@ public class AuctionController {
     public AuctionProxy createBidding(@RequestHeader("Authorization") String auth,
                                       @Valid @RequestBody BiddingPOJO bidding) {
 
+        // verify if the user requesting is the same as the buyer
+        String username = ControllerUtils.getUserFromAuth(auth);
+        if (!Objects.equals(username, bidding.getUser())) {
+            throw new ForbiddenException("The user requesting must be the same as the buyer");
+        }
+
         return new AuctionProxy(mAuctionService.addBidding(bidding.getUser(), bidding.getGameKey(), bidding.getPrice()),
                 true);
     }
