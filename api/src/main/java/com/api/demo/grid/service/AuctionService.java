@@ -88,6 +88,11 @@ public class AuctionService {
         Auction auction = mAuctionRepository.findByGameKey_rKey(gameKey);
         User buyer = mUserRepository.findByUsername(user);
 
+        // verify the buyer exists
+        if (buyer == null) {
+            throw new ExceptionDetails("The Buyer doesn't exists");
+        }
+
         // verify the current price
         double currentPrice = auction.getPrice();
         if (currentPrice >= price) {

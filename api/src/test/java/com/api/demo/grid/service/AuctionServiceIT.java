@@ -331,10 +331,10 @@ class AuctionServiceIT {
 
     @Test
     @SneakyThrows
-    void whenSetBidUpperWithNonexistentUser_setIsUnsuccessful() {
+    void whenSetBidUpperWithNonexistentBuyer_setIsUnsuccessful() {
 
-        // save buyer 1, game and game key
-        mUserRepository.save(mBuyer1);
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
@@ -349,13 +349,9 @@ class AuctionServiceIT {
     @SneakyThrows
     void whenSetBidUpperForNonexistentAuction_setIsUnsuccessful() {
 
-        // save auctioneer, game and game key
+        // save auctioneer and buyer
         mUserRepository.save(mAuctioneer);
-        mGameRepository.save(mGame);
-        mGameKeyRepository.save(mGameKey);
-
-        // insertion auction
-        mAuctionService.addAuction(mAuctionPOJO);
+        mUserRepository.save(mBuyer1);
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
                 mPrice + 1.3));
@@ -396,9 +392,6 @@ class AuctionServiceIT {
         mAuctionService.addAuction(mAuctionPOJO);
 
         double newPrice = mPrice + 2.5;
-
-        // first bid
-        mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, newPrice);
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mAuctioneerUsername, mGameKeyRKey,
                 newPrice + 1.3));
