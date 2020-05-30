@@ -251,6 +251,12 @@
                                 <include>**/*Test.java</include>
                                 <include>**/*IT.java</include>
                             </includes>
+
+                            <!-- TODO: Remove this -->
+                            <excludes>
+                                <exclude>**frontend/webapp/**</exclude>
+                                <exclude>**/GridRestControllerIT.*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
