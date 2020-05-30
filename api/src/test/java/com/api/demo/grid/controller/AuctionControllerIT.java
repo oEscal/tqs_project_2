@@ -119,6 +119,9 @@ class AuctionControllerIT {
     }
 
 
+    /***
+     *  Add Auction
+     ***/
     @Test
     @SneakyThrows
     void whenCreateCompleteFormAuction_creationIsSuccessful() {
@@ -234,4 +237,9 @@ class AuctionControllerIT {
         mMvc.perform(request).andExpect(status().isForbidden());
         assertEquals(0, mAuctionRepository.findAll().size());
     }
+
+
+    /***
+     *  Add Bid
+     ***/
 }
