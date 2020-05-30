@@ -150,6 +150,7 @@ class AuctionServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSaveNewAuction_insertReceiveAuction() {
 
         // mock user repository

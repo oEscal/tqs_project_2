@@ -313,7 +313,10 @@ class AuctionControllerIT {
                 .andExpect(jsonPath("$.price", is(newPrice)));
 
         // verify if there is an auction on the buyer side
-        assertEquals(1, mUserService.getUser(mAuctioneerUsername).getAuctionsWon().size());
+        assertEquals(1, mUserService.getUser(mBuyerUsername).getAuctionsWon().size());
+
+        // verify if the buyer is saved om the auction
+        assertEquals(mBuyerUsername, mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey).getBuyer().getUsername());
     }
 
     @Test

@@ -52,7 +52,7 @@ public class Auction {
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 

@@ -160,18 +160,16 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsCreated = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_buyer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsWon = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
