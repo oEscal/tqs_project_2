@@ -208,12 +208,14 @@ public class GridServiceImpl implements GridService {
             UnsufficientFundsException {
         List<Buy> buyList = new ArrayList<>();
         double bill = 0;
-        Optional<Sell> sell;
         Buy buy;
+
         Optional<User> optionalUser = mUserRepository.findById(buyListingsPOJO.getUserId());
         User user;
         if (optionalUser.isEmpty()) return null;
         user = optionalUser.get();
+
+        Optional<Sell> sell;
         for (long sellId : buyListingsPOJO.getListingsId()) {
             sell = mSellRepository.findById(sellId);
             if (sell.isEmpty()) throw new UnavailableListingException("This listing has been removed by the user");
@@ -225,14 +227,17 @@ public class GridServiceImpl implements GridService {
             buyList.add(buy);
             bill += sell.get().getPrice();
         }
+
         if (buyListingsPOJO.isWithFunds()) {
             if (bill > user.getFunds()) throw new UnsufficientFundsException("This user doesn't have enough funds");
             user.payWithFunds(bill);
         }
+
         for (Buy buy1 : buyList) {
             user.addBuy(buy1);
             mBuyRepository.save(buy1);
         }
+
         return buyList;
     }
 
