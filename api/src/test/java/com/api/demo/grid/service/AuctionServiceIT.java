@@ -272,48 +272,64 @@ class AuctionServiceIT {
     @SneakyThrows
     void whenSetBidLowerThanCurrentPrice_setIsUnsuccessful() {
 
-        // save auctioneer, buyer, game and game key
+        // save auctioneer, buyer 1, buyer 2, game and game key
         mUserRepository.save(mAuctioneer);
         mUserRepository.save(mBuyer1);
+        mUserRepository.save(mBuyer2);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username,
-                mGameKeyRKey, mPrice - 1.3));
+        double newPrice = mPrice + 2.5;
+
+        // first bid
+        mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, newPrice);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer2Username,
+                mGameKeyRKey, newPrice - 1.3));
 
         Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
 
         // verify the buyer
-        assertNotEquals(mBuyer1Username, resultantAuction.getBuyer().getUsername());
+        assertNotEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());
 
         // verify price
-        assertEquals(mPrice, resultantAuction.getPrice());
+        assertEquals(newPrice, resultantAuction.getPrice());
     }
 
     @Test
     @SneakyThrows
     void whenSetBidEqualsCurrentPrice_setIsUnsuccessful() {
 
-        // save auctioneer, buyer, game and game key
+        // save auctioneer, buyer 1, buyer 2, game and game key
         mUserRepository.save(mAuctioneer);
         mUserRepository.save(mBuyer1);
+        mUserRepository.save(mBuyer2);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction
         mAuctionService.addAuction(mAuctionPOJO);
 
-        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, mPrice));
+        double newPrice = mPrice + 2.5;
+
+        // first bid
+        mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey, newPrice);
+
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer2Username, mGameKeyRKey, newPrice));
 
         Auction resultantAuction = mAuctionRepository.findByGameKey_rKey(mGameKeyRKey);
 
         // verify the buyer
-        assertNotEquals(mBuyer1Username, resultantAuction.getBuyer().getUsername());
+        assertNotEquals(mBuyer2Username, resultantAuction.getBuyer().getUsername());
 
         // verify price
-        assertEquals(mPrice, resultantAuction.getPrice());
+        assertEquals(newPrice, resultantAuction.getPrice());
     }
+
+    // TODO -> verify if the user making new bidding is the same as the current
+    // TODO -> verify if the buyer exists
+    // TODO -> verify if the auction exists
 }

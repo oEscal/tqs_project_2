@@ -82,10 +82,17 @@ public class AuctionService {
         return mAuctionRepository.save(auctionSave);
     }
 
+    @SneakyThrows
     public Auction addBidding(String user, String gameKey, double price) {
 
         Auction auction = mAuctionRepository.findByGameKey_rKey(gameKey);
         User buyer = mUserRepository.findByUsername(user);
+
+        // verify the current price
+        double currentPrice = auction.getPrice();
+        if (currentPrice >= price) {
+            throw new ExceptionDetails("The new price must be higher than the current");
+        }
 
         auction.setBuyer(buyer);
         auction.setPrice(price);
