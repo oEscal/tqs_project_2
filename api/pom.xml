@@ -288,6 +288,7 @@
 
                     <excludes>
                         <exclude>**frontend/webapp/**</exclude>
+                        <exclude>**/GridRestControllerIT.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
