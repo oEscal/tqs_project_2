@@ -306,4 +306,41 @@ class AuctionControllerIT {
                 .andExpect(jsonPath("$.endDate", is(mEndDate)))
                 .andExpect(jsonPath("$.price", is(newPrice)));
     }
+
+    @Test
+    @SneakyThrows
+    void whenCreateBiddingWithBuyerDifferentFromAuthenticatedUser_creationIsUnsuccessful() {
+
+        // create fake buyer
+        String fakeBuyerUsername = "fake_username";
+        UserDTO fakeBuyerDTO = new UserDTO(fakeBuyerUsername, mBuyerName, "fake_email", mBuyerCountry,
+                mBuyerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
+
+        // save save auctioneer, fake buyer and game and game key
+        User auctioneer = mUserService.saveUser(mAuctioneerDTO);
+        mUserService.saveUser(fakeBuyerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // create auction
+        mAuction = new Auction();
+        mAuction.setAuctioneer(auctioneer);
+        mAuction.setGameKey(mGameKey);
+        mAuction.setPrice(mPrice);
+        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // save auction and buyer dto
+        mAuctionRepository.save(mAuction);
+        mUserService.saveUser(mBuyerDTO);
+
+        double newPrice = mPrice + 2.5;
+
+        // bidding json
+        mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
+
+        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+                .content(mBiddingJson).with(httpBasic(fakeBuyerUsername, mBuyerPassword));
+
+        mMvc.perform(request).andExpect(status().isForbidden());
+    }
 }
