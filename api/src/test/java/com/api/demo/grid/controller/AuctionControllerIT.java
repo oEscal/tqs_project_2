@@ -276,13 +276,13 @@ class AuctionControllerIT {
     void whenCreateCompleteBiddingAuction_creationIsSuccessful() {
 
         // save save auctioneer, game and game key
-        mUserService.saveUser(mAuctioneerDTO);
+        User auctioneer = mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // create auction
         mAuction = new Auction();
-        mAuction.setAuctioneer(mAuctioneer);
+        mAuction.setAuctioneer(auctioneer);
         mAuction.setGameKey(mGameKey);
         mAuction.setPrice(mPrice);
         mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
