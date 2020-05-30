@@ -240,7 +240,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mGameKeyPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rkey", is("key")))
+                .andExpect(jsonPath("$.realKey", is("key")))
                 .andExpect(jsonPath("$.gameId", is(Math.toIntExact(game.getId()))))
         ;
     }
@@ -271,7 +271,7 @@ class GridRestControllerIT {
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameKey.rkey", is("key")))
+                .andExpect(jsonPath("$.gameKey.realkey", is("key")))
                 .andExpect(jsonPath("$.userId", is(Math.toIntExact(user.getId()))))
         ;
     }
