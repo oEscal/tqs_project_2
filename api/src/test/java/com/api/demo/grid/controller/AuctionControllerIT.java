@@ -30,7 +30,7 @@ import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
 import static com.api.demo.grid.utils.BiddingJson.addBiddingJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -170,6 +170,12 @@ class AuctionControllerIT {
                 .andExpect(jsonPath("$.endDate", is(mEndDate)))
                 .andExpect(jsonPath("$.price", is(mPrice)));
         assertEquals(1, mAuctionRepository.findAll().size());
+
+        // verify if there is an auction on the auctioneer side
+        assertEquals(1, mUserService.getUser(mAuctioneerUsername).getAuctionsCreated().size());
+
+        // verify if there is an auction on the game key side
+        assertNotNull(mGameKeyRepository.findByRealKey(mGameKeyRKey).get().getAuction());
     }
 
     @Test
