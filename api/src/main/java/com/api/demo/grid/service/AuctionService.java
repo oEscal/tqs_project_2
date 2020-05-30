@@ -93,6 +93,11 @@ public class AuctionService {
             throw new ExceptionDetails("The Buyer doesn't exists");
         }
 
+        // verify the auction exists
+        if (auction == null) {
+            throw new ExceptionDetails("The Auction doesn't exists");
+        }
+
         // verify the current price
         double currentPrice = auction.getPrice();
         if (currentPrice >= price) {
