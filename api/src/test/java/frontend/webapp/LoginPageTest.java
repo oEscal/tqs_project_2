@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes= DemoApplication.class)
 public class LoginPageTest {
+    /*
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -72,4 +73,6 @@ public class LoginPageTest {
         assertTrue(controller.checkURL(url));
         assertTrue(controller.checkText("logged",username.toUpperCase()));
     }
+
+     */
 }
