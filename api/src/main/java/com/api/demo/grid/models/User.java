@@ -12,8 +12,6 @@ import lombok.EqualsAndHashCode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
 import org.springframework.transaction.annotation.Transactional;
