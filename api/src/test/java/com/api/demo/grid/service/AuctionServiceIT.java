@@ -333,6 +333,23 @@ class AuctionServiceIT {
     @SneakyThrows
     void whenSetBidUpperWithNonexistentUser_setIsUnsuccessful() {
 
+        // save buyer 1, game and game key
+        mUserRepository.save(mBuyer1);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        // verify the buyer
+        assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mBuyer1Username, mGameKeyRKey,
+                mPrice + 1.3));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSetBidUpperForNonexistentAuction_setIsUnsuccessful() {
+
         // save auctioneer, game and game key
         mUserRepository.save(mAuctioneer);
         mGameRepository.save(mGame);
