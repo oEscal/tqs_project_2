@@ -221,34 +221,34 @@ export default class Profile extends React.Component {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.products}>
               <Block row space="between" style={{ padding: theme.SIZES.BASE, }}>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>36</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.buys.length}</Text>
                   <Text muted size={12}>Games</Text>
                   <Text muted size={12}>Purchased</Text>
                 </Block>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>5</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.sells.length}</Text>
                   <Text muted size={12}>Games put</Text>
                   <Text muted size={12}>for Sale</Text>
                 </Block>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>2</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.auctionsCreated.length}</Text>
                   <Text muted size={12}>Games put</Text>
                   <Text muted size={12}>on Auction</Text>
                 </Block>
               </Block>
               <Block row space="between" style={{ padding: theme.SIZES.BASE, }}>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>2</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.reviewUsers.length}</Text>
                   <Text muted size={12}>Reviewes</Text>
                   <Text muted size={12}>Received</Text>
                 </Block>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>36</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.reviewedUsers.length}</Text>
                   <Text muted size={12}>Users</Text>
                   <Text muted size={12}>Reviewed</Text>
                 </Block>
                 <Block middle>
-                  <Text bold size={12} style={{ marginBottom: 8 }}>5</Text>
+                  <Text bold size={12} style={{ marginBottom: 8 }}>{this.state.info.reviewGames.length}</Text>
                   <Text muted size={12}>Games</Text>
                   <Text muted size={12}>Reviewed</Text>
                 </Block>

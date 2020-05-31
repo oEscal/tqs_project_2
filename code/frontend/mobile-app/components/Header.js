@@ -83,8 +83,6 @@ class Header extends React.Component {
         ]);
       case 'Profile':
         return ([
-          <ChatButton key='chat-profile' navigation={navigation} isWhite={white} />,
-          <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
         ]);
       case 'Product':
         return ([
