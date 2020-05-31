@@ -117,4 +117,22 @@ class UserServiceIT {
         // verify if the user was deleted
         assertEquals(0, mUserRepository.findAll().size());
     }
+
+    @Test
+    @SneakyThrows
+    void whenDeleteNonexistentUser_deleteIsUnsuccessful(){
+
+        // insert user
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // verify if the user was created
+        assertEquals(1, mUserRepository.findAll().size());
+
+        // delete user
+        mUserService.deleteUser("user_test");
+
+        // verify if the user was not deleted
+        assertEquals(mUsername1, mUserRepository.findByUsername(mUsername1).getUsername());
+        assertEquals(1, mUserRepository.findAll().size());
+    }
 }
