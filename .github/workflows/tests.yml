@@ -1,7 +1,22 @@
 on: push
 name: Tests workflow
 jobs:
-  sonarCloudTrigger:
+  tests:
+    name: Selenium tests
+    steps:
+    - name: Selenoid
+      uses: ajinx/selenoid@v2
+    - uses: actions/checkout@v2
+    - run: npm ci
+    - name: Run maven and react
+      run: | 
+        cd code/frontend/web-app; npm start &; 
+      
+      
+      
+      
+      <Test execution command e.g. mvn test, npm test etc>
+
     name: Junit Tests Trigger
     runs-on: ubuntu-latest
     steps:
