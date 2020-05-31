@@ -4,6 +4,7 @@ package com.api.demo.grid.controller;
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,4 @@ public class Account {
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping("/grid/user")
-    public ResponseEntity<User> updateUser()
 }

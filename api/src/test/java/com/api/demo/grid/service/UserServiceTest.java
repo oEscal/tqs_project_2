@@ -6,6 +6,7 @@ import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
@@ -24,6 +25,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -387,5 +392,91 @@ class UserServiceTest {
         given(mUserRepository.findByUsername("username1")).willReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    @SneakyThrows
+    void whenUpdatingAllUserInfo_returnFullyUpdatedUser(){
+        String newName1 = "springname",
+                newEmail1 = "springemail",
+                newCountry1 = "springcountry",
+                newPassword1 = "springpassword",
+                newPasswordEncrypted1 = "springpassword_encrypted1",
+                newBirthDateStr = "25/10/2010";
+        given(passwordEncoder.encode(newPassword1)).willReturn(newPasswordEncrypted1);
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.ofNullable(mUser1));
+        given(mUserRepository.findByEmail(anyString())).willReturn(null);
+
+        String creditCardNumber = RandomStringUtils.randomNumeric(10);
+        String creditCardCSC = RandomStringUtils.randomNumeric(3);
+        String creditCardOwner = "Test user";
+        Date creditCardExpirationDate = new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2030");
+        Date newBirthDate = new SimpleDateFormat("dd/MM/yyyy").parse(newBirthDateStr);
+
+        UserUpdatePOJO userUpdatePOJO = new UserUpdatePOJO();
+        userUpdatePOJO.setName(newName1);
+        userUpdatePOJO.setEmail(newEmail1);
+        userUpdatePOJO.setCountry(newCountry1);
+        userUpdatePOJO.setBirthDate(newBirthDate);
+        userUpdatePOJO.setPassword(newPassword1);
+        userUpdatePOJO.setCreditCardNumber(creditCardNumber);
+        userUpdatePOJO.setCreditCardCSC(creditCardCSC);
+        userUpdatePOJO.setCreditCardOwner(creditCardOwner);
+        userUpdatePOJO.setCreditCardExpirationDate(creditCardExpirationDate);
+
+        User newUser = mUserService.updateUser(1l, userUpdatePOJO);
+
+        assertEquals(newName1, newUser.getName());
+        assertEquals(newEmail1, newUser.getEmail());
+        assertEquals(newCountry1, newUser.getCountry());
+        assertEquals(newPasswordEncrypted1, newUser.getPassword());
+        assertEquals(newBirthDate, newUser.getBirthDate());
+        assertEquals(creditCardNumber, newUser.getCreditCardNumber());
+        assertEquals(creditCardCSC, newUser.getCreditCardCSC());
+        assertEquals(creditCardOwner, newUser.getCreditCardOwner());
+        assertEquals(creditCardExpirationDate, newUser.getCreditCardExpirationDate());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    @SneakyThrows
+    void whenUpdatingUser_returnsUserUpdated_withNonNullChanged_andNullKeepsSame(){
+        String newName = "springname";
+        String newDescription = "this is a spring description";
+        UserUpdatePOJO userUpdatePOJO = new UserUpdatePOJO();
+        userUpdatePOJO.setName(newName);
+        userUpdatePOJO.setDescription(newDescription);
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.ofNullable(mUser1));
+        given(mUserRepository.findByEmail(anyString())).willReturn(null);
+
+        User newUser = mUserService.updateUser(1l, userUpdatePOJO);
+        assertEquals(newName, newUser.getName());
+        assertEquals(newDescription, newUser.getDescription());
+        assertEquals(mPasswordEncrypted1, newUser.getPassword());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenUpdatingUser_withInvalidUsername_throwUserNotFoundException(){
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class,
+                () -> mUserService.updateUser(1l, new UserUpdatePOJO())
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    @SneakyThrows
+    void whenUpdatingUser_andEmailIsRepeated_throwsException(){
+        UserUpdatePOJO userUpdatePOJO = new UserUpdatePOJO();
+        userUpdatePOJO.setEmail(mEmail1);
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.ofNullable(mUser1));
+        given(mUserRepository.findByEmail(anyString())).willReturn(mUser1);
+
+        assertThrows(ExceptionDetails.class,
+                () -> mUserService.updateUser(1l, userUpdatePOJO)
+        );
     }
 }

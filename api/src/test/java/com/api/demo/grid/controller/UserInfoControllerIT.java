@@ -1,17 +1,22 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -31,6 +37,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,6 +75,7 @@ class UserInfoControllerIT {
             mBirthDateStr = "17/10/2010",
             mStartDateStr = "25/05/2020",
             mPhotoUrl = "photo.jpg";
+    private UserUpdatePOJO mUserUpdatePOJO;
     private BCryptPasswordEncoder mPasswordEncoder;
 
     @BeforeEach
@@ -109,6 +117,8 @@ class UserInfoControllerIT {
         mSell = new Sell();
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
+
+        mUserUpdatePOJO = new UserUpdatePOJO();
     }
 
     @Test
@@ -226,6 +236,63 @@ class UserInfoControllerIT {
                 .andExpect(status().reason(is("Username not found in the database")))
         ;
 
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingValidUserInfo_returnValidUser(){
+        mUserRepo.save(mUser);
+        Optional<User> user = mUserRepo.findById(mUser.getId());
+        String name = "newName";
+        mUserUpdatePOJO.setName(name);
+
+        MvcResult result = mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                //.andExpect(status().isOk())
+                //.andExpect(jsonPath("$.name", is(name)))
+        ;
+        System.out.println();
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidEmail_return4xxError(){
+        mUserRepo.save(mUser);
+        mUserUpdatePOJO.setEmail(mUser.getEmail());
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("There is already a user with that email"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidCC_return4xxError(){
+        mUserRepo.save(mUser);
+        mUserUpdatePOJO.setEmail("name");
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("There is already a user with that email"))
+        ;
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -3,12 +3,14 @@ package com.api.demo.grid.pojos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class UserUpdatePOJO {
 
     private String name;
@@ -38,11 +40,12 @@ public class UserUpdatePOJO {
     private Date creditCardExpirationDate;
 
     public Date getBirthDate() {
+        if (birthDate == null) return null;
         return (Date) birthDate.clone();
     }
 
     public void setBirthDate(Date birthDate) {
-        this.birthDate = (Date) birthDate.clone();
+        if (birthDate != null) this.birthDate = (Date) birthDate.clone();
     }
 
     public Date getCreditCardExpirationDate() {
@@ -53,6 +56,6 @@ public class UserUpdatePOJO {
     }
 
     public void setCreditCardExpirationDate(Date creditCardExpirationDate) {
-        this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
+        if (creditCardExpirationDate != null) this.creditCardExpirationDate = (Date) creditCardExpirationDate.clone();
     }
 }
