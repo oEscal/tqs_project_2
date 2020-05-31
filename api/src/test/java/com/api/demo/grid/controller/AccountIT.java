@@ -7,6 +7,7 @@ import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.http.MediaType;
@@ -26,13 +27,10 @@ import static com.api.demo.grid.utils.UserJson.simpleUserJson;
 import static com.api.demo.grid.utils.UserJson.userCreditCardJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @AutoConfigureMockMvc
@@ -97,7 +95,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.password", is(nullValue())));
-        assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
     }
 
     @Test
@@ -121,8 +119,8 @@ class AccountIT {
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
-        assertEquals(1, mUserRepository.findAll().size());
-        assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
     }
 
     @Test
@@ -140,8 +138,8 @@ class AccountIT {
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
-        assertEquals(1, mUserRepository.findAll().size());
-        assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
     }
 
     /***
@@ -171,7 +169,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
                 .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
                 .andExpect(jsonPath("$.creditCardExpirationDate", is(creditCardExpirationDate)));
-        assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
     }
 
 
@@ -285,7 +283,7 @@ class AccountIT {
         mMvc.perform(request).andExpect(status().isOk());
 
         // verify if user was removed
-        assertNull(mUserRepository.findByUsername(mUsername1));
+        Assertions.assertNull(mUserRepository.findByUsername(mUsername1));
     }
 
     @Test
@@ -308,6 +306,29 @@ class AccountIT {
         mMvc.perform(request).andExpect(status().isOk());
 
         // verify if user was removed
-        assertNull(mUserRepository.findByUsername(mUsername1));
+        Assertions.assertNull(mUserRepository.findByUsername(mUsername1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithNonAdminAndOtherUser_removeUserWithUnsuccess() {
+
+        String otherUser = "other_user";
+        UserDTO adminDTO = new UserDTO(otherUser, mName1, "test_email", mCountry1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // save the admin to database
+        mUserService.saveUser(adminDTO);
+
+        // remove user
+        RequestBuilder request = post("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(otherUser, mPassword1));
+        mMvc.perform(request).andExpect(status().isForbidden());
+
+        // verify if user was removed
+        Assertions.assertNotNull(mUserRepository.findByUsername(mUsername1));
     }
 }
