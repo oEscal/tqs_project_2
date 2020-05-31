@@ -12,8 +12,6 @@ import lombok.EqualsAndHashCode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,14 +135,13 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsCreated = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_buyer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -221,6 +218,15 @@ public class User {
         this.auctionsCreated.add(auction);
 
         auction.setAuctioneer(this);
+    }
+
+    @Transactional
+    public void addAuctionBought(Auction auction) {
+        if (this.auctionsWon.contains(auction)) return;
+
+        this.auctionsWon.add(auction);
+
+        auction.setBuyer(this);
     }
     
     public void addBuy(Buy aboutToBuy) {

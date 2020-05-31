@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.Transient;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
@@ -23,7 +24,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -39,6 +39,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonSerialize
+@Transient
 @SuppressFBWarnings
 public class Auction {
 
@@ -50,7 +51,7 @@ public class Auction {
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "auction_buyer_user_id")
     private User buyer;
 
@@ -65,7 +66,6 @@ public class Auction {
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    @Future
     @JsonFormat(pattern="dd/MM/yyyy")
     private Date endDate;
 
@@ -112,6 +112,17 @@ public class Auction {
 
         if (auctioneer != null) {
             auctioneer.addAuctionCreated(this);
+        }
+    }
+
+    @Transactional
+    public void setBuyer(User buyer) {
+        if (Objects.equals(this.buyer, buyer)) return;
+
+        this.buyer = buyer;
+
+        if (buyer != null) {
+            buyer.addAuctionBought(this);
         }
     }
 

@@ -13,6 +13,7 @@ import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -37,8 +38,7 @@ public class AuctionService {
         return mAuctionRepository.findByGameKey_RealKey(key);
     }
 
-    @SneakyThrows
-    public Auction addAuction(AuctionPOJO auctionPOJO) {
+    public Auction addAuction(AuctionPOJO auctionPOJO) throws ExceptionDetails {
 
         String gameKeyStr = auctionPOJO.getGameKey();
 
@@ -80,5 +80,43 @@ public class AuctionService {
         auctionSave.setEndDate(auctionPOJO.getEndDate());
 
         return mAuctionRepository.save(auctionSave);
+    }
+
+    @Transactional
+    public Auction addBidding(String user, String gameKey, double price) throws ExceptionDetails {
+
+        Auction auction = mAuctionRepository.findByGameKey_RealKey(gameKey);
+        User buyer = mUserRepository.findByUsername(user);
+
+        // verify the buyer exists
+        if (buyer == null) {
+            throw new ExceptionDetails("The Buyer doesn't exists");
+        }
+
+        // verify the auction exists
+        if (auction == null) {
+            throw new ExceptionDetails("The Auction doesn't exists");
+        }
+
+        // verify the buyer is the same as the current
+        if (auction.getBuyer() != null && auction.getBuyer().getUsername().equals(user)) {
+            throw new ExceptionDetails("The new buyer can't be the same as the current");
+        }
+
+        // verify the buyer is the same as the auctioneer
+        if (auction.getAuctioneer().getUsername().equals(user)) {
+            throw new ExceptionDetails("The buyer can't be the same as the auctioneer");
+        }
+
+        // verify the current price
+        double currentPrice = auction.getPrice();
+        if (currentPrice >= price) {
+            throw new ExceptionDetails("The new price must be higher than the current");
+        }
+
+        auction.setBuyer(buyer);
+        auction.setPrice(price);
+
+        return mAuctionRepository.save(auction);
     }
 }

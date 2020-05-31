@@ -3,6 +3,7 @@ package com.api.demo.grid.controller;
 
 import com.api.demo.grid.exception.ForbiddenException;
 import com.api.demo.grid.pojos.AuctionPOJO;
+import com.api.demo.grid.pojos.BiddingPOJO;
 import com.api.demo.grid.proxy.AuctionProxy;
 import com.api.demo.grid.service.AuctionService;
 import lombok.SneakyThrows;
@@ -39,5 +40,20 @@ public class AuctionController {
         }
 
         return new AuctionProxy(mAuctionService.addAuction(auction));
+    }
+
+    @SneakyThrows
+    @PostMapping("/create-bidding")
+    public AuctionProxy createBidding(@RequestHeader("Authorization") String auth,
+                                      @Valid @RequestBody BiddingPOJO bidding) {
+
+        // verify if the user requesting is the same as the buyer
+        String username = ControllerUtils.getUserFromAuth(auth);
+        if (!Objects.equals(username, bidding.getUser())) {
+            throw new ForbiddenException("The user requesting must be the same as the buyer");
+        }
+
+        return new AuctionProxy(mAuctionService.addBidding(bidding.getUser(), bidding.getGameKey(), bidding.getPrice()),
+                true);
     }
 }

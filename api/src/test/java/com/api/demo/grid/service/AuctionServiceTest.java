@@ -150,6 +150,7 @@ class AuctionServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSaveNewAuction_insertReceiveAuction() {
 
         // mock user repository
@@ -161,7 +162,6 @@ class AuctionServiceTest {
         // mock sell repository
         given(mSellRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(null);
 
-        System.out.println(mAuction);
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 
