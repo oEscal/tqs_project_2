@@ -27,6 +27,8 @@ import javax.persistence.TemporalType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -48,24 +50,23 @@ public class Game {
     @Column(unique=true)
     private String name;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "publisher_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
-    private Set<Developer> developers;
+    private Set<Developer> developers = new HashSet<>();
 
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
@@ -74,9 +75,9 @@ public class Game {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<ReviewGame> reviews;
+    private Set<ReviewGame> reviews = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
@@ -87,6 +88,7 @@ public class Game {
     private Set<User> userWish;
 
     private String coverUrl;
+
 
     public Date getReleaseDate(){ return (releaseDate==null)? null:(Date) releaseDate.clone(); }
 
@@ -101,42 +103,47 @@ public class Game {
         gameKey.setGame(this);
     }
 
-    public double getLowestPrice(){
-        if (gameKeys == null || gameKeys.isEmpty()) return -1;
-        double lowestPrice = 0;
+    public Sell getBestSell(){
+        if (gameKeys == null || gameKeys.isEmpty()) return null;
+        Sell bestSell = new Sell();
         boolean foundPrice = false;
         for (GameKey gameKey : gameKeys){
-            if (gameKey.getSell() != null){
-                if (!foundPrice || lowestPrice > gameKey.getSell().getPrice()) {
-                    lowestPrice = gameKey.getSell().getPrice();
+            if (gameKey.getSell() != null && gameKey.getSell().getPurchased() == null){
+                if (!foundPrice || bestSell.getPrice() > gameKey.getSell().getPrice()) {
+                    bestSell = gameKey.getSell();
                 }
                 foundPrice = true;
             }
         }
-        return (foundPrice)? lowestPrice:-1;
+        return (foundPrice)? bestSell:null;
     }
 
-    public String[] getPlatforms(){
-        if (gameKeys == null || gameKeys.isEmpty()) return new String[0];
-        ArrayList<String> gamePlatforms = new ArrayList<>();
+    public List<String> getPlatforms(){
+        if (gameKeys == null || gameKeys.isEmpty()) return new ArrayList<>();
+        List<String> gamePlatforms = new ArrayList<>();
         String platform;
         for (GameKey gameKey : gameKeys){
             platform = gameKey.getPlatform();
             if (!gamePlatforms.contains(platform)) gamePlatforms.add(platform);
         }
-        return gamePlatforms.toArray(new String[gamePlatforms.size()]);
+        return gamePlatforms;
     }
 
-    public String getPublisherName() { return (this.publisher == null)? "":this.publisher.getName(); }
+    public void setPublisher(Publisher publisher){
+        if (Objects.equals(this.publisher, publisher)) return;
+        this.publisher = publisher;
+        publisher.addGame(this);
+    }
 
-    public String[] getDeveloperNames() {
-        if (developers == null || developers.size()==0) return new String[0];
-        String[] devNames = new String[developers.size()];
-        int count = 0;
-        for (Developer developer : developers){
-            devNames[count] = developer.getName();
-            count++;
-        }
-        return devNames;
+    public void addGenre(GameGenre gameGenre) {
+        if (this.gameGenres.contains(gameGenre)) return;
+        this.gameGenres.add(gameGenre);
+        gameGenre.addGame(this);
+    }
+
+    public void addDeveloper(Developer developer) {
+        if (this.developers.contains(developer)) return;
+        this.developers.add(developer);
+        developer.addGame(this);
     }
 }

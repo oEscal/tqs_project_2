@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
-import lombok.AccessLevel;
 
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,27 +40,31 @@ public class GameKey {
     private long id;
 
     @Column(unique = true)
-    private String rKey;
+    @JsonIgnore
+    private String realKey;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "game_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Game game;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Sell sell;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Auction auction;
 
     private String retailer;
 
     private String platform;
+
 
     public void setGame(Game game) {
         //prevent endless loop
@@ -72,22 +76,45 @@ public class GameKey {
         if (game!=null) game.addGameKey(this);
     }
 
-    public void setSell(Sell sell){
-        if (sameAsFormerSale(sell)) return;
-
-        this.sell = sell;
-
-        if (sell != null) sell.setGameKey(this);
-    }
-
-    private boolean sameAsFormerSale(Sell newSale) {return Objects.equals(newSale, sell); }
-
     private boolean sameAsFormer(Game newGame) {
         return Objects.equals(game, newGame);
     }
 
+    public void setSell(Sell sell){
+        if (sameAsFormerSell(sell)) return ;
+        this.sell = sell;
+        if (sell!=null) sell.setGameKey(this);
+    }
+
+    private boolean sameAsFormerSell(Sell newSell) {
+        return Objects.equals(sell, newSell);
+    }
+
+    @EqualsAndHashCode.Include
     public long getGameId(){
         if (game == null) return -1L;
         return this.game.getId();
+    }
+
+    public void setAuction(Auction auction) {
+        if(Objects.equals(this.auction, auction)) return;
+
+        this.auction = auction;
+
+        if (auction != null) {
+            auction.setGameKey(this);
+        }
+    }
+    
+    @EqualsAndHashCode.Include
+    public String getGameName(){
+        if (game == null) return "";
+        return this.game.getName();
+    }
+
+    @EqualsAndHashCode.Include
+    public String getGamePhoto(){
+        if (game == null) return "";
+        return this.game.getCoverUrl();
     }
 }

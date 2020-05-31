@@ -1,19 +1,27 @@
 package com.api.demo.grid.repository;
 
+import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.utils.Pagination;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @DataJpaTest
 class SellRepositoryTest {
@@ -33,6 +41,7 @@ class SellRepositoryTest {
         user.setPassword("mPassword1");
         user.setCountry("mCountry1");
         user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
+        user.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse("25/05/2020"));
         mEntityManager.persistAndFlush(user);
 
         Sell sell = new Sell();
@@ -67,5 +76,64 @@ class SellRepositoryTest {
         GameKey gameKey = mEntityManager.persistAndFlush(new GameKey());
 
         assertEquals(Optional.empty(), mRepository.findByGameKey(gameKey));
+    }
+
+    @Test
+    void whenFindByAllGameKey_ReceivePage(){
+        Game game = new Game();
+        game.setName("game");
+        mEntityManager.persistAndFlush(game);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+
+        GameKey gameKey2 = new GameKey();
+        gameKey2.setGame(game);
+
+        mEntityManager.persistAndFlush(gameKey);
+        mEntityManager.persistAndFlush(gameKey2);
+
+        Sell sell1 = new Sell();
+        sell1.setGameKey(gameKey);
+        Sell sell2 = new Sell();
+        sell2.setGameKey(gameKey2);
+        mEntityManager.persistAndFlush(sell1);
+        mEntityManager.persistAndFlush(sell2);
+
+        List<Sell> sellList = Arrays.asList(sell1, sell2);
+        Pagination<Sell> pagination = new Pagination<>(sellList);
+        int page = 1;
+        int entriesPerPage = 18;
+        PageRequest pageRequest = PageRequest.of(page, entriesPerPage);
+
+        Page<Sell> sells = pagination.pageImpl(page, entriesPerPage);
+
+        assertEquals(sells, mRepository.findAllByGames(game.getId(), pageRequest));
+    }
+
+    @Test
+    void whenSearchSellByExistentKey_receiveSell(){
+
+        String gameKeyStr = "game_key_test";
+
+        Game game = new Game();
+        game.setName("game");
+        mEntityManager.persistAndFlush(game);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+        gameKey.setRealKey(gameKeyStr);
+        mEntityManager.persistAndFlush(gameKey);
+
+        Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+
+        assertEquals(sell, mRepository.findByGameKey_RealKey(gameKeyStr));
+    }
+
+    @Test
+    void whenSearchSellByNonExistentKey_receiveNull(){
+
+        assertNull(mRepository.findByGameKey_RealKey("game_key_test"));
     }
 }

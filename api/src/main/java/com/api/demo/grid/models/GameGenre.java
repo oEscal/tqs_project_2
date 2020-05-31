@@ -1,6 +1,7 @@
 package com.api.demo.grid.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -9,13 +10,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -39,8 +35,15 @@ public class GameGenre {
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<Game> games;
+    @JsonIgnore
+    private Set<Game> games = new HashSet<>();
+
+    public void addGame(Game game) {
+        if (this.games.contains(game)) return;
+        this.games.add(game);
+        game.addGenre(this);
+    }
 }

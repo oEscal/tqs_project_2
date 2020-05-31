@@ -6,13 +6,15 @@ import com.api.demo.grid.repository.UserRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -49,7 +51,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return new HashSet<>();
+            /*
+             adapted from https://stackoverflow.com/questions/37615034/spring-security-spring-boot-how-to-set-roles-for-users/50533455
+             */
+
+            final List<SimpleGrantedAuthority> authorities = new LinkedList<>();
+
+            if (this.user.isAdmin()) {
+                authorities.add(new SimpleGrantedAuthority("ADMIN"));
+            } else {
+                authorities.add(new SimpleGrantedAuthority("USER"));
+            }
+
+            return authorities;
         }
 
         @Override

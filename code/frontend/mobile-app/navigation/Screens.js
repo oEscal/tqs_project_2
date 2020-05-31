@@ -11,6 +11,7 @@ import ProfileScreen from '../screens/Profile';
 import WishlistScreen from '../screens/Wishlist';
 import SellScreen from '../screens/Sell';
 import WalletScreen from '../screens/Wallet';
+import GameInfoScreen from '../screens/GameInfo';
 
 
 import OnboardingScreen from '../screens/Onboarding';
@@ -143,13 +144,32 @@ function GamesStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header
-              search
-              tabs
               title="Games"
               navigation={navigation}
               scene={scene}
             />
           )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function GameInfoStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="GameInfo"
+      mode="card"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name={props.route.params.product.name}
+        component={GameInfoScreen}
+        initialParams={{ 'game': props.route.params.product }}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title={props.route.params.product.name} scene={scene} navigation={navigation} />
+          ),
         }}
       />
     </Stack.Navigator>
@@ -248,6 +268,16 @@ function AppStack(props) {
               color={focused ? "white" : materialTheme.COLORS.MUTED}
               style={{ marginRight: 2, marginLeft: 2 }}
             />
+          )
+        }}
+      />
+
+      <Drawer.Screen
+        name="GameInfo"
+        component={GameInfoStack}
+        options={{
+          drawerIcon: ({ focused }) => (
+            <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />

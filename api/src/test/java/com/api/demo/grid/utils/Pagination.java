@@ -17,19 +17,17 @@ public class Pagination<T> {
     }
 
     public PageImpl<T> pageImpl(int page, int entriesPerPage) {
+
         PageRequest pageRequest = PageRequest.of(page, entriesPerPage);
 
         int total = mData.size();
-        int start = Math.toIntExact(pageRequest.getOffset()) - 1;
+        int start = Math.toIntExact(pageRequest.getOffset());
         int end = Math.min((start + pageRequest.getPageSize()), total);
 
-        List<T> output = new ArrayList<>();
+        if (start > end)
+            return new PageImpl<T>(new ArrayList<>(), pageRequest, total);
 
-        if (start <= end) {
-            output = mData.subList(start, end);
-        }
-
-        return new PageImpl<>(output, pageRequest, total);
+        return new PageImpl<T>(mData.subList(start, end), pageRequest, total);
     }
 
 }

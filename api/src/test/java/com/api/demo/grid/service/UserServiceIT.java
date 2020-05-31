@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.text.SimpleDateFormat;
 
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserServiceIT {
 
     @Autowired
@@ -48,11 +50,6 @@ class UserServiceIT {
 
         mSimpleUserDTO = new UserDTO(mUsername1, mName1, mEmail1, mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-    }
-
-    @AfterEach
-    void afterEach() {
-        mUserRepository.deleteAll();
     }
 
 

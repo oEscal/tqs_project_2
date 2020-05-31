@@ -63,10 +63,13 @@ class LoginPage extends Component {
     redirect: false
   }
 
-  componentDidMount(){
+  componentDidMount() {
     //Reset prior info
     localStorage.setItem('loggedUser', null);
     global.user = null;
+
+    localStorage.setItem('cart', null);
+    global.cart = null
   }
 
   // Methods ///////////////////////////////
@@ -117,9 +120,9 @@ class LoginPage extends Component {
         }
       })
         .then(response => {
-          if (response.status === 401){
+          if (response.status === 401) {
             return response
-          }else if(response.status === 200) {
+          } else if (response.status === 200) {
             return response.json()
           }
           else throw new Error(response.status);
@@ -139,7 +142,6 @@ class LoginPage extends Component {
 
           } else { // Successful Login
             data["token"] = login_info
-            console.log(data)
             localStorage.setItem('loggedUser', JSON.stringify(data));
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
             success = true

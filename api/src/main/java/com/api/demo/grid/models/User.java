@@ -1,7 +1,6 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
@@ -10,23 +9,26 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinColumn;
-
-import javax.persistence.CascadeType;
-import javax.persistence.GenerationType;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
@@ -49,7 +51,6 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Long id;
 
     /***
@@ -75,11 +76,19 @@ public class User {
     @Temporal(TemporalType.DATE)
     @Past
     private Date birthDate;
-    
+
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @JsonFormat(pattern="dd/MM/yyyy")
+    @Temporal(TemporalType.DATE)
+    private Date startDate = new Date();
+
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;
 
     private String photoUrl;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String description;
 
     /***
      *  User's credit card info
@@ -104,76 +113,52 @@ public class User {
      ***/
     //The games he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<ReviewGame> reviewGames;
+    @ToString.Exclude
+    private Set<ReviewGame> reviewGames = new HashSet<>();
 
     //The users he reviewed
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_from_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviewUsers;
+    @ToString.Exclude
+    private Set<ReviewUser> reviewedUsers = new HashSet<>();
 
     //The users that reviewed him
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "review_to_user_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviewedUsers;
-
-    //The reviews directed to the users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<ReviewUser> reviews;
-
-    //The reports this user has issued on game reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewGame> reportsOnGameReview;
-
-    //The reports this user has issued on user reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewUser> reportsOnUserReview;
-
-    //The reports this user has received
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_from_user_id")
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsThisUser;
-
-    //The reports this user has issued on users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_to_user_id")
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsOnUser;
+    @ToString.Exclude
+    private Set<ReviewUser> reviewUsers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<Buy> buys;
+    private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "auctioneer_user_id")
     @EqualsAndHashCode.Exclude
-    private Set<Auction> auctions;
+    @ToString.Exclude
+    private Set<Auction> auctionsCreated = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "auction_buyer_user_id")
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Auction> auctionsWon = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
-    @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
+
+    @Column(columnDefinition = "FLOAT DEFAULT 0.00")
+    private double funds = 0;
 
     // because lombok doesnt support get and set params of Date type with security (clone)
     public Date getBirthDate() {
@@ -183,10 +168,20 @@ public class User {
         return null;
     }
 
+    public String getBirthDateStr(){
+        if (birthDate != null) return new SimpleDateFormat("dd/MM/yyyy").format(birthDate);
+        return null;
+    }
+
     public void setBirthDate(Date birthDate) {
         if (birthDate != null) {
             this.birthDate = (Date) birthDate.clone();
         }
+    }
+
+    public String getStartDateStr(){
+        if (startDate != null) return new SimpleDateFormat("dd/MM/yyyy").format(startDate);
+        return null;
     }
 
     public Date getCreditCardExpirationDate() {
@@ -202,11 +197,46 @@ public class User {
         }
     }
 
+    public double getFunds() { return this.funds; }
+
+    public void setFunds(double funds) { this.funds = funds; }
+
+    public void payWithFunds(double bill) { this.funds -= bill; }
+
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 
         this.sells.add(sell);
 
         sell.setUser(this);
+    }
+
+    @Transactional
+    public void addAuctionCreated(Auction auction) {
+        if (this.auctionsCreated.contains(auction)) return;
+
+        this.auctionsCreated.add(auction);
+
+        auction.setAuctioneer(this);
+    }
+
+    @Transactional
+    public void addAuctionBought(Auction auction) {
+        if (this.auctionsWon.contains(auction)) return;
+
+        this.auctionsWon.add(auction);
+
+        auction.setBuyer(this);
+    }
+    
+    public void addBuy(Buy aboutToBuy) {
+        if (this.buys == null) this.buys = new HashSet<>();
+
+        for (Buy buy: this.buys) {
+            if (buy.equals(aboutToBuy)) return;
+        }
+
+        this.buys.add(aboutToBuy);
+        aboutToBuy.setUser(this);
     }
 }

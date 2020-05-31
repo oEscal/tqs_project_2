@@ -30,6 +30,20 @@ import ProductSection from "./Sections/ProductSection.js";
 import TeamSection from "./Sections/TeamSection.js";
 import GameSection from "./Sections/GameSection.js";
 
+// Loading Animation
+import FadeIn from "react-fade-in";
+import Lottie from "react-lottie";
+import * as loadingAnim from "assets/animations/loading_anim.json";
+
+import {
+    Link,
+    Redirect
+} from "react-router-dom";
+
+
+// Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast, Flip } from 'react-toastify';
 
 class HomePage extends Component {
     constructor() {
@@ -37,44 +51,128 @@ class HomePage extends Component {
     }
 
     state = {
+        redirectLogin: false,
+        animationOptions: {
+            loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
+                preserveAspectRatio: "xMidYMid slice"
+            }
+        },
+        games: [],
+        redirectLogin: false,
+
+        doneLoading: false
     }
 
+    async allGames() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
 
-    componentDidMount(){
+        // Get All Games
+        await fetch(baseURL + "grid/all?page=" + 1, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+
+                    this.setState({ games: data.content })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+            });
+    }
+
+    async componentDidMount() {
+        window.scrollTo(0, 0)
+        await this.allGames()
+        this.setState({ doneLoading: true })
+    }
+
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
     }
 
     render() {
         const { classes } = this.props;
+
+        if (!this.state.doneLoading) {
+            return (
+                <div>
+                    <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
+
+                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                        <FadeIn>
+                            <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                        </FadeIn>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <div>
                 <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={600} />
+                {this.renderRedirectLogin()}
+                <ToastContainer
+                    position="top-center"
+                    autoClose={2500}
+                    hideProgressBar={false}
+                    transition={Flip}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnVisibilityChange
+                    draggable
+                    pauseOnHover
+                />
 
                 <Parallax filter image={require("assets/img/bg.png")}>
                     <div className={classes.container}>
                         <GridContainer>
                             <GridItem xs={12} sm={12} md={6}>
                                 <h1 style={{
-                                    background:"rgb(253,27,163)",
+                                    background: "rgb(253,27,163)",
                                     background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
                                     WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",   
-                                    fontWeight:"bolder"                                 
-                                    }}>Grid Marketplace</h1>
+                                    WebkitTextFillColor: "transparent",
+                                    fontWeight: "bolder"
+                                }}>Grid Marketplace</h1>
                                 <h4>
                                     Buy and sell all your favourite games! Participate in auctions and bid for exceptionally cheap prices!
                                 </h4>
-                                <br />
-                                <Button
-                                    color="danger"
-                                    size="lg"
-                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <i className="fas fa-play" />
-                                    Watch video
-                                </Button>
+                                
                             </GridItem>
                         </GridContainer>
                     </div>
@@ -82,12 +180,12 @@ class HomePage extends Component {
 
                 <div className={classNames(classes.main, classes.mainRaised)}>
                     <div className={classes.container}>
-                        <GameSection />
+                        <GameSection games={this.state.games}/>
                         <ProductSection />
                         <TeamSection />
                     </div>
                 </div>
-                <Footer />
+                <Footer rawg />
 
             </div>
         )
