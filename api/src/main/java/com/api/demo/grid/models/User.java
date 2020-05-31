@@ -239,4 +239,11 @@ public class User {
         this.buys.add(aboutToBuy);
         aboutToBuy.setUser(this);
     }
+
+    public double getScore(){
+        if (this.reviewUsers.isEmpty()) return -1;
+        double sum = 0;
+        for (ReviewUser review: reviewUsers) sum += review.getScore();
+        return sum/reviewUsers.size();
+    }
 }
