@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -26,10 +28,15 @@ public class UserService {
 
     private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
+    @Autowired
+    private EntityManager entityManager;
+
 
     public User getUser(String username) {
         User user = mRepository.findByUsername(username);
+
         if (user != null) {
+            entityManager.detach(user);
             user.setPassword(null);
         }
         return user;
@@ -63,6 +70,7 @@ public class UserService {
 
         userSave.setPassword(mPasswordEncoder.encode(userSave.getPassword()));
         User userSaved = mRepository.save(userSave);
+        entityManager.detach(userSaved);
         userSaved.setPassword(null);
         return userSaved;
     }
