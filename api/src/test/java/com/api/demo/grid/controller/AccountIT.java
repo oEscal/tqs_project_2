@@ -27,6 +27,7 @@ import static com.api.demo.grid.utils.UserJson.simpleUserJson;
 import static com.api.demo.grid.utils.UserJson.userCreditCardJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -265,5 +266,25 @@ class AccountIT {
         request = post("/grid/logout").with(httpBasic(mUsername1, mPassword1));
 
         mMvc.perform(request).andExpect(status().is2xxSuccessful());
+    }
+
+
+    /***
+     * Delete account tests
+     ***/
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithSameUserLoggedIn_removeUserWithSuccess() {
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // remove user
+        RequestBuilder request = post("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(mUsername1, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // verify if user was removed
+        assertNull(mUserRepository.findByUsername(mUsername1));
     }
 }
