@@ -7,7 +7,7 @@ import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.http.MediaType;
@@ -28,11 +28,10 @@ import static com.api.demo.grid.utils.UserJson.userCreditCardJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @AutoConfigureMockMvc
@@ -49,6 +48,7 @@ class AccountIT {
 
     @Autowired
     private UserService mUserService;
+
 
     // specifications for user1
     private User mSimpleUser;
@@ -95,8 +95,8 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())));
-        assertEquals(1, mUserRepository.findAll().size());
+                .andExpect(jsonPath("$.password").doesNotExist());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
     }
 
     @Test
@@ -112,7 +112,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())));
+                .andExpect(jsonPath("$.password").doesNotExist());
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
@@ -120,8 +120,8 @@ class AccountIT {
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
-        assertEquals(1, mUserRepository.findAll().size());
-        assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
     }
 
     @Test
@@ -139,8 +139,8 @@ class AccountIT {
                         "name_test"));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
-        assertEquals(1, mUserRepository.findAll().size());
-        assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(mName1, mUserRepository.findByUsername(mUsername1).getName());
     }
 
     /***
@@ -165,12 +165,12 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
                 .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
                 .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
                 .andExpect(jsonPath("$.creditCardExpirationDate", is(creditCardExpirationDate)));
-        assertEquals(1, mUserRepository.findAll().size());
+        Assertions.assertEquals(1, mUserRepository.findAll().size());
     }
 
 
@@ -192,7 +192,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", nullValue()))
                 .andExpect(jsonPath("$.creditCardCSC", nullValue()))
                 .andExpect(jsonPath("$.creditCardOwner", nullValue()))
@@ -226,7 +226,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
                 .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
                 .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
@@ -265,5 +265,72 @@ class AccountIT {
         request = post("/grid/logout").with(httpBasic(mUsername1, mPassword1));
 
         mMvc.perform(request).andExpect(status().is2xxSuccessful());
+    }
+
+
+    /***
+     * Delete account tests
+     ***/
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithSameUserLoggedIn_removeUserWithSuccess() {
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // remove user
+        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(mUsername1, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // verify if user was removed
+        Assertions.assertNull(mUserRepository.findByUsername(mUsername1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithAdmin_removeUserWithSuccess() {
+
+        String adminUsername = "admin_user";
+        UserDTO adminDTO = new UserDTO(adminUsername, mName1, "test_email", mCountry1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        adminDTO.setAdmin(true);
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // save the admin to database
+        mUserService.saveUser(adminDTO);
+
+        // remove user
+        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(adminUsername, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // verify if user was removed
+        Assertions.assertNull(mUserRepository.findByUsername(mUsername1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithNonAdminAndOtherUser_removeUserWithUnsuccessful() {
+
+        String otherUser = "other_user";
+        UserDTO adminDTO = new UserDTO(otherUser, mName1, "test_email", mCountry1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // save the admin to database
+        mUserService.saveUser(adminDTO);
+
+        // remove user
+        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(otherUser, mPassword1));
+        mMvc.perform(request).andExpect(status().isForbidden());
+
+        // verify if user was removed
+        Assertions.assertNotNull(mUserRepository.findByUsername(mUsername1));
     }
 }

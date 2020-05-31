@@ -115,8 +115,6 @@ class UserServiceTest {
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         userExpected.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
-        userExpected.setPassword(null);
-
         assertEquals(userExpected, mUserService.getUser(mUsername1));
     }
 
@@ -346,7 +344,7 @@ class UserServiceTest {
     }
 
     @Test
-    void whenSearchignInvalidUser_throwUserNotFoundException(){
+    void whenSearchingInvalidUser_throwUserNotFoundException(){
         given(mUserRepository.findByUsername("username1")).willReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));
