@@ -146,6 +146,7 @@ class SpringSecurityConfigIT {
         // login with admin user
         mSimpleUserDTO.setAdmin(true);
         mUserService.saveUser(mSimpleUserDTO);
+
         RequestBuilder request = post("/grid/login").with(httpBasic(mUsername1, mPassword1));
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.admin", is(true)));

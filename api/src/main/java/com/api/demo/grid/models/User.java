@@ -69,6 +69,7 @@ public class User {
     private String country;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Exclude
     private String password;
 
     @Column(name = "birth_date", nullable = false)
