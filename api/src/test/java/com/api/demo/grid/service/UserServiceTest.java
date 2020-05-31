@@ -346,7 +346,7 @@ class UserServiceTest {
     }
 
     @Test
-    void whenSearchignInvalidUser_throwUserNotFoundException(){
+    void whenSearchingInvalidUser_throwUserNotFoundException(){
         given(mUserRepository.findByUsername("username1")).willReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));

@@ -5,7 +5,6 @@ import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,7 @@ class UserServiceIT {
 
     @Autowired
     private UserService mUserService;
+
 
     // specifications for user1
     private UserDTO mSimpleUserDTO;
@@ -95,5 +95,26 @@ class UserServiceIT {
         mUserService.saveUser(mSimpleUserDTO);
         assertNull(mUserService.getUser(mUsername1).getPassword());
         assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+    }
+
+
+    /***
+     *  Delete User
+     ***/
+    @Test
+    @SneakyThrows
+    void whenDeleteUser_deleteIsSuccessful(){
+
+        // insert user
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // verify if the user was created
+        assertEquals(1, mUserRepository.findAll().size());
+
+        // delete user
+        mUserService.deleteUser(mUsername1);
+
+        // verify if the user was deleted
+        assertEquals(0, mUserRepository.findAll().size());
     }
 }

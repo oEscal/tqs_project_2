@@ -83,6 +83,10 @@ public class UserService {
         return user;
     }
 
+    public void deleteUser(String user) {
+
+    }
+
 
     private User convertToEntity(UserDTO userDto) {
         return mModelMapper.map(userDto, User.class);
