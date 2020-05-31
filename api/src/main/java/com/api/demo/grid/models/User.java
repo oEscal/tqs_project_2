@@ -147,7 +147,7 @@ public class User {
     @ToString.Exclude
     private Set<Auction> auctionsWon = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
