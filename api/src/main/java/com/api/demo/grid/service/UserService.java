@@ -6,6 +6,7 @@ import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import com.api.demo.grid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +29,11 @@ public class UserService {
 
     private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
-    private EntityManager entityManager;
 
-
+    @SneakyThrows
     public User getUser(String username) {
-        User user = mRepository.findByUsername(username);
 
-        if (user != null) {
-            entityManager.detach(user);
-            user.setPassword(null);
-        }
-        return user;
+        return mRepository.findByUsername(username);
     }
 
     public User saveUser(UserDTO user) throws ExceptionDetails {
@@ -69,10 +63,7 @@ public class UserService {
         User userSave = convertToEntity(user);
 
         userSave.setPassword(mPasswordEncoder.encode(userSave.getPassword()));
-        User userSaved = mRepository.save(userSave);
-        entityManager.detach(userSaved);
-        userSaved.setPassword(null);
-        return userSaved;
+        return mRepository.save(userSave);
     }
 
     public UserInfoProxy getUserInfo(String username) throws UserNotFoundException {

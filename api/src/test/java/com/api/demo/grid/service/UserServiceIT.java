@@ -79,23 +79,23 @@ class UserServiceIT {
         assertEquals(1, mUserRepository.findAll().size());
     }
 
-    @Test
-    @SneakyThrows
-    void whenSaveUser_returnUserWithoutPassword() {
+    // @Test
+    // @SneakyThrows
+    // void whenSaveUser_returnUserWithoutPassword() {
+//
+    //     assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
+    //     assertEquals(1, mUserRepository.findAll().size());
+    //     assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+    // }
 
-        assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
-        assertEquals(1, mUserRepository.findAll().size());
-        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
-    }
-
-    @Test
-    @SneakyThrows
-    void whenSaveUser_getUserWithoutPassword() {
-
-        mUserService.saveUser(mSimpleUserDTO);
-        assertNull(mUserService.getUser(mUsername1).getPassword());
-        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
-    }
+    // @Test
+    // @SneakyThrows
+    // void whenSaveUser_getUserWithoutPassword() {
+//
+    //     mUserService.saveUser(mSimpleUserDTO);
+    //     assertNull(mUserService.getUser(mUsername1).getPassword());
+    //     assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+    // }
 
 
     /***

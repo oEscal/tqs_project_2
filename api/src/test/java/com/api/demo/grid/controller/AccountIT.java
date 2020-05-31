@@ -95,7 +95,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())));
+                .andExpect(jsonPath("$.password").doesNotExist());
         Assertions.assertEquals(1, mUserRepository.findAll().size());
     }
 
@@ -112,7 +112,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())));
+                .andExpect(jsonPath("$.password").doesNotExist());
 
         // second save user
         request = post("/grid/sign-up").contentType(MediaType.APPLICATION_JSON)
@@ -165,7 +165,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
                 .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
                 .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))
@@ -192,7 +192,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", nullValue()))
                 .andExpect(jsonPath("$.creditCardCSC", nullValue()))
                 .andExpect(jsonPath("$.creditCardOwner", nullValue()))
@@ -226,7 +226,7 @@ class AccountIT {
                 .andExpect(jsonPath("$.email", is(mEmail1)))
                 .andExpect(jsonPath("$.country", is(mCountry1)))
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
-                .andExpect(jsonPath("$.password", is(nullValue())))
+                .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.creditCardNumber", is(creditCardNumber)))
                 .andExpect(jsonPath("$.creditCardCSC", is(creditCardCSC)))
                 .andExpect(jsonPath("$.creditCardOwner", is(creditCardOwner)))

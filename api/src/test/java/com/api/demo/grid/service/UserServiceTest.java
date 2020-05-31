@@ -115,8 +115,6 @@ class UserServiceTest {
         userExpected.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
         userExpected.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
-        userExpected.setPassword(null);
-
         assertEquals(userExpected, mUserService.getUser(mUsername1));
     }
 

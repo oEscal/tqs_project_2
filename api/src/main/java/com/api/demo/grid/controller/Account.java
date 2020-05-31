@@ -5,6 +5,7 @@ import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.ForbiddenException;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,18 +32,17 @@ public class Account {
 
 
     @PostMapping("/sign-up")
-    public User createUser(@Valid @RequestBody UserDTO user) throws ExceptionDetails {
+    public ResponseEntity<UserInfoProxy> createUser(@Valid @RequestBody UserDTO user) throws ExceptionDetails {
 
-        return mUserService.saveUser(user);
+        return ResponseEntity.ok().body(new UserInfoProxy(mUserService.saveUser(user), true));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestHeader("Authorization") String auth) {
+    public ResponseEntity<UserInfoProxy> login(@RequestHeader("Authorization") String auth) {
 
         String value = ControllerUtils.getUserFromAuth(auth);
-        User user = mUserService.getUser(value);
 
-        return ResponseEntity.ok().body(user);
+        return ResponseEntity.ok().body(new UserInfoProxy(mUserService.getUser(value), true));
     }
 
     @DeleteMapping("/remove-user")
