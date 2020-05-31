@@ -83,8 +83,13 @@ public class UserService {
         return user;
     }
 
-    public void deleteUser(String user) {
+    public void deleteUser(String username) {
 
+        User user = mRepository.findByUsername(username);
+
+        if (user == null) return;
+
+        mRepository.delete(user);
     }
 
 
