@@ -12,6 +12,8 @@ import global from "../constants/global";
 import { AsyncStorage } from 'react-native';
 import Onboarding from './Onboarding';
 
+import materialTheme from '../constants/Theme';
+
 export default class GameInfoScreen extends React.Component {
   state = {
     doneLoading: false,
@@ -135,6 +137,8 @@ export default class GameInfoScreen extends React.Component {
 
   async getGameListings() {
     var login_info = null
+    global.user = await this.getUser()
+
     if (global.user != null) {
       login_info = global.user.token
     }
@@ -223,6 +227,57 @@ export default class GameInfoScreen extends React.Component {
 
   }
 
+  async addToWishlist() {
+    var login_info = null
+    global.user = await this.getUser()
+
+    if (global.user != null) {
+      login_info = global.user.token
+    }
+
+    await this.setState({ doneLoading: false })
+
+    // Get All Games
+    await fetch(baseURL + "grid/add-wish-list?game_id=" + this.props.route.params.game.id + "&user_id=" + global.user.id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: login_info
+      }
+    })
+      .then(response => {
+        if (response.status === 401) {
+          return response
+        } else if (response.status === 200) {
+          return response.json()
+        }
+        else throw new Error(response.status);
+      })
+      .then(data => {
+
+        if (data.status === 401) { // Wrong token
+          this.setUser(null)
+          global.user = this.getUser()
+
+          this.setState({
+            redirectLogin: true
+          })
+          this.props.navigation.navigate("Onboarding")
+
+        } else {
+          this.setState({ doneLoading: true })
+        }
+
+      })
+      .catch(error => {
+        console.log(error)
+        this.setState({ doneLoading: true })
+
+      });
+
+
+  }
+
 
   async componentDidMount() {
     await this.setState({
@@ -235,6 +290,7 @@ export default class GameInfoScreen extends React.Component {
     await this.setState({
       doneLoading: true
     })
+
     this.props.navigation.addListener('focus', async () => {
       await this.setState({
         doneLoading: false
@@ -508,6 +564,15 @@ export default class GameInfoScreen extends React.Component {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.products}>
             {this.renderInfo()}
+            <Block flex center style={{marginTop:25}}>
+              <Button
+                shadowless
+                style={styles.button}
+                color={materialTheme.COLORS.BUTTON_COLOR}
+                onPress={() => this.addToWishlist()}>
+                Add to Wishlist
+              </Button>
+            </Block>
             {this.renderSells()}
             {this.renderGameInfo()}
           </ScrollView>
