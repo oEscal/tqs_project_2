@@ -14,6 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class UserInfoProxy {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
     private long id;
     private String username;
     private String name;
@@ -41,8 +44,8 @@ public class UserInfoProxy {
         this.photoUrl = user.getPhotoUrl();
         this.country = user.getCountry();
         this.description = user.getDescription();
-        this.birthDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getBirthDate());
-        this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getStartDate());
+        this.birthDate = DATE_FORMAT.format(user.getBirthDate());
+        this.startDate = DATE_FORMAT.format(user.getStartDate());
         this.listings = (user.getSells() == null)? new ArrayList<>():new ArrayList<>(user.getSells());
         this.reviews = (user.getReviewUsers() == null)? new ArrayList<>(): new ArrayList<>(user.getReviewUsers());
     }
@@ -57,7 +60,7 @@ public class UserInfoProxy {
             this.creditCardCSC = user.getCreditCardCSC();
             this.creditCardOwner = user.getCreditCardOwner();
             this.creditCardExpirationDate = (user.getCreditCardExpirationDate() == null) ?
-                    null : new SimpleDateFormat("dd/MM/yyyy").format(user.getCreditCardExpirationDate());
+                    null : DATE_FORMAT.format(user.getCreditCardExpirationDate());
 
         }
     }
