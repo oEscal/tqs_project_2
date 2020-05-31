@@ -293,6 +293,7 @@ class AccountIT {
         String adminUsername = "admin_user";
         UserDTO adminDTO = new UserDTO(adminUsername, mName1, "test_email", mCountry1, mPassword1,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        adminDTO.setAdmin(true);
 
         // add the user to database
         mUserService.saveUser(mSimpleUserDTO);
