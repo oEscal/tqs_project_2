@@ -16,6 +16,9 @@ import materialTheme from '../constants/Theme';
 
 export default class GameInfoScreen extends React.Component {
   state = {
+    user: null,
+    login_info: null,
+
     doneLoading: false,
     game: null,
     error: false,
@@ -47,18 +50,12 @@ export default class GameInfoScreen extends React.Component {
   }
 
   async getGameInfo() {
-    var login_info = null
-
-    if (global.user != null) {
-      login_info = global.user.token
-    }
-
     // Get All Games
     await fetch(baseURL + "grid/game?id=" + this.props.route.params.game.id, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: login_info
+        Authorization: this.state.user == null ? null : this.state.user.token
       }
     })
       .then(response => {
@@ -136,23 +133,16 @@ export default class GameInfoScreen extends React.Component {
   }
 
   async getGameListings() {
-    var login_info = null
-    global.user = await this.getUser()
-
-    if (global.user != null) {
-      login_info = global.user.token
-    }
-
     await this.setState({ loadingSell: true })
 
     global.cart = JSON.parse(await this.getCart())
 
     // Get All Games
-    await fetch(baseURL + "grid/sell-listing?gameId=" + this.props.route.params.game.id + "&page=0" + (this.state.listingsPage - 1), {
+    await fetch(baseURL + "grid/sell-listing?gameId=" + this.props.route.params.game.id + "&page=" + (this.state.listingsPage - 1), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: login_info
+        Authorization: this.state.user == null ? null : this.state.user.token
       }
     })
       .then(response => {
@@ -228,21 +218,25 @@ export default class GameInfoScreen extends React.Component {
   }
 
   async addToWishlist() {
-    var login_info = null
-    global.user = await this.getUser()
 
-    if (global.user != null) {
-      login_info = global.user.token
+    if (this.state.user == null) {
+      await this.setUser(null)
+      global.user = await this.getUser()
+
+      await this.setState({
+        redirectLogin: true
+      })
+      this.props.navigation.navigate("Onboarding")
     }
 
     await this.setState({ doneLoading: false })
 
     // Get All Games
-    await fetch(baseURL + "grid/add-wish-list?game_id=" + this.props.route.params.game.id + "&user_id=" + global.user.id, {
+    await fetch(baseURL + "grid/add-wish-list?game_id=" + this.props.route.params.game.id + "&user_id=" + this.state.user.id, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: login_info
+        Authorization: this.state.user == null ? null : this.state.user.token
       }
     })
       .then(response => {
@@ -278,11 +272,21 @@ export default class GameInfoScreen extends React.Component {
 
   }
 
+  async setUserStuff() {
+
+    global.user = await this.getUser()
+
+    await this.setState({
+      user: global.user,
+    })
+  }
 
   async componentDidMount() {
     await this.setState({
       doneLoading: false
     })
+
+    await this.setUserStuff()
 
     await this.getGameInfo()
     await this.getGameListings()
@@ -295,6 +299,8 @@ export default class GameInfoScreen extends React.Component {
       await this.setState({
         doneLoading: false
       })
+
+      await this.setUserStuff()
 
       await this.getGameInfo()
       await this.getGameListings()
@@ -441,49 +447,6 @@ export default class GameInfoScreen extends React.Component {
     )
   }
 
-  renderAuctions = () => {
-    var game = {
-      "id": 19,
-      "seller": "Jonas Pistolas",
-      "sellerId": 1,
-      "score": 5,
-      "price": 5,
-      "platform": "PC"
-    }
-
-    var forward = <Button shadowless style={styles.tab} >
-      <Block row middle>
-        <Text size={16} style={styles.tabTitle} color={"#999"}>Next Page</Text>
-        <Icon size={16} name="navigate-next" family="MaterialIcons" style={{ paddingLeft: 8, color: "#999" }} />
-      </Block>
-    </Button>
-
-    var back = <Button shadowless style={[styles.tab, styles.divider]}>
-      <Block row middle>
-        <Icon size={16} name="navigate-before" family="MaterialIcons" style={{ paddingRight: 8, color: "#999" }} />
-        <Text size={16} style={styles.tabTitle} color={"#999"}>Previous Page</Text>
-      </Block>
-    </Button>
-
-    return (
-      <View>
-        <Block flex left style={[styles.gameTitle3]}>
-          <Text size={25} style={styles.hr}>Auctions</Text>
-        </Block>
-
-        <Block flex row style={[styles.gameTitle2]}>
-          <ProductKey product={game} style={{ marginRight: theme.SIZES.BASE }} />
-          <ProductKey product={game} />
-        </Block>
-
-        <Block row flex middle>
-          {back}
-          {forward}
-        </Block>
-
-      </View>
-    )
-  }
 
   renderGameInfo = () => {
     const imageStyles = [styles.image, styles.fullImage];
@@ -549,7 +512,7 @@ export default class GameInfoScreen extends React.Component {
   }
 
   render() {
-    if (this.state.error) {
+    if (this.state.error || this.state.redirectLogin || (this.state.game == null && this.state.doneLoading)) {
       return (
         <Block flex center style={styles.loading}>
           <Text size={20}>Sorry, an unexpected error has occured whilst retreiving this game's data...</Text>
@@ -564,7 +527,7 @@ export default class GameInfoScreen extends React.Component {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.products}>
             {this.renderInfo()}
-            <Block flex center style={{marginTop:25}}>
+            <Block flex center style={{ marginTop: 25 }}>
               <Button
                 shadowless
                 style={styles.button}

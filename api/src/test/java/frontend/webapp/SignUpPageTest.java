@@ -12,6 +12,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest(classes= DemoApplication.class)
 public class SignUpPageTest {
     WebAppPageObject controller;
 
@@ -194,7 +195,7 @@ public class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardCVC"));
-        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 digits!"));
+        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 or 4 digits!"));
 
         //////////
         controller.writeInput("of", "cardCVC");
@@ -206,7 +207,7 @@ public class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardCVC"));
-        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 digits!"));
+        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 or 4 digits!"));
     }
 
 
@@ -221,7 +222,7 @@ public class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
     }
 
     @Test
@@ -236,7 +237,7 @@ public class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
     }
 
     @Test

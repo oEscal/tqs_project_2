@@ -16,6 +16,9 @@ import ReceiptScreen from './Receipt';
 
 export default class CartScreen extends React.Component {
   state = {
+    user: null,
+    cart: null,
+
     doneLoading: false,
     error: false,
     processing: false,
@@ -56,30 +59,6 @@ export default class CartScreen extends React.Component {
     return JSON.parse(value)
   }
 
-  async getGameListings() {
-    var login_info = null
-    if (global.user != null) {
-      login_info = global.user.token
-    }
-
-    global.cart = await this.getCart()
-
-    if (global.cart == null) {
-      await this.setState({ sellListings: [] })
-
-    } else {
-      var price = 0
-      for (var i = 0; i < global.cart.games.length; i++) {
-        var tempKey = global.cart.games[i]
-        price += tempKey.price
-      }
-      await this.setState({ sellListings: global.cart.games, price: price })
-
-    }
-
-
-  }
-
   async load() {
     await this.getGameListings()
 
@@ -88,42 +67,57 @@ export default class CartScreen extends React.Component {
     })
   }
 
+  async setUserStuff() {
+
+    global.user = await this.getUser()
+
+    await this.setState({
+      user: global.user,
+    })
+  }
+
+  async setCartStuff() {
+
+    global.cart = await this.getCart()
+
+    await this.setState({
+      cart: global.cart,
+    })
+  }
+
+
   async componentDidMount() {
+    await this.setUserStuff()
     await this.load()
 
     this.props.navigation.addListener('focus', async () => {
+      await this.setUserStuff()
       await this.load()
     });
 
   }
 
-  changePageForward = async () => {
-    var curPage = this.state.listingsPage
-    curPage++
-    await this.setState({
-      listingsPage: curPage
-    })
+  async getGameListings() {
 
-    await this.getGameListings()
-  };
+    if (this.state.cart == null) {
+      await this.setState({ sellListings: [] })
 
-  changePageBackward = async () => {
-    var curPage = this.state.listingsPage
-    curPage--
-    await this.setState({
-      listingsPage: curPage
-    })
+    } else {
+      var price = 0
+      for (var i = 0; i < this.state.cart.games.length; i++) {
+        var tempKey = this.state.cart.games[i]
+        price += tempKey.price
+      }
+      await this.setState({ sellListings: this.state.cart.games, price: price })
 
-    await this.getGameListings()
-  };
+    }
 
+  }
+  getGameListings
   async buyWithWallet() {
     var error = false
-    global.user = await this.getUser()
 
-    console.log(global.user)
-
-    if (global.user == null || parseFloat(global.user.funds) < parseFloat(this.state.price)) {
+    if (this.state.user == null || parseFloat(this.state.user.funds) < parseFloat(this.state.price)) {
       error = true
       console.log("hi")
       await this.setState({ badFunds: true })
@@ -131,36 +125,31 @@ export default class CartScreen extends React.Component {
       await this.setState({ badFunds: false })
     }
 
-    /*
+    
     if (!error) {
       this.confirmBuy(true)
     }
-    */
+  
   }
 
   async buyWithCard() {
     var error = false
 
-    console.log("hi")
-  
-    global.user = await this.getUser()
-
-
-    if (global.user != null) {
-      var cardNumber = global.user.creditCardNumber
-      var cardName = global.user.creditCardOwner
-      var cardCVC = global.user.creditCardCSC
-      var expiration = global.user.creditCardExpirationDate
+    if (this.state.user != null) {
+      var cardNumber = this.state.user.creditCardNumber
+      var cardName = this.state.user.creditCardOwner
+      var cardCVC = this.state.user.creditCardCSC
+      var expiration = this.state.user.creditCardExpirationDate
 
       if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '' || cardNumber == null || cardCVC == null || expiration == null || cardName == null) {
-        this.setState({badCard: true})
+        this.setState({ badCard: true })
         error = true
-      }else{
-        this.setState({badCard: false})
+      } else {
+        this.setState({ badCard: false })
       }
 
     } else {
-      this.setState({error: true})
+      this.setState({ error: true })
       error = true
     }
 
@@ -171,21 +160,19 @@ export default class CartScreen extends React.Component {
   }
 
   async confirmBuy(withFunds) {
-    global.cart = await this.getCart()
-    global.user = await this.getUser()
-    if (global.cart != null && global.cart.games.length > 0) {
+    if (this.state.cart != null && this.state.cart.games.length > 0) {
       await this.setState({
         doneLoading: false,
       })
 
       var gameIds = []
-      for (var i = 0; i < global.cart.games.length; i++) {
-        gameIds.push(global.cart.games[i].id)
+      for (var i = 0; i < this.state.cart.games.length; i++) {
+        gameIds.push(this.state.cart.games[i].id)
       }
 
       var user = -1
-      if (global.user != null) {
-        user = global.user.id
+      if (this.state.user != null) {
+        user = this.state.user.id
       }
 
       console.log(gameIds)
@@ -198,18 +185,12 @@ export default class CartScreen extends React.Component {
 
       var success = true
 
-      var login_info = null
-      global.user = await this.getUser()
-      if (global.user != null) {
-        login_info = global.user.token
-      }
-
 
       await fetch(baseURL + "grid/buy-listing", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: login_info
+          Authorization: this.state.user == null ? null : this.state.user.token
         },
         body: JSON.stringify(body)
       })
@@ -227,30 +208,23 @@ export default class CartScreen extends React.Component {
             this.setUser(null)
             global.user = this.getUser()
 
-            this.props.navigation.navigate("Onboarding")
-
             this.setState({
               redirectLogin: true
             })
 
-          } else if (data.status === 404) { // Game not available
-            this.setState({badUnavailable: true})
+            this.props.navigation.navigate("Onboarding")
 
-            //update cart
-            global.cart = this.getCart()
+          } else if (data.status === 404) { // Game not available
+            this.setState({ badUnavailable: true })
 
             success = false
 
           } else if (data.status === 400) { // No funds
-            this.setState({badFunds: true})
-
+            this.setState({ badFunds: true })
             success = false
 
           } else { // Successful 
             this.setCart(JSON.stringify({ "games": [] }))
-            global.cart = this.getCart()
-
-            this.props.navigation.navigate("Receipt", { games: data })
 
             this.setState({
               boughtKeys: data,
@@ -259,6 +233,8 @@ export default class CartScreen extends React.Component {
               badCard: false,
               badUnavailable: false
             })
+
+            this.props.navigation.navigate("Receipt", { games: data })
           }
         })
         .catch(error => {
@@ -273,7 +249,7 @@ export default class CartScreen extends React.Component {
 
     }
   }
-  
+
 
   renderSells = () => {
     var games = []
@@ -343,7 +319,7 @@ export default class CartScreen extends React.Component {
   renderPayment = () => {
     return (
       <View>
-        
+
 
         <Block flex center style={{ marginTop: 25 }}>
           <Button

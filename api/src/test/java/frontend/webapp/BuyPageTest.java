@@ -1,12 +1,15 @@
 package frontend.webapp;
 
+import com.api.demo.DemoApplication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest(classes= DemoApplication.class)
 public class BuyPageTest {
     WebAppPageObject controller;
 
