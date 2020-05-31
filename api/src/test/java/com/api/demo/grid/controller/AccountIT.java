@@ -7,7 +7,6 @@ import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.http.MediaType;
@@ -50,6 +49,7 @@ class AccountIT {
 
     @Autowired
     private UserService mUserService;
+
 
     // specifications for user1
     private User mSimpleUser;
@@ -282,6 +282,29 @@ class AccountIT {
         // remove user
         RequestBuilder request = post("/grid/remove-user").param("username", mUsername1)
                 .with(httpBasic(mUsername1, mPassword1));
+        mMvc.perform(request).andExpect(status().isOk());
+
+        // verify if user was removed
+        assertNull(mUserRepository.findByUsername(mUsername1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenRemoveUserWithAdmin_removeUserWithSuccess() {
+
+        String adminUsername = "admin_user";
+        UserDTO adminDTO = new UserDTO(adminUsername, mName1, "test_email", mCountry1, mPassword1,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+
+        // add the user to database
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // save the admin to database
+        mUserService.saveUser(adminDTO);
+
+        // remove user
+        RequestBuilder request = post("/grid/remove-user").param("username", mUsername1)
+                .with(httpBasic(adminUsername, mPassword1));
         mMvc.perform(request).andExpect(status().isOk());
 
         // verify if user was removed
