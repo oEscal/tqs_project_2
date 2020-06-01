@@ -3,8 +3,10 @@ package com.api.demo.grid.controller;
 
 import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.exception.ForbiddenException;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.UserUpdatePOJO;
+import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

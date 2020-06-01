@@ -75,7 +75,6 @@ public class UserService {
         return user;
     }
 
-<<<<<<< HEAD
     public User updateUser(long id, UserUpdatePOJO userUpdatePOJO)
             throws UserNotFoundException, ExceptionDetails{
         Optional<User> opUser = mRepository.findById(id);
@@ -139,7 +138,7 @@ public class UserService {
             throw new ExceptionDetails("If you add a new card you have to give all the details referring to that card");
         return allCreditCardInfo;
     }
-=======
+
     public void deleteUser(String username) {
 
         User user = mRepository.findByUsername(username);
@@ -148,8 +147,6 @@ public class UserService {
 
         mRepository.delete(user);
     }
-
->>>>>>> ca6be23002fb97b90415067f91c67f74fd48336d
 
     private User convertToEntity(UserDTO userDto) {
         return mModelMapper.map(userDto, User.class);
