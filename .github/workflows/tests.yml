@@ -1,7 +1,7 @@
 on: push
 name: Tests workflow
 jobs:
-  tests-backend: 
+  tests-frontend: 
     runs-on: ubuntu-latest
     name: Selenium tests
     steps:
