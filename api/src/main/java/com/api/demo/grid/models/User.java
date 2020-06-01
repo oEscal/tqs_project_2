@@ -30,7 +30,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Set;
@@ -74,7 +73,6 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    @Past
     private Date birthDate;
 
     @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")

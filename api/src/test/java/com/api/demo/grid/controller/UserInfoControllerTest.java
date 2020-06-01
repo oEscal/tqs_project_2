@@ -251,16 +251,15 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser2);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
-        Mockito.when(mMockUserService.updateUser(4l, mUserUpdatePOJO))
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenReturn(mUser);
 
-        MvcResult result = mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                //.andExpect(status().isOk())
-                //.andExpect(jsonPath("$.name", is(mName1)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(mName1)))
                 ;
         System.out.println();
     }
@@ -271,7 +270,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
-        Mockito.when(mMockUserService.updateUser(4l, mUserUpdatePOJO))
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new ExceptionDetails("There is already a user with that email"));
 
         mMockMvc.perform(put("/grid/user")
@@ -289,7 +288,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
-        Mockito.when(mMockUserService.updateUser(4l, mUserUpdatePOJO))
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new ExceptionDetails("If you add a new card you have to give all the details referring to that card"));
 
         mMockMvc.perform(put("/grid/user")
@@ -307,7 +306,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
-        Mockito.when(mMockUserService.updateUser(4l, mUserUpdatePOJO))
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new UserNotFoundException("Username not found in the database"));
 
         mMockMvc.perform(put("/grid/user")
@@ -323,7 +322,7 @@ class UserInfoControllerTest {
     @SneakyThrows
     void whenUpdatingUserInfo_withInvalidAuthn_return4xxError(){
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
-        Mockito.when(mMockUserService.updateUser(4l, mUserUpdatePOJO))
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenReturn(mUser);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(null);
