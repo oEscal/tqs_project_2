@@ -9,9 +9,10 @@ jobs:
       uses: ajinx/selenoid@2.0
     - uses: actions/checkout@v2
     - run: npm ci --prefix code/frontend/web-app
-    - name: Run maven and react
-      run: | 
-        npm start --prefix code/frontend/web-app &; mvn -f api '-Dtest=frontend.webapp.*' 
+    - name: Run react
+      run: npm start --prefix code/frontend/web-app
+    - name: Run maven selenium tests
+      run: mvn -f api '-Dtest=frontend.webapp.*' 
 
   tests-backend:
     name: Junit Tests Trigger
