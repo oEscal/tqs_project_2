@@ -12,8 +12,8 @@ jobs:
         java-version: '11'
     - name: Install Google Chrome
       run: |
-       chmod +x ./scripts/install_script.sh
-        ./scripts/install_script.sh
+       chmod +x ./scripts/install_chrome.sh
+        ./scripts/install_chrome.sh
     - name: Run react
       run: npm install; npm start --prefix code/frontend/web-app
     - name: Run maven selenium tests
