@@ -401,11 +401,11 @@ class ProfilePage extends Component {
                                                                         </TableCell>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder", color: "#f44336" }}>
                                                                             <span style={{
-                                                                            background: "rgb(253,27,163)",
-                                                                            background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
-                                                                            WebkitBackgroundClip: "text",
-                                                                            WebkitTextFillColor: "transparent",
-                                                                        }}><i class="fas fa-key"></i> </span><span style={{marginLeft:"5px"}}><b>{row.gamerKey}</b></span></TableCell>
+                                                                                background: "rgb(253,27,163)",
+                                                                                background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                                                                WebkitBackgroundClip: "text",
+                                                                                WebkitTextFillColor: "transparent",
+                                                                            }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -451,10 +451,12 @@ class ProfilePage extends Component {
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
                                                                         }
                                                                         {row.purchased ?
-                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+                                                                                
+                                                                            </TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
                                                                                 <Button
-                                                                                    size="md"
+                                                                                    size="sm"
                                                                                     style={{ backgroundColor: "#ff3ea0" }}
                                                                                     href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                                                                                     target="_blank"

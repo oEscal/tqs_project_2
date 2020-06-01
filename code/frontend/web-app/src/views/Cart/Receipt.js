@@ -128,10 +128,9 @@ class Receipt extends Component {
                         })
 
                     } else {
+                        data["token"] = login_info
                         localStorage.setItem('loggedUser', JSON.stringify(data));
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))
-
-                        window.location.reload(false);
                     }
                 })
                 .catch(error => {
