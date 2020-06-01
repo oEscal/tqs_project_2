@@ -2,6 +2,8 @@ package frontend.webapp;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes= DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoginPageTest {
     WebAppPageObject controller;
 
@@ -27,9 +30,16 @@ class LoginPageTest {
     @Autowired
     private UserService mUserService;
 
+    @Autowired
+    private UserRepository mUserRepository;
+
+    @Autowired
+    private GridService mGridService;
+
+
     @BeforeEach
     void setUp() {
-        controller = new WebAppPageObject();
+        controller = new WebAppPageObject(mUserService, mGridService);
         controller.navigate("http://localhost:" + port + "/login-page");
     }
 
@@ -76,10 +86,6 @@ class LoginPageTest {
 
         String username = "admin";
         String password = "admin";
-
-        UserDTO mSimpleUserDTO = new UserDTO(username, username, "ola@adeus.com", "hm", password,
-                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
-        mUserService.saveUser(mSimpleUserDTO);
 
         controller.writeInput(username,"username");
         controller.writeInput(password,"password");

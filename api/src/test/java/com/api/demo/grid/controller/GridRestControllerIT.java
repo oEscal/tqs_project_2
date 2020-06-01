@@ -25,6 +25,7 @@ import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +49,6 @@ import java.util.Set;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -133,7 +133,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
 
-        assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
+        Assertions.assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -144,7 +144,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mPublisherPOJO.getName())));
-        assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
+        Assertions.assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
 
     }
 
@@ -156,7 +156,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mDeveloperPOJO.getName())));
-        assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
+        Assertions.assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
     }
 
     @Test
@@ -183,7 +183,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGamePOJO.getName())))
         ;
-        assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        Assertions.assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -230,7 +230,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
-        assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        Assertions.assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test

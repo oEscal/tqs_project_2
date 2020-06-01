@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -53,17 +54,17 @@ public class Game {
     @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "publisher_id")
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
     private Set<Developer> developers = new HashSet<>();
@@ -129,21 +130,30 @@ public class Game {
         return gamePlatforms;
     }
 
+    @Transactional
     public void setPublisher(Publisher publisher){
         if (Objects.equals(this.publisher, publisher)) return;
+
         this.publisher = publisher;
+
         publisher.addGame(this);
     }
 
+    @Transactional
     public void addGenre(GameGenre gameGenre) {
         if (this.gameGenres.contains(gameGenre)) return;
+
         this.gameGenres.add(gameGenre);
+
         gameGenre.addGame(this);
     }
 
+    @Transactional
     public void addDeveloper(Developer developer) {
         if (this.developers.contains(developer)) return;
+
         this.developers.add(developer);
+
         developer.addGame(this);
     }
 }

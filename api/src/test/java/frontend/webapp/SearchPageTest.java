@@ -1,8 +1,11 @@
 package frontend.webapp;
 
+import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,9 +15,16 @@ class SearchPageTest {
 
     private final int port = 3000;
 
+    @Autowired
+    private UserService mUserService;
+
+    @Autowired
+    private GridService mGridService;
+
+
     @BeforeEach
     void setUp() {
-        controller = new WebAppPageObject();
+        controller = new WebAppPageObject(mUserService, mGridService);
         controller.navigate("http://localhost:" + port + "/games");
     }
 

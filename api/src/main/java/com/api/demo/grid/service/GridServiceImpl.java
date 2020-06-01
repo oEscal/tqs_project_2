@@ -141,8 +141,8 @@ public class GridServiceImpl implements GridService {
             game.addDeveloper(developer.get());
         }
 
-        this.mGameRepository.save(game);
-        return game;
+        Game game1 = this.mGameRepository.save(game);
+        return game1;
     }
 
     @Override
@@ -150,8 +150,7 @@ public class GridServiceImpl implements GridService {
         Publisher publisher = new Publisher();
         publisher.setName(publisherPOJO.getName());
         publisher.setDescription(publisherPOJO.getDescription());
-        this.mPublisherRepository.save(publisher);
-        return publisher;
+        return this.mPublisherRepository.save(publisher);
     }
 
     @Override
