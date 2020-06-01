@@ -84,8 +84,10 @@ public class UserService {
         Optional<User> optional = mRepository.findById(id);
         if (optional.isEmpty()) throw new UserNotFoundException("Username not found in database");
         User user = optional.get();
+
         user.setFunds(user.getFunds() + funds);
         mRepository.save(user);
+        System.out.println("ohmendes");
         return user;
     }
     

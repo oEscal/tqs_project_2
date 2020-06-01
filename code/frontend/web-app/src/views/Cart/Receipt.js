@@ -98,6 +98,64 @@ class Receipt extends Component {
         games: []
     }
 
+    async updateUserInfo() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+
+            await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: login_info
+                }
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        return response
+                    } else if (response.status === 200) {
+                        return response.json()
+                    }
+                    else throw new Error(response.status);
+                })
+                .then(data => {
+                    if (data.status === 401) { // Wrong token
+                        localStorage.setItem('loggedUser', null);
+                        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                        this.setState({
+                            redirectLogin: true
+                        })
+
+                    } else {
+                        localStorage.setItem('loggedUser', JSON.stringify(data));
+                        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                        window.location.reload(false);
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                    toast.error('Sorry, an unexpected error has occurred!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorToast"
+                    });
+                    this.setState({ error: true })
+                });
+        } else {
+            localStorage.setItem('loggedUser', null);
+            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+            this.setState({
+                redirectLogin: true
+            })
+        }
+    }
+
     async componentDidMount() {
         window.scrollTo(0, 0)
         if (this.props == null || this.props.location == null || this.props.location.state == null || this.props.location.state.games == null) {
@@ -106,7 +164,7 @@ class Receipt extends Component {
             await this.setState({ games: this.props.location.state.games })
         }
 
-        console.log(this.state.games)
+        await this.updateUserInfo()
 
         this.setState({ doneLoading: true })
     }
@@ -169,7 +227,7 @@ class Receipt extends Component {
                                         background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
                                         WebkitBackgroundClip: "text",
                                         WebkitTextFillColor: "transparent",
-                                    }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", marginLeft:"10px" }}> {game.gamerKey}</span>
+                                    }}><i class="fas fa-key"></i> </span><span style={{ fontWeight: "bolder", color: "#f44336", marginLeft: "10px" }}> {game.gamerKey}</span>
                                 </h3>
                             </div>
 
