@@ -26,8 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -250,7 +249,10 @@ class UserInfoControllerTest {
                 .thenReturn(mUser);
         mUser.setFunds(5);
 
-        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyLong()))
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyDouble()))
+                .thenReturn(mUser);
+
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
                 .thenReturn(mUser);
 
         mMockMvc.perform(put("/grid/funds")
@@ -258,7 +260,7 @@ class UserInfoControllerTest {
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.funds", is(5)))
+                .andExpect(jsonPath("$.funds", is(5.0)))
                 ;
     }
 
@@ -268,8 +270,11 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
 
-        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyLong()))
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyDouble()))
                 .thenThrow(new UserNotFoundException("Username not found in database"));
+
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
+                .thenReturn(mUser);
 
         mMockMvc.perform(put("/grid/funds")
                 .with(httpBasic(mUsername1, mPassword1))
@@ -286,12 +291,15 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(null);
 
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
+                .thenReturn(mUser);
+
         mMockMvc.perform(put("/grid/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(status().reason("Username not found in database"))
+                .andExpect(status().reason("Username not found in the database"))
         ;
     }
 }

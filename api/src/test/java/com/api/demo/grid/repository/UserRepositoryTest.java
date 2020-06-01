@@ -48,8 +48,7 @@ class UserRepositoryTest {
     private static final int CREDIT_CARD_CSC_MIN_LENGTH = 3;
 
     // for credit card and user
-    private static final String FUTURE_DATE = "17/10/2100",
-                                PAST_DATE = "17/10/1900";
+    private static final String PAST_DATE = "17/10/1900";
 
 
     @BeforeEach
@@ -114,16 +113,6 @@ class UserRepositoryTest {
 
         assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
     }
-
-    @Test
-    @SneakyThrows
-    void whenSetUserFutureBirthDate_setIsUnsuccessful() {
-
-        mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(FUTURE_DATE));
-
-        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
-    }
-
 
     /***
      *  User card's number, csc and expiration date limits tests

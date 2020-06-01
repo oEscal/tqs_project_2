@@ -81,7 +81,6 @@ public class UserService {
         return user;
     }
 
-    @Transactional
     public User addFundsToUser(long id, double funds) throws UserNotFoundException {
         Optional<User> optional = mRepository.findById(id);
         if (optional.isEmpty()) throw new UserNotFoundException("Username not found in database");

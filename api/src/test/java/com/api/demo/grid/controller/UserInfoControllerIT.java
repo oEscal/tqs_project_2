@@ -237,15 +237,13 @@ class UserInfoControllerIT {
         mUser.setFunds(5);
         mUserRepo.save(mUser);
 
-        MvcResult result = mMockMvc.perform(put("/grid/funds")
+        mMockMvc.perform(put("/grid/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andReturn()
-                //.andExpect(jsonPath("$.funds", is(10)))
+                .andExpect(jsonPath("$.funds", is(10.0)))
         ;
-        System.out.println();
     }
 
 }

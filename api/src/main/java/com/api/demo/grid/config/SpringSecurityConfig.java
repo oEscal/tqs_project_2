@@ -44,6 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] USER_WHITELIST = {
             "/grid/private/user-info",
+            "/grid/funds",
             "/grid/create-auction",
             "/grid/create-bidding",
             "/grid/remove-user",

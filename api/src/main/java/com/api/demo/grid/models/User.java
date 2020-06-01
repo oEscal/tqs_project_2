@@ -77,7 +77,6 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    @Past
     private Date birthDate;
 
     @Column(insertable = false, updatable = false, name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
