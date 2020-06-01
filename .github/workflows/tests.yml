@@ -10,13 +10,8 @@ jobs:
     - run: npm ci
     - name: Run maven and react
       run: | 
-        cd code/frontend/web-app; npm start &; 
+        npm start --prefix code/frontend/web-app &; mvn -f api '-Dtest=frontend.webapp.*' test
       
-      
-      
-      
-      <Test execution command e.g. mvn test, npm test etc>
-
     name: Junit Tests Trigger
     runs-on: ubuntu-latest
     steps:
