@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
+
     @Mock(lenient = true)
     private GameRepository mMockGameRepo;
 
@@ -328,7 +329,10 @@ class GridServiceTest {
 
     @Test
     void whenSavingPubPOJO_ReturnValidPublisher() {
+
         PublisherPOJO publisherPOJO = new PublisherPOJO("Pub", null);
+
+        Mockito.when(mMockPubRepo.save(Mockito.any(Publisher.class))).thenReturn(mPublisher);
 
         Publisher savedPub = mGridService.savePublisher(publisherPOJO);
 
@@ -341,6 +345,9 @@ class GridServiceTest {
         Mockito.when(mMockGameGenreRepo.findByName("Genre")).thenReturn(Optional.ofNullable(mGameGenre));
         Mockito.when(mMockDevRepo.findByName("Dev")).thenReturn(Optional.ofNullable(mDeveloper));
         Mockito.when(mMockPubRepo.findByName("Pub")).thenReturn(Optional.ofNullable(mPublisher));
+
+        Mockito.when(mMockGameRepo.save(Mockito.any(Game.class))).thenReturn(mGame);
+
 
         Set<String> gameGenrePOJOSet = new HashSet<>(Arrays.asList("Genre"));
 

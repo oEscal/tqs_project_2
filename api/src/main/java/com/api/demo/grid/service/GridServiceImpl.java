@@ -128,8 +128,6 @@ public class GridServiceImpl implements GridService {
         }
 
         // Get Publisher
-        List<Publisher> ola = mPublisherRepository.findAll();
-        Optional<Publisher> adeus = mPublisherRepository.findByName("ola");
         Optional<Publisher> publisher = mPublisherRepository.findByName(gamePOJO.getPublisher());
         if (publisher.isEmpty()) return null;
         game.setPublisher(publisher.get());
@@ -142,8 +140,8 @@ public class GridServiceImpl implements GridService {
             game.addDeveloper(developer.get());
         }
 
-        Game game1 = this.mGameRepository.save(game);
-        return game1;
+        Game ola = this.mGameRepository.save(game);
+        return ola;
     }
 
     @Override
