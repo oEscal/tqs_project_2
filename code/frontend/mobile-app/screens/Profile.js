@@ -24,7 +24,9 @@ export default class Profile extends React.Component {
 
     gamesLoaded: false,
     error: false,
-    doneLoading: false
+    doneLoading: false,
+
+    user: null
   }
 
 
@@ -53,61 +55,78 @@ export default class Profile extends React.Component {
 
 
   async getUserInfo() {
-    var login_info = null
+    if (this.state.user != null) {
+      await this.setState({ gamesLoaded: false })
 
-    global.user = await this.getUser()
-    if (global.user != null) {
-      login_info = global.user.token
+      // Get All Games
+      await fetch(baseURL + "grid/private/user-info?username=" + this.state.user.username, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: this.state.user.token
+        }
+      })
+        .then(response => {
+          if (response.status === 401) {
+            return response
+          } else if (response.status === 200) {
+            return response.json()
+          }
+          else throw new Error(response.status);
+        })
+        .then(data => {
+          if (data.status === 401) { // Wrong token
+            this.setUser(null)
+            global.user = this.getUser()
+
+            this.setState({
+              redirectLogin: true
+            })
+
+            this.props.navigation.navigate("Onboarding")
+
+          } else {
+            this.setState({ info: data })
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          this.setState({ error: true })
+        });
+
+      await this.setState({ gamesLoaded: true })
+    } else {
+      this.setUser(null)
+      global.user = this.getUser()
+
+      await this.setState({
+        redirectLogin: true
+      })
+
+      try{
+        this.props.navigation.navigate("Onboarding")
+
+      }catch(e){
+        
+      }
     }
 
-    await this.setState({ gamesLoaded: false })
 
-    // Get All Games
-    await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: login_info
-      }
+  }
+
+
+  async setUserStuff() {
+
+    global.user = await this.getUser()
+
+    await this.setState({
+      user: global.user,
     })
-      .then(response => {
-        if (response.status === 401) {
-          return response
-        } else if (response.status === 200) {
-          return response.json()
-        }
-        else throw new Error(response.status);
-      })
-      .then(data => {
-        if (data.status === 401) { // Wrong token
-          this.setUser(null)
-          global.user = this.getUser()
-
-          this.props.navigation.navigate("Onboarding")
-
-          this.setState({
-            redirectLogin: true
-          })
-
-
-        } else {
-          console.log(data)
-          this.setState({ info: data })
-        }
-      })
-      .catch(error => {
-        console.log(error)
-        this.setState({ error: true })
-      });
-
-    await this.setState({ gamesLoaded: true })
   }
 
   async componentDidMount() {
-    await this.getUserInfo();
-    this.setState({ doneLoading: true, })
-
     this.props.navigation.addListener('focus', async () => {
+      await this.setUserStuff()
       await this.getUserInfo();
       this.setState({ doneLoading: true, })
     });

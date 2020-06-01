@@ -180,7 +180,7 @@ public class GridServiceImpl implements GridService {
         gameKey.setGame(realGame);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
-        this.mGameKeyRepository.save(gameKey);
+        this.mGameRepository.save(realGame);
         return gameKey;
     }
 
@@ -199,7 +199,8 @@ public class GridServiceImpl implements GridService {
         sell.setGameKey(realGameKey);
         sell.setPrice(sellPOJO.getPrice());
         sell.setDate(sellPOJO.getDate());
-        this.mSellRepository.save(sell);
+        this.mUserRepository.save(realUser);
+        this.mGameKeyRepository.save(realGameKey);
         return sell;
     }
 
@@ -235,9 +236,9 @@ public class GridServiceImpl implements GridService {
 
         for (Buy buy1 : buyList) {
             user.addBuy(buy1);
-            mBuyRepository.save(buy1);
+            mSellRepository.save(buy1.getSell());
         }
-
+        mUserRepository.save(user);
         return buyList;
     }
 

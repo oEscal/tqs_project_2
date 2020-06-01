@@ -24,6 +24,7 @@ import com.api.demo.grid.pojos.SellPOJO;
 
 import com.api.demo.grid.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,30 +37,28 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = DemoApplication.class)
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class GridRestControllerIT {
 
     @Autowired
@@ -91,7 +90,6 @@ class GridRestControllerIT {
 
     @Autowired
     private ReviewGameRepository mReviewGameRepository;
-
 
     @Autowired
     private MockMvc mMockMvc;
@@ -291,7 +289,7 @@ class GridRestControllerIT {
         gameKey.setRealKey("key");
         gameKey.setPlatform("ps4");
         gameKey.setGame(game);
-        mGameKeyRepository.save(gameKey);
+        mGameRepository.save(game);
 
         User user = createUser();
         mUserRepository.save(user);
@@ -306,6 +304,7 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.gameKey.platform", is("ps4")))
                 .andExpect(jsonPath("$.price", is(2.4)))
         ;
+
         mMockMvc.perform(get("/grid/game")
                 .param("id", "" + game.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -360,7 +359,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(1)))
-                ;
+        ;
 
     }
 
@@ -370,22 +369,27 @@ class GridRestControllerIT {
         User seller = createUser();
         mUserRepository.save(seller);
 
+        Game game = new Game();
+        game.setName("Game");
+
+        GameKey gameKey = new GameKey();
+        gameKey.setRealKey("key");
+        gameKey.setGame(game);
+
         Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+        mGameRepository.save(game);
         sell.setUser(seller);
-        sell.setGameKey(new GameKey());
+        mUserRepository.save(seller);
 
         User buyer = createUser();
         mUserRepository.save(buyer);
 
         Buy buy = new Buy();
+        buy.setUser(buyer);
         sell.setPurchased(buy);
-
+        mUserRepository.save(buyer);
         mSellRepository.save(sell);
-
-        Buy buy1 = new Buy();
-        buy1.setUser(buyer);
-        mBuyRepository.save(buy1);
-
 
         long[] listingId = {sell.getId()};
         mBuyListingsPOJO.setListingsId(listingId);
@@ -402,17 +406,23 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring")
     void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception {
-        User seller = createUser();
-        //mUserRepository.save(seller);
+        Sell sell = this.createSellListing();
+
         User buyer = createUser();
         mUserRepository.save(buyer);
-        Sell sell = new Sell();
-        sell.setUser(seller);
-        //sell.setGameKey(new GameKey());
-        mSellRepository.save(sell);
 
         long[] listingId = {sell.getId()};
-        mSellRepository.delete(sell);
+
+        Optional<User> user = mUserRepository.findById(sell.getUserId());
+        user.get().getSells().remove(sell);
+        mUserRepository.save(user.get());
+
+        Optional<GameKey> gameKey = mGameKeyRepository.findById(sell.getGameKey().getId());
+        gameKey.get().setSell(null);
+        mGameKeyRepository.save(gameKey.get());
+
+        mSellRepository.delete(mSellRepository.findById(sell.getId()).get());
+        Optional<Sell> sell1 = mSellRepository.findById(sell.getId());
         mBuyListingsPOJO.setListingsId(listingId);
         mBuyListingsPOJO.setUserId(buyer.getId());
         mBuyListingsPOJO.setWithFunds(false);
@@ -432,11 +442,8 @@ class GridRestControllerIT {
         buyer.setFunds(0);
         mUserRepository.save(buyer);
 
-        User seller = createUser();
-        Sell sell = new Sell();
-        sell.setUser(seller);
-        sell.setPrice(1);
-        //sell.setGameKey(new GameKey());
+        Sell sell = this.createSellListing();
+        sell.setPrice(50);
         mSellRepository.save(sell);
 
         long[] listingId = {sell.getId()};
@@ -839,5 +846,25 @@ class GridRestControllerIT {
         user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
         mNumberUser++;
         return user;
+    }
+
+    @SneakyThrows
+    private Sell createSellListing() {
+        User seller = createUser();
+        mUserRepository.save(seller);
+
+        Game game = new Game();
+        game.setName("Game");
+
+        GameKey gameKey = new GameKey();
+        gameKey.setRealKey("key");
+        gameKey.setGame(game);
+
+        Sell sell = new Sell();
+        sell.setGameKey(gameKey);
+        mGameRepository.save(game);
+        sell.setUser(seller);
+        mUserRepository.save(seller);
+        return sell;
     }
 }

@@ -1,7 +1,6 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
@@ -13,8 +12,6 @@ import lombok.EqualsAndHashCode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +69,7 @@ public class User {
     private String country;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Exclude
     private String password;
 
     @Column(name = "birth_date", nullable = false)
@@ -134,47 +132,23 @@ public class User {
     @ToString.Exclude
     private Set<ReviewUser> reviewUsers = new HashSet<>();
 
-
-    //The reports this user has issued on game reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewGame> reportsOnGameReview;
-
-    //The reports this user has issued on user reviews
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    private Set<ReportReviewUser> reportsOnUserReview;
-
-    //The reports this user has received
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_from_user_id")
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsThisUser;
-
-    //The reports this user has issued on users
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "report_to_user_id")
-    @EqualsAndHashCode.Exclude
-    private Set<ReportUser> reportsOnUser;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @Fetch(FetchMode.SUBSELECT)
     private Set<Auction> auctionsCreated = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_buyer_user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Auction> auctionsWon = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
@@ -184,7 +158,7 @@ public class User {
     @EqualsAndHashCode.Exclude
     private Set<Game> wishList;
 
-    @Column(columnDefinition = "FLOAT   DEFAULT 0.00")
+    @Column(columnDefinition = "FLOAT DEFAULT 0.00")
     private double funds = 0;
 
     // because lombok doesnt support get and set params of Date type with security (clone)
@@ -246,6 +220,15 @@ public class User {
 
         auction.setAuctioneer(this);
     }
+
+    @Transactional
+    public void addAuctionBought(Auction auction) {
+        if (this.auctionsWon.contains(auction)) return;
+
+        this.auctionsWon.add(auction);
+
+        auction.setBuyer(this);
+    }
     
     public void addBuy(Buy aboutToBuy) {
         if (this.buys == null) this.buys = new HashSet<>();
@@ -256,5 +239,12 @@ public class User {
 
         this.buys.add(aboutToBuy);
         aboutToBuy.setUser(this);
+    }
+
+    public double getScore(){
+        if (this.reviewUsers.isEmpty()) return -1;
+        double sum = 0;
+        for (ReviewUser review: reviewUsers) sum += review.getScore();
+        return sum/reviewUsers.size();
     }
 }

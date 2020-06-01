@@ -14,8 +14,14 @@ import java.util.List;
 @Getter
 @Setter
 public class UserInfoProxy {
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+    private long id;
     private String username;
     private String name;
+    private String email;
+    private boolean admin;
     private String photoUrl;
     private String country;
     private String description;
@@ -24,16 +30,39 @@ public class UserInfoProxy {
     private List<Sell> listings;
     private List<ReviewUser> reviews;
 
+    // card details
+    private String creditCardNumber;
+    private String creditCardCSC;
+    private String creditCardOwner;
+    private String creditCardExpirationDate;
+
+
     public UserInfoProxy(User user){
+        this.admin = user.isAdmin();
         this.username = user.getUsername();
         this.name = user.getName();
         this.photoUrl = user.getPhotoUrl();
         this.country = user.getCountry();
         this.description = user.getDescription();
-        this.birthDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getBirthDate());
-        this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(user.getStartDate());
+        this.birthDate = simpleDateFormat.format(user.getBirthDate());
+        this.startDate = simpleDateFormat.format(user.getStartDate());
         this.listings = (user.getSells() == null)? new ArrayList<>():new ArrayList<>(user.getSells());
         this.reviews = (user.getReviewUsers() == null)? new ArrayList<>(): new ArrayList<>(user.getReviewUsers());
+    }
+
+    public UserInfoProxy(User user, boolean showAllInfo) {
+
+        this(user);
+        if (showAllInfo) {
+            this.id = user.getId();
+            this.email = user.getEmail();
+            this.creditCardNumber = user.getCreditCardNumber();
+            this.creditCardCSC = user.getCreditCardCSC();
+            this.creditCardOwner = user.getCreditCardOwner();
+            this.creditCardExpirationDate = (user.getCreditCardExpirationDate() == null) ?
+                    null : simpleDateFormat.format(user.getCreditCardExpirationDate());
+
+        }
     }
 
     public double getScore(){

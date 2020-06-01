@@ -9,24 +9,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes= DemoApplication.class)
-public class SearchPageTest {
+class SearchPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new WebAppPageObject();
         controller.navigate("http://localhost:" + port + "/games");
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         controller.tear();
     }
 
     @Test
-    public void whenClickingGame_goToGamePage() {
+    void whenClickingGame_goToGamePage() {
         controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
@@ -41,7 +41,7 @@ public class SearchPageTest {
 
 
     @Test
-    public void whenInvalidPriceSearch_showError() {
+    void whenInvalidPriceSearch_showError() {
         controller.waitForLoad("firstLoad");
         controller.scrollToTop();
         controller.writeInput("oof", "priceFrom");
@@ -58,7 +58,7 @@ public class SearchPageTest {
     }
 
     @Test
-    public void whenSearchingNothing_sameAsAll() {
+    void whenSearchingNothing_sameAsAll() {
         String noProducts = controller.getText("numberOfProducts");
 
         controller.scrollToElement("confirm");

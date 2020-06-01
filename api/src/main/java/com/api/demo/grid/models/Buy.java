@@ -10,6 +10,7 @@ import lombok.ToString;
 import lombok.NoArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -52,8 +53,9 @@ public class Buy {
     @ToString.Exclude
     private User user;
 
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private Date date = new Date();
 
     @Transactional
     public void setUser(User user) {

@@ -3,6 +3,7 @@ package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.models.Auction;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
@@ -26,9 +27,10 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import java.text.SimpleDateFormat;
 
 import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
+import static com.api.demo.grid.utils.BiddingJson.addBiddingJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,10 +59,13 @@ class AuctionControllerIT {
     private GameRepository mGameRepository;
 
 
+    private Auction mAuction;
     private GameKey mGameKey;
     private Game mGame;
-    private User mAuctioneer;
-    private UserDTO mAuctioneerDTO;
+    private User mAuctioneer,
+            mBuyer;
+    private UserDTO mAuctioneerDTO,
+            mBuyerDTO;
 
     private AuctionPOJO mAuctionPOJO;
 
@@ -76,12 +81,22 @@ class AuctionControllerIT {
             mAuctioneerBirthDateStr = "17/10/2010",
             mAuctioneerStartDateStr = "25/05/2020";
 
+    // buyer info
+    private String mBuyerUsername = "buyer1",
+            mBuyerName = "name1",
+            mBuyerEmail = "buyer_email1",
+            mBuyerCountry = "country1",
+            mBuyerPassword = "password1",
+            mBuyerBirthDateStr = "17/10/2010",
+            mBuyerStartDateStr = "25/05/2020";
+
     // game info
     private String mGameName = "game1",
             mGameKeyRKey = "game_key1";
 
     // auction json
-    private String mAuctionJson;
+    private String mAuctionJson,
+            mBiddingJson;
 
 
     @BeforeEach
@@ -97,9 +112,23 @@ class AuctionControllerIT {
         mAuctioneer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
         mAuctioneer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerStartDateStr));
 
-        // create dto auctioneer
-        this.mAuctioneerDTO = new UserDTO(mAuctioneerUsername, mAuctioneerName, mAuctioneerEmail, mAuctioneerCountry,
+        // create buyer
+        mBuyer = new User();
+        mBuyer.setUsername(mBuyerUsername);
+        mBuyer.setName(mBuyerName);
+        mBuyer.setEmail(mBuyerEmail);
+        mBuyer.setPassword(mBuyerPassword);
+        mBuyer.setCountry(mBuyerCountry);
+        mBuyer.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
+        mBuyer.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerStartDateStr));
+
+        // create auctioneer dto
+        mAuctioneerDTO = new UserDTO(mAuctioneerUsername, mAuctioneerName, mAuctioneerEmail, mAuctioneerCountry,
                 mAuctioneerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mAuctioneerBirthDateStr));
+
+        // create buyer dto
+        mBuyerDTO = new UserDTO(mBuyerUsername, mBuyerName, mBuyerEmail, mBuyerCountry,
+                mBuyerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
 
         // create game
         mGame = new Game();
@@ -119,6 +148,9 @@ class AuctionControllerIT {
     }
 
 
+    /***
+     *  Add Auction
+     ***/
     @Test
     @SneakyThrows
     void whenCreateCompleteFormAuction_creationIsSuccessful() {
@@ -138,6 +170,12 @@ class AuctionControllerIT {
                 .andExpect(jsonPath("$.endDate", is(mEndDate)))
                 .andExpect(jsonPath("$.price", is(mPrice)));
         assertEquals(1, mAuctionRepository.findAll().size());
+
+        // verify if there is an auction on the auctioneer side
+        assertEquals(1, mUserService.getUser(mAuctioneerUsername).getAuctionsCreated().size());
+
+        // verify if there is an auction on the game key side
+        assertNotNull(mGameKeyRepository.findByRealKey(mGameKeyRKey).get().getAuction());
     }
 
     @Test
@@ -233,5 +271,88 @@ class AuctionControllerIT {
 
         mMvc.perform(request).andExpect(status().isForbidden());
         assertEquals(0, mAuctionRepository.findAll().size());
+    }
+
+
+    /***
+     *  Add Bid
+     ***/
+    @Test
+    @SneakyThrows
+    void whenCreateCompleteBiddingAuction_creationIsSuccessful() {
+
+        // save save auctioneer, game and game key
+        User auctioneer = mUserService.saveUser(mAuctioneerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // create auction
+        mAuction = new Auction();
+        mAuction.setAuctioneer(auctioneer);
+        mAuction.setGameKey(mGameKey);
+        mAuction.setPrice(mPrice);
+        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // save auction and buyer dto
+        mAuctionRepository.save(mAuction);
+        mUserService.saveUser(mBuyerDTO);
+
+        double newPrice = mPrice + 2.5;
+
+        // bidding json
+        mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
+
+        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+                .content(mBiddingJson).with(httpBasic(mBuyerUsername, mBuyerPassword));
+
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.auctioneer", is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.buyer", is(mBuyerUsername)))
+                .andExpect(jsonPath("$.gameKey", is(nullValue())))
+                .andExpect(jsonPath("$.endDate", is(mEndDate)))
+                .andExpect(jsonPath("$.price", is(newPrice)));
+
+        // verify if there is an auction on the buyer side
+        assertEquals(1, mUserService.getUser(mBuyerUsername).getAuctionsWon().size());
+
+        // verify if the buyer is saved om the auction
+        assertEquals(mBuyerUsername, mAuctionRepository.findByGameKey_RealKey(mGameKeyRKey).getBuyer().getUsername());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenCreateBiddingWithBuyerDifferentFromAuthenticatedUser_creationIsUnsuccessful() {
+
+        // create fake buyer
+        String fakeBuyerUsername = "fake_username";
+        UserDTO fakeBuyerDTO = new UserDTO(fakeBuyerUsername, mBuyerName, "fake_email", mBuyerCountry,
+                mBuyerPassword, new SimpleDateFormat("dd/MM/yyyy").parse(mBuyerBirthDateStr));
+
+        // save save auctioneer, fake buyer and game and game key
+        User auctioneer = mUserService.saveUser(mAuctioneerDTO);
+        mUserService.saveUser(fakeBuyerDTO);
+        mGameRepository.save(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // create auction
+        mAuction = new Auction();
+        mAuction.setAuctioneer(auctioneer);
+        mAuction.setGameKey(mGameKey);
+        mAuction.setPrice(mPrice);
+        mAuction.setEndDate(new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+
+        // save auction and buyer dto
+        mAuctionRepository.save(mAuction);
+        mUserService.saveUser(mBuyerDTO);
+
+        double newPrice = mPrice + 2.5;
+
+        // bidding json
+        mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
+
+        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+                .content(mBiddingJson).with(httpBasic(fakeBuyerUsername, mBuyerPassword));
+
+        mMvc.perform(request).andExpect(status().isForbidden());
     }
 }
