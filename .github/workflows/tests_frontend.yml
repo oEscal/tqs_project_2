@@ -15,7 +15,7 @@ jobs:
        chmod +x ./scripts/install_chrome.sh
         ./scripts/install_chrome.sh
     - name: Run react
-      run: npm install; npm start --prefix code/frontend/web-app
+      run: npm install --prefix code/frontend/web-app; npm start --prefix code/frontend/web-app
     - name: Run maven selenium tests
       run: mvn -f api '-Dtest=frontend.webapp.*' test
   
