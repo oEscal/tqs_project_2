@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
@@ -83,6 +84,14 @@ public class UserService {
         return user;
     }
 
+    public User addFundsToUser(long id, double funds) throws UserNotFoundException {
+        Optional<User> optional = mRepository.findById(id);
+        if (optional.isEmpty()) throw new UserNotFoundException("Username not found in database");
+        User user = optional.get();
+        user.setFunds(user.getFunds() + funds);
+        mRepository.save(user);
+        return user;
+    }
 
     private User convertToEntity(UserDTO userDto) {
         return mModelMapper.map(userDto, User.class);

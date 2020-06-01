@@ -1,6 +1,7 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
@@ -12,6 +13,7 @@ import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -31,6 +34,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -225,7 +229,23 @@ class UserInfoControllerIT {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("Username not found in the database")))
         ;
+    }
 
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_ReturnSuccessMessage(){
+        mUser.setFunds(5);
+        mUserRepo.save(mUser);
+
+        MvcResult result = mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                //.andExpect(jsonPath("$.funds", is(10)))
+        ;
+        System.out.println();
     }
 
 }

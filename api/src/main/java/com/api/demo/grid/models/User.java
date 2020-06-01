@@ -68,7 +68,7 @@ public class User {
     @Column(nullable = false)
     private String country;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(name = "birth_date", nullable = false)
@@ -77,7 +77,7 @@ public class User {
     @Past
     private Date birthDate;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
     private Date startDate = new Date();

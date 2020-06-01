@@ -24,6 +24,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 
@@ -387,5 +389,24 @@ class UserServiceTest {
         given(mUserRepository.findByUsername("username1")).willReturn(null);
 
         assertThrows(UserNotFoundException.class, () -> mUserService.getUserInfo("username1"));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    @SneakyThrows
+    void whenAddingFundsToUser_returnUpdatedUser(){
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.ofNullable(mUser1));
+
+        User user = mUserService.addFundsToUser(4l, 5);
+
+        assertEquals(5, user.getFunds());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenAddingFundToUser_AndUserDoesNotExist_throwsException(){
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> mUserService.addFundsToUser(4l, 5));
     }
 }

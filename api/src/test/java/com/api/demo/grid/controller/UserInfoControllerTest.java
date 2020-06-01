@@ -27,13 +27,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -240,6 +241,57 @@ class UserInfoControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("Username not found in the database")))
         ;
+    }
 
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_ReturnSuccessMessage(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        mUser.setFunds(5);
+
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyLong()))
+                .thenReturn(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.funds", is(5)))
+                ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_andFails_Return4xxMessage(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyLong()))
+                .thenThrow(new UserNotFoundException("Username not found in database"));
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in database"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToInvalidUser_Return4xxMessage(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(null);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in database"))
+        ;
     }
 }

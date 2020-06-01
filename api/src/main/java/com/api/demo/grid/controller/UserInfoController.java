@@ -7,12 +7,7 @@ import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -49,6 +44,22 @@ public class UserInfoController {
         }
         try{
             return ResponseEntity.ok(mUserService.getFullUserInfo(username));
+        } catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/funds", params = {"newfunds"})
+    public ResponseEntity<User> addFundsToUser(@RequestHeader("Authorization") String auth,
+                                               @RequestParam double newfunds){
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
+
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
+        }
+        try{
+            return ResponseEntity.ok(mUserService.addFundsToUser(user.getId(),  newfunds));
         } catch (UserNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
