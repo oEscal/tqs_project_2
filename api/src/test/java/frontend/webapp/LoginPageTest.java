@@ -31,9 +31,6 @@ class LoginPageTest {
     private UserService mUserService;
 
     @Autowired
-    private UserRepository mUserRepository;
-
-    @Autowired
     private GridService mGridService;
 
 

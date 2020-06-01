@@ -28,9 +28,6 @@ class BuyPageTest {
     private UserService mUserService;
 
     @Autowired
-    private UserRepository mUserRepository;
-
-    @Autowired
     private GridService mGridService;
 
 
