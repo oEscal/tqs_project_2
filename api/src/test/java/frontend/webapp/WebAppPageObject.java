@@ -27,16 +27,16 @@ class WebAppPageObject {
     JavascriptExecutor js;
 
     WebAppPageObject() {
-        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        // System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
 
-        // WebDriverManager.chromedriver().setup();
-        // ChromeOptions options = new ChromeOptions();
-        // options.addArguments("--no-sandbox");
-        // options.addArguments("--disable-dev-shm-usage");
-        // options.addArguments("--headless");
-//
-        // driver = new ChromeDriver(options);
-        driver = new ChromeDriver();
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+
+        driver = new ChromeDriver(options);
+        // driver = new ChromeDriver();
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
 
