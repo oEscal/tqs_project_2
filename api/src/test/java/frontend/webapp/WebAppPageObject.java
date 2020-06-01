@@ -72,8 +72,8 @@ class WebAppPageObject {
             DeveloperPOJO developerPOJO = new DeveloperPOJO("developer" + id);
             gridService.saveDeveloper(developerPOJO);
 
-            gamePOJO.setDevelopers(new HashSet<String>(Arrays.asList("developer" + id)));
-            gamePOJO.setGameGenres(new HashSet<String>(Arrays.asList("genre" + id)));
+            gamePOJO.setDevelopers(new HashSet<>(Arrays.asList("developer" + id)));
+            gamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre" + id)));
             gamePOJO.setPublisher("publisher" + id);
             gridService.saveGame(gamePOJO);
         }

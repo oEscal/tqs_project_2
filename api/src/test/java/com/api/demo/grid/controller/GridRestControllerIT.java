@@ -162,6 +162,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGame_ReturnValidResponse() throws Exception {
+
         Developer developer = new Developer();
         developer.setName("dev");
         mDeveloperRepository.save(developer);
@@ -177,6 +178,7 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("pub");
         mGamePOJO.setDevelopers(new HashSet<>(Arrays.asList("dev")));
         mGamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre")));
+
         mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))

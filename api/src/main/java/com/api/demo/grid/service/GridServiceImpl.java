@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
@@ -43,9 +44,6 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private UserRepository mUserRepository;
-
-    @Autowired
-    private BuyRepository mBuyRepository;
 
     @Autowired
     private ReviewUserRepository mReviewUserRepository;
@@ -112,6 +110,7 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
+    @Transactional
     public Game saveGame(GamePOJO gamePOJO) {
         Game game = new Game();
         game.setName(gamePOJO.getName());
@@ -129,6 +128,8 @@ public class GridServiceImpl implements GridService {
         }
 
         // Get Publisher
+        List<Publisher> ola = mPublisherRepository.findAll();
+        Optional<Publisher> adeus = mPublisherRepository.findByName("ola");
         Optional<Publisher> publisher = mPublisherRepository.findByName(gamePOJO.getPublisher());
         if (publisher.isEmpty()) return null;
         game.setPublisher(publisher.get());
