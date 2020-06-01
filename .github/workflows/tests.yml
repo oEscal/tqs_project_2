@@ -1,17 +1,7 @@
 on: push
 name: Tests workflow
 jobs:
-  tests:
-    name: Selenium tests
-    steps:
-    - name: Selenoid
-      uses: ajinx/selenoid@v2
-    - uses: actions/checkout@v2
-    - run: npm ci
-    - name: Run maven and react
-      run: | 
-        npm start --prefix code/frontend/web-app &; mvn -f api '-Dtest=frontend.webapp.*' test
-      
+  tests:  
     name: Junit Tests Trigger
     runs-on: ubuntu-latest
     steps:
@@ -23,3 +13,13 @@ jobs:
     - name: Run tests
       run: |
         cd api; mvn test
+
+  name: Selenium tests
+    steps:
+    - name: Selenoid
+      uses: ajinx/selenoid@v2
+    - uses: actions/checkout@v2
+    - run: npm ci
+    - name: Run maven and react
+      run: | 
+        npm start --prefix code/frontend/web-app &; mvn -f api '-Dtest=frontend.webapp.*' test
