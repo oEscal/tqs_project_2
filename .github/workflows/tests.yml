@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: npm ci --prefix code/frontend/web-app
     - name: Run react
-      run: npm start --prefix code/frontend/web-app
+      run: npm start --prefix code/frontend/web-app --port 4444
     - name: Run maven selenium tests
       run: mvn -f api '-Dtest=frontend.webapp.*' 
 

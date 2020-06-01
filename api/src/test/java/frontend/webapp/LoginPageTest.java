@@ -1,19 +1,30 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.service.UserService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-@SpringBootTest(classes= DemoApplication.class)
+@SpringBootTest(classes= DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@AutoConfigureTestDatabase
 class LoginPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
+
+    @Autowired
+    private UserService mUserService;
 
     @BeforeEach
     void setUp() {
@@ -41,6 +52,7 @@ class LoginPageTest {
     @Test
     //Check that when no input is fed, an error is displayed
     void whenInvalidCredentials_thenErrorMessage() {
+
         controller.writeInput("jonas","username");
         controller.writeInput("jonas","password");
 
@@ -56,11 +68,18 @@ class LoginPageTest {
     }
 
     @Test
+    @SneakyThrows
     //Check that when a correct input is fed, we get moved to the homepage and are logged in
     // NOTE: This requires the BD to have this user...
     void whenValidCredentials_thenRedirectToHome_andLogin() {
+
         String username = "admin";
         String password = "admin";
+
+        UserDTO mSimpleUserDTO = new UserDTO(username, username, "ola@adeus.com", "hm", password,
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
+        mUserService.saveUser(mSimpleUserDTO);
+
         controller.writeInput(username,"username");
         controller.writeInput(password,"password");
 
