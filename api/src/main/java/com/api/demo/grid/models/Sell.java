@@ -22,6 +22,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 
@@ -59,9 +61,9 @@ public class Sell {
     private double price;
 
     @EqualsAndHashCode.Exclude
-    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @Temporal(TemporalType.DATE)
-    private Date date = new Date();
+    private Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 
     public void setUser(User user) {

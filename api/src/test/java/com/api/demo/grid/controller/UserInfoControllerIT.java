@@ -87,7 +87,6 @@ class UserInfoControllerIT {
         mUser.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser.setPhotoUrl(mPhotoUrl);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mUser2 = new User();
         mUser2.setUsername("spring");
@@ -97,7 +96,6 @@ class UserInfoControllerIT {
         mUser2.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser2.setPhotoUrl(mPhotoUrl);
         mUser2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mGame = new Game();
         mGame.setName("name");
@@ -113,6 +111,8 @@ class UserInfoControllerIT {
         mSell = new Sell();
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
+
+        mStartDateStr = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
     }
 
     @Test

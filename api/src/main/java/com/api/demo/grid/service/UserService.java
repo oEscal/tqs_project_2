@@ -6,11 +6,13 @@ import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.proxy.UserInfoProxy;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import com.api.demo.grid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
@@ -27,13 +29,10 @@ public class UserService {
 
     private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
-
+    @SneakyThrows
     public User getUser(String username) {
-        User user = mRepository.findByUsername(username);
-        if (user != null) {
-            user.setPassword(null);
-        }
-        return user;
+
+        return mRepository.findByUsername(username);
     }
 
     public User saveUser(UserDTO user) throws ExceptionDetails {
@@ -63,9 +62,7 @@ public class UserService {
         User userSave = convertToEntity(user);
 
         userSave.setPassword(mPasswordEncoder.encode(userSave.getPassword()));
-        User userSaved = mRepository.save(userSave);
-        userSaved.setPassword(null);
-        return userSaved;
+        return mRepository.save(userSave);
     }
 
     public UserInfoProxy getUserInfo(String username) throws UserNotFoundException {
@@ -84,6 +81,7 @@ public class UserService {
         return user;
     }
 
+    @Transactional
     public User addFundsToUser(long id, double funds) throws UserNotFoundException {
         Optional<User> optional = mRepository.findById(id);
         if (optional.isEmpty()) throw new UserNotFoundException("Username not found in database");
@@ -92,6 +90,16 @@ public class UserService {
         mRepository.save(user);
         return user;
     }
+    
+    public void deleteUser(String username) {
+
+        User user = mRepository.findByUsername(username);
+
+        if (user == null) return;
+
+        mRepository.delete(user);
+    }
+
 
     private User convertToEntity(UserDTO userDto) {
         return mModelMapper.map(userDto, User.class);

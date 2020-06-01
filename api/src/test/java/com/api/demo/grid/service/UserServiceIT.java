@@ -5,7 +5,6 @@ import com.api.demo.grid.dtos.UserDTO;
 import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.repository.UserRepository;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,7 @@ class UserServiceIT {
 
     @Autowired
     private UserService mUserService;
+
 
     // specifications for user1
     private UserDTO mSimpleUserDTO;
@@ -79,21 +79,60 @@ class UserServiceIT {
         assertEquals(1, mUserRepository.findAll().size());
     }
 
+    // @Test
+    // @SneakyThrows
+    // void whenSaveUser_returnUserWithoutPassword() {
+//
+    //     assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
+    //     assertEquals(1, mUserRepository.findAll().size());
+    //     assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+    // }
+
+    // @Test
+    // @SneakyThrows
+    // void whenSaveUser_getUserWithoutPassword() {
+//
+    //     mUserService.saveUser(mSimpleUserDTO);
+    //     assertNull(mUserService.getUser(mUsername1).getPassword());
+    //     assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+    // }
+
+
+    /***
+     *  Delete User
+     ***/
     @Test
     @SneakyThrows
-    void whenSaveUser_returnUserWithoutPassword() {
+    void whenDeleteUser_deleteIsSuccessful(){
 
-        assertNull(mUserService.saveUser(mSimpleUserDTO).getPassword());
+        // insert user
+        mUserService.saveUser(mSimpleUserDTO);
+
+        // verify if the user was created
         assertEquals(1, mUserRepository.findAll().size());
-        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+
+        // delete user
+        mUserService.deleteUser(mUsername1);
+
+        // verify if the user was deleted
+        assertEquals(0, mUserRepository.findAll().size());
     }
 
     @Test
     @SneakyThrows
-    void whenSaveUser_getUserWithoutPassword() {
+    void whenDeleteNonexistentUser_deleteIsUnsuccessful(){
 
+        // insert user
         mUserService.saveUser(mSimpleUserDTO);
-        assertNull(mUserService.getUser(mUsername1).getPassword());
-        assertNotNull(mUserRepository.findByUsername(mUsername1).getPassword());
+
+        // verify if the user was created
+        assertEquals(1, mUserRepository.findAll().size());
+
+        // delete user
+        mUserService.deleteUser("user_test");
+
+        // verify if the user was not deleted
+        assertEquals(mUsername1, mUserRepository.findByUsername(mUsername1).getUsername());
+        assertEquals(1, mUserRepository.findAll().size());
     }
 }
