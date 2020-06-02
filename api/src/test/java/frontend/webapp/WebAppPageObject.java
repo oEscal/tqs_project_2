@@ -14,6 +14,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -36,8 +37,8 @@ class WebAppPageObject {
 
     @SneakyThrows
     WebAppPageObject(UserService userService, GridService gridService) {
-        // System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
 
+        // Chrome headless Driver
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -45,7 +46,19 @@ class WebAppPageObject {
         options.addArguments("--headless");
 
         driver = new ChromeDriver(options);
-        // driver = new ChromeDriver();
+
+        // Chrome Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new ChromeDriver();
+         */
+
+        // Firefox Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new FirefoxDriver();
+        */
+
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
 

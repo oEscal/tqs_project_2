@@ -22,6 +22,8 @@ import CustomDrawerContent from './Menu';
 import { Icon, Header } from '../components';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Images, materialTheme } from "../constants/";
+import CartScreen from '../screens/Cart';
+import ReceiptScreen from '../screens/Receipt';
 
 const { width } = Dimensions.get("screen");
 
@@ -30,7 +32,7 @@ const Drawer = createDrawerNavigator();
 
 const profile = {
   avatar: Images.Profile,
-  name: "Rachel Brown",
+  name: "Welcome to the Grid!",
   type: "Seller",
   plan: "Pro",
   rating: 4.8
@@ -72,6 +74,47 @@ function WishlistStack(props) {
         options={{
           header: ({ navigation, scene }) => (
             <Header title="Wishlist" scene={scene} navigation={navigation} />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function CartStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Cart"
+      mode="card"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Cart" scene={scene} navigation={navigation} />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ReceiptStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Receipt"
+      mode="card"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name="Receipt"
+        component={ReceiptScreen}
+        initialParams={{ 'games': props.route.params.games }}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header title="Receipt" scene={scene} navigation={navigation} />
           )
         }}
       />
@@ -217,6 +260,7 @@ function AppStack(props) {
           )
         }}
       />
+
       <Drawer.Screen
         name="Wishlist"
         component={WishlistStack}
@@ -228,21 +272,11 @@ function AppStack(props) {
       />
 
       <Drawer.Screen
-        name="Sell"
-        component={SellStack}
+        name="Cart"
+        component={CartStack}
         options={{
           drawerIcon: ({ focused }) => (
-            <FontAwesome5 name="money-bill-wave" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
-          )
-        }}
-      />
-
-      <Drawer.Screen
-        name="Wallet"
-        component={WalletStack}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <FontAwesome5 name="wallet" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+            <FontAwesome5 name="shopping-cart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
@@ -256,21 +290,6 @@ function AppStack(props) {
           )
         }}
       />
-      <Drawer.Screen
-        name="Components"
-        component={ComponentsStack}
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Icon
-              size={16}
-              name="md-switch"
-              family="ionicon"
-              color={focused ? "white" : materialTheme.COLORS.MUTED}
-              style={{ marginRight: 2, marginLeft: 2 }}
-            />
-          )
-        }}
-      />
 
       <Drawer.Screen
         name="GameInfo"
@@ -278,6 +297,16 @@ function AppStack(props) {
         options={{
           drawerIcon: ({ focused }) => (
             <FontAwesome5 name="gamepad" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+          )
+        }}
+      />
+
+      <Drawer.Screen
+        name="Receipt"
+        component={ReceiptStack}
+        options={{
+          drawerIcon: ({ focused }) => (
+            <FontAwesome5 name="shopping-cart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
           )
         }}
       />
