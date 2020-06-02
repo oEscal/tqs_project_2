@@ -93,7 +93,8 @@ class ProfilePage extends Component {
             }
         },
         public: false,
-        info: null
+        info: null,
+        gameReview: null
     }
 
     async getPrivateUserInfo() {
@@ -156,7 +157,7 @@ class ProfilePage extends Component {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: login_info
-            }
+            },
         })
             .then(response => {
                 if (response.status === 401) {
@@ -205,13 +206,29 @@ class ProfilePage extends Component {
 
 
     //METHODS////////////////////////////////////
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
+    }
 
+    renderRedirectGameReview = async (game) => {
+        await this.setState({"gameReview": game})
+    }
 
     ////////////////////////////////////////////
 
 
     render() {
         const { classes } = this.props;
+
+        if(this.state.gameReview != null){
+            console.log(this.state.gameReview)
+            return <Redirect to={{
+                pathname: '/review-game',
+                state: {"game": this.state.gameReview}
+            }} />
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -393,6 +410,7 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.buys.map((row) => (
+                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder" }}>
                                                                             <Link to={"/game/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
@@ -401,12 +419,24 @@ class ProfilePage extends Component {
                                                                         </TableCell>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder", color: "#f44336" }}>
                                                                             <span style={{
-                                                                            background: "rgb(253,27,163)",
-                                                                            background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
-                                                                            WebkitBackgroundClip: "text",
-                                                                            WebkitTextFillColor: "transparent",
-                                                                        }}><i class="fas fa-key"></i> </span><span style={{marginLeft:"5px"}}><b>{row.gamerKey}</b></span></TableCell>
+                                                                                background: "rgb(253,27,163)",
+                                                                                background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                                                                WebkitBackgroundClip: "text",
+                                                                                WebkitTextFillColor: "transparent",
+                                                                            }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
+                                                                        <TableCell align="right">
+                                                                            <Button
+                                                                                size="sm"
+                                                                                style={{ backgroundColor: "#fc8f6f" }}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                id={"reviewButton" + row.gameId}
+                                                                                onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
+                                                                            >
+                                                                                <i class="far fa-star"></i> Review
+                                                                            </Button>
+                                                                        </TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -451,10 +481,12 @@ class ProfilePage extends Component {
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
                                                                         }
                                                                         {row.purchased ?
-                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+
+                                                                            </TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
                                                                                 <Button
-                                                                                    size="md"
+                                                                                    size="sm"
                                                                                     style={{ backgroundColor: "#ff3ea0" }}
                                                                                     href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                                                                                     target="_blank"
