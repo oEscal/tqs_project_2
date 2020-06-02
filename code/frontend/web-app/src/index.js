@@ -24,6 +24,9 @@ import Admin from "views/Admin/Admin.js";
 import DashBoard from "views/Admin/DashBoard.js";
 
 import Cart from "views/Cart/Cart.js";
+import GameReview from "views/Review/GameReview.js";
+import UserReview from "views/Review/UserReview.js";
+
 import Receipt from "views/Cart/Receipt.js";
 import WishList from "views/WishList/WishList.js";
 
@@ -43,6 +46,8 @@ ReactDOM.render(
             <Route exact path="/cart/receipt" component={Receipt}/>
             <Route exact path="/games/info/:game" component={Game}/>
             <Route exact path="/games" component={GameSearch}/>
+            <Route exact path="/review-game" component={GameReview}/>
+            <Route exact path="/review-user" component={UserReview}/>
             <Route exact path="/user/:user" component={ProfilePage}/>
             <Route exact path="/user/:user/edit" component={EditProfile}/>
             <Route exact path="/sell-game" component={SellGame}/>

@@ -1,7 +1,9 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +54,24 @@ public class UserInfoController {
         try{
             return ResponseEntity.ok(mUserService.getFullUserInfo(username));
         } catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String auth,
+                                           @RequestBody UserUpdatePOJO userUpdatePOJO){
+
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
+
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
+        }
+
+        try{
+            return ResponseEntity.ok(mUserService.updateUser(user.getId(), userUpdatePOJO));
+        } catch (UserNotFoundException | ExceptionDetails e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }

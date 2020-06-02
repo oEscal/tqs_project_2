@@ -24,7 +24,8 @@ export default function CustomInput(props) {
     error,
     white,
     inputRootCustomClasses,
-    success
+    success,
+    multiline
   } = props;
 
   const labelClasses = classNames({
@@ -74,6 +75,7 @@ export default function CustomInput(props) {
           disabled: classes.disabled,
           underline: underlineClasses
         }}
+        multiline={multiline == null ? false : multiline}
         id={id}
 
         {...inputProps}
@@ -91,5 +93,6 @@ CustomInput.propTypes = {
   inputRootCustomClasses: PropTypes.string,
   error: PropTypes.bool,
   success: PropTypes.bool,
-  white: PropTypes.bool
+  white: PropTypes.bool,
+  multiline: PropTypes.bool
 };
