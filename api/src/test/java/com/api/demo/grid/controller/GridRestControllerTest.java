@@ -51,8 +51,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -943,10 +943,13 @@ class GridRestControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void whenDeletingValidListing_andIsOwner_ReturnOkListing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
         Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
-        mMockMvc.perform(get("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -956,8 +959,11 @@ class GridRestControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void whenDeletingValidListing_andIsAdmin_ReturnOkListing() throws Exception {
         mBuyer.setAdmin(true);
+        Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mBuyer);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
         Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
         mMockMvc.perform(get("/grid/delete-sell-listing")
@@ -970,10 +976,13 @@ class GridRestControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void whenDeletingValidListing_andIsNotOwner_norAdmin_Return401Exception() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mBuyer);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
         Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
-        mMockMvc.perform(get("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -983,11 +992,14 @@ class GridRestControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void whenDeletingInvalidListing_andIsOwner_Return404Listing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
         Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
                 .thenThrow(Mockito.any(UnavailableListingException.class));
-        mMockMvc.perform(get("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -997,11 +1009,14 @@ class GridRestControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void whenDeletingInvalidListing_andIsOwner_Return403Listing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(null);
         Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
                 .thenThrow(Mockito.any(ExceptionDetails.class));
-        mMockMvc.perform(get("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
                 .contentType(MediaType.APPLICATION_JSON))
