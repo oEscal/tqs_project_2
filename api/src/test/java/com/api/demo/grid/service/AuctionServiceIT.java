@@ -139,7 +139,6 @@ class AuctionServiceIT {
         // create game key
         mGameKey = new GameKey();
         mGameKey.setRealKey(mGameKeyRKey);
-        mGameKey.setGame(mGame);
 
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
@@ -157,6 +156,7 @@ class AuctionServiceIT {
         // save auctioneer, game and game key
         mUserRepository.save(mAuctioneer);
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // first insertion
@@ -175,6 +175,7 @@ class AuctionServiceIT {
         // save auctioneer, game and game key
         mUserRepository.save(mAuctioneer);
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insert game key on sell
@@ -193,6 +194,7 @@ class AuctionServiceIT {
 
         // save game and game key
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
 
@@ -224,6 +226,7 @@ class AuctionServiceIT {
         mUserRepository.save(mAuctioneer);
         mUserRepository.save(mBuyer1);
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction
@@ -365,6 +368,7 @@ class AuctionServiceIT {
         mUserRepository.save(mAuctioneer);
         mUserRepository.save(mBuyer1);
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction
@@ -386,6 +390,7 @@ class AuctionServiceIT {
         // save auctioneer, game and game key
         mUserRepository.save(mAuctioneer);
         mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // insertion auction

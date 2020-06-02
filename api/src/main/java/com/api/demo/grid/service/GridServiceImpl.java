@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
@@ -43,9 +44,6 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private UserRepository mUserRepository;
-
-    @Autowired
-    private BuyRepository mBuyRepository;
 
     @Autowired
     private ReviewUserRepository mReviewUserRepository;
@@ -112,6 +110,7 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
+    @Transactional
     public Game saveGame(GamePOJO gamePOJO) {
         Game game = new Game();
         game.setName(gamePOJO.getName());
@@ -141,8 +140,7 @@ public class GridServiceImpl implements GridService {
             game.addDeveloper(developer.get());
         }
 
-        this.mGameRepository.save(game);
-        return game;
+        return this.mGameRepository.save(game);
     }
 
     @Override
@@ -150,8 +148,7 @@ public class GridServiceImpl implements GridService {
         Publisher publisher = new Publisher();
         publisher.setName(publisherPOJO.getName());
         publisher.setDescription(publisherPOJO.getDescription());
-        this.mPublisherRepository.save(publisher);
-        return publisher;
+        return this.mPublisherRepository.save(publisher);
     }
 
     @Override
@@ -171,16 +168,15 @@ public class GridServiceImpl implements GridService {
     }
 
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
-        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
-        if (game.isEmpty()) return null;
-        Game realGame = game.get();
+        Game game = this.mGameRepository.findById(gameKeyPOJO.getGameId()).orElse(null);
+        if (game == null) return null;
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey(gameKeyPOJO.getKey());
-        gameKey.setGame(realGame);
+        gameKey.setGame(game);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
-        this.mGameRepository.save(realGame);
+        this.mGameKeyRepository.save(gameKey);
         return gameKey;
     }
 

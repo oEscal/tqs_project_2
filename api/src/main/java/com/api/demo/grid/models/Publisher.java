@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -35,15 +36,19 @@ public class Publisher {
 
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JsonIgnore
     private Set<Game> games = new HashSet<>();
 
+
+    @Transactional
     public void addGame(Game game) {
         if (this.games.contains(game)) return;
+
         games.add(game);
+
         game.setPublisher(this);
     }
 }

@@ -146,7 +146,7 @@ public class User {
     @ToString.Exclude
     private Set<Auction> auctionsWon = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
@@ -202,6 +202,7 @@ public class User {
 
     public void payWithFunds(double bill) { this.funds -= bill; }
 
+    @Transactional
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 
