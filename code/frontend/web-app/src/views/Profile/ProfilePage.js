@@ -346,7 +346,7 @@ class ProfilePage extends Component {
                                                                 {this.state.info.reviewGames.map((row) => (
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left">
-                                                                            <Link to={"/games/info/" + row.gameId}  style={{ color: "#ff3ea0" }}>
+                                                                            <Link to={"/games/info/" + row.gameId} style={{ color: "#ff3ea0" }}>
                                                                                 <b>{row.gameName}</b>
                                                                             </Link>
                                                                         </TableCell>
@@ -387,7 +387,6 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.reviewedUsers.map((row) => (
-                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left">
                                                                             <Link to={"/user/" + row.targetUsername} style={{ color: "#ff3ea0" }} >
@@ -651,7 +650,7 @@ class ProfilePage extends Component {
                                             </div>
 
                                             <div style={{ marginTop: "10px", width: "99%" }}>
-                                                {this.state.info.reviewUsers.length == 0 ?
+                                                {this.state.info.reviews.length == 0 ?
                                                     <div style={{ textAlign: "left" }}>
                                                         <h3 style={{ color: "#999" }}>
                                                             Oops, seems like no one's reviewed this user yet...
@@ -660,12 +659,16 @@ class ProfilePage extends Component {
                                                     <TableContainer component={Paper}>
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
-                                                                {this.state.info.reviewUsers.map((row) => (
-                                                                    <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                {this.state.info.reviews.map((row) => (
+                                                                    <TableRow hover key={row.id}>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.targetUsername} style={{ color: "#ff3ea0" }} >
+                                                                                <b><i class="far fa-user"></i> {row.targetUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -710,20 +713,11 @@ class ProfilePage extends Component {
                                                                             <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
                                                                         }
-                                                                        {row.purchased ?
-                                                                            null :
-                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-                                                                                <Button
-                                                                                    size="md"
-                                                                                    style={{ backgroundColor: "#ff3ea0" }}
-                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                                                    target="_blank"
-                                                                                    rel="noopener noreferrer"
-                                                                                >
-                                                                                    <i class="fas fa-times"></i> Cancel Sale
-                                                                        </Button>
-                                                                            </TableCell>
-                                                                        }
+
+                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+
+                                                                        </TableCell>
+
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -835,7 +829,7 @@ class ProfilePage extends Component {
                                         </div>
                                         <div style={{ textAlign: "left" }}>
                                             <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                                {this.state.info.birthDateStr}
+                                                {this.state.info.birthDate}
                                             </span>
                                         </div>
 
@@ -846,7 +840,7 @@ class ProfilePage extends Component {
                                         </div>
                                         <div style={{ textAlign: "left" }}>
                                             <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                                {this.state.info.startDateStr}
+                                                {this.state.info.startDate}
                                             </span>
                                         </div>
 
