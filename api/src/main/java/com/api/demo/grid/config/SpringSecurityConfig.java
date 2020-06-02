@@ -49,6 +49,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/create-bidding",
             "/grid/user",
             "/grid/remove-user",
+            "/grid/delete-sell-listing"
     };
 
     @Autowired

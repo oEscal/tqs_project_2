@@ -20,7 +20,7 @@ public class ReviewUserPOJO {
     public ReviewUserPOJO(String comment, int score, long author, long target) {
         this.comment = comment;
         this.score = score;
-        this.date = (date == null) ? new Date() : date;
+        this.date = new Date();
         this.author = author;
         this.target = target;
     }
