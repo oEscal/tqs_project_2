@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -201,6 +202,13 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
+    public Sell getSell(long id) {
+        Optional<Sell> optionalSell = mSellRepository.findById(id);
+        if (optionalSell.isEmpty()) return null;
+        return optionalSell.get();
+    }
+
+    @Override
     public List<Buy> saveBuy(BuyListingsPOJO buyListingsPOJO) throws UnavailableListingException,
             UnsufficientFundsException {
         List<Buy> buyList = new ArrayList<>();
@@ -236,6 +244,27 @@ public class GridServiceImpl implements GridService {
         }
         mUserRepository.save(user);
         return buyList;
+    }
+
+    @Override
+    public Sell deleteSell(long id) throws UnavailableListingException, ExceptionDetails {
+        Optional<Sell> optionalSell = mSellRepository.findById(id);
+        if (optionalSell.isEmpty()) throw new UnavailableListingException("This listing has already been removed");
+        Sell sell = optionalSell.get();
+
+        if (sell.getPurchased() != null) throw new ExceptionDetails("This listing has been bought already");
+
+        GameKey gameKey = sell.getGameKey();
+        gameKey.setSell(null);
+
+        User user = sell.getUser();
+        user.removeListing(sell);
+
+        mGameKeyRepository.save(sell.getGameKey());
+        mUserRepository.save(sell.getUser());
+        mSellRepository.delete(sell);
+
+        return sell;
     }
 
     @Override

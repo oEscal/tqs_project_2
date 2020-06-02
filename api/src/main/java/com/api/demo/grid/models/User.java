@@ -248,4 +248,8 @@ public class User {
         for (ReviewUser review: reviewUsers) sum += review.getScore();
         return sum/reviewUsers.size();
     }
+
+    public void removeListing(Sell sell) {
+        this.sells.remove(sell);
+    }
 }

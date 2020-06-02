@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -1206,5 +1207,43 @@ class GridServiceTest {
         assertNull(expected);
     }
 
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingValidListing_ReturnListing() throws UnavailableListingException, ExceptionDetails {
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        Sell deletedSell = mGridService.deleteSell(1L);
+        assertEquals(mSell1.getId(), deletedSell.getId());
+        assertFalse(mUser.getSells().contains(mSell1));
+        assertNull(mGameKey.getSell());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingInvalidListing_ThrowException(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(UnavailableListingException.class, () -> mGridService.deleteSell(1l));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingSoldListing_ThrowException(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        mSell1.setPurchased(new Buy());
+        assertThrows(ExceptionDetails.class, () -> mGridService.deleteSell(1L));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGettingValidSellListing_returnCorrectListing(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        assertEquals(mSell1.getId(), mGridService.getSell(2l).getId());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGettingInvalidSellListing_returnNull(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertNull(mGridService.getSell(2l));
+    }
 
 }

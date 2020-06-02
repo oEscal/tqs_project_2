@@ -32,7 +32,6 @@ import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,8 +56,10 @@ import java.util.Set;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -105,6 +107,7 @@ class GridRestControllerIT {
     private ReviewGamePOJO mReviewGamePOJO;
     private ReviewUserPOJO mReviewUserPOJO;
     private static int mNumberUser = 0;
+    private static BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     public void setUp() {
@@ -121,7 +124,7 @@ class GridRestControllerIT {
         mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
 
         mBuyListingsPOJO = new BuyListingsPOJO();
-
+        mNumberUser = 0;
     }
 
     @Test
@@ -134,7 +137,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
 
-        Assertions.assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
+        assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -145,7 +148,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mPublisherPOJO.getName())));
-        Assertions.assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
+        assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
 
     }
 
@@ -157,7 +160,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mDeveloperPOJO.getName())));
-        Assertions.assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
+        assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
     }
 
     @Test
@@ -186,7 +189,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGamePOJO.getName())))
         ;
-        Assertions.assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -233,7 +236,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
-        Assertions.assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -271,6 +274,9 @@ class GridRestControllerIT {
         GameKey gameKey = new GameKey();
         gameKey.setRealKey("key");
         mGameKeyRepository.save(gameKey);
+        GameKey gameKey2 = new GameKey();
+        gameKey2.setRealKey("key2");
+        mGameKeyRepository.save(gameKey2);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
         mMockMvc.perform(post("/grid/add-sell-listing")
@@ -831,6 +837,71 @@ class GridRestControllerIT {
                 .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    void whenDeletingValidListing_andIsOwner_ReturnOkListing() throws Exception {
+        Sell sell = createSellListing();
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
+                .with(httpBasic("mUsername0", "mPassword0"))
+                .param("id", ""+sell.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(sell.getPrice())))
+        ;
+        User owner = mUserRepository.findByUsername("mUsername0");
+        assertFalse(owner.getSells().contains(sell));
+        assertFalse(mSellRepository.existsById(sell.getId()));
+    }
+
+    @Test
+    void whenDeletingValidListing_andIsAdmin_ReturnOkListing() throws Exception {
+        Sell sell = createSellListing();
+        User admin = createUser();
+        admin.setAdmin(true);
+        mUserRepository.save(admin);
+
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
+                .with(httpBasic("mUsername1", "mPassword1"))
+                .param("id", ""+sell.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(sell.getPrice())))
+        ;
+        User owner = mUserRepository.findByUsername("mUsername0");
+        assertFalse(owner.getSells().contains(sell));
+        assertFalse(mSellRepository.existsById(sell.getId()));
+    }
+
+    @Test
+    void whenDeletingValidListing_andIsNotOwner_norAdmin_Return401Exception() throws Exception {
+        Sell sell = createSellListing();
+        User admin = createUser();
+        mUserRepository.save(admin);
+
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
+                .with(httpBasic("mUsername1", "mPassword1"))
+                .param("id", ""+sell.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Don't have permission to delete this listing"))
+        ;
+    }
+
+    @Test
+    void whenDeletingBoughtListing_andIsOwner_Return403Listing() throws Exception {
+        Sell sell = createSellListing();
+        Buy buy = new Buy();
+        buy.setSell(sell);
+        mSellRepository.save(sell);
+
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
+                .with(httpBasic("mUsername0", "mPassword0"))
+                .param("id", ""+sell.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Listing has already been bought"))
+        ;
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {
@@ -845,7 +916,7 @@ class GridRestControllerIT {
         user.setUsername("mUsername" + mNumberUser);
         user.setName("mName" + mNumberUser);
         user.setEmail("mEmail" + mNumberUser);
-        user.setPassword("mPassword" + mNumberUser);
+        user.setPassword(mPasswordEncoder.encode("mPassword" + mNumberUser));
         user.setCountry("mCountry" + mNumberUser);
         user.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse("17/10/2010"));
         mNumberUser++;

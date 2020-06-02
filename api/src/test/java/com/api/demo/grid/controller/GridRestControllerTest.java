@@ -1,5 +1,6 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -23,10 +24,12 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
+import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.utils.Pagination;
 import com.api.demo.grid.utils.ReviewJoiner;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,19 +40,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +75,9 @@ class GridRestControllerTest {
 
     @MockBean
     private GridService mGridService;
+
+    @MockBean
+    private UserRepository mUserRepository;
 
     private Game mGame;
     private GameGenre mGameGenre;
@@ -89,7 +99,17 @@ class GridRestControllerTest {
     private ReviewGamePOJO mReviewGamePOJO;
     private ReviewUserPOJO mReviewUserPOJO;
 
+    private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
+    private String mUsername1 = "username1",
+            mName1 = "name1",
+            mEmail1 = "email1",
+            mCountry1 = "country1",
+            mPassword1 = "mPassword1",
+            mBirthDateStr = "17/10/2010",
+            mStartDateStr = "25/05/2020";
+
     @BeforeEach
+    @SneakyThrows
     void setUp() {
         mGame = new Game();
         mGame.setDescription("");
@@ -120,7 +140,13 @@ class GridRestControllerTest {
         mGamePOJO.setPublisher("publisher");
 
         mUser = new User();
-        mUser.setId(2L);
+        mUser.setUsername(mUsername1);
+        mUser.setName(mName1);
+        mUser.setEmail(mEmail1);
+        mUser.setCountry(mCountry1);
+        mUser.setPassword(mPasswordEncoder.encode(mPassword1));
+        mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
+        mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mGameKey = new GameKey();
         mGameKey.setRealKey("key");
@@ -131,6 +157,7 @@ class GridRestControllerTest {
         mSell.setId(4L);
         mSell.setGameKey(mGameKey);
         mSell.setUser(mUser);
+        mSell.setPrice(2.5);
         mSell.setDate(new Date());
 
         mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
@@ -208,7 +235,6 @@ class GridRestControllerTest {
 
         Mockito.verify(mGridService, Mockito.times(1)).getAllGames(page);
     }
-
 
     @Test
     @WithMockUser(username = "spring")
@@ -905,7 +931,6 @@ class GridRestControllerTest {
                 .andExpect(jsonPath("$.content", hasSize(0)));
     }
 
-
     @Test
     @WithMockUser(username = "spring")
     void whenGetInvalidAllUserReviews_ReturnException() throws Exception {
@@ -917,6 +942,73 @@ class GridRestControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    void whenDeletingValidListing_andIsOwner_ReturnOkListing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
+        mMockMvc.perform(get("/grid/delete-sell-listing")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("id", "2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(2.5)))
+                ;
+    }
+
+    @Test
+    void whenDeletingValidListing_andIsAdmin_ReturnOkListing() throws Exception {
+        mBuyer.setAdmin(true);
+        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
+        mMockMvc.perform(get("/grid/delete-sell-listing")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("id", "2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(2.5)))
+        ;
+    }
+
+    @Test
+    void whenDeletingValidListing_andIsNotOwner_norAdmin_Return401Exception() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
+        mMockMvc.perform(get("/grid/delete-sell-listing")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("id", "2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Don't have permission to delete this listing"))
+        ;
+    }
+
+    @Test
+    void whenDeletingInvalidListing_andIsOwner_Return404Listing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
+                .thenThrow(Mockito.any(UnavailableListingException.class));
+        mMockMvc.perform(get("/grid/delete-sell-listing")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("id", "2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Sell Listing was not found"))
+        ;
+    }
+
+    @Test
+    void whenDeletingInvalidListing_andIsOwner_Return403Listing() throws Exception {
+        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
+                .thenThrow(Mockito.any(ExceptionDetails.class));
+        mMockMvc.perform(get("/grid/delete-sell-listing")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("id", "2")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Listing has already been bought"))
+        ;
+    }
 
     public static String asJsonString(final Object obj) {
         try {

@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -45,6 +46,8 @@ public interface GridService {
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
     Sell saveSell(SellPOJO sellPOJO);
+    Sell getSell(long id);
+    Sell deleteSell(long id) throws UnavailableListingException, ExceptionDetails;
     List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo) throws UnavailableListingException, UnsufficientFundsException;
     Set<Game> addWishListByUserID(long gameID, long userID);
     Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);
