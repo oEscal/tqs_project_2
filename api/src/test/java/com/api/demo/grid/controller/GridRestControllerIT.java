@@ -22,7 +22,14 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.repository.DeveloperRepository;
+import com.api.demo.grid.repository.GameGenreRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.ReviewUserRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -847,21 +854,24 @@ class GridRestControllerIT {
 
     @SneakyThrows
     private Sell createSellListing() {
+
         User seller = createUser();
         mUserRepository.save(seller);
 
         Game game = new Game();
         game.setName("Game");
+        mGameRepository.save(game);
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey("key");
         gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
 
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
-        mGameRepository.save(game);
         sell.setUser(seller);
-        mUserRepository.save(seller);
+        mSellRepository.save(sell);
+
         return sell;
     }
 }
