@@ -1,6 +1,5 @@
 package com.api.demo.grid.pojos;
 
-import com.api.demo.grid.models.ReportReviewGame;
 import lombok.Getter;
 
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
-import java.util.Set;
 
 
 @Getter
