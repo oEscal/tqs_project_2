@@ -28,13 +28,14 @@
     "react-scripts": "^3.4.1",
     "react-select": "^3.1.0",
     "react-slick": "0.25.2",
+    "react-star-ratings": "^2.3.0",
     "react-sticky": "^6.0.3",
     "react-swipeable-views": "0.13.3",
     "react-switch": "^5.0.1",
     "react-tabs": "^3.1.0",
     "react-toastify": "^6.0.4",
-    "serialize-javascript": "^3.0.0",
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "serialize-javascript": "^3.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.5.5",

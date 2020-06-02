@@ -45,9 +45,9 @@ public interface GridService {
     Developer saveDeveloper(DeveloperPOJO developerPOJO);
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
     GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
-    Sell saveSell(SellPOJO sellPOJO);
     Sell getSell(long id);
     Sell deleteSell(long id) throws UnavailableListingException, ExceptionDetails;
+    Sell saveSell(SellPOJO sellPOJO) throws ExceptionDetails;
     List<Buy> saveBuy(BuyListingsPOJO buyListingsPojo) throws UnavailableListingException, UnsufficientFundsException;
     Set<Game> addWishListByUserID(long gameID, long userID);
     Set<ReviewGame> addGameReview(ReviewGamePOJO reviewGamePOJO);

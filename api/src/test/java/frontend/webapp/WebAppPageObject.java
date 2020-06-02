@@ -37,9 +37,8 @@ class WebAppPageObject {
 
     @SneakyThrows
     WebAppPageObject(UserService userService, GridService gridService) {
-        // System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
 
-        // Chrome Driver
+        // Chrome headless Driver
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -47,7 +46,12 @@ class WebAppPageObject {
         options.addArguments("--headless");
 
         driver = new ChromeDriver(options);
-        // driver = new ChromeDriver();
+
+        // Chrome Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new ChromeDriver();
+         */
 
         // Firefox Driver
         /*

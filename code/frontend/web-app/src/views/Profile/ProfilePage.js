@@ -93,7 +93,9 @@ class ProfilePage extends Component {
             }
         },
         public: false,
-        info: null
+        info: null,
+        gameReview: null,
+        userReview: null
     }
 
     async getPrivateUserInfo() {
@@ -205,13 +207,39 @@ class ProfilePage extends Component {
 
 
     //METHODS////////////////////////////////////
+    renderRedirectLogin = () => {
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
+    }
 
+    renderRedirectGameReview = async (game) => {
+        await this.setState({ "gameReview": game })
+    }
+
+    renderRedirectUserReview = async (game) => {
+        await this.setState({ "userReview": game })
+    }
 
     ////////////////////////////////////////////
 
 
     render() {
         const { classes } = this.props;
+
+        if (this.state.gameReview != null) {
+            return <Redirect to={{
+                pathname: '/review-game',
+                state: { "game": this.state.gameReview }
+            }} />
+        }
+
+        if (this.state.userReview != null) {
+            return <Redirect to={{
+                pathname: '/review-user',
+                state: { "user": this.state.userReview }
+            }} />
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -277,8 +305,14 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.reviewUsers.map((row) => (
+                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
+
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.authorUsername} style={{ color: "#ff3ea0" }}>
+                                                                                <b>{row.authorUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
                                                                         <TableCell align="left">{row.comment}</TableCell>
                                                                         <TableCell align="left">{row.date}</TableCell>
@@ -317,10 +351,14 @@ class ProfilePage extends Component {
                                                             <TableBody>
                                                                 {this.state.info.reviewGames.map((row) => (
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.game.name}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/games/info/" + row.gameId} style={{ color: "#ff3ea0" }}>
+                                                                                <b>{row.gameName}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -356,10 +394,14 @@ class ProfilePage extends Component {
                                                             <TableBody>
                                                                 {this.state.info.reviewedUsers.map((row) => (
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.targetUsername} style={{ color: "#ff3ea0" }} >
+                                                                                <b><i class="far fa-user"></i> {row.targetUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -393,20 +435,53 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.buys.map((row) => (
+                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder" }}>
-                                                                            <Link to={"/game/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
+                                                                            <Link to={"/games/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
                                                                                 <b>{row.gameName}</b>
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder", color: "#f44336" }}>
                                                                             <span style={{
-                                                                            background: "rgb(253,27,163)",
-                                                                            background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
-                                                                            WebkitBackgroundClip: "text",
-                                                                            WebkitTextFillColor: "transparent",
-                                                                        }}><i class="fas fa-key"></i> </span><span style={{marginLeft:"5px"}}><b>{row.gamerKey}</b></span></TableCell>
+                                                                                background: "rgb(253,27,163)",
+                                                                                background: "linear-gradient(0deg, rgba(253,27,163,1) 0%, rgba(251,72,138,1) 24%, rgba(252,137,114,1) 55%, rgba(253,161,104,1) 82%, rgba(254,220,87,1) 100%)",
+                                                                                WebkitBackgroundClip: "text",
+                                                                                WebkitTextFillColor: "transparent",
+                                                                            }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+                                                                        <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
+>>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+                                                                        <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
+                                                                        <TableCell align="right">
+                                                                            <Button
+                                                                                size="sm"
+                                                                                style={{ backgroundColor: "#fc8f6f" }}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                id={"reviewButton" + row.gameId}
+                                                                                onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
+                                                                            >
+                                                                                <i class="far fa-star"></i> Review Game
+                                                                            </Button>
+                                                                        </TableCell>
+                                                                        <TableCell align="right">
+                                                                            <Button
+                                                                                size="sm"
+                                                                                style={{ backgroundColor: "#ff3ea0" }}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                id={"reviewButton" + row.sellerId}
+                                                                                onClick={() => this.renderRedirectUserReview({ sellerName: row.sellerName, sellerId: row.sellerId })}
+                                                                            >
+                                                                                <i class="far fa-star"></i> Review Seller
+                                                                            </Button>
+                                                                        </TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -451,10 +526,19 @@ class ProfilePage extends Component {
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
                                                                         }
                                                                         {row.purchased ?
-                                                                            null :
+                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+<<<<<<< HEAD
+<<<<<<< HEAD
+                                                                                
+=======
+
+>>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
+                                                                            </TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
                                                                                 <Button
-                                                                                    size="md"
+                                                                                    size="sm"
                                                                                     style={{ backgroundColor: "#ff3ea0" }}
                                                                                     href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
                                                                                     target="_blank"
@@ -586,7 +670,7 @@ class ProfilePage extends Component {
                                             </div>
 
                                             <div style={{ marginTop: "10px", width: "99%" }}>
-                                                {this.state.info.reviewUsers.length == 0 ?
+                                                {this.state.info.reviews.length == 0 ?
                                                     <div style={{ textAlign: "left" }}>
                                                         <h3 style={{ color: "#999" }}>
                                                             Oops, seems like no one's reviewed this user yet...
@@ -595,12 +679,16 @@ class ProfilePage extends Component {
                                                     <TableContainer component={Paper}>
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
-                                                                {this.state.info.reviewUsers.map((row) => (
-                                                                    <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                {this.state.info.reviews.map((row) => (
+                                                                    <TableRow hover key={row.id}>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.targetUsername} style={{ color: "#ff3ea0" }} >
+                                                                                <b><i class="far fa-user"></i> {row.targetUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -645,20 +733,11 @@ class ProfilePage extends Component {
                                                                             <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
                                                                         }
-                                                                        {row.purchased ?
-                                                                            null :
-                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-                                                                                <Button
-                                                                                    size="md"
-                                                                                    style={{ backgroundColor: "#ff3ea0" }}
-                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                                                    target="_blank"
-                                                                                    rel="noopener noreferrer"
-                                                                                >
-                                                                                    <i class="fas fa-times"></i> Cancel Sale
-                                                                        </Button>
-                                                                            </TableCell>
-                                                                        }
+
+                                                                        <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+
+                                                                        </TableCell>
+
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -770,7 +849,7 @@ class ProfilePage extends Component {
                                         </div>
                                         <div style={{ textAlign: "left" }}>
                                             <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                                {this.state.info.birthDateStr}
+                                                {this.state.info.birthDate}
                                             </span>
                                         </div>
 
@@ -781,7 +860,7 @@ class ProfilePage extends Component {
                                         </div>
                                         <div style={{ textAlign: "left" }}>
                                             <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                                                {this.state.info.startDateStr}
+                                                {this.state.info.startDate}
                                             </span>
                                         </div>
 

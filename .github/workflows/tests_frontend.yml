@@ -18,13 +18,3 @@ jobs:
       run: npm install --prefix code/frontend/web-app; npm start --prefix code/frontend/web-app &
     - name: Run maven selenium tests
       run: mvn -f api '-Dtest=frontend.webapp.*' test
-  
-    # steps:
-    # - name: Selenoid
-    #   uses: ajinx/selenoid@2.0
-    # - uses: actions/checkout@v2
-    # - run: npm ci --prefix code/frontend/web-app
-    # - name: Run react
-    #   run: npm start --prefix code/frontend/web-app --port 4444
-    # - name: Run maven selenium tests
-    #   run: mvn -f api '-Dtest=frontend.webapp.*' 

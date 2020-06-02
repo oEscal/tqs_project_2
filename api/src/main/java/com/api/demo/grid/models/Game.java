@@ -159,4 +159,11 @@ public class Game {
 
         developer.addGame(this);
     }
+
+    public double getScore(){
+        if (this.reviews.isEmpty()) return -1;
+        double sum = 0;
+        for (ReviewGame review: reviews) sum += review.getScore();
+        return sum/reviews.size();
+    }
 }

@@ -26,6 +26,7 @@ import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.service.UserService;
 import com.api.demo.grid.utils.Pagination;
 import com.api.demo.grid.utils.ReviewJoiner;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +80,9 @@ class GridRestControllerTest {
     @MockBean
     private UserRepository mUserRepository;
 
+    @MockBean
+    private UserService mUserService;
+
     private Game mGame;
     private GameGenre mGameGenre;
     private Publisher mPublisher;
@@ -101,12 +105,7 @@ class GridRestControllerTest {
 
     private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
     private String mUsername1 = "username1",
-            mName1 = "name1",
-            mEmail1 = "email1",
-            mCountry1 = "country1",
-            mPassword1 = "mPassword1",
-            mBirthDateStr = "17/10/2010",
-            mStartDateStr = "25/05/2020";
+            mPassword1 = "mPassword1";
 
     @BeforeEach
     @SneakyThrows
@@ -140,13 +139,9 @@ class GridRestControllerTest {
         mGamePOJO.setPublisher("publisher");
 
         mUser = new User();
+        mUser.setId(2L);
         mUser.setUsername(mUsername1);
-        mUser.setName(mName1);
-        mUser.setEmail(mEmail1);
-        mUser.setCountry(mCountry1);
         mUser.setPassword(mPasswordEncoder.encode(mPassword1));
-        mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mGameKey = new GameKey();
         mGameKey.setRealKey("key");
@@ -157,7 +152,6 @@ class GridRestControllerTest {
         mSell.setId(4L);
         mSell.setGameKey(mGameKey);
         mSell.setUser(mUser);
-        mSell.setPrice(2.5);
         mSell.setDate(new Date());
 
         mSellPOJO = new SellPOJO("key", 2L, 2.3, null);
@@ -165,6 +159,8 @@ class GridRestControllerTest {
 
         mBuyer = new User();
         mBuyer.setId(5L);
+        mBuyer.setUsername(mUsername1);
+        mBuyer.setPassword(mPasswordEncoder.encode(mPassword1));
 
         mBuy = new Buy();
         mBuy.setSell(mSell);
@@ -177,8 +173,8 @@ class GridRestControllerTest {
 
         mSearchGamePOJO = new SearchGamePOJO();
 
-        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
-        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
+        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, 1, 1);
+        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, 1, 2);
     }
 
     @Test
@@ -500,12 +496,12 @@ class GridRestControllerTest {
     @WithMockUser(username = "spring")
     void whenPostingValidSellListing_ReturnValidSellObject() throws Exception {
         Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(mSell);
-        mMockMvc.perform(post("/grid/add-sell-listing")
+        MvcResult result = mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(4)))
-                .andExpect(jsonPath("$.userId", is(2)))
+                .andExpect(jsonPath("$.userId", is(2))).andReturn()
         ;
     }
 
@@ -513,6 +509,18 @@ class GridRestControllerTest {
     @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception {
         Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(null);
+        mMockMvc.perform(post("/grid/add-sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidSellListing_AndGotExceptionDetails_Return409Exception() throws Exception {
+        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenThrow(ExceptionDetails.class);
         mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -945,9 +953,10 @@ class GridRestControllerTest {
     @Test
     @SneakyThrows
     void whenDeletingValidListing_andIsOwner_ReturnOkListing() throws Exception {
+        mSell.setPrice(2.5);
         Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
         Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
-        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mUserService.getUser(anyString())).thenReturn(mUser);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
         mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
@@ -961,12 +970,13 @@ class GridRestControllerTest {
     @Test
     @SneakyThrows
     void whenDeletingValidListing_andIsAdmin_ReturnOkListing() throws Exception {
+        mSell.setPrice(2.5);
         mBuyer.setAdmin(true);
         Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mBuyer);
         Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
-        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
+        Mockito.when(mUserService.getUser(anyString())).thenReturn(mBuyer);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
-        mMockMvc.perform(get("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -980,7 +990,7 @@ class GridRestControllerTest {
     void whenDeletingValidListing_andIsNotOwner_norAdmin_Return401Exception() throws Exception {
         Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mBuyer);
         Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
-        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mBuyer);
+        Mockito.when(mUserService.getUser(anyString())).thenReturn(mBuyer);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong())).thenReturn(mSell);
         mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
@@ -996,9 +1006,9 @@ class GridRestControllerTest {
     void whenDeletingInvalidListing_andIsOwner_Return404Listing() throws Exception {
         Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
         Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
-        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mUserService.getUser(anyString())).thenReturn(mUser);
         Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
-                .thenThrow(Mockito.any(UnavailableListingException.class));
+                .thenThrow(new UnavailableListingException("Somethign"));
         mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")
@@ -1010,12 +1020,14 @@ class GridRestControllerTest {
 
     @Test
     @SneakyThrows
-    void whenDeletingInvalidListing_andIsOwner_Return403Listing() throws Exception {
+    void whenDeletingBoughtListing_andIsOwner_Return403Listing(){
         Mockito.when(mUserRepository.findByUsername(mUsername1)).thenReturn(mUser);
-        Mockito.when(mGridService.getSell(anyLong())).thenReturn(null);
-        Mockito.when(mUserRepository.findByUsername(anyString())).thenReturn(mUser);
+        Mockito.when(mGridService.getSell(anyLong())).thenReturn(mSell);
+        Mockito.when(mUserService.getUser(anyString())).thenReturn(mUser);
+        mSell.setPurchased(new Buy());
         Mockito.when(mGridService.deleteSell(Mockito.anyLong()))
-                .thenThrow(Mockito.any(ExceptionDetails.class));
+                .thenThrow(new ExceptionDetails("GG wp"));
+
         mMockMvc.perform(delete("/grid/delete-sell-listing")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("id", "2")

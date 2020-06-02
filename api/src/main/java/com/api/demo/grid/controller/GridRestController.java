@@ -144,7 +144,12 @@ public class GridRestController {
 
     @PostMapping("/add-sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
-        Sell sell = mGridService.saveSell(sellPOJO);
+        Sell sell = null;
+        try {
+            sell = mGridService.saveSell(sellPOJO);
+        } catch (ExceptionDetails exceptionDetails) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Could not save Sell Listing");
+        }
         if (sell == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }
@@ -164,7 +169,7 @@ public class GridRestController {
         if (sell == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sell Listing was not found");
         }
-        if (sell.getUser().getId() != user.getId() && !user.isAdmin()){
+        if (!sell.getUser().getId().equals(user.getId()) && !user.isAdmin()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Don't have permission to delete this listing");
         }
         try{

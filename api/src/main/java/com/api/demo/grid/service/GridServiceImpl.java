@@ -182,7 +182,7 @@ public class GridServiceImpl implements GridService {
     }
 
     @Override
-    public Sell saveSell(SellPOJO sellPOJO) {
+    public Sell saveSell(SellPOJO sellPOJO) throws ExceptionDetails {
         Optional<User> user = this.mUserRepository.findById(sellPOJO.getUserId());
         if (user.isEmpty()) return null;
         User realUser = user.get();
@@ -190,6 +190,10 @@ public class GridServiceImpl implements GridService {
         Optional<GameKey> gameKey = this.mGameKeyRepository.findByRealKey(sellPOJO.getGameKey());
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
+
+        if (realGameKey.getSell() != null || realGameKey.getAuction() != null){
+            throw new ExceptionDetails("This key is already in a different listing");
+        }
 
         Sell sell = new Sell();
         sell.setUser(realUser);
