@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import javax.persistence.CascadeType;
@@ -43,7 +44,7 @@ public class GameKey {
     @JsonIgnore
     private String realKey;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
@@ -66,6 +67,7 @@ public class GameKey {
     private String platform;
 
 
+    @Transactional
     public void setGame(Game game) {
         //prevent endless loop
         if (sameAsFormer(game)) return ;

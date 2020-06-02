@@ -78,7 +78,7 @@ public class Game {
     @ToString.Exclude
     private Set<ReviewGame> reviews = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
@@ -97,10 +97,13 @@ public class Game {
         if (date != null) releaseDate = (Date) date.clone();
     }
 
+    @Transactional
     public void addGameKey(GameKey gameKey) {
         if (gameKeys == null) gameKeys = new HashSet<>();
         else if (gameKeys.contains(gameKey)) return;
+
         gameKeys.add(gameKey);
+
         gameKey.setGame(this);
     }
 

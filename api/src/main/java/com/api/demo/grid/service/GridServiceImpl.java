@@ -140,8 +140,7 @@ public class GridServiceImpl implements GridService {
             game.addDeveloper(developer.get());
         }
 
-        Game ola = this.mGameRepository.save(game);
-        return ola;
+        return this.mGameRepository.save(game);
     }
 
     @Override
@@ -169,16 +168,15 @@ public class GridServiceImpl implements GridService {
     }
 
     public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
-        Optional<Game> game = this.mGameRepository.findById(gameKeyPOJO.getGameId());
-        if (game.isEmpty()) return null;
-        Game realGame = game.get();
+        Game game = this.mGameRepository.findById(gameKeyPOJO.getGameId()).orElse(null);
+        if (game == null) return null;
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey(gameKeyPOJO.getKey());
-        gameKey.setGame(realGame);
+        gameKey.setGame(game);
         gameKey.setRetailer(gameKeyPOJO.getRetailer());
         gameKey.setPlatform(gameKeyPOJO.getPlatform());
-        this.mGameRepository.save(realGame);
+        this.mGameKeyRepository.save(gameKey);
         return gameKey;
     }
 

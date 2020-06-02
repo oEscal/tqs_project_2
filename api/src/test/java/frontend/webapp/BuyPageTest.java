@@ -1,7 +1,6 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import org.junit.jupiter.api.AfterEach;
