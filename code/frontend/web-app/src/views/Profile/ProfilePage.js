@@ -305,8 +305,14 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.reviewUsers.map((row) => (
+                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
+
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.authorUsername} style={{ color: "#ff3ea0" }}>
+                                                                                <b>{row.authorUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
                                                                         <TableCell align="left">{row.comment}</TableCell>
                                                                         <TableCell align="left">{row.date}</TableCell>
