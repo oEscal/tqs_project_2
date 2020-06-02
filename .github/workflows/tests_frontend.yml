@@ -1,0 +1,30 @@
+on: push
+name: Tests frontend workflow
+jobs:
+  tests: 
+    runs-on: ubuntu-latest
+    name: Selenium tests
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+    - name: Install Google Chrome
+      run: |
+       chmod +x ./scripts/install_chrome.sh
+        ./scripts/install_chrome.sh
+    - name: Run react
+      run: npm install --prefix code/frontend/web-app; npm start --prefix code/frontend/web-app &
+    - name: Run maven selenium tests
+      run: mvn -f api '-Dtest=frontend.webapp.*' test
+  
+    # steps:
+    # - name: Selenoid
+    #   uses: ajinx/selenoid@2.0
+    # - uses: actions/checkout@v2
+    # - run: npm ci --prefix code/frontend/web-app
+    # - name: Run react
+    #   run: npm start --prefix code/frontend/web-app --port 4444
+    # - name: Run maven selenium tests
+    #   run: mvn -f api '-Dtest=frontend.webapp.*' 

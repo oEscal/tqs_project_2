@@ -1,7 +1,7 @@
 on: push
-name: Tests workflow
+name: Tests backend workflow
 jobs:
-  sonarCloudTrigger:
+  tests:
     name: Junit Tests Trigger
     runs-on: ubuntu-latest
     steps:

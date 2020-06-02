@@ -22,9 +22,17 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.repository.DeveloperRepository;
+import com.api.demo.grid.repository.GameGenreRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.ReviewUserRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +56,6 @@ import java.util.Set;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,13 +90,7 @@ class GridRestControllerIT {
     private GameKeyRepository mGameKeyRepository;
 
     @Autowired
-    private BuyRepository mBuyRepository;
-
-    @Autowired
     private ReviewUserRepository mReviewUserRepository;
-
-    @Autowired
-    private ReviewGameRepository mReviewGameRepository;
 
     @Autowired
     private MockMvc mMockMvc;
@@ -133,7 +134,7 @@ class GridRestControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGameGenrePOJO.getName()))).andReturn();
 
-        assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
+        Assertions.assertFalse(mGameGenreRepository.findByName(mGameGenrePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -144,7 +145,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mPublisherPOJO.getName())));
-        assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
+        Assertions.assertFalse(mPublisherRepository.findByName(mPublisherPOJO.getName()).isEmpty());
 
     }
 
@@ -156,12 +157,13 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mDeveloperPOJO.getName())));
-        assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
+        Assertions.assertFalse(mDeveloperRepository.findByName(mDeveloperPOJO.getName()).isEmpty());
     }
 
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGame_ReturnValidResponse() throws Exception {
+
         Developer developer = new Developer();
         developer.setName("dev");
         mDeveloperRepository.save(developer);
@@ -177,13 +179,14 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("pub");
         mGamePOJO.setDevelopers(new HashSet<>(Arrays.asList("dev")));
         mGamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre")));
+
         mMockMvc.perform(post("/grid/add-game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(mGamePOJO.getName())))
         ;
-        assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        Assertions.assertFalse(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -230,7 +233,7 @@ class GridRestControllerIT {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Could not save Game"));
-        assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
+        Assertions.assertTrue(mGameRepository.findAllByNameContaining(mGamePOJO.getName()).isEmpty());
     }
 
     @Test
@@ -365,22 +368,23 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception {
+    void whenPostingValidBuyListing_AndItemHasBeenBought_ThrowException() throws Exception {
         User seller = createUser();
         mUserRepository.save(seller);
 
         Game game = new Game();
         game.setName("Game");
+        mGameRepository.save(game);
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey("key");
         gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
 
+        mUserRepository.save(seller);
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
-        mGameRepository.save(game);
         sell.setUser(seller);
-        mUserRepository.save(seller);
 
         User buyer = createUser();
         mUserRepository.save(buyer);
@@ -388,7 +392,6 @@ class GridRestControllerIT {
         Buy buy = new Buy();
         buy.setUser(buyer);
         sell.setPurchased(buy);
-        mUserRepository.save(buyer);
         mSellRepository.save(sell);
 
         long[] listingId = {sell.getId()};
@@ -405,7 +408,8 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception {
+    void whenPostingValidBuyListing_AndListingHasBeenRemoved_ThrowException() throws Exception {
+
         Sell sell = this.createSellListing();
 
         User buyer = createUser();
@@ -850,21 +854,24 @@ class GridRestControllerIT {
 
     @SneakyThrows
     private Sell createSellListing() {
+
         User seller = createUser();
         mUserRepository.save(seller);
 
         Game game = new Game();
         game.setName("Game");
+        mGameRepository.save(game);
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey("key");
         gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
 
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
-        mGameRepository.save(game);
         sell.setUser(seller);
-        mUserRepository.save(seller);
+        mSellRepository.save(sell);
+
         return sell;
     }
 }
