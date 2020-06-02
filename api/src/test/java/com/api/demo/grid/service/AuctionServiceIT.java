@@ -445,7 +445,7 @@ class AuctionServiceIT {
                 new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
         mAuctionService.addAuction(auctionPastPOJO);
 
-        List<Auction> auctions = mAuctionRepository.findAllByGameWithEndDateAfterCurrent(mGame.getId());
+        List<Auction> auctions = mAuctionService.getAllAuctionsListings(mGame.getId());
 
         // verify if there are just 2 current auctions
         assertEquals(2, auctions.size());
