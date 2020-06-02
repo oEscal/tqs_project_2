@@ -14,13 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.Optional;
 
 
 @Service
 public class UserService {
+
+    private static final String USER_ERROR = "Username not found in the database";
 
     @Autowired
     private UserRepository mRepository;
@@ -62,7 +63,7 @@ public class UserService {
     public UserInfoProxy getUserInfo(String username) throws UserNotFoundException {
         User user = mRepository.findByUsername(username);
 
-        if (user == null) throw new UserNotFoundException("Username not found in the database");
+        if (user == null) throw new UserNotFoundException(USER_ERROR);
 
         return new UserInfoProxy(user);
     }
@@ -70,7 +71,7 @@ public class UserService {
     public User getFullUserInfo(String username) throws UserNotFoundException {
         User user = mRepository.findByUsername(username);
 
-        if (user == null) throw new UserNotFoundException("Username not found in the database");
+        if (user == null) throw new UserNotFoundException(USER_ERROR);
 
         return user;
     }
@@ -78,7 +79,7 @@ public class UserService {
     public User updateUser(long id, UserUpdatePOJO userUpdatePOJO)
             throws UserNotFoundException, ExceptionDetails{
         Optional<User> opUser = mRepository.findById(id);
-        if (opUser.isEmpty()) throw new UserNotFoundException("Username not found in the database");
+        if (opUser.isEmpty()) throw new UserNotFoundException(USER_ERROR);
         User user = opUser.get();
         //Update name
         if (userUpdatePOJO.getName() != null) user.setName(userUpdatePOJO.getName());
