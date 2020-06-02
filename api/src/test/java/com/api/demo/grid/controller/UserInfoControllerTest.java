@@ -23,20 +23,19 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -270,7 +269,7 @@ class UserInfoControllerTest {
         }
    
     @Test
-    @SneakyThrows 
+    @SneakyThrows
     void whenUpdatingValidUserInfo_returnValidUser(){
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser2);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))

@@ -1,8 +1,6 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.exception.ExceptionDetails;
-import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

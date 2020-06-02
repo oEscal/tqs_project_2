@@ -30,7 +30,11 @@ import Wallet from "views/Wallet/Wallet.js";
 import GameReview from "views/Review/GameReview.js";
 import UserReview from "views/Review/UserReview.js";
 
+<<<<<<< HEAD
 >>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+>>>>>>> master
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
 import Receipt from "views/Cart/Receipt.js";
 import WishList from "views/WishList/WishList.js";
 
@@ -55,7 +59,11 @@ ReactDOM.render(
 =======
             <Route exact path="/review-game" component={GameReview}/>
             <Route exact path="/review-user" component={UserReview}/>
+<<<<<<< HEAD
 >>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+>>>>>>> master
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
             <Route exact path="/user/:user" component={ProfilePage}/>
             <Route exact path="/user/:user/edit" component={EditProfile}/>
             <Route exact path="/sell-game" component={SellGame}/>
