@@ -1,17 +1,19 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.proxy.UserInfoProxy;
 import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +28,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+<<<<<<< HEAD
+=======
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+>>>>>>> master
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,6 +62,7 @@ class UserInfoControllerTest {
     private Game mGame;
     private Game mWishGame;
     private UserInfoProxy mUserInfoProxy;
+    private UserUpdatePOJO mUserUpdatePOJO;
     private String mUsername1 = "username1",
             mName1 = "name1",
             mEmail1 = "email1",
@@ -106,6 +112,7 @@ class UserInfoControllerTest {
         mWishGame.setUserWish(new HashSet<>(Arrays.asList(mUser)));
 
         mUserInfoProxy = new UserInfoProxy(mUser);
+        mUserUpdatePOJO = new UserUpdatePOJO();
     }
 
     @Test
@@ -244,6 +251,7 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
+<<<<<<< HEAD
     void whenAddingFundsToUser_ReturnSuccessMessage(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
@@ -262,10 +270,64 @@ class UserInfoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.funds", is(5.0)))
                 ;
+=======
+    void whenUpdatingValidUserInfo_returnValidUser(){
+        Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser2);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
+                .thenReturn(mUser);
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(mName1)))
+                ;
+        System.out.println();
     }
 
     @Test
     @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidEmail_return4xxError(){
+        Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
+                .thenThrow(new ExceptionDetails("There is already a user with that email"));
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("There is already a user with that email"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidCC_return4xxError(){
+        Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
+                .thenThrow(new ExceptionDetails("If you add a new card you have to give all the details referring to that card"));
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("If you add a new card you have to give all the details referring to that card"))
+        ;
+>>>>>>> master
+    }
+
+    @Test
+    @SneakyThrows
+<<<<<<< HEAD
     void whenAddingFundsToUser_andFails_Return4xxMessage(){
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(mUser);
@@ -301,5 +363,47 @@ class UserInfoControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("Username not found in the database"))
         ;
+=======
+    void whenUpdatingUserInfo_withInvalidName_return4xxError(){
+        Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
+                .thenThrow(new UserNotFoundException("Username not found in the database"));
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in the database"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidAuthn_return4xxError(){
+        Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser);
+        Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
+                .thenReturn(mUser);
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(null);
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in the database"))
+        ;
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+>>>>>>> master
     }
 }

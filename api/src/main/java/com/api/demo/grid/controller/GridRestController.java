@@ -1,5 +1,6 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -153,7 +154,12 @@ public class GridRestController {
 
     @PostMapping("/add-sell-listing")
     public ResponseEntity<Sell> saveSell(@RequestBody SellPOJO sellPOJO) {
-        Sell sell = mGridService.saveSell(sellPOJO);
+        Sell sell = null;
+        try {
+            sell = mGridService.saveSell(sellPOJO);
+        } catch (ExceptionDetails exceptionDetails) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Could not save Sell Listing");
+        }
         if (sell == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }

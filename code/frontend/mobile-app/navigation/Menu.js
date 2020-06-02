@@ -20,10 +20,8 @@ function CustomDrawerContent({
   const screens = [
     "Games",
     "Wishlist",
-    "Sell",
-    "Wallet",
+    "Cart",
     "Profile",
-    "Components"
   ];
   return (
     <Block
@@ -44,18 +42,9 @@ function CustomDrawerContent({
         <Block row>
           <Block middle style={styles.pro2}>
             <Text size={16} color="white">
-              {"0.0"}{" "}
-              <FontAwesome5 name="wallet" size={14} color="white" />
+              Game On
             </Text>
           </Block>
-          <Block middle style={styles.pro2}>
-            <Text size={16} color={"#ffec4f"}>
-              {profile.rating}{" "}
-              <Icon name="shape-star" family="GalioExtra" size={14} />
-            </Text>
-          </Block>
-
-
         </Block>
       </Block>
 

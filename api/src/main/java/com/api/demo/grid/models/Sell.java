@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,10 +53,11 @@ public class Sell {
     @EqualsAndHashCode.Exclude
     private Buy purchased;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private User user;
 
     private double price;
@@ -66,6 +68,7 @@ public class Sell {
     private Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 
+    @Transactional
     public void setUser(User user) {
         //prevent endless loop
         if (sameAsFormer(user)) return ;
