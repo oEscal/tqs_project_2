@@ -41,6 +41,10 @@ class DrawerItem extends React.Component {
         return (
           <FontAwesome5 name="heart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
         );
+      case "Cart":
+        return (
+          <FontAwesome5 name="shopping-cart" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
+        );
       case "Logout":
         return (
           <FontAwesome5 name="door-open" size={16} color={focused ? "white" : materialTheme.COLORS.MUTED} />
