@@ -319,6 +319,37 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
+    void whenPostingInvalidSellListing_AndGotExceptionDetails_Return409Exception() throws Exception {
+        User seller = createUser();
+        mUserRepository.save(seller);
+
+        Game game = new Game();
+        game.setName("game");
+        game.setCoverUrl("cover.jpg");
+        mGameRepository.save(game);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
+
+        Sell sell = new Sell();
+        sell.setUser(seller);
+        sell.setGameKey(gameKey);
+        mSellRepository.save(sell);
+
+        mSellPOJO.setUserId(seller.getId());
+        mSellPOJO.setPrice(2.4);
+        mSellPOJO.setGameKey("key");
+        mMockMvc.perform(post("/grid/add-sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception {
 
         mMockMvc.perform(post("/grid/add-sell-listing")
