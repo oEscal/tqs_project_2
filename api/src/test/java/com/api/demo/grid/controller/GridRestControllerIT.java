@@ -83,13 +83,7 @@ class GridRestControllerIT {
     private GameKeyRepository mGameKeyRepository;
 
     @Autowired
-    private BuyRepository mBuyRepository;
-
-    @Autowired
     private ReviewUserRepository mReviewUserRepository;
-
-    @Autowired
-    private ReviewGameRepository mReviewGameRepository;
 
     @Autowired
     private MockMvc mMockMvc;
@@ -367,22 +361,23 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidBuylisting_AndItemHasBeenBought_ThrowException() throws Exception {
+    void whenPostingValidBuyListing_AndItemHasBeenBought_ThrowException() throws Exception {
         User seller = createUser();
         mUserRepository.save(seller);
 
         Game game = new Game();
         game.setName("Game");
+        mGameRepository.save(game);
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey("key");
         gameKey.setGame(game);
+        mGameKeyRepository.save(gameKey);
 
+        mUserRepository.save(seller);
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
-        mGameRepository.save(game);
         sell.setUser(seller);
-        mUserRepository.save(seller);
 
         User buyer = createUser();
         mUserRepository.save(buyer);
@@ -390,7 +385,6 @@ class GridRestControllerIT {
         Buy buy = new Buy();
         buy.setUser(buyer);
         sell.setPurchased(buy);
-        mUserRepository.save(buyer);
         mSellRepository.save(sell);
 
         long[] listingId = {sell.getId()};
@@ -407,7 +401,8 @@ class GridRestControllerIT {
 
     @Test
     @WithMockUser(username = "spring")
-    void whenPostingValidBuylisting_AndListingHasBeenRemoved_ThrowException() throws Exception {
+    void whenPostingValidBuyListing_AndListingHasBeenRemoved_ThrowException() throws Exception {
+
         Sell sell = this.createSellListing();
 
         User buyer = createUser();
