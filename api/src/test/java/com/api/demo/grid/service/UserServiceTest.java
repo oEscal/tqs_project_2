@@ -35,16 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
-<<<<<<< HEAD
 import static org.mockito.ArgumentMatchers.anyString;
-=======
-<<<<<<< HEAD
-=======
-import static org.mockito.ArgumentMatchers.anyString;
->>>>>>> master
->>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -480,6 +472,8 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> mUserService.addFundsToUser(4l, 5));
     }
 
+    @Test
+    @WithMockUser(username = "spring")
     void whenUpdatingUser_withInvalidUsername_throwUserNotFoundException(){
         given(mUserRepository.findById(anyLong())).willReturn(Optional.empty());
 
