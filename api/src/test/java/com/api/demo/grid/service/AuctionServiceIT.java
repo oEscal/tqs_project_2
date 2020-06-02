@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -400,5 +401,41 @@ class AuctionServiceIT {
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mAuctioneerUsername, mGameKeyRKey,
                 newPrice + 1.3));
+    }
+
+
+    /***
+     *  Get all current auctions
+     ***/
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctions_getIsSuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction 1
+        mAuctionService.addAuction(mAuctionPOJO);
+
+
+        // save game key 2
+        String gameKey = "other_game_key";
+        GameKey gameKey1 = new GameKey();
+        gameKey1.setRealKey(gameKey);
+        gameKey1.setGame(mGame);
+        mGameKeyRepository.save(gameKey1);
+
+        // insert auction 2
+        AuctionPOJO auctionPOJO = new AuctionPOJO(mAuctioneerUsername, gameKey, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+        // insertion auction 2
+        mAuctionService.addAuction(auctionPOJO);
+
+        List<Auction> a = mAuctionRepository.findAll();
+        List<Auction> auctions = mAuctionRepository.findAllByGameWithEndDateAfterCurrent(mGame.getId());
+        return;
     }
 }
