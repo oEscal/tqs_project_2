@@ -971,6 +971,19 @@ class Game extends Component {
             }
 
             if (this.state.game != null) {
+                var score = <span style={{ color: "#999" }}>UNRATED</span>
+
+                if (this.state.info.score == -1) {
+                    score = <span style={{ color: "#999" }}>UNRATED</span>
+                }
+                else if (this.state.info.score > 0 && this.state.info.score <= 1) {
+                    score = <span style={{ color: "red" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
+                } else if (this.state.info.score < 4) {
+                    score = <span style={{ color: "#fc926e" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
+                } else if (this.state.info.score <= 5) {
+                    score = <span style={{ color: "#4ec884" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
+                }
+                
                 gameHeader = <div style={{ padding: "70px 0" }}>
                     <GridContainer>
                         <GridItem xs={12} sm={12} md={5}>
