@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -46,13 +45,14 @@ class UserInfoControllerIT {
     private UserRepository mUserRepo;
 
     @Autowired
-    private SellRepository mSellRepo;
-
-    @Autowired
     private GameRepository mGameRepo;
 
     @Autowired
-    private GameKeyRepository mGameKeyRepo;
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private SellRepository mSellRepository;
+
 
     private User mUser;
     private User mUser2;
@@ -114,13 +114,16 @@ class UserInfoControllerIT {
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
+
         mUserRepo.save(mUser);
+        mGameRepo.save(mGame);
 
         mGameKey.setGame(mGame);
+        mGameKeyRepository.save(mGameKey);
 
         mSell.setGameKey(mGameKey);
-        mGameRepo.save(mGame);
         mSell.setUser(mUser);
+        mSellRepository.save(mSell);
         mUserRepo.save(mUser);
 
         mMockMvc.perform(get("/grid/public/user-info")
@@ -133,7 +136,7 @@ class UserInfoControllerIT {
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.startDate", is(mStartDateStr)))
                 .andExpect(jsonPath("$.listings[0].id", is((int)mSell.getId())))
-                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId())))
+                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId()))).andReturn()
         ;
 
     }
