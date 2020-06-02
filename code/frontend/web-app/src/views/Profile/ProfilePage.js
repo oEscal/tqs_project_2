@@ -94,7 +94,8 @@ class ProfilePage extends Component {
         },
         public: false,
         info: null,
-        gameReview: null
+        gameReview: null,
+        userReview: null
     }
 
     async getPrivateUserInfo() {
@@ -157,7 +158,7 @@ class ProfilePage extends Component {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: login_info
-            },
+            }
         })
             .then(response => {
                 if (response.status === 401) {
@@ -213,7 +214,11 @@ class ProfilePage extends Component {
     }
 
     renderRedirectGameReview = async (game) => {
-        await this.setState({"gameReview": game})
+        await this.setState({ "gameReview": game })
+    }
+
+    renderRedirectUserReview = async (game) => {
+        await this.setState({ "userReview": game })
     }
 
     ////////////////////////////////////////////
@@ -222,11 +227,17 @@ class ProfilePage extends Component {
     render() {
         const { classes } = this.props;
 
-        if(this.state.gameReview != null){
-            console.log(this.state.gameReview)
+        if (this.state.gameReview != null) {
             return <Redirect to={{
                 pathname: '/review-game',
-                state: {"game": this.state.gameReview}
+                state: { "game": this.state.gameReview }
+            }} />
+        }
+
+        if (this.state.userReview != null) {
+            return <Redirect to={{
+                pathname: '/review-user',
+                state: { "user": this.state.userReview }
             }} />
         }
 
@@ -334,10 +345,14 @@ class ProfilePage extends Component {
                                                             <TableBody>
                                                                 {this.state.info.reviewGames.map((row) => (
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.game.name}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/games/info/" + row.gameId}  style={{ color: "#ff3ea0" }}>
+                                                                                <b>{row.gameName}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -372,11 +387,16 @@ class ProfilePage extends Component {
                                                         <Table style={{ width: "100%" }} aria-label="simple table">
                                                             <TableBody>
                                                                 {this.state.info.reviewedUsers.map((row) => (
+                                                                    console.log(row),
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left">{row.author.username}</TableCell>
-                                                                        <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
-                                                                        <TableCell align="left">{row.date}</TableCell>
+                                                                        <TableCell align="left">
+                                                                            <Link to={"/user/" + row.targetUsername} style={{ color: "#ff3ea0" }} >
+                                                                                <b><i class="far fa-user"></i> {row.targetUsername}</b>
+                                                                            </Link>
+                                                                        </TableCell>
+                                                                        <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
+                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
@@ -413,7 +433,7 @@ class ProfilePage extends Component {
                                                                     console.log(row),
                                                                     <TableRow hover key={row.name}>
                                                                         <TableCell align="left" style={{ fontWeight: "bolder" }}>
-                                                                            <Link to={"/game/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
+                                                                            <Link to={"/games/info/" + row.gameId} style={{ color: "#ff3ea0" }} >
                                                                                 <b>{row.gameName}</b>
                                                                             </Link>
                                                                         </TableCell>
@@ -424,6 +444,7 @@ class ProfilePage extends Component {
                                                                                 WebkitBackgroundClip: "text",
                                                                                 WebkitTextFillColor: "transparent",
                                                                             }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
+                                                                        <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
                                                                         <TableCell align="right">
                                                                             <Button
@@ -434,7 +455,19 @@ class ProfilePage extends Component {
                                                                                 id={"reviewButton" + row.gameId}
                                                                                 onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
                                                                             >
-                                                                                <i class="far fa-star"></i> Review
+                                                                                <i class="far fa-star"></i> Review Game
+                                                                            </Button>
+                                                                        </TableCell>
+                                                                        <TableCell align="right">
+                                                                            <Button
+                                                                                size="sm"
+                                                                                style={{ backgroundColor: "#ff3ea0" }}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                id={"reviewButton" + row.sellerId}
+                                                                                onClick={() => this.renderRedirectUserReview({ sellerName: row.sellerName, sellerId: row.sellerId })}
+                                                                            >
+                                                                                <i class="far fa-star"></i> Review Seller
                                                                             </Button>
                                                                         </TableCell>
                                                                     </TableRow>

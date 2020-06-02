@@ -87,7 +87,7 @@ import {
     Redirect
 } from "react-router-dom";
 
-class GameReview extends Component {
+class UserReview extends Component {
     constructor() {
         super();
     }
@@ -100,7 +100,7 @@ class GameReview extends Component {
             }
         },
         info: null,
-        game: null,
+        user: null,
 
         redirectLogin: false,
         redirectProfile: false,
@@ -201,13 +201,13 @@ class GameReview extends Component {
                 var body = {
                     "author": this.state.info.id,
                     "comment": review,
-                    "game": this.state.game.gameId,
+                    "target": this.state.user.sellerId,
                     "score": this.state.rating
                 }
 
                 await this.setState({ doneLoading: false })
 
-                await fetch(baseURL + "grid/add-game-review", {
+                await fetch(baseURL + "grid/add-user-review", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -217,7 +217,7 @@ class GameReview extends Component {
 
                 })
                     .then(response => {
-                        if (response.status === 401) {
+                        if (response.status === 401 || response.status === 400) {
                             return response
                         } else if (response.status === 200) {
                             return response.json()
@@ -232,7 +232,17 @@ class GameReview extends Component {
                             this.setState({
                                 redirectLogin: true
                             })
-
+                        }
+                        else if (data.status === 400) {
+                            toast.error('You can\'t review yourself, silly', {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                toastId: "errorBlowjob"
+                            });
                         } else {
                             this.setState({ redirectProfile: true })
                         }
@@ -249,8 +259,8 @@ class GameReview extends Component {
                         });
                         this.setState({ error: true })
                     });
-                    
-                    await this.setState({ doneLoading: true })
+
+                await this.setState({ doneLoading: true })
 
             } else {
                 localStorage.setItem('loggedUser', null);
@@ -267,10 +277,10 @@ class GameReview extends Component {
     async componentDidMount() {
         window.scrollTo(0, 0)
 
-        if (this.props.location.state.game == null) {
+        if (this.props.location.state.user == null) {
             await this.setState({ redirectGames: true })
         } else {
-            await this.setState({ game: this.props.location.state.game })
+            await this.setState({ user: this.props.location.state.user })
         }
         await this.getPrivateUserInfo()
         this.setState({ doneLoading: true })
@@ -353,7 +363,7 @@ class GameReview extends Component {
                                                         fontWeight: "bolder",
                                                         marginTop: "0px",
                                                         padding: "0 0"
-                                                    }}>Review <span style={{ color: "#f44336" }}><b>{this.state.game == null ? "" : this.state.game.gameName}</b></span></h2>
+                                                    }}>Review <span style={{ color: "#f44336" }}><b>{this.state.user == null ? "" : this.state.user.sellerName}</b></span></h2>
                                                 </GridItem>
                                             </GridContainer>
                                             <hr style={{ color: "#999", opacity: "0.4" }}></hr>
@@ -421,4 +431,4 @@ class GameReview extends Component {
     }
 }
 
-export default withStyles(styles)(GameReview);
+export default withStyles(styles)(UserReview);

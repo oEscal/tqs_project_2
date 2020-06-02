@@ -386,16 +386,20 @@ class Game extends Component {
                     var content = []
 
                     data.content.forEach(review => {
-                        review["profileButton"] = <Button
-                            color="danger"
-                            size="sm"
-                            style={{ backgroundColor: "#ff3ea0" }}
-                            onClick={() => this.goToProfile(this.state.game.bestSell.gameKey.retailer)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i class="far fa-user"></i> Review Profile
-                        </Button>
+                        var score = <span style={{ color: "#999" }}>UNRATED</span>
+
+                        if (review.score == -1) {
+                            score = <span style={{ color: "#999" }}>UNRATED</span>
+                        }
+                        else if (review.score > 0 && review.score <= 1) {
+                            score = <span style={{ color: "red" }}><b>{review.score} <i class="far fa-star"></i></b></span>
+                        } else if (review.score < 4) {
+                            score = <span style={{ color: "#fc926e" }}><b>{review.score} <i class="far fa-star"></i></b></span>
+                        } else if (review.score <= 5) {
+                            score = <span style={{ color: "#4ec884" }}><b>{review.score} <i class="far fa-star"></i></b></span>
+                        }
+
+                        review["score"] = score
 
                         content.push(review)
                     })
@@ -749,8 +753,8 @@ class Game extends Component {
                                                     <b><i class="far fa-user"></i> {row.authorUsername}</b>
                                                 </Link>
                                             </TableCell>
-                                            <TableCell align="left">{row.score == -1 || row.score == null ? "UNRATED" : <b>{row.score}</b>} <b><i class="far fa-star"></i></b></TableCell>
-                                            <TableCell align="left">{row.comment}</TableCell>
+                                            <TableCell align="left"><b>{row.score}</b></TableCell>
+                                            <TableCell align="left"><b>"{row.comment}"</b></TableCell>
                                             <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                         </TableRow>
                                     ))}
@@ -761,7 +765,7 @@ class Game extends Component {
 
                     reviewListings.push(<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                         <div style={{ margin: "auto", width: "40%" }}>
-                        <Pagination count={this.state.noReviewPages} page={this.state.reviewsPage} onChange={this.changePageReviews} variant="outlined" shape="rounded" />
+                            <Pagination count={this.state.noReviewPages} page={this.state.reviewsPage} onChange={this.changePageReviews} variant="outlined" shape="rounded" />
                         </div>
                     </GridItem>)
                 }
