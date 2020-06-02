@@ -1,5 +1,6 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -450,6 +451,7 @@ class GridServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSavingValidSellPOJO_ReturnValidSell() {
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
         Mockito.when(mMockGameKeyRepo.findByRealKey("key")).thenReturn(Optional.ofNullable(mGameKey));
@@ -463,6 +465,7 @@ class GridServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSavingInvalidUser_ReturnNullSell() {
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.empty());
         Mockito.when(mMockGameKeyRepo.findByRealKey("key")).thenReturn(Optional.ofNullable(mGameKey));
@@ -476,6 +479,7 @@ class GridServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSavingInvalidGameKey_ReturnNullSell() {
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
         Mockito.when(mMockGameKeyRepo.findByRealKey("key")).thenReturn(Optional.empty());
@@ -486,6 +490,18 @@ class GridServiceTest {
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(6L);
         Mockito.verify(mMockGameKeyRepo, Mockito.times(1)).findByRealKey("key");
         assertNull(savedSell);
+    }
+
+    @Test
+    @SneakyThrows
+    void whenSavingGameKey_WithSellListing_ThrowsException() {
+        Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
+        Mockito.when(mMockGameKeyRepo.findByRealKey("key")).thenReturn(Optional.ofNullable(mGameKey));
+        mGameKey.setSell(mSell1);
+
+        SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
+
+        assertThrows(ExceptionDetails.class, () -> mGridService.saveSell(sellPOJO));
     }
 
     @Test

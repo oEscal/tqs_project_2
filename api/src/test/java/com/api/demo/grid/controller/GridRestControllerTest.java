@@ -1,5 +1,6 @@
 package com.api.demo.grid.controller;
 
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.exception.UnavailableListingException;
 import com.api.demo.grid.exception.UnsufficientFundsException;
 import com.api.demo.grid.exception.GameNotFoundException;
@@ -487,6 +488,18 @@ class GridRestControllerTest {
     @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception {
         Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenReturn(null);
+        mMockMvc.perform(post("/grid/add-sell-listing")
+                .content(asJsonString(mSellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Could not save Sell Listing"))
+        ;
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenPostingInvalidSellListing_AndGotExceptionDetails_Return409Exception() throws Exception {
+        Mockito.when(mGridService.saveSell(Mockito.any(SellPOJO.class))).thenThrow(ExceptionDetails.class);
         mMockMvc.perform(post("/grid/add-sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
