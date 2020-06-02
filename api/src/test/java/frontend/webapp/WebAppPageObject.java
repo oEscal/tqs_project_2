@@ -1,30 +1,95 @@
 package frontend.webapp;
 
+import com.api.demo.DemoApplication;
+import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.pojos.DeveloperPOJO;
+import com.api.demo.grid.pojos.GameGenrePOJO;
+import com.api.demo.grid.pojos.GamePOJO;
+import com.api.demo.grid.pojos.PublisherPOJO;
+import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.service.UserService;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.SneakyThrows;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
 class WebAppPageObject {
+
     private WebDriver driver;
     private Map<String, Object> vars;
     JavascriptExecutor js;
 
-    WebAppPageObject() {
+
+    @SneakyThrows
+    WebAppPageObject(UserService userService, GridService gridService) {
+
+        // Chrome headless Driver
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+
+        driver = new ChromeDriver(options);
+
+        // Chrome Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new ChromeDriver();
+         */
+
+        // Firefox Driver
+        /*
         System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
         driver = new FirefoxDriver();
+        */
+
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
 
-        driver.manage().window().maximize();
+        driver.manage().window().setSize(new Dimension(1920,1080));
+        driver.manage().timeouts().implicitlyWait(120, TimeUnit.MILLISECONDS);
+
+
+        // set user
+        UserDTO mSimpleUserDTO = new UserDTO("admin", "admin", "ola@adeus.com", "hm", "admin",
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
+        userService.saveUser(mSimpleUserDTO);
+
+        // set games
+        for (int id = 0; id < 10; id++) {
+            GamePOJO gamePOJO = new GamePOJO("game" + id, "", null, null, null,
+                    null, "");
+
+            GameGenrePOJO gameGenrePOJO = new GameGenrePOJO("genre" + id, "");
+            gridService.saveGameGenre(gameGenrePOJO);
+
+            PublisherPOJO publisherPOJO = new PublisherPOJO("publisher" + id, "");
+            gridService.savePublisher(publisherPOJO);
+
+            DeveloperPOJO developerPOJO = new DeveloperPOJO("developer" + id);
+            gridService.saveDeveloper(developerPOJO);
+
+            gamePOJO.setDevelopers(new HashSet<>(Arrays.asList("developer" + id)));
+            gamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre" + id)));
+            gamePOJO.setPublisher("publisher" + id);
+            gridService.saveGame(gamePOJO);
+        }
     }
 
     void tear() {

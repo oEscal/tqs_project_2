@@ -57,4 +57,5 @@ public class Account {
 
         mUserService.deleteUser(username);
     }
+
 }

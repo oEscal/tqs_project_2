@@ -345,6 +345,7 @@ class SellGame extends Component {
                 "retailer": global.user.username
             }
 
+            console.log(body)
             // Insert new Key
             await fetch(baseURL + "grid/gamekey", {
                 method: "POST",
@@ -527,8 +528,6 @@ class SellGame extends Component {
                     else throw new Error(response.status);
                 })
                 .then(data => {
-
-
                     if (data.status === 401) { // Wrong token
                         localStorage.setItem('loggedUser', null);
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))

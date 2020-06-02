@@ -24,6 +24,27 @@ export default class GamesScreen extends React.Component {
     searchParam: ""
   }
 
+  setUser = async (value) => {
+    var value = await AsyncStorage.setItem('loggedUser', value)
+  }
+
+  getUser = async () => {
+    var value = await AsyncStorage.getItem('loggedUser')
+    return JSON.parse(value)
+  }
+
+
+  setCart = async (value) => {
+    var value = await AsyncStorage.setItem('cart', value)
+    return value
+  }
+
+
+  getCart = async () => {
+    var value = await AsyncStorage.getItem('cart')
+    return JSON.parse(value)
+  }
+
   async searchGame() {
     if (this.state.searchParam == "") {
       this.allGames()
@@ -53,8 +74,10 @@ export default class GamesScreen extends React.Component {
         })
         .then(data => {
           if (data.status === 401) { // Wrong token
-            AsyncStorage.setItem('loggedUser', null);
-            global.user = JSON.parse(AsyncStorage.getItem('loggedUser'))
+            this.setUser(null)
+            global.user = this.getUser()
+
+            this.props.navigation.navigate("Onboarding")
 
             this.setState({
               redirectLogin: true
@@ -152,6 +175,11 @@ export default class GamesScreen extends React.Component {
   async componentDidMount() {
     await this.allGames()
     this.setState({ doneLoading: true })
+
+    this.props.navigation.addListener('focus', async () => {
+      await this.allGames()
+      this.setState({ doneLoading: true })
+    });
   }
 
   renderSearch = () => {

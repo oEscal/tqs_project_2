@@ -7,7 +7,7 @@ import materialTheme from '../constants/Theme';
 
 const { width } = Dimensions.get('screen');
 
-class Product extends React.Component {
+class ProductBought extends React.Component {
   render() {
     const { navigation, product, horizontal, full, style, priceColor, imageStyle, page } = this.props;
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
@@ -17,26 +17,17 @@ class Product extends React.Component {
       pageName = "GameInfo"
     }
 
-    var forSale = null
-    if (product.bestSell == null) {
-      forSale = <Text size={13} muted={!priceColor} color={priceColor}>No one is selling this game</Text>
-    } else {
-      forSale = <Text size={13} color={priceColor}>As low as <Text color={"#f44336"}>{product.bestSell.price}€</Text></Text>
-
-    }
-
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate(pageName, { product: product })}>
+        <TouchableWithoutFeedback>
           <Block flex style={[styles.imageContainer, styles.shadow]}>
-            <Image source={{ uri: product.coverUrl }} style={imageStyles} />
+            <Image source={{ uri: product.gamePhoto }} style={imageStyles} />
           </Block>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate(pageName, { product: product })}>
+        <TouchableWithoutFeedback>
           <Block flex space="between" style={styles.productDescription}>
-            <Text size={14} style={styles.productTitle}>{product.name}</Text>
-            <Text size={10} muted={!priceColor} color={priceColor}>Release Date:  {product.releaseDate}</Text>
-            {forSale}
+            <Text size={14} style={styles.productTitle}>{product.gameName}</Text>
+            <Text size={16} muted={!priceColor} color={"#f44336"}>Key:  {product.gamerKey}</Text>
           </Block>
         </TouchableWithoutFeedback>
       </Block>
@@ -44,7 +35,7 @@ class Product extends React.Component {
   }
 }
 
-export default withNavigation(Product);
+export default withNavigation(ProductBought);
 
 const styles = StyleSheet.create({
   product: {

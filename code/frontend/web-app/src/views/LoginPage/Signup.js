@@ -200,8 +200,8 @@ class Signup extends Component {
       }
     }
 
-    if (cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 9)) {
-      toast.error('Oops, the credit card number must contain only numbers and have at least 9 digits!', {
+    if (cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 8 || cardNumber.length > 19)) {
+      toast.error('Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!', {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -214,8 +214,8 @@ class Signup extends Component {
     }
 
 
-    if (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length != 3)) {
-      toast.error('Oops, the CVC must contain only numbers and have 3 digits!', {
+    if (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length < 3 || cardCVC.length > 4)) {
+      toast.error('Oops, the CVC must contain only numbers and have 3 or 4 digits!', {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,

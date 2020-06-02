@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.hibernate.validator.constraints.Length;
@@ -30,7 +32,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Set;
@@ -75,13 +76,12 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    @Past
     private Date birthDate;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    private Date startDate = new Date();
+    private Date startDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;
@@ -148,7 +148,7 @@ public class User {
     @ToString.Exclude
     private Set<Auction> auctionsWon = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Sell> sells = new HashSet<>();
@@ -204,6 +204,7 @@ public class User {
 
     public void payWithFunds(double bill) { this.funds -= bill; }
 
+    @Transactional
     public void addSell(Sell sell) {
         if (this.sells.contains(sell)) return;
 

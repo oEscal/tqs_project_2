@@ -30,7 +30,8 @@ import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
 import static com.api.demo.grid.utils.BiddingJson.addBiddingJson;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -137,7 +138,6 @@ class AuctionControllerIT {
         // create game key
         mGameKey = new GameKey();
         mGameKey.setRealKey(mGameKeyRKey);
-        mGameKey.setGame(mGame);
 
         // set auction pojo
         mAuctionPOJO = new AuctionPOJO(mAuctioneerUsername, mGameKeyRKey, mPrice,
@@ -158,6 +158,8 @@ class AuctionControllerIT {
         // save auctioneer, game and game key
         mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
@@ -185,6 +187,8 @@ class AuctionControllerIT {
         // save auctioneer, game and game key
         mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, mEndDate);
@@ -203,6 +207,8 @@ class AuctionControllerIT {
         // save auctioneer, game and game key
         mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, null, mEndDate, mPrice);
@@ -221,6 +227,8 @@ class AuctionControllerIT {
         // save auctioneer, game and game key
         mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, null, mPrice);
@@ -239,6 +247,8 @@ class AuctionControllerIT {
         // save auctioneer, game and game key
         mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         mAuctionJson = addAuctionJson(null, mGameKeyRKey, mEndDate, mPrice);
@@ -263,6 +273,8 @@ class AuctionControllerIT {
         mUserService.saveUser(mAuctioneerDTO);
         mUserService.saveUser(fakeAuctioneer);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
 
@@ -284,6 +296,8 @@ class AuctionControllerIT {
         // save save auctioneer, game and game key
         User auctioneer = mUserService.saveUser(mAuctioneerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // create auction
@@ -332,6 +346,8 @@ class AuctionControllerIT {
         User auctioneer = mUserService.saveUser(mAuctioneerDTO);
         mUserService.saveUser(fakeBuyerDTO);
         mGameRepository.save(mGame);
+
+        mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
         // create auction

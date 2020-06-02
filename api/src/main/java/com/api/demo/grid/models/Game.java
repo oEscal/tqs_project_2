@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -53,17 +54,17 @@ public class Game {
     @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_genre_id")
     @EqualsAndHashCode.Exclude
     private Set<GameGenre> gameGenres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "publisher_id")
     @EqualsAndHashCode.Exclude
     private Publisher publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "developer_id")
     @EqualsAndHashCode.Exclude
     private Set<Developer> developers = new HashSet<>();
@@ -77,7 +78,7 @@ public class Game {
     @ToString.Exclude
     private Set<ReviewGame> reviews = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<GameKey> gameKeys = new HashSet<>();
@@ -96,10 +97,13 @@ public class Game {
         if (date != null) releaseDate = (Date) date.clone();
     }
 
+    @Transactional
     public void addGameKey(GameKey gameKey) {
         if (gameKeys == null) gameKeys = new HashSet<>();
         else if (gameKeys.contains(gameKey)) return;
+
         gameKeys.add(gameKey);
+
         gameKey.setGame(this);
     }
 
@@ -129,21 +133,37 @@ public class Game {
         return gamePlatforms;
     }
 
+    @Transactional
     public void setPublisher(Publisher publisher){
         if (Objects.equals(this.publisher, publisher)) return;
+
         this.publisher = publisher;
+
         publisher.addGame(this);
     }
 
+    @Transactional
     public void addGenre(GameGenre gameGenre) {
         if (this.gameGenres.contains(gameGenre)) return;
+
         this.gameGenres.add(gameGenre);
+
         gameGenre.addGame(this);
     }
 
+    @Transactional
     public void addDeveloper(Developer developer) {
         if (this.developers.contains(developer)) return;
+
         this.developers.add(developer);
+
         developer.addGame(this);
+    }
+
+    public double getScore(){
+        if (this.reviews.isEmpty()) return -1;
+        double sum = 0;
+        for (ReviewGame review: reviews) sum += review.getScore();
+        return sum/reviews.size();
     }
 }

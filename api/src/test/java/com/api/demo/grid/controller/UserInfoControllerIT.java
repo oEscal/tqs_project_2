@@ -5,10 +5,12 @@ import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
 import com.api.demo.grid.models.User;
+import com.api.demo.grid.pojos.UserUpdatePOJO;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,13 +49,14 @@ class UserInfoControllerIT {
     private UserRepository mUserRepo;
 
     @Autowired
-    private SellRepository mSellRepo;
-
-    @Autowired
     private GameRepository mGameRepo;
 
     @Autowired
-    private GameKeyRepository mGameKeyRepo;
+    private GameKeyRepository mGameKeyRepository;
+
+    @Autowired
+    private SellRepository mSellRepository;
+
 
     private User mUser;
     private User mUser2;
@@ -68,6 +72,7 @@ class UserInfoControllerIT {
             mBirthDateStr = "17/10/2010",
             mStartDateStr = "25/05/2020",
             mPhotoUrl = "photo.jpg";
+    private UserUpdatePOJO mUserUpdatePOJO;
     private BCryptPasswordEncoder mPasswordEncoder;
 
     @BeforeEach
@@ -83,7 +88,6 @@ class UserInfoControllerIT {
         mUser.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser.setPhotoUrl(mPhotoUrl);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mUser2 = new User();
         mUser2.setUsername("spring");
@@ -93,7 +97,6 @@ class UserInfoControllerIT {
         mUser2.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser2.setPhotoUrl(mPhotoUrl);
         mUser2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mGame = new Game();
         mGame.setName("name");
@@ -109,18 +112,24 @@ class UserInfoControllerIT {
         mSell = new Sell();
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
+
+        mStartDateStr = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        mUserUpdatePOJO = new UserUpdatePOJO();
     }
 
     @Test
     @SneakyThrows
     void whenSearchingForValidUsername_getValidProxy(){
+
         mUserRepo.save(mUser);
+        mGameRepo.save(mGame);
 
         mGameKey.setGame(mGame);
+        mGameKeyRepository.save(mGameKey);
 
         mSell.setGameKey(mGameKey);
-        mGameRepo.save(mGame);
         mSell.setUser(mUser);
+        mSellRepository.save(mSell);
         mUserRepo.save(mUser);
 
         mMockMvc.perform(get("/grid/public/user-info")
@@ -133,7 +142,7 @@ class UserInfoControllerIT {
                 .andExpect(jsonPath("$.birthDate", is(mBirthDateStr)))
                 .andExpect(jsonPath("$.startDate", is(mStartDateStr)))
                 .andExpect(jsonPath("$.listings[0].id", is((int)mSell.getId())))
-                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId())))
+                .andExpect(jsonPath("$.listings[0].gameKey.id", is((int)mGameKey.getId()))).andReturn()
         ;
 
     }
@@ -225,7 +234,76 @@ class UserInfoControllerIT {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("Username not found in the database")))
         ;
+    }
 
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_ReturnSuccessMessage(){
+        mUser.setFunds(5);
+        mUserRepo.save(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.funds", is(10.0)))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingValidUserInfo_returnValidUser(){
+        mUserRepo.save(mUser);
+        Optional<User> user = mUserRepo.findById(mUser.getId());
+        String name = "newName";
+        mUserUpdatePOJO.setName(name);
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(name)))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidEmail_return4xxError(){
+        mUserRepo.save(mUser);
+        mUserUpdatePOJO.setEmail(mUser.getEmail());
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("There is already a user with that email"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenUpdatingUserInfo_withInvalidCC_return4xxError(){
+        mUserRepo.save(mUser);
+        mUserUpdatePOJO.setEmail("name");
+
+        mMockMvc.perform(put("/grid/user")
+                .with(httpBasic(mUsername1, mPassword1))
+                .content(asJsonString(mUserUpdatePOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("There is already a user with that email"))
+        ;
+    }
+
+    public static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

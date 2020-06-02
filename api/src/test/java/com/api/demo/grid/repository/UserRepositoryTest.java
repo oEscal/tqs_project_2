@@ -115,16 +115,6 @@ class UserRepositoryTest {
         assertTrue(mUserRepository.findByUsername(mUsername1).isAdmin());
     }
 
-    @Test
-    @SneakyThrows
-    void whenSetUserFutureBirthDate_setIsUnsuccessful() {
-
-        mUser1.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(FUTURE_DATE));
-
-        assertThrows(ConstraintViolationException.class, () -> mEntityManager.persistAndFlush(mUser1));
-    }
-
-
     /***
      *  User card's number, csc and expiration date limits tests
      ***/
