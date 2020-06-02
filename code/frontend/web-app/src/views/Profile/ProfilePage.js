@@ -449,7 +449,14 @@ class ProfilePage extends Component {
                                                                                 WebkitBackgroundClip: "text",
                                                                                 WebkitTextFillColor: "transparent",
                                                                             }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
                                                                         <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
+>>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+                                                                        <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
                                                                         <TableCell align="right">
                                                                             <Button
@@ -520,7 +527,14 @@ class ProfilePage extends Component {
                                                                         }
                                                                         {row.purchased ?
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
+<<<<<<< HEAD
+<<<<<<< HEAD
+                                                                                
+=======
 
+>>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
+=======
+>>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
                                                                             </TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
                                                                                 <Button

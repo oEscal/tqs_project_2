@@ -46,10 +46,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] USER_WHITELIST = {
             "/grid/private/user-info",
+            "/grid/funds",
             "/grid/create-auction",
             "/grid/create-bidding",
             "/grid/user",
             "/grid/remove-user",
+            "/grid/delete-sell-listing"
     };
 
     @Autowired
