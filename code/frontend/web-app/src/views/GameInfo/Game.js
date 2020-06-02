@@ -179,7 +179,7 @@ class Game extends Component {
 
                     var allPlatforms = ""
                     data.platforms.forEach(platform => {
-                        allGenres += platform + ", "
+                        allPlatforms += platform + ", "
                     })
                     allPlatforms = allPlatforms.substring(0, allPlatforms.length - 2)
                     data["allPlatforms"] = allPlatforms
@@ -973,17 +973,17 @@ class Game extends Component {
             if (this.state.game != null) {
                 var score = <span style={{ color: "#999" }}>UNRATED</span>
 
-                if (this.state.info.score == -1) {
+                if (this.state.game.score == -1) {
                     score = <span style={{ color: "#999" }}>UNRATED</span>
                 }
-                else if (this.state.info.score > 0 && this.state.info.score <= 1) {
+                else if (this.state.game.score > 0 && this.state.game.score <= 1) {
                     score = <span style={{ color: "red" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
-                } else if (this.state.info.score < 4) {
+                } else if (this.state.game.score < 4) {
                     score = <span style={{ color: "#fc926e" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
-                } else if (this.state.info.score <= 5) {
+                } else if (this.state.game.score <= 5) {
                     score = <span style={{ color: "#4ec884" }}><b>{this.state.game.score} <i class="far fa-star"></i></b></span>
                 }
-                
+
                 gameHeader = <div style={{ padding: "70px 0" }}>
                     <GridContainer>
                         <GridItem xs={12} sm={12} md={5}>
@@ -1011,7 +1011,7 @@ class Game extends Component {
                             </div>
                             <div style={{ textAlign: "left", marginTop: "30px" }}>
                                 <span style={{ color: "#999", fontSize: "25px" }}>
-                                    <img src={image} style={{ marginBottom: "10px" }}></img><b> Grid Score:</b> <span style={{ color: "#4ec884" }}><b>4 <i class="far fa-star"></i></b></span>
+                                    <img src={image} style={{ marginBottom: "10px" }}></img><b> Grid Score:</b> {score}
                                 </span>
                             </div>
                         </GridItem>
