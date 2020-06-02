@@ -246,15 +246,13 @@ class UserInfoControllerIT {
         String name = "newName";
         mUserUpdatePOJO.setName(name);
 
-        MvcResult result = mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andReturn()
-                //.andExpect(status().isOk())
-                //.andExpect(jsonPath("$.name", is(name)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(name)))
         ;
-        System.out.println();
     }
 
     @Test
