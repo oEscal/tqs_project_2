@@ -286,7 +286,7 @@ class ProfilePage extends Component {
                                     tabButton: "Reviews",
                                     tabIcon: "far fa-comment-alt",
                                     tabContent: (
-                                        <div>
+                                        <div id="reviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
@@ -331,7 +331,7 @@ class ProfilePage extends Component {
                                     tabButton: "Game Reviews",
                                     tabIcon: "fas fa-gamepad",
                                     tabContent: (
-                                        <div>
+                                        <div id="gameReviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Game Reviews
@@ -374,7 +374,7 @@ class ProfilePage extends Component {
                                     tabButton: "User Reviews",
                                     tabIcon: "fas fa-users",
                                     tabContent: (
-                                        <div>
+                                        <div id="userReviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My User Reviews
@@ -416,7 +416,7 @@ class ProfilePage extends Component {
                                     tabButton: "Library",
                                     tabIcon: "fas fa-key",
                                     tabContent: (
-                                        <div>
+                                        <div id="library">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Games
@@ -489,7 +489,7 @@ class ProfilePage extends Component {
                                     tabButton: "Sales",
                                     tabIcon: "fas fa-money-bill-wave",
                                     tabContent: (
-                                        <div>
+                                        <div id="sales">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
@@ -547,7 +547,7 @@ class ProfilePage extends Component {
                                     tabButton: "Auctions",
                                     tabIcon: "fas fa-gavel",
                                     tabContent: (
-                                        <div>
+                                        <div id="auctions">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Auctions
@@ -605,7 +605,7 @@ class ProfilePage extends Component {
                                     tabButton: "Payment Info",
                                     tabIcon: "fas fa-credit-card",
                                     tabContent: (
-                                        <div>
+                                        <div id="card">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Credit Card
@@ -640,13 +640,14 @@ class ProfilePage extends Component {
                 } else {
                     info = <GridItem xs={12} sm={12} md={12}>
                         <NavPills
+                            id="tabContents"
                             color="rose"
                             tabs={[
                                 {
                                     tabButton: "Reviews",
                                     tabIcon: "far fa-comment-alt",
                                     tabContent: (
-                                        <div>
+                                        <div id="reviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
@@ -689,7 +690,7 @@ class ProfilePage extends Component {
                                     tabButton: "Sales",
                                     tabIcon: "fas fa-money-bill-wave",
                                     tabContent: (
-                                        <div>
+                                        <div id="sales">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
@@ -857,6 +858,7 @@ class ProfilePage extends Component {
                                                     style={{ backgroundColor: "#ff3ea0" }}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
+                                                    id="editButton"
                                                 >
                                                     <i class="fas fa-pencil-alt"></i> Edit Profile
                                                 </Button>

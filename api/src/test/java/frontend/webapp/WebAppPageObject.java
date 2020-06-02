@@ -72,6 +72,10 @@ class WebAppPageObject {
                 new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
         userService.saveUser(mSimpleUserDTO);
 
+        mSimpleUserDTO = new UserDTO("oof", "oof", "oof@adeus.com", "hmm", "oof",
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
+        userService.saveUser(mSimpleUserDTO);
+
         // set games
         for (int id = 0; id < 10; id++) {
             GamePOJO gamePOJO = new GamePOJO("game" + id, "", null, null, null,
@@ -91,6 +95,7 @@ class WebAppPageObject {
             gamePOJO.setPublisher("publisher" + id);
             gridService.saveGame(gamePOJO);
         }
+
     }
 
     void tear() {
