@@ -105,23 +105,244 @@ class ProfilePage extends Component {
         confirmed: false,
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        window.scrollTo(0, 0)
         this.setState({ doneLoading: true })
     }
 
     //METHODS////////////////////////////////////
-    confirm() {
-        if (false) {
-            toast.error('Oops, an error', {
+    validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    async confirm() {
+        var name = document.getElementById("name").value
+        var country = document.getElementById("country").textContent
+        var birthday = document.getElementById("birthday").value
+
+        var description = document.getElementById("description").value
+
+        var email = document.getElementById("email").value
+
+
+        var pass = document.getElementById("pass").value
+        var passConfirm = document.getElementById("passConfirm").value
+
+        var cardNumber = document.getElementById("cardNumber").value
+        var cardName = document.getElementById("cardName").value
+        var cardCVC = document.getElementById("cardCVC").value
+        var expiration = document.getElementById("cardExpiration").value
+
+        var error = false
+
+        var tempBirth = birthday.split("/")
+        if (!error && (tempBirth != "" && tempBirth.length != 3)) {
+            toast.error('Please use a valid birthday...', {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
+                toastId: "errorBirthday"
             });
+            error = true
         } else {
-            this.setState({ confirmed: true })
+            if (tempBirth != "") {
+                birthday = tempBirth[1] + "/" + tempBirth[0] + "/" + tempBirth[2]
+            }
+        }
+
+        if (!error && (email != "" && !this.validateEmail(email))) {
+            toast.error('Please use a valid email...', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorEmail"
+            });
+            error = true
+        } else {
+            if (email != "") {
+                email = email.toLowerCase()
+            }
+        }
+
+
+        if (!error && (pass != "" && pass != passConfirm)) {
+            toast.error('Oops, your passwords don\'t match!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorPass"
+            });
+            error = true
+        }
+
+
+        if (!error && (cardNumber != '' || cardCVC != '' || expiration != '' || cardName != '')) {
+            if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '') {
+                toast.error('Oops, if you want to add your payment info, you\'ve got to specify all four card information fields!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorCardAll"
+                });
+                error = true
+                console.log(document.getElementById("errorMinimum"))
+            }
+        }
+
+        if (!error && expiration != "" && expiration != null) {
+            var tempExpiration = expiration.split("/")
+            if (tempExpiration.length != 3) {
+                toast.error('Please use a valid expiration date...', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorCardExpiration"
+                });
+                error = true
+            } else {
+                expiration = tempExpiration[1] + "/" + tempExpiration[0] + "/" + tempExpiration[2]
+            }
+        }
+
+        if (!error && (cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 9 || cardName.length > 19))) {
+            toast.error('Oops, the credit card number must contain only numbers and have at least 9 digits and less than 19!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardNumber"
+            });
+            error = true
+        }
+
+
+        if (!error && (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length > 4 || cardCVC.length < 3))) {
+            toast.error('Oops, the CVC must contain only numbers and have 3 or 4 digits!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorCardCVC"
+            });
+            error = true
+        }
+
+        if (country == "Country*") {
+            country = null
+        }
+
+        if (!error) {
+            await this.setState({
+                doneLoading: false
+            })
+
+            var success = false
+
+
+            var body = {
+                "birthDate": birthday == "" ? null : birthday,
+                "country": country == "" ? null : country,
+                "creditCardCSC": cardCVC == "" ? null : cardCVC,
+                "creditCardExpirationDate": expiration == "" ? null : expiration,
+                "creditCardNumber": cardNumber == "" ? null : cardNumber,
+                "creditCardOwner": cardName == "" ? null : cardName,
+                "description": description == "" ? null : description,
+                "email": email == "" ? null : email,
+                "name": name == "" ? null : name,
+                "password": pass == "" ? null : pass
+            }
+
+            var onSuccessLogin = (pass != "" && pass != null)
+            console.log(onSuccessLogin)
+
+            if (global.user == null) {
+                localStorage.setItem('loggedUser', null);
+                global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                this.setState({
+                    redirectLogin: true
+                })
+
+            }
+            await fetch(baseURL + "grid/user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: global.user.token
+                },
+                body: JSON.stringify(body)
+            })
+                .then(response => {
+                    if (response.status == 401) {
+                        return response
+                    }
+                    else if (response.status === 200) {
+                        return response.json()
+                    }
+                    else throw new Error(response.status);
+                })
+                .then(data => {
+                    if (data.status === 401) {
+                        localStorage.setItem('loggedUser', null);
+                        global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                        this.setState({
+                            redirectLogin: true
+                        })
+
+
+                    } else { // Successful Login
+                        if (onSuccessLogin) {
+                            const token = "Basic " + btoa(data.username + ":" + pass);
+                            data["token"] = token
+                            localStorage.setItem('loggedUser', JSON.stringify(data));
+                            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                        } else {
+                            data["token"] = global.user.token
+                            localStorage.setItem('loggedUser', JSON.stringify(data));
+                            global.user = JSON.parse(localStorage.getItem('loggedUser'))
+                        }
+
+                        success = true
+
+                    }
+                })
+                .catch(error => {
+                    toast.error('Sorry, an unexpected error has occurred!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorThreeToast"
+                    });
+                });
+
+            await this.setState({
+                doneLoading: true,
+                confirmed: success
+            })
         }
     }
 
@@ -130,8 +351,17 @@ class ProfilePage extends Component {
     render() {
         const { classes } = this.props;
 
+        if (this.state.redirectLogin) {
+            return <Redirect to='/login-page' />
+        }
         if (this.state.confirmed) {
-            return <Redirect to={"/user/" + "Jonas_PP"} />
+            var redirect
+            if (global.user != null) {
+                redirect = "/user/" + global.user.username
+            } else {
+                redirect = "/login-page"
+            }
+            return <Redirect to={redirect} />
         }
 
         if (!this.state.doneLoading) {
@@ -448,7 +678,7 @@ class ProfilePage extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={12}>
                                                     <CustomInput
-                                                        labelText="Name"
+                                                        labelText="Name*"
                                                         id="name"
                                                         formControlProps={{
                                                             fullWidth: true
@@ -471,7 +701,7 @@ class ProfilePage extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={12}>
                                                     <CustomInput
-                                                        labelText="Email"
+                                                        labelText="Email*"
                                                         id="email"
                                                         formControlProps={{
                                                             fullWidth: true
@@ -492,10 +722,34 @@ class ProfilePage extends Component {
                                     <GridItem xs={12} sm={12} md={12}>
                                         <div>
                                             <GridContainer>
+                                                <GridItem xs={12} sm={12} md={12}>
+                                                    <CustomInput
+                                                        labelText="Description"
+                                                        id="description"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            multiline: true,
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="fas fa-align-justify" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                            </GridContainer>
+                                        </div>
+                                    </GridItem>
+
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <div>
+                                            <GridContainer>
                                                 <GridItem xs={12} sm={12} md={6}>
                                                     <CustomInput
-                                                        labelText="Password"
-                                                        id="password"
+                                                        labelText="Password*"
+                                                        id="pass"
                                                         formControlProps={{
                                                             fullWidth: true
                                                         }}
@@ -511,8 +765,8 @@ class ProfilePage extends Component {
                                                 </GridItem>
                                                 <GridItem xs={12} sm={12} md={6}>
                                                     <CustomInput
-                                                        labelText="Confirm Password"
-                                                        id="password"
+                                                        labelText="Confirm Password*"
+                                                        id="passConfirm"
                                                         formControlProps={{
                                                             fullWidth: true
                                                         }}
@@ -536,13 +790,15 @@ class ProfilePage extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={12}>
                                                     <InputLabel className={classes.label}>
-                                                        Country
+                                                        Country*
                                                     </InputLabel>
                                                     <br />
                                                     <Select
                                                         className="basic-single"
                                                         classNamePrefix="select"
                                                         name="color"
+                                                        id="country"
+                                                        placeholder="Country*"
                                                         defaultValue={null}
                                                         options={countryList}
                                                     />
@@ -556,13 +812,13 @@ class ProfilePage extends Component {
                                             <GridContainer>
                                                 <GridItem xs={12} sm={12} md={12}>
                                                     <InputLabel className={classes.label}>
-                                                        Birthday
+                                                        Birthday*
                                                     </InputLabel>
                                                     <br />
                                                     <FormControl fullWidth>
                                                         <Datetime
                                                             timeFormat={false}
-                                                            inputProps={{ placeholder: "Birthday" }}
+                                                            inputProps={{ placeholder: "Birthday*", id: "birthday" }}
                                                         />
                                                     </FormControl>
                                                 </GridItem>
@@ -573,7 +829,7 @@ class ProfilePage extends Component {
                                     <GridItem xs={12} sm={12} md={12}>
                                         <div style={{ marginTop: "45px" }}>
                                             <GridContainer>
-                                                <GridItem xs={12} sm={12} md={8}>
+                                                <GridItem xs={12} sm={12} md={4}>
                                                     <CustomInput
                                                         labelText="Credit Card Number"
                                                         id="cardNumber"
@@ -584,6 +840,22 @@ class ProfilePage extends Component {
                                                             endAdornment: (
                                                                 <InputAdornment position="end">
                                                                     <i class="fas fa-credit-card" />
+                                                                </InputAdornment>
+                                                            )
+                                                        }}
+                                                    />
+                                                </GridItem>
+                                                <GridItem xs={12} sm={12} md={4}>
+                                                    <CustomInput
+                                                        labelText="Credit Card Name"
+                                                        id="cardName"
+                                                        formControlProps={{
+                                                            fullWidth: true
+                                                        }}
+                                                        inputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <i class="fas fa-user" />
                                                                 </InputAdornment>
                                                             )
                                                         }}
@@ -611,7 +883,7 @@ class ProfilePage extends Component {
                                                                 <FormControl fullWidth>
                                                                     <Datetime
                                                                         timeFormat={false}
-                                                                        inputProps={{ placeholder: "Expiration" }}
+                                                                        inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
                                                                     />
                                                                 </FormControl>
                                                             </GridItem>
