@@ -533,6 +533,26 @@ class Game extends Component {
         this.setState({ doneLoading: true })
     }
 
+    changePageSales = async (event, value) => {
+        await this.setState({
+            listingsPage: value
+        })
+
+        console.log(this.state.listingsPage)
+
+        await this.getGameListings()
+
+    };
+
+    changePageReviews = async (event, value) => {
+        await this.setState({
+            reviewsPage: value
+        })
+
+        await this.getGameReviews()
+
+    };
+
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
             return <Redirect to='/login-page' />
@@ -688,7 +708,7 @@ class Game extends Component {
 
                     sellListings.push(<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                         <div style={{ margin: "auto", width: "40%" }}>
-                            <Pagination count={1} variant="outlined" shape="rounded" />
+                            <Pagination count={this.state.noListingPages} page={this.state.listingsPage} onChange={this.changePageSales} variant="outlined" shape="rounded" />
                         </div>
                     </GridItem>)
                 }
@@ -741,7 +761,7 @@ class Game extends Component {
 
                     reviewListings.push(<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                         <div style={{ margin: "auto", width: "40%" }}>
-                            <Pagination count={1} variant="outlined" shape="rounded" />
+                        <Pagination count={this.state.noReviewPages} page={this.state.reviewsPage} onChange={this.changePageReviews} variant="outlined" shape="rounded" />
                         </div>
                     </GridItem>)
                 }
