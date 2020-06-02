@@ -420,22 +420,38 @@ class AuctionServiceIT {
         // insertion auction 1
         mAuctionService.addAuction(mAuctionPOJO);
 
-
         // save game key 2
-        String gameKey = "other_game_key";
-        GameKey gameKey1 = new GameKey();
-        gameKey1.setRealKey(gameKey);
-        gameKey1.setGame(mGame);
-        mGameKeyRepository.save(gameKey1);
+        String gameKeyStr = "other_game_key";
+        GameKey gameKey = new GameKey();
+        gameKey.setRealKey(gameKeyStr);
+        gameKey.setGame(mGame);
+        mGameKeyRepository.save(gameKey);
 
         // insert auction 2
-        AuctionPOJO auctionPOJO = new AuctionPOJO(mAuctioneerUsername, gameKey, mPrice,
+        AuctionPOJO auctionPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyStr, mPrice,
                 new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
-        // insertion auction 2
         mAuctionService.addAuction(auctionPOJO);
 
-        List<Auction> a = mAuctionRepository.findAll();
+
+        // save game key 3
+        String gameKeyPastStr = "past_game_key";
+        GameKey gameKeyPast = new GameKey();
+        gameKeyPast.setRealKey(gameKeyPastStr);
+        gameKeyPast.setGame(mGame);
+        mGameKeyRepository.save(gameKeyPast);
+
+        // insert auction 3
+        AuctionPOJO auctionPastPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyPastStr, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
+        mAuctionService.addAuction(auctionPastPOJO);
+
         List<Auction> auctions = mAuctionRepository.findAllByGameWithEndDateAfterCurrent(mGame.getId());
-        return;
+
+        // verify if there are just 2 current auctions
+        assertEquals(2, auctions.size());
+
+        // verify if the returned auctions are the correct ones
+        assertEquals(mGameKeyRKey, auctions.get(0).getGameKey().getRealKey());
+        assertEquals(gameKeyStr, auctions.get(1).getGameKey().getRealKey());
     }
 }
