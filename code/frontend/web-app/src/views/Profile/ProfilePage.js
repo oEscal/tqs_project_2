@@ -262,7 +262,7 @@ class ProfilePage extends Component {
                             <GridContainer xs={12} sm={12} md={11}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <div style={{ textAlign: "center" }}>
-                                        <h3 style={{ color: "#999" }}>
+                                        <h3 style={{ color: "#999" }} id="errorMessage">
                                             Sorry, there was an error retrieving this user's information...
                                         </h3>
                                     </div>
@@ -801,12 +801,12 @@ class ProfilePage extends Component {
 
                                     <GridItem xs={12} sm={12} md={7}>
                                         <div style={{ textAlign: "left" }}>
-                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>{this.state.info.username}</b> <span style={{ color: "#999" }}>({this.state.info.name})</span></h3>
+                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }} id="username">{this.state.info.username}</b> <span style={{ color: "#999" }} id="name">({this.state.info.name})</span></h3>
                                             <hr style={{ color: "#999" }}></hr>
                                         </div>
                                         <div style={{ textAlign: "left", marginTop: "30px", minHeight: "110px" }}>
-                                            <span style={{ color: "#999", fontSize: "15px" }}>
-                                                <b>Description:</b> <span style={{ color: "#3b3e48" }}> {this.state.info.description != null ? this.state.info.description : "This user hasn't written a description yet!"}</span>
+                                            <span style={{ color: "#999", fontSize: "15px" }} >
+                                                <b>Description:</b> <span style={{ color: "#3b3e48" }} id="description"> {this.state.info.description != null ? this.state.info.description : "This user hasn't written a description yet!"}</span>
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left", marginTop: "30px" }}>
@@ -823,7 +823,7 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="country">
                                                 {this.state.info.country}
                                             </span>
                                         </div>
@@ -834,7 +834,7 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="birthday">
                                                 {this.state.info.birthDate}
                                             </span>
                                         </div>
@@ -845,13 +845,13 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="startday">
                                                 {this.state.info.startDate}
                                             </span>
                                         </div>
 
                                         {!this.state.public ? <div style={{ marginTop: "20px" }}>
-                                            <Link to={"/user/" + "Jonas_PP" + "/edit"} style={{ color: "inherit" }}>
+                                            <Link to={"/user/" + global.user.username + "/edit"} style={{ color: "inherit" }}>
                                                 <Button
                                                     color="danger"
                                                     size="md"
