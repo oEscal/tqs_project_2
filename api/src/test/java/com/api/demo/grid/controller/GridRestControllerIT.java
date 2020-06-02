@@ -117,8 +117,8 @@ class GridRestControllerIT {
         mGamePOJO.setPublisher("publisher");
         mGameKeyPOJO = new GameKeyPOJO("key", 2L, "steam", "ps3");
         mSellPOJO = new SellPOJO("key", 6L, 2.3, null);
-        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
-        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
+        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, 1, 1);
+        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, 1, 2);
 
         mBuyListingsPOJO = new BuyListingsPOJO();
 

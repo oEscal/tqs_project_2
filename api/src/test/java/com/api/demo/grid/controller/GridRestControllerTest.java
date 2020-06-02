@@ -151,8 +151,8 @@ class GridRestControllerTest {
 
         mSearchGamePOJO = new SearchGamePOJO();
 
-        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, null, 1, 1, null);
-        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, null, null, 1, 2);
+        mReviewGamePOJO = new ReviewGamePOJO("comment", 1, 1, 1);
+        mReviewUserPOJO = new ReviewUserPOJO("comment", 1, 1, 2);
     }
 
     @Test

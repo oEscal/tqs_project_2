@@ -455,7 +455,7 @@ class GridServiceTest {
     void whenSavingValidSellPOJO_ReturnValidSell() {
         Mockito.when(mMockUserRepo.findById(6L)).thenReturn(Optional.ofNullable(mUser));
         Mockito.when(mMockGameKeyRepo.findByRealKey("key")).thenReturn(Optional.ofNullable(mGameKey));
-
+        mGameKey.setSell(null);
         SellPOJO sellPOJO = new SellPOJO("key", 6L, 2.3, null);
 
         Sell savedSell = mGridService.saveSell(sellPOJO);
@@ -780,7 +780,8 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.ofNullable(mUser));
         Mockito.when(mMockGameRepo.findById(gameID)).thenReturn(Optional.ofNullable(mGame));
 
-        ReviewGamePOJO review = new ReviewGamePOJO("comment", 2, null, 1, 1, now);
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 2, 1, 1);
+        review.setDate(now);
         Set<ReviewGame> expected = new HashSet<>();
         expected.add(mReviewGame);
 
@@ -800,8 +801,8 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(userID)).thenReturn(Optional.empty());
 
 
-        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
-
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, 1, 1);
+        review.setDate(now);
         Set<ReviewGame> reviewGames = mGridService.addGameReview(review);
 
 
@@ -820,8 +821,8 @@ class GridServiceTest {
         Mockito.when(mMockGameRepo.findById(gameID)).thenReturn(Optional.empty());
 
 
-        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
-
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, 1, 1);
+        review.setDate(now);
         Set<ReviewGame> reviewGames = mGridService.addGameReview(review);
 
 
@@ -838,8 +839,8 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.save(Mockito.any(User.class))).thenThrow(DataIntegrityViolationException.class);
         Mockito.when(mMockGameRepo.save(Mockito.any(Game.class))).thenThrow(DataIntegrityViolationException.class);
 
-        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, null, 1, 1, now);
-
+        ReviewGamePOJO review = new ReviewGamePOJO("comment", 1, 1, 1);
+        review.setDate(now);
         Set<ReviewGame> reviewGames = mGridService.addGameReview(review);
 
 
@@ -856,8 +857,8 @@ class GridServiceTest {
         Mockito.when(mMockUserRepo.findById(targetID)).thenReturn(Optional.ofNullable(mUser2));
         Mockito.when(mMockReviewUserRepo.save(Mockito.any(ReviewUser.class))).thenReturn(mReviewUser);
 
-        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
-
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, authorID, targetID);
+        review.setDate(now);
         Set<ReviewUser> expected = new HashSet<>();
         expected.add(mReviewUser);
 
@@ -876,8 +877,8 @@ class GridServiceTest {
         long authorID = 1L;
         long targetID = 1L;
 
-        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
-
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, authorID, targetID);
+        review.setDate(now);
         Set<ReviewUser> reviews = mGridService.addUserReview(review);
 
         assertNull(reviews);
@@ -892,8 +893,8 @@ class GridServiceTest {
 
         Mockito.when(mMockUserRepo.findById(authorID)).thenReturn(Optional.ofNullable(mUser));
 
-        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, now, null, authorID, targetID);
-
+        ReviewUserPOJO review = new ReviewUserPOJO("comment", 1, authorID, targetID);
+        review.setDate(now);
         Set<ReviewUser> reviews = mGridService.addUserReview(review);
 
         Mockito.verify(mMockUserRepo, Mockito.times(1)).findById(authorID);
