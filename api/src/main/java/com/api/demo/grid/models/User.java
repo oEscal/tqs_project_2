@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.hibernate.validator.constraints.Length;
@@ -76,10 +78,10 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date birthDate;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, name = "start_date", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    private Date startDate = new Date();
+    private Date startDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean admin;

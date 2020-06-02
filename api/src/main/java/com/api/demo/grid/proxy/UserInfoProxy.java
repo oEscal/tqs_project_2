@@ -27,6 +27,7 @@ public class UserInfoProxy {
     private String description;
     private String birthDate;
     private String startDate;
+    private double funds;
     private List<Sell> listings;
     private List<ReviewUser> reviews;
 
@@ -56,6 +57,7 @@ public class UserInfoProxy {
         if (showAllInfo) {
             this.id = user.getId();
             this.email = user.getEmail();
+            this.funds = user.getFunds();
             this.creditCardNumber = user.getCreditCardNumber();
             this.creditCardCSC = user.getCreditCardCSC();
             this.creditCardOwner = user.getCreditCardOwner();

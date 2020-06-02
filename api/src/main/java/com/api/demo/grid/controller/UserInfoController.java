@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,10 +60,25 @@ public class UserInfoController {
         }
     }
 
+    @PutMapping(value = "/funds", params = {"newfunds"})
+    public ResponseEntity<User> addFundsToUser(@RequestHeader("Authorization") String auth,
+                                               @RequestParam double newfunds){
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
+
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
+        }
+        try{
+            return ResponseEntity.ok(mUserService.addFundsToUser(user.getId(),  newfunds));
+        } catch (UserNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
     @PutMapping("/user")
     public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String auth,
                                            @RequestBody UserUpdatePOJO userUpdatePOJO){
-
         String value = ControllerUtils.getUserFromAuth(auth);
         User user = mUserService.getUser(value);
 

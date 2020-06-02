@@ -1,5 +1,6 @@
 package com.api.demo.grid.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -22,6 +23,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 
@@ -53,9 +56,10 @@ public class Buy {
     @ToString.Exclude
     private User user;
 
-    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @Column(insertable = false, updatable = false, nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    @JsonFormat(pattern="dd/MM/yyyy")
     @Temporal(TemporalType.DATE)
-    private Date date = new Date();
+    private Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     @Transactional
     public void setUser(User user) {

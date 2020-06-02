@@ -1,8 +1,6 @@
 package com.api.demo.grid.controller;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.exception.ExceptionDetails;
-import com.api.demo.grid.exception.UserNotFoundException;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Sell;
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -92,7 +88,6 @@ class UserInfoControllerIT {
         mUser.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser.setPhotoUrl(mPhotoUrl);
         mUser.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mUser2 = new User();
         mUser2.setUsername("spring");
@@ -102,7 +97,6 @@ class UserInfoControllerIT {
         mUser2.setPassword(mPasswordEncoder.encode(mPassword1));
         mUser2.setPhotoUrl(mPhotoUrl);
         mUser2.setBirthDate(new SimpleDateFormat("dd/MM/yyyy").parse(mBirthDateStr));
-        mUser2.setStartDate(new SimpleDateFormat("dd/MM/yyyy").parse(mStartDateStr));
 
         mGame = new Game();
         mGame.setName("name");
@@ -119,6 +113,7 @@ class UserInfoControllerIT {
         mSell.setDate(new Date());
         mSell.setPrice(2.4);
 
+        mStartDateStr = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         mUserUpdatePOJO = new UserUpdatePOJO();
     }
 
@@ -239,7 +234,21 @@ class UserInfoControllerIT {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason(is("Username not found in the database")))
         ;
+    }
 
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_ReturnSuccessMessage(){
+        mUser.setFunds(5);
+        mUserRepo.save(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.funds", is(10.0)))
+        ;
     }
 
     @Test

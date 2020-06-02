@@ -23,12 +23,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.mockito.Mockito;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -247,6 +248,28 @@ class UserInfoControllerTest {
 
     @Test
     @SneakyThrows
+    void whenAddingFundsToUser_ReturnSuccessMessage(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+        mUser.setFunds(5);
+
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyDouble()))
+                .thenReturn(mUser);
+
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
+                .thenReturn(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.funds", is(5.0)))
+                ;
+        }
+   
+    @Test
+    @SneakyThrows
     void whenUpdatingValidUserInfo_returnValidUser(){
         Mockito.when(mUserRepository.findByUsername(Mockito.anyString())).thenReturn(mUser2);
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
@@ -297,6 +320,45 @@ class UserInfoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().reason("If you add a new card you have to give all the details referring to that card"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToUser_andFails_Return4xxMessage(){
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(mUser);
+
+        Mockito.when(mMockUserService.addFundsToUser(Mockito.anyLong(), Mockito.anyDouble()))
+                .thenThrow(new UserNotFoundException("Username not found in database"));
+
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
+                .thenReturn(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in database"))
+        ;
+    }
+
+    @Test
+    @SneakyThrows
+    void whenAddingFundsToInvalidUser_Return4xxMessage() {
+        Mockito.when(mMockUserService.getUser(Mockito.anyString()))
+                .thenReturn(null);
+
+        Mockito.when(mUserRepository.findByUsername(mUsername1))
+                .thenReturn(mUser);
+
+        mMockMvc.perform(put("/grid/funds")
+                .with(httpBasic(mUsername1, mPassword1))
+                .param("newfunds", "5")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason("Username not found in the database"))
         ;
     }
 

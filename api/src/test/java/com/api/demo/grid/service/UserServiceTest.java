@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -395,6 +394,17 @@ class UserServiceTest {
     @Test
     @WithMockUser(username = "spring")
     @SneakyThrows
+    void whenAddingFundsToUser_returnUpdatedUser(){
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.ofNullable(mUser1));
+
+        User user = mUserService.addFundsToUser(4l, 5);
+
+        assertEquals(5, user.getFunds());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    @SneakyThrows
     void whenUpdatingAllUserInfo_returnFullyUpdatedUser(){
         String newName1 = "springname",
                 newEmail1 = "springemail",
@@ -452,6 +462,14 @@ class UserServiceTest {
         assertEquals(newName, newUser.getName());
         assertEquals(newDescription, newUser.getDescription());
         assertEquals(mPasswordEncrypted1, newUser.getPassword());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenAddingFundToUser_AndUserDoesNotExist_throwsException(){
+        given(mUserRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> mUserService.addFundsToUser(4l, 5));
     }
 
     @Test

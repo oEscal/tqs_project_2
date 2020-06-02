@@ -31,7 +31,6 @@ public class UserService {
 
     private BCryptPasswordEncoder mPasswordEncoder = new BCryptPasswordEncoder();
 
-
     @SneakyThrows
     public User getUser(String username) {
 
@@ -76,6 +75,16 @@ public class UserService {
         return user;
     }
 
+    public User addFundsToUser(long id, double funds) throws UserNotFoundException {
+        Optional<User> optional = mRepository.findById(id);
+        if (optional.isEmpty()) throw new UserNotFoundException("Username not found in database");
+        User user = optional.get();
+
+        user.setFunds(user.getFunds() + funds);
+        mRepository.save(user);
+        return user;
+    }
+    
     public User updateUser(long id, UserUpdatePOJO userUpdatePOJO)
             throws UserNotFoundException, ExceptionDetails{
         Optional<User> opUser = mRepository.findById(id);
