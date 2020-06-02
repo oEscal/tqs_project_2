@@ -98,11 +98,17 @@ class Game extends Component {
 
         loadingSell: false,
         loadingAuctions: false,
+        loadingReviews: false,
 
         sellListings: [],
         listingsPage: 1,
         noListingPages: 1,
-        noSells: 0
+        noSells: 0,
+
+        reviewListings: [],
+        reviewsPage: 1,
+        noReviewPages: 1,
+        noReviews: 0
     }
 
     async getGameInfo() {
@@ -335,6 +341,87 @@ class Game extends Component {
 
     }
 
+    async getGameReviews() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ loadingReviews: true })
+
+        // Get All Games
+        await fetch(baseURL + "grid/game-review?game_id=" + this.props.match.params.game + "&page=" + (this.state.reviewsPage - 1), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                } else {
+
+                    if (data.first) {
+                        this.setState({
+                            noReviewPages: data.totalPages,
+                            noReviews: data.totalElements
+                        })
+                    }
+
+                    var content = []
+
+                    data.content.forEach(review => {
+                        review["profileButton"] = <Button
+                            color="danger"
+                            size="sm"
+                            style={{ backgroundColor: "#ff3ea0" }}
+                            onClick={() => this.goToProfile(this.state.game.bestSell.gameKey.retailer)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i class="far fa-user"></i> Review Profile
+                        </Button>
+
+                        content.push(review)
+                    })
+
+                    this.setState({
+                        reviewListings: content
+                    })
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred while loading the reviews for this game!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+            });
+
+        await this.setState({ loadingReviews: false })
+
+
+    }
+
     async addToWishlist() {
         var login_info = null
         if (global.user != null) {
@@ -442,6 +529,7 @@ class Game extends Component {
         window.scrollTo(0, 0)
         await this.getGameInfo()
         await this.getGameListings()
+        await this.getGameReviews()
         this.setState({ doneLoading: true })
     }
 
@@ -619,6 +707,59 @@ class Game extends Component {
                 </div>
             }
 
+            var reviewListings = <div></div>
+            if (!this.state.loadingReviews) {
+                if (this.state.reviewListings == null || this.state.reviewListings.length == 0) {
+                    reviewListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <div style={{ textAlign: "left" }}>
+                            <h3 style={{ color: "#999" }}>
+                                It seems like no one's reviewed this game yet :(
+                        </h3>
+                        </div>
+                    </GridItem>
+                } else {
+                    reviewListings = [<GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <TableContainer component={Paper}>
+                            <Table style={{ width: "100%" }} aria-label="simple table">
+                                <TableBody>
+                                    {this.state.reviewListings.map((row) => (
+                                        <TableRow hover key={row.name}>
+                                            <TableCell align="left">
+                                                <Link to={"/user/" + row.authorUsername} style={{ color: "#ff3ea0" }} >
+                                                    <b><i class="far fa-user"></i> {row.authorUsername}</b>
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell align="left">{row.score == -1 || row.score == null ? "UNRATED" : <b>{row.score}</b>} <b><i class="far fa-star"></i></b></TableCell>
+                                            <TableCell align="left">{row.comment}</TableCell>
+                                            <TableCell align="left">{row.date.split("T")[0]}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </GridItem>]
+
+                    reviewListings.push(<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
+                        <div style={{ margin: "auto", width: "40%" }}>
+                            <Pagination count={1} variant="outlined" shape="rounded" />
+                        </div>
+                    </GridItem>)
+                }
+            } else {
+                reviewListings = <div
+                    className="animated fadeOut animated"
+                    id="loadingAuctions"
+                    style={{
+                        top: "50%",
+                        left: "50%",
+                        display: ""
+                    }}>
+                    <FadeIn>
+                        <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                    </FadeIn>
+                </div>
+            }
+
             var gameHeader = null
             var gameInfo = null
 
@@ -640,19 +781,19 @@ class Game extends Component {
                 </GridItem>
             } else {
                 bestPrice = <GridItem xs={12} sm={12} md={2}>
-                <div style={{ textAlign: "left", paddingTop: "15px" }}>
-                    <Button
-                        size="md"
-                        style={{ backgroundColor: "#1598a7", width: "100%" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        disabled
-                        id="wishlistButton"
-                    >
-                        <i class="far fa-heart"></i> Add to Wishlist
+                    <div style={{ textAlign: "left", paddingTop: "15px" }}>
+                        <Button
+                            size="md"
+                            style={{ backgroundColor: "#1598a7", width: "100%" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            disabled
+                            id="wishlistButton"
+                        >
+                            <i class="far fa-heart"></i> Add to Wishlist
                     </Button>
-                </div>
-            </GridItem>
+                    </div>
+                </GridItem>
             }
             if (this.state.game.bestSell != null) {
                 var score = <span style={{ color: "#999" }}>No one's reviewed this user yet!</span>
@@ -1190,6 +1331,19 @@ class Game extends Component {
                                             <Pagination count={1} variant="outlined" shape="rounded" />
                                         </div>
                                     </GridItem>
+                                </GridContainer>
+                            </div>
+
+                            <div style={{ padding: "45px 0px" }}>
+                                <GridContainer>
+                                    <GridItem xs={12} sm={12} md={12}>
+                                        <span>
+                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>{this.state.noReviews} Reviews
+                                            </h2>
+                                        </span>
+                                    </GridItem>
+                                    {reviewListings}
+
                                 </GridContainer>
                             </div>
 
