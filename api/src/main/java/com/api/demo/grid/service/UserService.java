@@ -87,7 +87,6 @@ public class UserService {
 
         user.setFunds(user.getFunds() + funds);
         mRepository.save(user);
-        System.out.println("ohmendes");
         return user;
     }
     
