@@ -47,6 +47,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/funds",
             "/grid/create-auction",
             "/grid/create-bidding",
+            "/grid/user",
             "/grid/remove-user",
     };
 

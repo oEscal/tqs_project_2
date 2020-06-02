@@ -1,25 +1,39 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.nio.charset.Charset;
-import java.util.Random;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
+
+@SpringBootTest(classes= DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class SignUpPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
 
+    @Autowired
+    private UserService mUserService;
+
+    @Autowired
+    private GridService mGridService;
+
+
     @BeforeEach
     void setUp() {
-        controller = new WebAppPageObject();
+        controller = new WebAppPageObject(mUserService, mGridService);
         controller.navigate("http://localhost:" + port + "/signup-page");
     }
 
@@ -194,7 +208,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardCVC"));
-        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 digits!"));
+        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 or 4 digits!"));
 
         //////////
         controller.writeInput("of", "cardCVC");
@@ -206,7 +220,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardCVC"));
-        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 digits!"));
+        assertTrue(controller.checkText("errorCardCVC", "Oops, the CVC must contain only numbers and have 3 or 4 digits!"));
     }
 
 
@@ -221,7 +235,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
     }
 
     @Test
@@ -236,7 +250,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
     }
 
     @Test

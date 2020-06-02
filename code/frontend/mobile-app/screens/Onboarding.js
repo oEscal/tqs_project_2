@@ -25,6 +25,27 @@ export default class Onboarding extends React.Component {
     bad: false
   }
 
+  getUser = async () => {
+    var value = await AsyncStorage.getItem('loggedUser')
+    return value
+  }
+
+  getCart = async () => {
+    var value = await AsyncStorage.getItem('cart')
+    return value
+  }
+
+  setUser = async (value) => {
+    var value = await AsyncStorage.setItem('loggedUser', value)
+  }
+
+  setCart = async (value) => {
+    var value = await AsyncStorage.setItem('cart', value)
+    return value
+  }
+
+
+
   async login() {
 
     const username = this.state.username;
@@ -70,10 +91,15 @@ export default class Onboarding extends React.Component {
             })
           } else { // Successful Login
             data["token"] = login_info
-            AsyncStorage.setItem(
-              'loggedUser', data
-            );
-            global.user = AsyncStorage.getItem('loggedUser')
+
+            this.setUser(JSON.stringify(data))
+
+            global.user = this.getUser()
+
+            this.setState({
+              bad: false,
+              error: false
+            })
             success = true
           }
         })
@@ -98,6 +124,12 @@ export default class Onboarding extends React.Component {
   }
 
   async componentDidMount() {
+    global.user = await this.setUser(null)
+    global.cart = await this.setCart(null)
+    this.props.navigation.addListener('focus', async () => {
+      global.user = await this.setUser(null)
+      global.cart = await this.setCart(null)
+    });
   }
 
   render() {
