@@ -39,7 +39,7 @@ class WebAppPageObject {
     WebAppPageObject(UserService userService, GridService gridService) {
 
         // Chrome headless Driver
-        /*
+        
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -47,7 +47,7 @@ class WebAppPageObject {
         options.addArguments("--headless");
 
         driver = new ChromeDriver(options);
-        */
+
 
         // Chrome Driver
         /*
@@ -56,10 +56,10 @@ class WebAppPageObject {
          */
 
         // Firefox Driver
-
+        /*
         System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
         driver = new FirefoxDriver();
-
+        */
 
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
