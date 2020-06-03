@@ -51,7 +51,7 @@ export default class GameInfoScreen extends React.Component {
 
   async getGameInfo() {
     // Get All Games
-    await fetch(baseURL + "grid/game?id=" + this.props.route.params.game.id, {
+    await fetch(baseURL + "grid/games/game?id=" + this.props.route.params.game.id, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export default class GameInfoScreen extends React.Component {
 
           var allPlatforms = ""
           data.platforms.forEach(platform => {
-            allGenres += platform + ", "
+            allPlatforms += platform + ", "
           })
           allPlatforms = allPlatforms.substring(0, allPlatforms.length - 2)
           data["allPlatforms"] = allPlatforms
@@ -232,7 +232,7 @@ export default class GameInfoScreen extends React.Component {
     await this.setState({ doneLoading: false })
 
     // Get All Games
-    await fetch(baseURL + "grid/add-wish-list?game_id=" + this.props.route.params.game.id + "&user_id=" + this.state.user.id, {
+    await fetch(baseURL + "grid/wishlist?game_id=" + this.props.route.params.game.id + "&user_id=" + this.state.user.id, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -380,13 +380,16 @@ export default class GameInfoScreen extends React.Component {
 
       for (var i = 0; i < this.state.sellListings.length; i += 2) {
         var tempBlock = []
+        console.log(i)
+        console.log(this.state.sellListings)
 
         tempBlock.push(<ProductKey product={this.state.sellListings[i]} style={{ marginRight: theme.SIZES.BASE }} />
         )
 
         try {
-          tempBlock.push(<ProductKey product={this.state.sellListings[i + 1]} />
-          )
+          if(this.state.sellListings.length > i+1)
+            tempBlock.push(<ProductKey product={this.state.sellListings[i + 1]} />
+            )
         } catch (e) {
 
         }
@@ -489,7 +492,7 @@ export default class GameInfoScreen extends React.Component {
           <Text size={25} style={styles.hr5}>Platforms</Text>
         </Block>
         <Block flex left style={[styles.gameInfo]}>
-          <Text size={18} >{this.state.game.allPlatforms}</Text>
+          {this.state.game.allPlatforms == "" ? <Text size={18} color="#999">This game isn't currently available on any platforms</Text> : <Text size={18} >{this.state.game.allPlatforms}</Text>}
         </Block>
 
 

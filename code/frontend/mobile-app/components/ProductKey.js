@@ -97,7 +97,6 @@ class ProductKey extends React.Component {
       }
     }
    
-
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>
         <TouchableWithoutFeedback>

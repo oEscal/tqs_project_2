@@ -23,7 +23,7 @@ describe('Fetching Data', () => {
         const instance = wrapper.instance();
 
         // Mocking
-        const url = baseURL + "grid/game?id=" + route.params.game.id
+        const url = baseURL + "grid/games/game?id=" + route.params.game.id
         const mockResponse = {
             "id": 2,
             "name": "Portal 2",
@@ -1194,7 +1194,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/add-wish-list?game_id=" + route.params.game.id + "&user_id=1"
+        const url = baseURL + "grid/wishlist?game_id=" + route.params.game.id + "&user_id=1"
         fetchMock.post(url, 200);
 
         // Call method
@@ -1212,7 +1212,7 @@ describe('Fetching Data', () => {
         const instance = wrapper.instance();
 
         // Mocking
-        const url = baseURL + "grid/game?id=" + route.params.game.id
+        const url = baseURL + "grid/games/game?id=" + route.params.game.id
         const mockResponse = 401
 
         fetchMock.get(url, mockResponse);
@@ -1330,7 +1330,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/add-wish-list?game_id=" + route.params.game.id + "&user_id=1"
+        const url = baseURL + "grid/wishlist?game_id=" + route.params.game.id + "&user_id=1"
         const mockResponse = 401
 
         fetchMock.post(url, mockResponse);

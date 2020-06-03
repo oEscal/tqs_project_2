@@ -38,7 +38,7 @@ describe('Fetching Data', () => {
         const instance = wrapper.instance();
 
         // Mocking
-        const url = baseURL + "grid/all?page=" + (wrapper.state('curPage') - 1);
+        const url = baseURL + "grid/games/all?page=" + (wrapper.state('curPage') - 1);
         const mockResponse = {
             "content": [
                 {
@@ -121,7 +121,7 @@ describe('Fetching Data', () => {
         wrapper.setState({ 'searchParam': 'grand' })
 
         // Mocking
-        const url = baseURL + "grid/name?name=" + wrapper.state('searchParam');
+        const url = baseURL + "grid/games/name?name=" + wrapper.state('searchParam');
         const mockResponse = [
             {
                 "id": 1,
