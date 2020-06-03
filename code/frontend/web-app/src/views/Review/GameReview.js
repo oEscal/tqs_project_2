@@ -217,7 +217,7 @@ class GameReview extends Component {
 
                 })
                     .then(response => {
-                        if (response.status === 401) {
+                        if (response.status === 401 || response.status === 400) {
                             return response
                         } else if (response.status === 200) {
                             return response.json()
@@ -233,7 +233,17 @@ class GameReview extends Component {
                                 redirectLogin: true
                             })
 
-                        } else {
+                        }else if (data.status === 400) {
+                            toast.error('Oops, seems like you\'ve already reviewed this game!', {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                toastId: "errorBlowjob"
+                            });
+                         }  else {
                             this.setState({ redirectProfile: true })
                         }
                     })
@@ -267,7 +277,7 @@ class GameReview extends Component {
     async componentDidMount() {
         window.scrollTo(0, 0)
 
-        if (this.props.location.state.game == null) {
+        if (this.props == null || this.props.location == null || this.props.location.state == null || this.props.location.state.game == null) {
             await this.setState({ redirectGames: true })
         } else {
             await this.setState({ game: this.props.location.state.game })

@@ -137,7 +137,7 @@ class ProfilePage extends Component {
         var error = false
 
         var tempBirth = birthday.split("/")
-        if (!error && (tempBirth != "" && tempBirth.length != 3)) {
+        if ((tempBirth != "" && tempBirth.length != 3)) {
             toast.error('Please use a valid birthday...', {
                 position: "top-center",
                 autoClose: 5000,
@@ -154,7 +154,7 @@ class ProfilePage extends Component {
             }
         }
 
-        if (!error && (email != "" && !this.validateEmail(email))) {
+        if ((email != "" && !this.validateEmail(email))) {
             toast.error('Please use a valid email...', {
                 position: "top-center",
                 autoClose: 5000,
@@ -172,7 +172,7 @@ class ProfilePage extends Component {
         }
 
 
-        if (!error && (pass != "" && pass != passConfirm)) {
+        if ((pass != "" && pass != passConfirm)) {
             toast.error('Oops, your passwords don\'t match!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -186,7 +186,7 @@ class ProfilePage extends Component {
         }
 
 
-        if (!error && (cardNumber != '' || cardCVC != '' || expiration != '' || cardName != '')) {
+        if ((cardNumber != '' || cardCVC != '' || expiration != '' || cardName != '')) {
             if (cardNumber == '' || cardCVC == '' || expiration == '' || cardName == '') {
                 toast.error('Oops, if you want to add your payment info, you\'ve got to specify all four card information fields!', {
                     position: "top-center",
@@ -202,7 +202,7 @@ class ProfilePage extends Component {
             }
         }
 
-        if (!error && expiration != "" && expiration != null) {
+        if (expiration != "" && expiration != null) {
             var tempExpiration = expiration.split("/")
             if (tempExpiration.length != 3) {
                 toast.error('Please use a valid expiration date...', {
@@ -220,7 +220,7 @@ class ProfilePage extends Component {
             }
         }
 
-        if (!error && (cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 9 || cardName.length > 19))) {
+        if ((cardNumber != "" && cardNumber != null && (!(/^\d+$/.test(cardNumber)) || cardNumber.length < 9 || cardName.length > 19))) {
             toast.error('Oops, the credit card number must contain only numbers and have at least 9 digits and less than 19!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -234,7 +234,7 @@ class ProfilePage extends Component {
         }
 
 
-        if (!error && (cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length > 4 || cardCVC.length < 3))) {
+        if ((cardCVC != "" && cardCVC != null && (!(/^\d+$/.test(cardCVC)) || cardCVC.length > 4 || cardCVC.length < 3))) {
             toast.error('Oops, the CVC must contain only numbers and have 3 or 4 digits!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -369,7 +369,7 @@ class ProfilePage extends Component {
                 <div>
                     <LoggedHeader user={global.user} cart={global.cart} heightChange={false} height={600} />
 
-                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }}>
+                    <div className="animated fadeOut animated" style={{ width: "100%", marginTop: "15%" }} id="firstLoad">
                         <FadeIn>
                             <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
                         </FadeIn>
@@ -634,6 +634,15 @@ class ProfilePage extends Component {
                 countryList.push({ "value": country, "label": country })
             })
 
+            var today = Datetime.moment()
+            var valid = function (current) {
+                return current.isAfter(today);
+            };
+
+            var valid2 = function (current) {
+                return current.isBefore(today);
+            };
+
             return (
                 <div style={{ backgroundColor: "#fff" }}>
                     <ToastContainer
@@ -819,6 +828,8 @@ class ProfilePage extends Component {
                                                         <Datetime
                                                             timeFormat={false}
                                                             inputProps={{ placeholder: "Birthday*", id: "birthday" }}
+                                                            isValidDate={valid2}
+
                                                         />
                                                     </FormControl>
                                                 </GridItem>
@@ -884,6 +895,8 @@ class ProfilePage extends Component {
                                                                     <Datetime
                                                                         timeFormat={false}
                                                                         inputProps={{ placeholder: "Expiration Date", id: "cardExpiration" }}
+                                                                        isValidDate={valid}
+
                                                                     />
                                                                 </FormControl>
                                                             </GridItem>
@@ -902,6 +915,7 @@ class ProfilePage extends Component {
                                                 style={{ backgroundColor: "#ff3ea0" }}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                id="confirm"
                                                 onClick={() => this.confirm()}
                                             >
                                                 <i class="fas fa-pencil-alt"></i> Confirm Edit
