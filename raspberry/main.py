@@ -9,8 +9,11 @@ import pygame
 RED = (250, 51, 126)
 YELLOW = (255, 187, 120)
 GREEN = (100, 212, 104)
+GRAY = (144, 164, 174)
 
-WINDOW_SIZE = (1080, 700)
+WINDOW_SIZE = (1300, 700)
+CIRCLE_RADIUS = 50
+TEXT_SIZE = 30
 
 
 TOKEN = os.environ.get('TOKEN', '9050')
@@ -26,6 +29,7 @@ def main():
 	clock = pygame.time.Clock()
 	pygame.init()
 	screen = pygame.display.set_mode(WINDOW_SIZE)
+	font = pygame.font.SysFont("couriernew", TEXT_SIZE)
 	done = False
 
 	while not done:
@@ -35,17 +39,19 @@ def main():
 
 		screen.fill((0, 0, 0))
 
-		workflow_i = 0
-		for workflow in repository.get_workflows():
+		workflows = list(repository.get_workflows())
+		number_workflows = len(workflows)
+		for workflow_i in range(number_workflows):
+			workflow = workflows[workflow_i]
 
 			info = repository.get_workflow_run(workflow.id, branch="feature/raspberry/pipeline_integration")
 
+			color = GRAY
 			if "workflow_runs" in info and len(info["workflow_runs"]):
 				conclusion = info["workflow_runs"][0]["conclusion"]
 				print(workflow)
 				print(conclusion)
 
-				color = (255, 255, 255)
 				if conclusion == "success":
 					color = GREEN
 				elif conclusion == "failure":
@@ -53,11 +59,14 @@ def main():
 				elif not conclusion:
 					color = YELLOW
 
-				# TODO -> mudar para dar para qualquer numero de pipelines
-				circle_height = int(WINDOW_SIZE[0] * (workflow_i + 1) / (4 + 1))
-				pygame.draw.circle(screen, color, (circle_height, int(WINDOW_SIZE[1] / 2)), 50)
+			circle_horizontal = int(WINDOW_SIZE[0] * (workflow_i + 1) / (number_workflows + 1))
+			circle_vertical = int(WINDOW_SIZE[1] / 2)
+			pygame.draw.circle(screen, color, (circle_horizontal, circle_vertical), CIRCLE_RADIUS)
 
-				workflow_i += 1
+			text_present = workflow.name.split(" ")
+			for line_i in range(len(text_present)):
+				text = font.render(text_present[line_i], True, (255, 255, 255))
+				screen.blit(text, (circle_horizontal - CIRCLE_RADIUS,  circle_vertical + CIRCLE_RADIUS*2 + TEXT_SIZE*line_i))
 
 		pygame.display.update()
 		clock.tick(1/update_seconds)
