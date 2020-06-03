@@ -59,7 +59,7 @@ public class AuctionService {
         }
 
         // verify if the game key is already in some sell
-        if (this.mSellRepository.findByGameKey_RealKey(gameKeyStr) != null) {
+        if (!this.mSellRepository.findAllByGameKey_RealKey(gameKeyStr).isEmpty()) {
             throw new ExceptionDetails("There is already a sell for that game key");
         }
 

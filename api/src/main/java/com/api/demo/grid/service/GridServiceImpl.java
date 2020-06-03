@@ -273,7 +273,8 @@ public class GridServiceImpl implements GridService {
             user.addBuy(buy1);
             paidSell = buy1.getSell();
             if (paidSell.getResale()){
-                
+                paidSell.getUser().removeGameKey(paidSell.getPurchased().getGamerKey());
+                mUserRepository.save(paidSell.getUser());
             }
             mSellRepository.save(buy1.getSell());
         }

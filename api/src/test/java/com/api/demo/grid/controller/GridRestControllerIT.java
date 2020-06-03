@@ -959,6 +959,49 @@ class GridRestControllerIT {
         ;
     }
 
+    @Test
+    void whenBuyResale_ReturnsValidSale_andSellerDoesNotHaveKey() throws Exception{
+        Sell sell = createSellListing();
+        User buyer = createUser();
+        mUserRepository.save(buyer);
+        Buy buy = new Buy();
+        buy.setSell(sell);
+        buy.setUser(buyer);
+        mUserRepository.save(buyer);
+        mSellRepository.save(sell);
+
+        SellPOJO sellPOJO = new SellPOJO();
+        sellPOJO.setPrice(5.5);
+        sellPOJO.setGameKey(buy.getGamerKey());
+        sellPOJO.setUserId(buyer.getId());
+
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(sellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(5.5)))
+        ;
+
+        User secondBuyer = createUser();
+        mUserRepository.save(secondBuyer);
+        BuyListingsPOJO buyListingsPOJO = new BuyListingsPOJO();
+        buyListingsPOJO.setWithFunds(false);
+        buyListingsPOJO.setUserId(secondBuyer.getId());
+        long[] ids = {mSellRepository.findUnsoldGameKey(sellPOJO.getGameKey()).getId()};
+        buyListingsPOJO.setListingsId(ids);
+        mMockMvc.perform(post("/grid/buy-listing")
+                .content(asJsonString(buyListingsPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(1)))
+        ;
+
+        Optional<User> optionalUser = mUserRepository.findById(buyer.getId());
+
+        assertFalse(optionalUser.isEmpty());
+        assertTrue(optionalUser.get().getBuys().isEmpty());
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DataJpaTest
@@ -128,12 +128,12 @@ class SellRepositoryTest {
         Sell sell = new Sell();
         sell.setGameKey(gameKey);
 
-        assertEquals(sell, mRepository.findByGameKey_RealKey(gameKeyStr));
+        assertEquals(sell, mRepository.findAllByGameKey_RealKey(gameKeyStr).get(0));
     }
 
     @Test
     void whenSearchSellByNonExistentKey_receiveNull(){
 
-        assertNull(mRepository.findByGameKey_RealKey("game_key_test"));
+        assertTrue(mRepository.findAllByGameKey_RealKey("game_key_test").isEmpty());
     }
 }

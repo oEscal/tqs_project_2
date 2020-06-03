@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
+import java.util.*;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.Transient;
@@ -33,8 +33,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Pattern;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -132,7 +130,7 @@ public class User {
     @ToString.Exclude
     private Set<ReviewUser> reviewUsers = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude
     private Set<Buy> buys = new HashSet<>();
 
@@ -253,5 +251,11 @@ public class User {
         this.sells.remove(sell);
     }
 
-    public void removeBuys(Buy buy) { this.buys.remove(buy); }
+    public void removeGameKey(String gamerKey) {
+        List<Buy> toRemove = new ArrayList<>();
+        for (Buy buy: buys){
+            if (buy.getGamerKey().equals(gamerKey)) toRemove.add(buy);
+        }
+        buys.removeAll(toRemove);
+    }
 }
