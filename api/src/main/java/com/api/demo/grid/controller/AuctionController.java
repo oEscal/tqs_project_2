@@ -27,7 +27,7 @@ public class AuctionController {
 
 
     @SneakyThrows
-    @PostMapping("/create-auction")
+    @PostMapping("/auction")
     public AuctionProxy createAuction(@RequestHeader("Authorization") String auth,
                                       @Valid @RequestBody AuctionPOJO auction) {
 
@@ -41,7 +41,7 @@ public class AuctionController {
     }
 
     @SneakyThrows
-    @PostMapping("/create-bidding")
+    @PostMapping("/bidding")
     public AuctionProxy createBidding(@RequestHeader("Authorization") String auth,
                                       @Valid @RequestBody BiddingPOJO bidding) {
 
@@ -56,7 +56,7 @@ public class AuctionController {
     }
 
     @SneakyThrows
-    @GetMapping("/auctions")
+    @GetMapping("/auction")
     public List<AuctionProxy> getAllAuctions(@RequestParam Long gameId) {
 
         List<Auction> auctions = mAuctionService.getAllAuctionsListings(gameId);

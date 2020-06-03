@@ -48,9 +48,6 @@ public class ReviewGame {
     @Column(nullable = false)
     private Date date;
 
-    @OneToMany
-    private Set<ReportReviewGame> reports;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore

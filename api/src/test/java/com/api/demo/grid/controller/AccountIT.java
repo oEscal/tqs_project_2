@@ -279,7 +279,7 @@ class AccountIT {
         mUserService.saveUser(mSimpleUserDTO);
 
         // remove user
-        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+        RequestBuilder request = delete("/grid/user").param("username", mUsername1)
                 .with(httpBasic(mUsername1, mPassword1));
         mMvc.perform(request).andExpect(status().isOk());
 
@@ -303,7 +303,7 @@ class AccountIT {
         mUserService.saveUser(adminDTO);
 
         // remove user
-        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+        RequestBuilder request = delete("/grid/user").param("username", mUsername1)
                 .with(httpBasic(adminUsername, mPassword1));
         mMvc.perform(request).andExpect(status().isOk());
 
@@ -326,7 +326,7 @@ class AccountIT {
         mUserService.saveUser(adminDTO);
 
         // remove user
-        RequestBuilder request = delete("/grid/remove-user").param("username", mUsername1)
+        RequestBuilder request = delete("/grid/user").param("username", mUsername1)
                 .with(httpBasic(otherUser, mPassword1));
         mMvc.perform(request).andExpect(status().isForbidden());
 
