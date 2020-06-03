@@ -47,7 +47,7 @@ public class Auction {
     @GeneratedValue( strategy= GenerationType.AUTO )
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
     private User auctioneer;
 
