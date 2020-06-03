@@ -221,6 +221,67 @@ class ProfilePage extends Component {
         await this.setState({ "userReview": game })
     }
 
+
+    deleteListing = async (listing) => {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        this.setState({ doneLoading: false })
+
+        await fetch(baseURL + "grid/sell-listing?id=" + listing, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                    this.setState({ doneLoading: true })
+
+                } else {
+                    toast.success('Sale successfuly canceled!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorToast"
+                    });
+
+                    window.location.reload(false);
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+                this.setState({ error: true })
+            });
+    }
     ////////////////////////////////////////////
 
 
@@ -460,7 +521,7 @@ class ProfilePage extends Component {
                                                                                 id={"reviewGameButton" + row.gameId}
                                                                                 onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
                                                                             >
-                                                                                 <i class="far fa-star"></i> Review Game
+                                                                                <i class="far fa-star"></i> Review Game
                                                                             </Button>
                                                                         </TableCell>
                                                                         <TableCell align="right">
@@ -525,7 +586,8 @@ class ProfilePage extends Component {
                                                                                 <Button
                                                                                     size="sm"
                                                                                     style={{ backgroundColor: "#ff3ea0" }}
-                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                                                                    id={"deleteSell" + row.id}
+                                                                                    onClick={() => this.deleteListing(row.id)}
                                                                                     target="_blank"
                                                                                     rel="noopener noreferrer"
                                                                                 >
