@@ -854,7 +854,7 @@ class GridRestControllerTest {
         int score = review.getScore();
         Date date = review.getDate();
 
-        reviews.add(new ReviewJoiner(id, comment, score, date, new HashSet<>(), user, game));
+        reviews.add(new ReviewJoiner(id, comment, score, date, user, game));
 
         Pagination<ReviewJoiner> reviewsPage = new Pagination<>(new ArrayList<>(reviews));
 
@@ -909,7 +909,7 @@ class GridRestControllerTest {
         int score = review.getScore();
         Date date = review.getDate();
 
-        reviews.add(new ReviewJoiner(id, comment, score, date, new HashSet<>(), user, game));
+        reviews.add(new ReviewJoiner(id, comment, score, date, user, game));
 
         Pagination<ReviewJoiner> reviewsPage = new Pagination<>(new ArrayList<>(reviews));
 
