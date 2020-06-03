@@ -438,6 +438,7 @@ class GridServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSavingValidGameKeyPOJO_ReturnValidGameKey() {
         Mockito.when(mMockGameRepo.findById(2L)).thenReturn(Optional.ofNullable(mGame2));
 
@@ -453,6 +454,7 @@ class GridServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void whenSavingInvalidGameKeyPOJO_ReturnNullGameKey() {
         Mockito.when(mMockGameRepo.findById(2L)).thenReturn(Optional.empty());
 

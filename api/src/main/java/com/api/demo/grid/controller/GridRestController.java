@@ -151,7 +151,12 @@ public class GridRestController {
 
     @PostMapping("/gamekey")
     public ResponseEntity<GameKey> saveSellAndGameKey(@RequestBody GameKeyPOJO gameKeyPOJO) {
-        GameKey gameKey = mGridService.saveGameKey(gameKeyPOJO);
+        GameKey gameKey;
+        try {
+             gameKey = mGridService.saveGameKey(gameKeyPOJO);
+        } catch (ExceptionDetails e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Game key was repeated");
+        }
         if (gameKey == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Game Key");
         }

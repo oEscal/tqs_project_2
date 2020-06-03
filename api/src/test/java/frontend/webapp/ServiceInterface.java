@@ -43,7 +43,7 @@ public class ServiceInterface {
         }
     }
 
-    public static List<String> addGameKeys(GridService gridService, int gameID, int size) {
+    public static List<String> addGameKeys(GridService gridService, int gameID, int size) throws ExceptionDetails{
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             String key = ServiceInterface.randomString(50);

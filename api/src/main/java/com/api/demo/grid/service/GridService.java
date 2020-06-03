@@ -44,7 +44,7 @@ public interface GridService {
     Publisher savePublisher(PublisherPOJO publisherPOJO);
     Developer saveDeveloper(DeveloperPOJO developerPOJO);
     GameGenre saveGameGenre(GameGenrePOJO gameGenrePOJO);
-    GameKey saveGameKey(GameKeyPOJO gameKeyPOJO);
+    GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) throws ExceptionDetails;
     Sell getSell(long id);
     Sell deleteSell(long id) throws UnavailableListingException, ExceptionDetails;
     Sell saveSell(SellPOJO sellPOJO) throws ExceptionDetails;

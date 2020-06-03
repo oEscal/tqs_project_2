@@ -196,9 +196,12 @@ public class GridServiceImpl implements GridService {
         return gameGenre;
     }
 
-    public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) {
+    public GameKey saveGameKey(GameKeyPOJO gameKeyPOJO) throws ExceptionDetails {
         Game game = this.mGameRepository.findById(gameKeyPOJO.getGameId()).orElse(null);
         if (game == null) return null;
+
+        Optional<GameKey> optionalGameKey = this.mGameKeyRepository.findByRealKey(gameKeyPOJO.getKey());
+        if (!optionalGameKey.isEmpty()) throw new ExceptionDetails("Game Key already exists");
 
         GameKey gameKey = new GameKey();
         gameKey.setRealKey(gameKeyPOJO.getKey());
