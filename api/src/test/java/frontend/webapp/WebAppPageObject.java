@@ -33,7 +33,11 @@ class WebAppPageObject {
     JavascriptExecutor js;
 
 
-    WebAppPageObject() {
+    @SneakyThrows
+    WebAppPageObject(UserService userService, GridService gridService) {
+
+        // Chrome headless Driver
+
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -66,12 +70,14 @@ class WebAppPageObject {
     WebAppPageObject(UserService userService, GridService gridService) throws ParseException, ExceptionDetails {
 
 
-        // Chrome headless Driver
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--headless");
+        mSimpleUserDTO = new UserDTO("oof", "oof", "oof@adeus.com", "hmm", "oof",
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
+        userService.saveUser(mSimpleUserDTO);
+
+        // set games
+        for (int id = 0; id < 10; id++) {
+            GamePOJO gamePOJO = new GamePOJO("game" + id, "", null, null, null,
+                    null, "");
 
         driver = new ChromeDriver(options);
 
@@ -82,23 +88,12 @@ class WebAppPageObject {
          */
 
 
-        // Firefox Driver
-        /*
-        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
-        driver = new FirefoxDriver();
-        */
+            gamePOJO.setDevelopers(new HashSet<>(Arrays.asList("developer" + id)));
+            gamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre" + id)));
+            gamePOJO.setPublisher("publisher" + id);
+            gridService.saveGame(gamePOJO);
+        }
 
-        js = (JavascriptExecutor) driver;
-        vars = new HashMap<String, Object>();
-
-        driver.manage().window().setSize(new Dimension(1920, 1080));
-        driver.manage().timeouts().implicitlyWait(120, TimeUnit.MILLISECONDS);
-
-
-        // set user
-        ServiceInterface.addUser(userService);
-        // set games
-        ServiceInterface.addGames(gridService, 10);
     }
 
     void tear() {
@@ -212,7 +207,16 @@ class WebAppPageObject {
         driver.findElement(By.id("react-select-3-option-0")).click();
     }
 
-    void login(int port) {
+    void clickStars(){
+        driver.findElement(By.className("star-container")).click();
+    }
+
+    void waitForVisibility(String id){
+        driver.findElement(By.cssSelector(".ProfilePage-main-4")).click();
+
+    }
+
+    void login(int port){
         //Login
         this.navigate("http://localhost:" + port + "/login-page");
         String username = "admin";
@@ -222,6 +226,17 @@ class WebAppPageObject {
 
         this.clickButton("confirm");
         this.waitForLoad("processing");
+    }
 
+    void loginAlt(int port){
+        //Login
+        this.navigate("http://localhost:" + port + "/login-page");
+        String username = "oof";
+        String password = "oof";
+        this.writeInput(username,"username");
+        this.writeInput(password,"password");
+
+        this.clickButton("confirm");
+        this.waitForLoad("processing");
     }
 }

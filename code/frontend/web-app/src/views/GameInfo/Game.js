@@ -555,6 +555,15 @@ class Game extends Component {
 
         await this.getGameListings()
 
+        toast.success('Sale successfully added to shopping cart!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "addToCartToast"
+        });
+
         this.setState({ doneLoading: true })
     }
 
@@ -575,6 +584,15 @@ class Game extends Component {
         global.cart = await JSON.parse(localStorage.getItem('cart'))
 
         await this.getGameListings()
+
+        toast.success('Sale successfully removed to shopping cart!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "removeFromCartToast"
+        });
 
         this.setState({ doneLoading: true })
     }
@@ -725,7 +743,7 @@ class Game extends Component {
                 if (this.state.sellListings == null || this.state.sellListings.length == 0) {
                     sellListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                         <div style={{ textAlign: "left" }}>
-                            <h3 style={{ color: "#999" }}>
+                            <h3 style={{ color: "#999" }} id="noSell">
                                 It seems like no one's selling this game at the moment :(
                         </h3>
                         </div>
@@ -785,7 +803,7 @@ class Game extends Component {
                 if (this.state.reviewListings == null || this.state.reviewListings.length == 0) {
                     reviewListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                         <div style={{ textAlign: "left" }}>
-                            <h3 style={{ color: "#999" }}>
+                            <h3 style={{ color: "#999" }} id="noReviews">
                                 It seems like no one's reviewed this game yet :(
                         </h3>
                         </div>
@@ -803,7 +821,7 @@ class Game extends Component {
                                                 </Link>
                                             </TableCell>
                                             <TableCell align="left"><b>{row.score}</b></TableCell>
-                                            <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                            <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                             <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                         </TableRow>
                                     ))}
@@ -971,7 +989,7 @@ class Game extends Component {
 
                 bestPrice = <GridItem xs={12} sm={12} md={2}>
                     <div style={{ textAlign: "left", marginTop: "30px" }}>
-                        <span style={{ color: "#999", fontSize: "12px" }}>
+                        <span style={{ color: "#999", fontSize: "12px" }} id="bestOfferSign">
                             BEST OFFER
                             </span>
                     </div>
@@ -1005,7 +1023,7 @@ class Game extends Component {
                             </span>
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
+                        <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }} id="bestOfferPrice">
                             {this.state.game.bestSell.price}€
                             </span>
 
@@ -1054,12 +1072,12 @@ class Game extends Component {
 
                         <GridItem xs={12} sm={12} md={5}>
                             <div style={{ textAlign: "left" }}>
-                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>{this.state.game.name}</b></h3>
+                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }} id="gameNameHeader">{this.state.game.name}</b></h3>
                                 <hr style={{ color: "#999" }}></hr>
                             </div>
                             <div style={{ textAlign: "left", marginTop: "30px" }}>
                                 <span style={{ color: "#999", fontSize: "15px" }}>
-                                    <b>Description:</b> <span style={{ color: "#3b3e48" }}> {this.state.game.minimizedDescription}</span>
+                                    <b>Description:</b> <span style={{ color: "#3b3e48" }} id="descriptionHeader"> {this.state.game.minimizedDescription}</span>
                                 </span>
                             </div>
                             <div style={{ textAlign: "left", marginTop: "30px" }}>
@@ -1093,7 +1111,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullName">
                                             {this.state.game.name}
                                         </div>
                                     </GridItem>
@@ -1111,7 +1129,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullReleaseDate">
                                             {this.state.game.releaseDate}
                                         </div>
                                     </GridItem>
@@ -1129,7 +1147,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }} id="fullDescription">
                                             {this.state.game.description}
                                         </div>
                                     </GridItem>
@@ -1147,7 +1165,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullGenres">
                                             {this.state.game.allGenres}
                                         </div>
                                     </GridItem>
@@ -1165,8 +1183,8 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allPlatforms}
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullPlatforms">
+                                            {this.state.game.allPlatforms == "" ? <span style={{ color: "#999" }}><i>This game isn't currently available on any platforms</i></span> : <span>{this.state.game.allPlatforms}</span>}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -1183,7 +1201,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullDevelopers">
                                             {this.state.game.allDevelopers}
                                         </div>
                                     </GridItem>
@@ -1201,7 +1219,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullPublisher">
                                             {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
@@ -1305,7 +1323,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allGenres}
+                                            {this.state.game.allPlatforms == "" ? <span style={{ color: "#999" }}><i>This game isn't currently available on any platforms</i></span> : <span>{this.state.game.allPlatforms}</span>}
                                         </div>
                                     </GridItem>
                                 </GridContainer>

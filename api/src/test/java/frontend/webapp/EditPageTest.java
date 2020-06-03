@@ -1,7 +1,6 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -12,17 +11,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.text.ParseException;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 
 @SpringBootTest(classes= DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class SignUpPageTest {
+class EditPageTest {
     WebAppPageObject controller;
 
     private final int port = 3000;
@@ -35,9 +31,16 @@ class SignUpPageTest {
 
 
     @BeforeEach
-    void setUp() throws ParseException, ExceptionDetails {
+    void setUp() {
         controller = new WebAppPageObject(mUserService, mGridService);
-        controller.navigate("http://localhost:" + port + "/signup-page");
+
+        //Login
+        controller.login(port);
+        controller.waitForLoad("processing");
+
+        controller.navigate("http://localhost:" + port + "/user/admin/edit");
+        controller.waitForLoad("firstLoad");
+
     }
 
     @AfterEach
@@ -45,17 +48,6 @@ class SignUpPageTest {
         controller.tear();
     }
 
-    @Test
-    //Check that when the necessary input isn't fed, an error is displayed
-    void whenNoMinimumInput_thenErrorMessage() {
-        controller.clickButton("confirm");
-
-        controller.waitForLoad("processing");
-        controller.waitSeconds(2);
-
-        assertTrue(controller.checkVisibility("errorMinimum"));
-        assertTrue(controller.checkText("errorMinimum", "Oops, you've got to specify, at least, a name, username, birthday, email, password and country!"));
-    }
 
     @Test
     //Check that when an invalid birthdate is given an error is displayed
@@ -238,7 +230,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits and less than 19!"));
     }
 
     @Test
@@ -253,7 +245,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits and less than 19!"));
     }
 
     @Test
@@ -268,7 +260,7 @@ class SignUpPageTest {
         controller.waitSeconds(2);
 
         assertTrue(controller.checkExistance("errorCardNumber"));
-        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 8 digits and less than 19!"));
+        assertTrue(controller.checkText("errorCardNumber", "Oops, the credit card number must contain only numbers and have at least 9 digits and less than 19!"));
 
         //////////
     }
@@ -301,50 +293,21 @@ class SignUpPageTest {
         assertTrue(controller.checkText("errorCardExpiration", "Please use a valid expiration date..."));
     }
 
-    @Test
-    //Needs the user ola adeus to exist in the DB
-    void whenUserAlreadyExists_thenError() {
-        controller.writeInput("admin", "name");
-        controller.writeInput("admin", "username");
-        controller.pickSelect(52, "country");
-        controller.writeInput("04/04/1999", "birthday");
-        controller.writeInput("ola@oof.com", "email");
-        controller.writeInput("adeus", "pass");
-        controller.writeInput("adeus", "passConfirm");
-
-
-        controller.clickButton("confirm");
-
-        controller.waitForLoad("processing");
-        controller.waitSeconds(2);
-
-        controller.waitSeconds(1);
-        assertTrue(controller.checkExistance("errorTwoToast"));
-        assertTrue(controller.checkText("errorTwoToast", "There is already a user with that username"));
-    }
 
     //Test when everything goes right
     @Test
-    void whenValidInput_thenRedirectToHome_andLogin() {
+    void whenValidInput_thenRedirectToProfile() {
         String randomString = this.randomString(10);
 
-        controller.writeInput(randomString, "name");
-        controller.writeInput(randomString, "username");
-        controller.pickSelect(52, "country");
-        controller.writeInput("04/04/1999", "birthday");
-        controller.writeInput(randomString+"@"+randomString+".com", "email");
-        controller.writeInput(randomString, "pass");
-        controller.writeInput(randomString, "passConfirm");
-
+        controller.writeInput(randomString, "description");
 
         controller.clickButton("confirm");
 
-        controller.waitForLoad("processing");
+        controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
-        String url = "http://localhost:" + port + "/";
+        String url = "http://localhost:" + port + "/user/admin";
         assertTrue(controller.checkURL(url));
-        assertTrue(controller.checkText("logged",randomString.toUpperCase()));
     }
 
     static String randomString(int n)
