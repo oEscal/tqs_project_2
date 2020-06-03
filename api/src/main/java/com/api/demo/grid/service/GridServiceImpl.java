@@ -26,15 +26,7 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.DeveloperRepository;
-import com.api.demo.grid.repository.GameGenreRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.GameRepository;
-import com.api.demo.grid.repository.PublisherRepository;
-import com.api.demo.grid.repository.ReviewGameRepository;
-import com.api.demo.grid.repository.ReviewUserRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.repository.*;
 import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,6 +69,9 @@ public class GridServiceImpl implements GridService {
 
     @Autowired
     private ReviewGameRepository mReviewGameRepository;
+
+    @Autowired
+    private BuyRepository mBuyRepository;
 
     private SearchGamePOJO mPreviousGamePojo;
 
@@ -217,11 +212,16 @@ public class GridServiceImpl implements GridService {
         if (gameKey.isEmpty()) return null;
         GameKey realGameKey = gameKey.get();
 
-        if (realGameKey.getSell() != null || realGameKey.getAuction() != null){
+        boolean isResale = realGameKey.getSell() != null
+                && realGameKey.getSell().getPurchased() != null
+                && realGameKey.getSell().getPurchased().getUserId() == realUser.getId();
+
+        if (realGameKey.getSell() != null && !isResale || realGameKey.getAuction() != null){
             throw new ExceptionDetails("This key is already in a different listing");
         }
 
         Sell sell = new Sell();
+        sell.setResale(isResale);
         sell.setUser(realUser);
         sell.setGameKey(realGameKey);
         sell.setPrice(sellPOJO.getPrice());
@@ -268,8 +268,13 @@ public class GridServiceImpl implements GridService {
             user.payWithFunds(bill);
         }
 
+        Sell paidSell;
         for (Buy buy1 : buyList) {
             user.addBuy(buy1);
+            paidSell = buy1.getSell();
+            if (paidSell.getResale()){
+                
+            }
             mSellRepository.save(buy1.getSell());
         }
         mUserRepository.save(user);

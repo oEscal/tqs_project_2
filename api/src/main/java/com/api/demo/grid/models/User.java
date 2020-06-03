@@ -252,4 +252,6 @@ public class User {
     public void removeListing(Sell sell) {
         this.sells.remove(sell);
     }
+
+    public void removeBuys(Buy buy) { this.buys.remove(buy); }
 }

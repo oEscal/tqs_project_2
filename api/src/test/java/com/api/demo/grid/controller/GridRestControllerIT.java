@@ -935,6 +935,30 @@ class GridRestControllerIT {
         ;
     }
 
+    @Test
+    void whenResellingBoughtKey_returnValidListing() throws Exception{
+        Sell sell = createSellListing();
+        User buyer = createUser();
+        mUserRepository.save(buyer);
+        Buy buy = new Buy();
+        buy.setSell(sell);
+        buy.setUser(buyer);
+        mUserRepository.save(buyer);
+        mSellRepository.save(sell);
+
+        SellPOJO sellPOJO = new SellPOJO();
+        sellPOJO.setPrice(5.5);
+        sellPOJO.setGameKey(buy.getGamerKey());
+        sellPOJO.setUserId(buyer.getId());
+
+        mMockMvc.perform(post("/grid/sell-listing")
+                .content(asJsonString(sellPOJO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price", is(5.5)))
+        ;
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {

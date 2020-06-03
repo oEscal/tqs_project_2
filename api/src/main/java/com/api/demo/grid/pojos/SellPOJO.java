@@ -13,7 +13,7 @@ import java.util.Date;
 public class SellPOJO {
     private long userId;
     private double price;
-    private Date date;
+    private Date date = new Date();
     private String gameKey;
 
     public SellPOJO(String gameKey, long userId, double price, Date date) {
