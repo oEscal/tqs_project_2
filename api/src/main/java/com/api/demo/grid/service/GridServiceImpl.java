@@ -11,8 +11,6 @@ import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameGenre;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.Publisher;
-import com.api.demo.grid.models.ReportReviewGame;
-import com.api.demo.grid.models.ReportUser;
 import com.api.demo.grid.models.ReviewGame;
 import com.api.demo.grid.models.ReviewUser;
 import com.api.demo.grid.models.Sell;
@@ -493,10 +491,9 @@ public class GridServiceImpl implements GridService {
             String comment = currentReview.getComment();
             int score = currentReview.getScore();
             Date date = currentReview.getDate();
-            Set<ReportUser> reports = currentReview.getReports();
             User author = currentReview.getAuthor();
             User target = currentReview.getTarget();
-            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+            reviews.add(new ReviewJoiner(id, comment, score, date, author, target));
         }
 
         for (ReviewGame currentReview : reviewsGame) {
@@ -504,10 +501,9 @@ public class GridServiceImpl implements GridService {
             String comment = currentReview.getComment();
             int score = currentReview.getScore();
             Date date = currentReview.getDate();
-            Set<ReportReviewGame> reports = currentReview.getReports();
             User author = currentReview.getAuthor();
             Game game = currentReview.getGame();
-            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+            reviews.add(new ReviewJoiner(id, comment, score, date, author, game));
         }
 
         Pagination<ReviewJoiner> pagination = new Pagination<>();
@@ -528,10 +524,9 @@ public class GridServiceImpl implements GridService {
             String comment = currentReview.getComment();
             int score = currentReview.getScore();
             Date date = currentReview.getDate();
-            Set<ReportUser> reports = currentReview.getReports();
             User author = currentReview.getAuthor();
             User target = currentReview.getTarget();
-            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, target));
+            reviews.add(new ReviewJoiner(id, comment, score, date, author, target));
         }
 
         List<ReviewGame> userGames = mReviewGameRepository.findAll();
@@ -540,10 +535,9 @@ public class GridServiceImpl implements GridService {
             String comment = currentReview.getComment();
             int score = currentReview.getScore();
             Date date = currentReview.getDate();
-            Set<ReportReviewGame> reports = currentReview.getReports();
             User author = currentReview.getAuthor();
             Game game = currentReview.getGame();
-            reviews.add(new ReviewJoiner(id, comment, score, date, reports, author, game));
+            reviews.add(new ReviewJoiner(id, comment, score, date, author, game));
         }
 
 
