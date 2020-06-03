@@ -75,6 +75,7 @@ class ProfilePageTest {
         assertFalse(controller.checkExistance("editButton"));
     }
 
+    /*
     @Test
     void whenLoadsProfile_showGenericInfo(){
         controller.navigate("http://localhost:" + port + "/user/admin");
@@ -86,7 +87,8 @@ class ProfilePageTest {
         assertTrue(controller.checkText("country", "hm"));
         assertTrue(controller.checkText("birthday", "09/10/2019"));
     }
-
+    */
+    
     @Test
     void whenClickingEditProfile_goToEditProfilePage(){
         controller.navigate("http://localhost:" + port + "/user/admin");

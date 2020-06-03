@@ -39,7 +39,7 @@ class WebAppPageObject {
     WebAppPageObject(UserService userService, GridService gridService) {
 
         // Chrome headless Driver
-        
+
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
