@@ -14,7 +14,7 @@ import com.api.demo.grid.models.Publisher;
 import com.api.demo.grid.models.ReviewGame;
 import com.api.demo.grid.models.ReviewUser;
 import com.api.demo.grid.models.Sell;
-
+import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.BuyListingsPOJO;
 import com.api.demo.grid.pojos.DeveloperPOJO;
 import com.api.demo.grid.pojos.GameGenrePOJO;
@@ -27,15 +27,18 @@ import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
 import com.api.demo.grid.service.GridService;
 
+import com.api.demo.grid.service.UserService;
 import com.api.demo.grid.utils.ReviewJoiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,6 +57,9 @@ public class GridRestController {
 
     @Autowired
     private GridService mGridService;
+
+    @Autowired
+    private UserService mUserService;
 
     @GetMapping(value = "/all", params = {"page"})
     public ResponseEntity<Page<Game>> getAllGames(@RequestParam("page") int page) {
@@ -164,6 +170,31 @@ public class GridRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save Sell Listing");
         }
         return new ResponseEntity<>(sell, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-sell-listing")
+    public ResponseEntity<Sell> saveSell(@RequestHeader("Authorization") String auth,
+                                         @RequestParam long id){
+        String value = ControllerUtils.getUserFromAuth(auth);
+        User user = mUserService.getUser(value);
+
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found in the database");
+        }
+        Sell sell = mGridService.getSell(id);
+        if (sell == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sell Listing was not found");
+        }
+        if (!sell.getUser().getId().equals(user.getId()) && !user.isAdmin()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Don't have permission to delete this listing");
+        }
+        try{
+            return new ResponseEntity<>(mGridService.deleteSell(id), HttpStatus.OK);
+        } catch (ExceptionDetails e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Listing has already been bought");
+        } catch (UnavailableListingException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sell Listing was not found");
+        }
     }
 
     @PostMapping("/buy-listing")

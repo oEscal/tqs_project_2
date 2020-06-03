@@ -33,6 +33,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/sell-listing",
             "/grid/search",
             "/grid/public/user-info",
+            "/grid/public/user-info",
+            "/grid/auctions",
     };
 
     private static final String[] ADMIN_WHITELIST = {
@@ -49,6 +51,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/create-bidding",
             "/grid/user",
             "/grid/remove-user",
+            "/grid/delete-sell-listing"
     };
 
     @Autowired

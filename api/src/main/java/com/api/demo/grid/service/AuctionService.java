@@ -2,19 +2,22 @@ package com.api.demo.grid.service;
 
 
 import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.Auction;
+import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
 import com.api.demo.grid.repository.SellRepository;
 import com.api.demo.grid.repository.UserRepository;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,6 +35,9 @@ public class AuctionService {
 
     @Autowired
     private SellRepository mSellRepository;
+
+    @Autowired
+    private GameRepository mGameRepository;
 
 
     public Auction getAuctionByGameKey(String key) {
@@ -118,5 +124,12 @@ public class AuctionService {
         auction.setPrice(price);
 
         return mAuctionRepository.save(auction);
+    }
+
+    public List<Auction> getAllAuctionsListings(long gameId) throws GameNotFoundException {
+        Optional<Game> game = mGameRepository.findById(gameId);
+        if (game.isEmpty()) throw new GameNotFoundException("Game not found in the database");
+
+        return mAuctionRepository.findAllByGameWithEndDateAfterCurrent(gameId);
     }
 }

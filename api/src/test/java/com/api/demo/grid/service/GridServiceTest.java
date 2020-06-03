@@ -25,7 +25,16 @@ import com.api.demo.grid.pojos.ReviewGamePOJO;
 import com.api.demo.grid.pojos.ReviewUserPOJO;
 import com.api.demo.grid.pojos.SearchGamePOJO;
 import com.api.demo.grid.pojos.SellPOJO;
-import com.api.demo.grid.repository.*;
+import com.api.demo.grid.repository.BuyRepository;
+import com.api.demo.grid.repository.DeveloperRepository;
+import com.api.demo.grid.repository.GameGenreRepository;
+import com.api.demo.grid.repository.GameKeyRepository;
+import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.PublisherRepository;
+import com.api.demo.grid.repository.ReviewGameRepository;
+import com.api.demo.grid.repository.ReviewUserRepository;
+import com.api.demo.grid.repository.SellRepository;
+import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.utils.Pagination;
 import com.api.demo.grid.utils.ReviewJoiner;
 import lombok.SneakyThrows;
@@ -51,7 +60,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(MockitoExtension.class)
 class GridServiceTest {
@@ -1223,5 +1237,43 @@ class GridServiceTest {
         assertNull(expected);
     }
 
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingValidListing_ReturnListing() throws UnavailableListingException, ExceptionDetails {
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        Sell deletedSell = mGridService.deleteSell(1L);
+        assertEquals(mSell1.getId(), deletedSell.getId());
+        assertFalse(mUser.getSells().contains(mSell1));
+        assertNull(mGameKey.getSell());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingInvalidListing_ThrowException(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(UnavailableListingException.class, () -> mGridService.deleteSell(1l));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenDeletingSoldListing_ThrowException(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        mSell1.setPurchased(new Buy());
+        assertThrows(ExceptionDetails.class, () -> mGridService.deleteSell(1L));
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGettingValidSellListing_returnCorrectListing(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(mSell1));
+        assertEquals(mSell1.getId(), mGridService.getSell(2l).getId());
+    }
+
+    @Test
+    @WithMockUser(username = "spring")
+    void whenGettingInvalidSellListing_returnNull(){
+        Mockito.when(mMockSellRepo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertNull(mGridService.getSell(2l));
+    }
 
 }

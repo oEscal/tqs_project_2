@@ -1,14 +1,12 @@
 package com.api.demo.grid.service;
 
+import com.api.demo.grid.exception.GameNotFoundException;
 import com.api.demo.grid.models.Auction;
 import com.api.demo.grid.models.Game;
 import com.api.demo.grid.models.GameKey;
 import com.api.demo.grid.models.User;
 import com.api.demo.grid.pojos.AuctionPOJO;
-import com.api.demo.grid.repository.AuctionRepository;
-import com.api.demo.grid.repository.GameKeyRepository;
-import com.api.demo.grid.repository.SellRepository;
-import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.repository.*;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 
@@ -37,6 +35,9 @@ class AuctionServiceTest {
 
     @Mock(lenient = true)
     private GameKeyRepository mGameKeyRepository;
+
+    @Mock(lenient = true)
+    private GameRepository mGameRepository;
 
     @Mock(lenient = true)
     private SellRepository mSellRepository;
@@ -166,5 +167,44 @@ class AuctionServiceTest {
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
 
         assertEquals(mAuction, mAuctionService.addAuction(mAuctionPOJO));
+    }
+
+
+    /***
+     *  Get all current auctions
+     ***/
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctions_getIsSuccessful() {
+
+        List<Auction> auctions = new ArrayList<>();
+        auctions.add(mAuction);
+
+        given(mGameRepository.findById((long) 1)).willReturn(java.util.Optional.of(new Game()));
+
+        given(mAuctionRepository.findAllByGameWithEndDateAfterCurrent(1)).willReturn(auctions);
+
+        assertEquals(auctions, mAuctionService.getAllAuctionsListings(1));
+    }
+
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctionsAndThereAreNoAuctions_getEmptyList() {
+
+        given(mGameRepository.findById((long) 1)).willReturn(java.util.Optional.of(new Game()));
+
+        assertEquals(0, mAuctionService.getAllAuctionsListings(1).size());
+    }
+
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctionsAndTheGameDoesNotExist_getError() {
+
+        List<Auction> auctions = new ArrayList<>();
+        auctions.add(mAuction);
+
+        given(mAuctionRepository.findAllByGameWithEndDateAfterCurrent(1)).willReturn(auctions);
+
+        assertThrows(GameNotFoundException.class, () -> mAuctionService.getAllAuctionsListings(1));
     }
 }
