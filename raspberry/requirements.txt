@@ -5,7 +5,8 @@ cryptography==2.9.2
 Deprecated==1.2.10
 idna==2.9
 pycparser==2.20
-PyGithub==1.51
+pygame==1.9.6
+git+https://github.com/PyGithub/PyGithub.git
 PyJWT==1.7.1
 requests==2.23.0
 six==1.15.0
