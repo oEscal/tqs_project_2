@@ -457,10 +457,10 @@ class ProfilePage extends Component {
                                                                                 style={{ backgroundColor: "#fc8f6f" }}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
-                                                                                id={"reviewButton" + row.gameId}
+                                                                                id={"reviewGameButton" + row.gameId}
                                                                                 onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
                                                                             >
-                                                                                <i class="far fa-star"></i> Review Game
+                                                                                 <i class="far fa-star"></i> Review Game
                                                                             </Button>
                                                                         </TableCell>
                                                                         <TableCell align="right">
@@ -469,7 +469,7 @@ class ProfilePage extends Component {
                                                                                 style={{ backgroundColor: "#ff3ea0" }}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
-                                                                                id={"reviewButton" + row.sellerId}
+                                                                                id={"reviewUserButton" + row.sellerId}
                                                                                 onClick={() => this.renderRedirectUserReview({ sellerName: row.sellerName, sellerId: row.sellerId })}
                                                                             >
                                                                                 <i class="far fa-star"></i> Review Seller

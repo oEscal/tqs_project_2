@@ -209,6 +209,15 @@ class WebAppPageObject {
         driver.findElement(By.id("react-select-3-option-0")).click();
     }
 
+    void clickStars(){
+        driver.findElement(By.className("star-container")).click();
+    }
+
+    void waitForVisibility(String id){
+        driver.findElement(By.cssSelector(".ProfilePage-main-4")).click();
+
+    }
+
     void login(int port){
         //Login
         this.navigate("http://localhost:" + port + "/login-page");
@@ -219,6 +228,17 @@ class WebAppPageObject {
 
         this.clickButton("confirm");
         this.waitForLoad("processing");
+    }
 
+    void loginAlt(int port){
+        //Login
+        this.navigate("http://localhost:" + port + "/login-page");
+        String username = "oof";
+        String password = "oof";
+        this.writeInput(username,"username");
+        this.writeInput(password,"password");
+
+        this.clickButton("confirm");
+        this.waitForLoad("processing");
     }
 }

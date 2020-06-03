@@ -105,6 +105,7 @@ class Wallet extends Component {
         var login_info = null
         if (global.user != null) {
             login_info = global.user.token
+            console.log(global.user.token)
 
             await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
                 method: "GET",
@@ -114,6 +115,7 @@ class Wallet extends Component {
                 }
             })
                 .then(response => {
+                    console.log(response)
                     if (response.status === 401) {
                         return response
                     } else if (response.status === 200) {
@@ -122,6 +124,8 @@ class Wallet extends Component {
                     else throw new Error(response.status);
                 })
                 .then(data => {
+                    console.log(data)
+
                     if (data.status === 401) { // Wrong token
                         localStorage.setItem('loggedUser', null);
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))
@@ -131,6 +135,8 @@ class Wallet extends Component {
                         })
 
                     } else {
+                        console.log(data)
+
                         this.setState({ info: data })
                     }
                 })
@@ -150,6 +156,7 @@ class Wallet extends Component {
             localStorage.setItem('loggedUser', null);
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
+            console.log("wtf")
             this.setState({
                 redirectLogin: true
             })
@@ -316,10 +323,13 @@ class Wallet extends Component {
                             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                             this.setState({
-                                redirectLogin: true
+                                redirectLogin: true,
+                                doneLoading: true
+
                             })
 
                         } else {
+                            data["token"] = global.user.token
                             localStorage.setItem('loggedUser', JSON.stringify(data));
                             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
@@ -335,6 +345,9 @@ class Wallet extends Component {
                             draggable: true,
                             toastId: "errorThreeToast"
                         });
+                        this.setState({
+                            doneLoading: true
+                        })
                     });
 
             } else {
@@ -342,14 +355,12 @@ class Wallet extends Component {
                 global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                 this.setState({
-                    redirectLogin: true
+                    redirectLogin: true,
+                    doneLoading: true
                 })
             }
         }
 
-        this.setState({
-            doneLoading: true
-        })
     }
 
     async componentDidMount() {
@@ -368,6 +379,10 @@ class Wallet extends Component {
 
     render() {
         const { classes } = this.props;
+
+        if (this.state.redirectLogin) {
+            return (<div>{this.renderRedirectLogin()}</div>)
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -444,7 +459,7 @@ class Wallet extends Component {
                                             WebkitTextFillColor: "transparent",
                                             fontWeight: "bold",
                                             fontSize: "50px"
-                                        }}>{this.state.info.funds == null ? 0 : this.state.info.funds}€</span></h2>
+                                        }} id="totalFunds">{this.state.info.funds == null ? 0 : this.state.info.funds}€</span></h2>
                                         <h4 style={{
                                             color: "#999",
                                             fontWeight: "",
