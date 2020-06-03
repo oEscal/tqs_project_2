@@ -207,6 +207,21 @@ class ProfilePage extends Component {
 
 
     //METHODS////////////////////////////////////
+    async componentWillReceiveProps(nextProps) {
+        if (this.props.match.params.user !== nextProps.match.params.user) {
+            this.setState({ doneLoading: false })
+
+            this.props = nextProps
+            if (global.user != null && global.user.username == this.props.match.params.user) {
+                await this.getPrivateUserInfo()
+            } else {
+                await this.getPublicUserInfo()
+            }
+    
+            this.setState({ doneLoading: true })
+        }
+    }
+
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
             return <Redirect to='/login-page' />
