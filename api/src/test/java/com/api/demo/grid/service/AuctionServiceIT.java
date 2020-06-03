@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -400,5 +401,57 @@ class AuctionServiceIT {
 
         assertThrows(ExceptionDetails.class, () -> mAuctionService.addBidding(mAuctioneerUsername, mGameKeyRKey,
                 newPrice + 1.3));
+    }
+
+
+    /***
+     *  Get all current auctions
+     ***/
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctions_getIsSuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction 1
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        // save game key 2
+        String gameKeyStr = "other_game_key";
+        GameKey gameKey = new GameKey();
+        gameKey.setRealKey(gameKeyStr);
+        gameKey.setGame(mGame);
+        mGameKeyRepository.save(gameKey);
+
+        // insert auction 2
+        AuctionPOJO auctionPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyStr, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+        mAuctionService.addAuction(auctionPOJO);
+
+
+        // save game key 3
+        String gameKeyPastStr = "past_game_key";
+        GameKey gameKeyPast = new GameKey();
+        gameKeyPast.setRealKey(gameKeyPastStr);
+        gameKeyPast.setGame(mGame);
+        mGameKeyRepository.save(gameKeyPast);
+
+        // insert auction 3
+        AuctionPOJO auctionPastPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyPastStr, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
+        mAuctionService.addAuction(auctionPastPOJO);
+
+        List<Auction> auctions = mAuctionService.getAllAuctionsListings(mGame.getId());
+
+        // verify if there are just 2 current auctions
+        assertEquals(2, auctions.size());
+
+        // verify if the returned auctions are the correct ones
+        assertEquals(mGameKeyRKey, auctions.get(0).getGameKey().getRealKey());
+        assertEquals(gameKeyStr, auctions.get(1).getGameKey().getRealKey());
     }
 }

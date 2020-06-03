@@ -11,8 +11,11 @@ import com.api.demo.grid.pojos.AuctionPOJO;
 import com.api.demo.grid.repository.AuctionRepository;
 import com.api.demo.grid.repository.GameKeyRepository;
 import com.api.demo.grid.repository.GameRepository;
+import com.api.demo.grid.repository.UserRepository;
+import com.api.demo.grid.service.AuctionService;
 import com.api.demo.grid.service.UserService;
 import lombok.SneakyThrows;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +31,11 @@ import java.text.SimpleDateFormat;
 
 import static com.api.demo.grid.utils.AuctionJson.addAuctionJson;
 import static com.api.demo.grid.utils.BiddingJson.addBiddingJson;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,6 +60,12 @@ class AuctionControllerIT {
 
     @Autowired
     private GameRepository mGameRepository;
+
+    @Autowired
+    private UserRepository mUserRepository;
+
+    @Autowired
+    private AuctionService mAuctionService;
 
 
     private Auction mAuction;
@@ -166,11 +174,11 @@ class AuctionControllerIT {
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isOk())
-                .andExpect(jsonPath("$.auctioneer", is(mAuctioneerUsername)))
-                .andExpect(jsonPath("$.buyer", is(nullValue())))
-                .andExpect(jsonPath("$.gameKey", is(mGameKeyRKey)))
-                .andExpect(jsonPath("$.endDate", is(mEndDate)))
-                .andExpect(jsonPath("$.price", is(mPrice)));
+                .andExpect(jsonPath("$.auctioneer", Matchers.is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.buyer", Matchers.is(Matchers.nullValue())))
+                .andExpect(jsonPath("$.gameKey", Matchers.is(mGameKeyRKey)))
+                .andExpect(jsonPath("$.endDate", Matchers.is(mEndDate)))
+                .andExpect(jsonPath("$.price", Matchers.is(mPrice)));
         assertEquals(1, mAuctionRepository.findAll().size());
 
         // verify if there is an auction on the auctioneer side
@@ -320,11 +328,11 @@ class AuctionControllerIT {
                 .content(mBiddingJson).with(httpBasic(mBuyerUsername, mBuyerPassword));
 
         mMvc.perform(request).andExpect(status().isOk())
-                .andExpect(jsonPath("$.auctioneer", is(mAuctioneerUsername)))
-                .andExpect(jsonPath("$.buyer", is(mBuyerUsername)))
-                .andExpect(jsonPath("$.gameKey", is(nullValue())))
-                .andExpect(jsonPath("$.endDate", is(mEndDate)))
-                .andExpect(jsonPath("$.price", is(newPrice)));
+                .andExpect(jsonPath("$.auctioneer", Matchers.is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.buyer", Matchers.is(mBuyerUsername)))
+                .andExpect(jsonPath("$.gameKey", Matchers.is(Matchers.nullValue())))
+                .andExpect(jsonPath("$.endDate", Matchers.is(mEndDate)))
+                .andExpect(jsonPath("$.price", Matchers.is(newPrice)));
 
         // verify if there is an auction on the buyer side
         assertEquals(1, mUserService.getUser(mBuyerUsername).getAuctionsWon().size());
@@ -370,5 +378,61 @@ class AuctionControllerIT {
                 .content(mBiddingJson).with(httpBasic(fakeBuyerUsername, mBuyerPassword));
 
         mMvc.perform(request).andExpect(status().isForbidden());
+    }
+
+
+    /***
+     *  Get all current auctions
+     ***/
+    @Test
+    @SneakyThrows
+    void whenGetAllCurrentAuctions_getIsSuccessful() {
+
+        // save auctioneer, game and game key
+        mUserRepository.save(mAuctioneer);
+        mGameRepository.save(mGame);
+        mGameKey.setGame(mGame);
+        mGameKeyRepository.save(mGameKey);
+
+        // insertion auction 1
+        mAuctionService.addAuction(mAuctionPOJO);
+
+        // save game key 2
+        String gameKeyStr = "other_game_key";
+        GameKey gameKey = new GameKey();
+        gameKey.setRealKey(gameKeyStr);
+        gameKey.setGame(mGame);
+        mGameKeyRepository.save(gameKey);
+
+        // insert auction 2
+        AuctionPOJO auctionPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyStr, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse(mEndDate));
+        mAuctionService.addAuction(auctionPOJO);
+
+        // save game key 3
+        String gameKeyPastStr = "past_game_key";
+        GameKey gameKeyPast = new GameKey();
+        gameKeyPast.setRealKey(gameKeyPastStr);
+        gameKeyPast.setGame(mGame);
+        mGameKeyRepository.save(gameKeyPast);
+
+        // insert auction 3
+        AuctionPOJO auctionPastPOJO = new AuctionPOJO(mAuctioneerUsername, gameKeyPastStr, mPrice,
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/1999"));
+        mAuctionService.addAuction(auctionPastPOJO);
+
+
+        RequestBuilder request = get("/grid/auctions").contentType(MediaType.APPLICATION_JSON)
+                .param("gameId", String.valueOf(mGame.getId()));
+
+        mMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$", Matchers.hasSize(2)))
+                .andExpect(jsonPath("$.[0].auctioneer", Matchers.is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.[1].auctioneer", Matchers.is(mAuctioneerUsername)))
+                .andExpect(jsonPath("$.[*].gameKey", Matchers.containsInAnyOrder(mGameKeyRKey, gameKeyStr)))
+                .andExpect(jsonPath("$.[0].endDate", Matchers.is(mEndDate)))
+                .andExpect(jsonPath("$.[1].endDate", Matchers.is(mEndDate)))
+                .andExpect(jsonPath("$.[0].price", Matchers.is(mPrice)))
+                .andExpect(jsonPath("$.[1].price", Matchers.is(mPrice)));
     }
 }
