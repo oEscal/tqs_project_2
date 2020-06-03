@@ -105,8 +105,9 @@ class Wallet extends Component {
         var login_info = null
         if (global.user != null) {
             login_info = global.user.token
+            console.log(global.user.token)
 
-            await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+            await fetch(baseURL + "grid/private/user?username=" + global.user.username, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -114,6 +115,7 @@ class Wallet extends Component {
                 }
             })
                 .then(response => {
+                    console.log(response)
                     if (response.status === 401) {
                         return response
                     } else if (response.status === 200) {
@@ -122,6 +124,8 @@ class Wallet extends Component {
                     else throw new Error(response.status);
                 })
                 .then(data => {
+                    console.log(data)
+
                     if (data.status === 401) { // Wrong token
                         localStorage.setItem('loggedUser', null);
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))
@@ -131,6 +135,8 @@ class Wallet extends Component {
                         })
 
                     } else {
+                        console.log(data)
+
                         this.setState({ info: data })
                     }
                 })
@@ -150,6 +156,7 @@ class Wallet extends Component {
             localStorage.setItem('loggedUser', null);
             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
+            console.log("wtf")
             this.setState({
                 redirectLogin: true
             })
@@ -210,7 +217,7 @@ class Wallet extends Component {
         }
 
         if (!error) {
-            this.addFunds()
+            await this.addFunds()
         }
     }
 
@@ -251,8 +258,10 @@ class Wallet extends Component {
         }
 
         if (!error) {
-            this.addFunds()
+            await this.addFunds()
         }
+
+
 
     }
 
@@ -260,9 +269,7 @@ class Wallet extends Component {
         var amount = document.getElementById("fundsAmount").value
         var error = false
 
-        this.setState({
-            doneLoading: false
-        })
+
 
         if (amount == '' || amount == null) {
             toast.error('Oops, you have to specify how much money you want to add to your wallet!', {
@@ -291,11 +298,15 @@ class Wallet extends Component {
         }
 
         if (!error) {
+            await this.setState({
+                doneLoading: false
+            })
+
             var login_info = null
             if (global.user != null) {
                 login_info = global.user.token
-
-                await fetch(baseURL + "grid/funds?newfunds=" + amount, {
+                console.log(amount)
+                await fetch(baseURL + "grid/private/funds?newfunds=" + amount, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -316,10 +327,13 @@ class Wallet extends Component {
                             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                             this.setState({
-                                redirectLogin: true
+                                redirectLogin: true,
+                                doneLoading: true
+
                             })
 
                         } else {
+                            data["token"] = global.user.token
                             localStorage.setItem('loggedUser', JSON.stringify(data));
                             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
@@ -327,6 +341,7 @@ class Wallet extends Component {
                         }
                     })
                     .catch(error => {
+                        console.log(error)
                         toast.error('Sorry, an unexpected error has occurred!', {
                             position: "top-center",
                             hideProgressBar: false,
@@ -335,6 +350,9 @@ class Wallet extends Component {
                             draggable: true,
                             toastId: "errorThreeToast"
                         });
+                        this.setState({
+                            doneLoading: true
+                        })
                     });
 
             } else {
@@ -342,14 +360,11 @@ class Wallet extends Component {
                 global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                 this.setState({
-                    redirectLogin: true
+                    redirectLogin: true,
+                    doneLoading: true
                 })
             }
         }
-
-        this.setState({
-            doneLoading: true
-        })
     }
 
     async componentDidMount() {
@@ -359,7 +374,7 @@ class Wallet extends Component {
     }
 
     renderRedirectLogin = () => {
-        if (this.state.redirectLogin) {
+        if (this.state.redirectLogin || global.user == null || this.state.info == null) {
             return <Redirect to='/login-page' />
         }
     }
@@ -368,6 +383,10 @@ class Wallet extends Component {
 
     render() {
         const { classes } = this.props;
+
+        if (this.state.redirectLogin || global.user == null || (this.state.doneLoading && this.state.info == null)) {
+            return (<div>{this.renderRedirectLogin()}</div>)
+        }
 
         if (!this.state.doneLoading) {
             return (
@@ -444,7 +463,7 @@ class Wallet extends Component {
                                             WebkitTextFillColor: "transparent",
                                             fontWeight: "bold",
                                             fontSize: "50px"
-                                        }}>{this.state.info.funds == null ? 0 : this.state.info.funds}€</span></h2>
+                                        }} id="totalFunds">{this.state.info.funds == null ? 0 : this.state.info.funds}€</span></h2>
                                         <h4 style={{
                                             color: "#999",
                                             fontWeight: "",

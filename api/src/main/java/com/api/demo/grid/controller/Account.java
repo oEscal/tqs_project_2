@@ -44,7 +44,7 @@ public class Account {
         return ResponseEntity.ok().body(new UserInfoProxy(mUserService.getUser(value), true));
     }
 
-    @DeleteMapping("/remove-user")
+    @DeleteMapping("/user")
     public void removeUser(@RequestHeader("Authorization") String auth, @RequestParam String username)
             throws ForbiddenException {
 

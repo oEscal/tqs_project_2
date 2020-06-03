@@ -42,12 +42,15 @@ class SearchPageTest {
 
     @Test
     void whenClickingGame_goToGamePage() {
+        controller.login(port);
+        controller.waitForLoad("processing");
+
+        controller.navigate("http://localhost:" + port + "/games");
         controller.waitForLoad("firstLoad");
-        controller.waitSeconds(2);
 
         controller.clickCard();
 
-        controller.waitForLoad("processing");
+        controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
         String url = "http://localhost:" + port + "/games/info/1";
@@ -80,7 +83,8 @@ class SearchPageTest {
         controller.clickButton("confirm");
 
         controller.waitForLoad("processing");
-        controller.waitSeconds(2);
+        controller.waitForLoad("firstLoad");
+        controller.waitSeconds(10);
 
         controller.scrollToTop();
         assertTrue(controller.checkText("numberOfProducts", noProducts));

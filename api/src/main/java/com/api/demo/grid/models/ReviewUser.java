@@ -46,9 +46,6 @@ public class ReviewUser {
     @Column(nullable = false)
     private Date date;
 
-    @OneToMany
-    private Set<ReportUser> reports;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_from_user_id", nullable = false)
     @JsonIgnore

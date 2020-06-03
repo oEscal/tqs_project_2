@@ -100,7 +100,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/private/user-info?username=" + user.username
+        const url = baseURL + "grid/private/user?username=" + user.username
         fetchMock.get(url, user);
 
         await instance.getUserInfo()
@@ -194,7 +194,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/private/user-info?username=" + user.username
+        const url = baseURL + "grid/private/user?username=" + user.username
         fetchMock.get(url, 404);
 
         await instance.getUserInfo()
@@ -287,7 +287,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/private/user-info?username=" + user.username
+        const url = baseURL + "grid/private/user?username=" + user.username
         fetchMock.get(url, 401);
 
         await instance.getUserInfo()

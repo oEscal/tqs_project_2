@@ -133,7 +133,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidGenre_ReturnValidResponse() throws Exception {
 
-        mMockMvc.perform(post("/grid/add-genre")
+        mMockMvc.perform(post("/grid/games/genre")
                 .content(asJsonString(mGameGenrePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -145,7 +145,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidPub_ReturnValidResponse() throws Exception {
-        mMockMvc.perform(post("/grid/add-publisher")
+        mMockMvc.perform(post("/grid/games/publisher")
                 .content(asJsonString(mPublisherPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -157,7 +157,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring", authorities = "ADMIN")
     void whenPostingValidDeveloper_ReturnValidResponse() throws Exception {
-        mMockMvc.perform(post("/grid/add-developer")
+        mMockMvc.perform(post("/grid/games/developer")
                 .content(asJsonString(mDeveloperPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -185,7 +185,7 @@ class GridRestControllerIT {
         mGamePOJO.setDevelopers(new HashSet<>(Arrays.asList("dev")));
         mGamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre")));
 
-        mMockMvc.perform(post("/grid/add-game")
+        mMockMvc.perform(post("/grid/games/game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -233,7 +233,7 @@ class GridRestControllerIT {
 
         mGamePOJO.setPublisher(null);
 
-        mMockMvc.perform(post("/grid/add-game")
+        mMockMvc.perform(post("/grid/games/game")
                 .content(asJsonString(mGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -281,7 +281,7 @@ class GridRestControllerIT {
         mGameKeyRepository.save(gameKey2);
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setGameKey("key");
-        mMockMvc.perform(post("/grid/add-sell-listing")
+        mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -308,7 +308,7 @@ class GridRestControllerIT {
         mSellPOJO.setUserId(user.getId());
         mSellPOJO.setPrice(2.4);
         mSellPOJO.setGameKey("key");
-        mMockMvc.perform(post("/grid/add-sell-listing")
+        mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -316,7 +316,7 @@ class GridRestControllerIT {
                 .andExpect(jsonPath("$.price", is(2.4)))
         ;
 
-        mMockMvc.perform(get("/grid/game")
+        mMockMvc.perform(get("/grid/games/game")
                 .param("id", "" + game.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -348,7 +348,7 @@ class GridRestControllerIT {
         mSellPOJO.setUserId(seller.getId());
         mSellPOJO.setPrice(2.4);
         mSellPOJO.setGameKey("key");
-        mMockMvc.perform(post("/grid/add-sell-listing")
+        mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -360,7 +360,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingInvalidSellListing_Return404Exception() throws Exception {
 
-        mMockMvc.perform(post("/grid/add-sell-listing")
+        mMockMvc.perform(post("/grid/sell-listing")
                 .content(asJsonString(mSellPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -519,7 +519,7 @@ class GridRestControllerIT {
         mUserRepository.save(user);
 
 
-        mMockMvc.perform(post("/grid/add-wish-list")
+        mMockMvc.perform(post("/grid/wishlist")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("game_id", String.valueOf(game.getId()))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -532,7 +532,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring")
     void whenPostingInvalidWishList_ReturnException() throws Exception {
-        mMockMvc.perform(post("/grid/add-wish-list")
+        mMockMvc.perform(post("/grid/wishlist")
                 .param("user_id", String.valueOf(1))
                 .param("game_id", String.valueOf(1))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -557,7 +557,7 @@ class GridRestControllerIT {
         mReviewGamePOJO.setAuthor(user.getId());
         mReviewGamePOJO.setGame(game.getId());
 
-        mMockMvc.perform(post("/grid/add-game-review")
+        mMockMvc.perform(post("/grid/reviews/game")
                 .content(asJsonString(mReviewGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -607,7 +607,7 @@ class GridRestControllerIT {
         mUserRepository.save(user);
         mGameRepository.save(game);
 
-        mMockMvc.perform(post("/grid/add-game-review")
+        mMockMvc.perform(post("/grid/reviews/game")
                 .content(asJsonString(mReviewGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -618,7 +618,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenPostingInvalidGameReview_ReturnException() throws Exception {
 
-        mMockMvc.perform(post("/grid/add-game-review")
+        mMockMvc.perform(post("/grid/reviews/game")
                 .content(asJsonString(mReviewGamePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -651,7 +651,7 @@ class GridRestControllerIT {
         mReviewUserPOJO.setAuthor(author.getId());
         mReviewUserPOJO.setTarget(target.getId());
 
-        mMockMvc.perform(post("/grid/add-user-review")
+        mMockMvc.perform(post("/grid/reviews/user")
                 .content(asJsonString(mReviewUserPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -697,7 +697,7 @@ class GridRestControllerIT {
         this.mUserRepository.save(target);
         this.mReviewUserRepository.save(review);
 
-        mMockMvc.perform(post("/grid/add-user-review")
+        mMockMvc.perform(post("/grid/reviews/user")
                 .content(asJsonString(mReviewUserPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -709,7 +709,7 @@ class GridRestControllerIT {
     void whenPostingInvalidUserReview_ReturnException() throws Exception {
         mReviewUserPOJO.setAuthor(1);
         mReviewUserPOJO.setTarget(2);
-        mMockMvc.perform(post("/grid/add-user-review")
+        mMockMvc.perform(post("/grid/reviews/user")
                 .content(asJsonString(mReviewUserPOJO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -743,7 +743,7 @@ class GridRestControllerIT {
         this.mGameRepository.save(game);
 
 
-        mMockMvc.perform(get("/grid/game-review")
+        mMockMvc.perform(get("/grid/reviews/game")
                 .param("game_id", String.valueOf(game.getId()))
                 .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -758,7 +758,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenGetInvalidGameReviews_ReturnException() throws Exception {
 
-        mMockMvc.perform(get("/grid/game-review")
+        mMockMvc.perform(get("/grid/reviews/game")
                 .param("game_id", String.valueOf(1))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -790,7 +790,7 @@ class GridRestControllerIT {
 
         this.mUserRepository.save(user);
 
-        mMockMvc.perform(get("/grid/user-reviewed")
+        mMockMvc.perform(get("/grid/reviews/user")
                 .param("user_id", String.valueOf(user.getId()))
                 .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -805,7 +805,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenGetInvalidUserReviews_ReturnException() throws Exception {
 
-        mMockMvc.perform(get("/grid/user-reviewed")
+        mMockMvc.perform(get("/grid/reviews/user")
                 .param("user_id", "1")
                 .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -840,7 +840,7 @@ class GridRestControllerIT {
         this.mUserRepository.save(user);
 
 
-        mMockMvc.perform(get("/grid/all-reviews")
+        mMockMvc.perform(get("/grid/reviews/all")
                 .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -851,7 +851,7 @@ class GridRestControllerIT {
     @Test
     @WithMockUser(username = "spring")
     void whenGetValidAllUserReviews_ReturnSuccessEmpty() throws Exception {
-        mMockMvc.perform(get("/grid/all-reviews")
+        mMockMvc.perform(get("/grid/reviews/all")
                 .param("page", "0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -863,7 +863,7 @@ class GridRestControllerIT {
     @WithMockUser(username = "spring")
     void whenGetInvalidAllUserReviews_ReturnException() throws Exception {
 
-        mMockMvc.perform(get("/grid/all-reviews")
+        mMockMvc.perform(get("/grid/reviews/all")
                 .param("page", "0")
                 .param("sort","incorrect")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -873,7 +873,7 @@ class GridRestControllerIT {
     @Test
     void whenDeletingValidListing_andIsOwner_ReturnOkListing() throws Exception {
         Sell sell = createSellListing();
-        mMockMvc.perform(delete("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/sell-listing")
                 .with(httpBasic("mUsername0", "mPassword0"))
                 .param("id", ""+sell.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -892,7 +892,7 @@ class GridRestControllerIT {
         admin.setAdmin(true);
         mUserRepository.save(admin);
 
-        mMockMvc.perform(delete("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/sell-listing")
                 .with(httpBasic("mUsername1", "mPassword1"))
                 .param("id", ""+sell.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -910,7 +910,7 @@ class GridRestControllerIT {
         User admin = createUser();
         mUserRepository.save(admin);
 
-        mMockMvc.perform(delete("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/sell-listing")
                 .with(httpBasic("mUsername1", "mPassword1"))
                 .param("id", ""+sell.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -926,7 +926,7 @@ class GridRestControllerIT {
         buy.setSell(sell);
         mSellRepository.save(sell);
 
-        mMockMvc.perform(delete("/grid/delete-sell-listing")
+        mMockMvc.perform(delete("/grid/sell-listing")
                 .with(httpBasic("mUsername0", "mPassword0"))
                 .param("id", ""+sell.getId())
                 .contentType(MediaType.APPLICATION_JSON))

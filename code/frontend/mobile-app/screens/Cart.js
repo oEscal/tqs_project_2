@@ -88,10 +88,12 @@ export default class CartScreen extends React.Component {
 
   async componentDidMount() {
     await this.setUserStuff()
+    await this.setCartStuff()
     await this.load()
 
     this.props.navigation.addListener('focus', async () => {
       await this.setUserStuff()
+      await this.setCartStuff()
       await this.load()
     });
 

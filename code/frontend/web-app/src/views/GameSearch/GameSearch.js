@@ -98,7 +98,7 @@ class GameSearch extends Component {
         await this.setState({ gamesLoaded: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/all?page=" + (this.state.curPage - 1), {
+        await fetch(baseURL + "grid/games/all?page=" + (this.state.curPage - 1), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -130,6 +130,8 @@ class GameSearch extends Component {
                         })
 
                     }
+
+                    console.log(data)
                     this.setState({ games: data.content })
                 }
             })
@@ -166,7 +168,7 @@ class GameSearch extends Component {
 
 
             // Proceed to login
-            await fetch(baseURL + "grid/search", {
+            await fetch(baseURL + "grid/games/search", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -284,7 +286,7 @@ class GameSearch extends Component {
 
 
                 // Proceed to login
-                await fetch(baseURL + "grid/search", {
+                await fetch(baseURL + "grid/games/search", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
