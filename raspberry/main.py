@@ -10,6 +10,7 @@ RED = (250, 51, 126)
 YELLOW = (255, 187, 120)
 GREEN = (100, 212, 104)
 GRAY = (144, 164, 174)
+WHITE = (255, 255, 255)
 
 WINDOW_SIZE = (1300, 700)
 CIRCLE_RADIUS = 50
@@ -21,10 +22,13 @@ TOKEN = os.environ.get('TOKEN', '9050')
 
 def main():
 	update_seconds = 5
+	branch = "feature/raspberry/pipeline_integration"
 
+	# github info
 	github = Github(TOKEN)
 	repository = github.get_repo(full_name_or_id=261307973)
 	MyRepository.convert_super_to_sub(repository)
+	last_commit = repository.get_branch(branch).commit
 
 	clock = pygame.time.Clock()
 	pygame.init()
@@ -44,13 +48,11 @@ def main():
 		for workflow_i in range(number_workflows):
 			workflow = workflows[workflow_i]
 
-			info = repository.get_workflow_run(workflow.id, branch="feature/raspberry/pipeline_integration")
+			info = repository.get_workflow_run(workflow.id, branch=branch)
 
 			color = GRAY
 			if "workflow_runs" in info and len(info["workflow_runs"]):
 				conclusion = info["workflow_runs"][0]["conclusion"]
-				print(workflow)
-				print(conclusion)
 
 				if conclusion == "success":
 					color = GREEN
@@ -59,13 +61,22 @@ def main():
 				elif not conclusion:
 					color = YELLOW
 
+			# branch info
+			text = font.render(f"Branch: {branch}", True, WHITE)
+			screen.blit(text, (10, 10))
+			text = font.render(f"Commit message: {last_commit.commit.message}", True, WHITE)
+			screen.blit(text, (10, 10 + TEXT_SIZE))
+			text = font.render(f"Commit author: {last_commit.commit.author.name}", True, WHITE)
+			screen.blit(text, (10, 10 + TEXT_SIZE*2))
+
+			# circles
 			circle_horizontal = int(WINDOW_SIZE[0] * (workflow_i + 1) / (number_workflows + 1))
 			circle_vertical = int(WINDOW_SIZE[1] / 2)
 			pygame.draw.circle(screen, color, (circle_horizontal, circle_vertical), CIRCLE_RADIUS)
 
 			text_present = workflow.name.split(" ")
 			for line_i in range(len(text_present)):
-				text = font.render(text_present[line_i], True, (255, 255, 255))
+				text = font.render(text_present[line_i], True, WHITE)
 				screen.blit(text, (circle_horizontal - CIRCLE_RADIUS,  circle_vertical + CIRCLE_RADIUS*2 + TEXT_SIZE*line_i))
 
 		pygame.display.update()
