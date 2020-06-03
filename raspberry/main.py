@@ -28,7 +28,6 @@ def main():
 	github = Github(TOKEN)
 	repository = github.get_repo(full_name_or_id=261307973)
 	MyRepository.convert_super_to_sub(repository)
-	last_commit = repository.get_branch(branch).commit
 
 	clock = pygame.time.Clock()
 	pygame.init()
@@ -42,6 +41,8 @@ def main():
 				done = True
 
 		screen.fill((0, 0, 0))
+
+		last_commit = repository.get_branch(branch).commit
 
 		workflows = list(repository.get_workflows())
 		number_workflows = len(workflows)
