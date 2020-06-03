@@ -314,7 +314,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -357,7 +357,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -400,7 +400,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -673,7 +673,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
