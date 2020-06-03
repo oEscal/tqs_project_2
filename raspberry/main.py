@@ -14,10 +14,10 @@ def main():
 	MyRepository.convert_super_to_sub(repository)
 
 	for workflow in repository.get_workflows():
-		print(workflow)
-
 		info = repository.get_workflow_run(workflow.id)
-		if "workflow_runs" in info:
+
+		if "workflow_runs" in info and len(info["workflow_runs"]):
+			print(workflow)
 			print(info["workflow_runs"][0]["conclusion"])
 
 

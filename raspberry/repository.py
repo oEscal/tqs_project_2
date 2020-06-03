@@ -5,9 +5,9 @@ class MyRepository(Repository.Repository):
 	def __init__(self):
 		super().__init__()
 
-	def get_workflow_run(self, workflow_id):
+	def get_workflow_run(self, workflow_id, branch="master"):
 		headers, data = self._requester.requestJsonAndCheck(
-			"GET", f"{self.url}/actions/workflows/{workflow_id}/runs",
+			"GET", f"{self.url}/actions/workflows/{workflow_id}/runs?branch={branch}",
 		)
 
 		return data
