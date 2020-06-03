@@ -1,3 +1,4 @@
+import argparse
 import os
 
 from github import Github
@@ -20,9 +21,9 @@ TEXT_SIZE = 30
 TOKEN = os.environ.get('TOKEN', '9050')
 
 
-def main():
-	update_seconds = 5
-	branch = "feature/raspberry/pipeline_integration"
+def main(branch, update_seconds):
+	# update_seconds = 5
+	# branch = "feature/raspberry/pipeline_integration"
 
 	# github info
 	github = Github(TOKEN)
@@ -85,4 +86,9 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--branch', type=str, default="master")
+	parser.add_argument('--update_seconds', type=int, default=5)
+	args = parser.parse_args()
+
+	main(args.branch, args.update_seconds)
