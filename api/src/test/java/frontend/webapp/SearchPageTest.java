@@ -42,12 +42,15 @@ class SearchPageTest {
 
     @Test
     void whenClickingGame_goToGamePage() {
+        controller.login(port);
+        controller.waitForLoad("processing");
+
+        controller.navigate("http://localhost:" + port + "/games");
         controller.waitForLoad("firstLoad");
-        controller.waitSeconds(2);
 
         controller.clickCard();
 
-        controller.waitForLoad("processing");
+        controller.waitForLoad("firstLoad");
         controller.waitSeconds(2);
 
         String url = "http://localhost:" + port + "/games/info/1";
