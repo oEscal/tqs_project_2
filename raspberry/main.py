@@ -17,7 +17,7 @@ TOKEN = os.environ.get('TOKEN', '9050')
 
 
 def main():
-	update_seconds = 3
+	update_seconds = 5
 
 	github = Github(TOKEN)
 	repository = github.get_repo(full_name_or_id=261307973)
@@ -50,6 +50,8 @@ def main():
 					color = GREEN
 				elif conclusion == "failure":
 					color = RED
+				elif not conclusion:
+					color = YELLOW
 
 				# TODO -> mudar para dar para qualquer numero de pipelines
 				circle_height = int(WINDOW_SIZE[0] * (workflow_i + 1) / (4 + 1))
