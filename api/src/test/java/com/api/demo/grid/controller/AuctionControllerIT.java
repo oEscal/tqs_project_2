@@ -170,7 +170,7 @@ class AuctionControllerIT {
         mGameKey.setGame(mGame);
         mGameKeyRepository.save(mGameKey);
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isOk())
@@ -201,7 +201,7 @@ class AuctionControllerIT {
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, mEndDate);
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
@@ -221,7 +221,7 @@ class AuctionControllerIT {
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, null, mEndDate, mPrice);
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
@@ -241,7 +241,7 @@ class AuctionControllerIT {
 
         mAuctionJson = addAuctionJson(mAuctioneerUsername, mGameKeyRKey, null, mPrice);
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isBadRequest());
@@ -261,7 +261,7 @@ class AuctionControllerIT {
 
         mAuctionJson = addAuctionJson(null, mGameKeyRKey, mEndDate, mPrice);
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(mAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().is4xxClientError());
@@ -286,7 +286,7 @@ class AuctionControllerIT {
         mGameKeyRepository.save(mGameKey);
 
 
-        RequestBuilder request = post("/grid/create-auction").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .content(mAuctionJson).with(httpBasic(fakeAuctioneerUsername, mAuctioneerPassword));
 
         mMvc.perform(request).andExpect(status().isForbidden());
@@ -324,7 +324,7 @@ class AuctionControllerIT {
         // bidding json
         mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
 
-        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/bidding").contentType(MediaType.APPLICATION_JSON)
                 .content(mBiddingJson).with(httpBasic(mBuyerUsername, mBuyerPassword));
 
         mMvc.perform(request).andExpect(status().isOk())
@@ -374,7 +374,7 @@ class AuctionControllerIT {
         // bidding json
         mBiddingJson = addBiddingJson(mBuyerUsername, mGameKeyRKey, newPrice);
 
-        RequestBuilder request = post("/grid/create-bidding").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = post("/grid/bidding").contentType(MediaType.APPLICATION_JSON)
                 .content(mBiddingJson).with(httpBasic(fakeBuyerUsername, mBuyerPassword));
 
         mMvc.perform(request).andExpect(status().isForbidden());
@@ -422,7 +422,7 @@ class AuctionControllerIT {
         mAuctionService.addAuction(auctionPastPOJO);
 
 
-        RequestBuilder request = get("/grid/auctions").contentType(MediaType.APPLICATION_JSON)
+        RequestBuilder request = get("/grid/auction").contentType(MediaType.APPLICATION_JSON)
                 .param("gameId", String.valueOf(mGame.getId()));
 
         mMvc.perform(request).andExpect(status().isOk())

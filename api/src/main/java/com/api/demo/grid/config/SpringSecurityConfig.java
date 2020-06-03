@@ -6,6 +6,7 @@ import com.api.demo.grid.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -20,38 +21,58 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 @EnableJpaRepositories(basePackageClasses = UserRepository.class)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] AUTH_WHITELIST = {
+    private static final String[] GET_AUTH_WHITELIST = {
+            "/grid/logout",
+            "/grid/games/all",
+            "/grid/games/genre",
+            "/grid/games/name",
+            "/grid/games/developer",
+            "/grid/games/publisher",
+            "/grid/games/game",
+            "/grid/sell-listing",
+            "/grid/public/user",
+            "/grid/reviews/user",
+            "/grid/reviews/game",
+            "/grid/reviews/all",
+            "/grid/auction"
+    };
+
+    private static final String[] POST_AUTH_WHITELIST = {
             "/grid/sign-up",
             "/grid/login",
-            "/grid/logout",
-            "/grid/all",
-            "/grid/game",
-            "/grid/genre",
-            "/grid/name",
-            "/grid/developer",
-            "/grid/publisher",
+            "/grid/games/search",
+            "/grid/gamekey",
             "/grid/sell-listing",
-            "/grid/search",
-            "/grid/public/user-info",
-            "/grid/public/user-info",
-            "/grid/auctions",
+            "/grid/buy-listing",
+            "/grid/wishlist",
+            "/grid/reviews/game",
+            "/grid/reviews/user"
     };
 
-    private static final String[] ADMIN_WHITELIST = {
-            "/grid/add-game",
-            "/grid/add-developer",
-            "/grid/add-genre",
-            "/grid/add-publisher",
-    };
-
-    private static final String[] USER_WHITELIST = {
-            "/grid/private/user-info",
-            "/grid/funds",
-            "/grid/create-auction",
-            "/grid/create-bidding",
+    private static final String[] DELETE_USER_WHITELIST = {
             "/grid/user",
-            "/grid/remove-user",
-            "/grid/delete-sell-listing"
+            "/grid/sell-listing"
+    };
+
+    private static final String[] POST_USER_WHITELIST = {
+            "/grid/auction",
+            "/grid/bidding",
+    };
+
+    private static final String[] POST_ADMIN_WHITELIST = {
+            "/grid/games/game",
+            "/grid/games/developer",
+            "/grid/games/genre",
+            "/grid/games/publisher",
+    };
+
+    private static final String[] PUT_USER_WHITELIST = {
+            "/grid/private/user",
+            "/grid/private/funds",
+    };
+
+    private static final String[] GET_USER_WHITELIST = {
+            "/grid/private/user",
     };
 
     @Autowired
@@ -79,15 +100,28 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // TODO -> verify roles here
+
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(USER_WHITELIST).hasAnyAuthority("USER", "ADMIN")
-                .antMatchers(ADMIN_WHITELIST).hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET, GET_AUTH_WHITELIST)
+                .permitAll()
+                .antMatchers(HttpMethod.GET, GET_USER_WHITELIST)
+                .hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.POST, POST_AUTH_WHITELIST)
+                .permitAll()
+                .antMatchers(HttpMethod.POST, POST_USER_WHITELIST)
+                .hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.POST, POST_ADMIN_WHITELIST)
+                .hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.PUT, PUT_USER_WHITELIST)
+                .hasAnyAuthority("USER", "ADMIN")
+                .antMatchers(HttpMethod.DELETE, DELETE_USER_WHITELIST)
+                .hasAnyAuthority("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .authenticationEntryPoint(mAuthEntryPoint)
                 .and().logout().logoutUrl("/grid/logout");
+
+
     }
 }

@@ -118,7 +118,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
                 .thenReturn(mUserInfoProxy);
 
-        mMockMvc.perform(get("/grid/public/user-info")
+        mMockMvc.perform(get("/grid/public/user")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -140,7 +140,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUserInfo(Mockito.anyString()))
                 .thenThrow(new UserNotFoundException("Username not found in the database"));
 
-        mMockMvc.perform(get("/grid/public/user-info")
+        mMockMvc.perform(get("/grid/public/user")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -160,7 +160,7 @@ class UserInfoControllerTest {
                 .thenReturn(mUser);
 
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -187,7 +187,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername("spring"))
                 .thenReturn(mUser2);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -215,7 +215,7 @@ class UserInfoControllerTest {
 
         Mockito.when(mMockUserService.getUser("username1")).thenReturn(mUser);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -237,7 +237,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername("spring"))
                 .thenReturn(mUser2);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -259,7 +259,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(mUsername1))
                 .thenReturn(mUser);
 
-        mMockMvc.perform(put("/grid/funds")
+        mMockMvc.perform(put("/grid/private/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -277,7 +277,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenReturn(mUser);
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -296,7 +296,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new ExceptionDetails("There is already a user with that email"));
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -314,7 +314,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new ExceptionDetails("If you add a new card you have to give all the details referring to that card"));
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -335,7 +335,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(mUsername1))
                 .thenReturn(mUser);
 
-        mMockMvc.perform(put("/grid/funds")
+        mMockMvc.perform(put("/grid/private/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -353,7 +353,7 @@ class UserInfoControllerTest {
         Mockito.when(mUserRepository.findByUsername(mUsername1))
                 .thenReturn(mUser);
 
-        mMockMvc.perform(put("/grid/funds")
+        mMockMvc.perform(put("/grid/private/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -371,7 +371,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.updateUser(Mockito.anyLong(), Mockito.any(UserUpdatePOJO.class)))
                 .thenThrow(new UserNotFoundException("Username not found in the database"));
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -389,7 +389,7 @@ class UserInfoControllerTest {
         Mockito.when(mMockUserService.getUser(Mockito.anyString()))
                 .thenReturn(null);
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))

@@ -29,7 +29,7 @@ public class UserInfoController {
     @Autowired
     private UserService mUserService;
 
-    @GetMapping(value="/public/user-info", params={"username"})
+    @GetMapping(value="/public/user", params={"username"})
     public ResponseEntity<UserInfoProxy> getUserInfo(@RequestParam("username") String username){
         try{
             return ResponseEntity.ok(mUserService.getUserInfo(username));
@@ -38,7 +38,7 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping(value="/private/user-info", params={"username"})
+    @GetMapping(value="/private/user", params={"username"})
     public ResponseEntity<User> getPrivateUserInfo(@RequestHeader("Authorization") String auth,
                                                    @RequestParam("username") String username){
         String value = ControllerUtils.getUserFromAuth(auth);
@@ -59,7 +59,7 @@ public class UserInfoController {
         }
     }
 
-    @PutMapping(value = "/funds", params = {"newfunds"})
+    @PutMapping(value = "/private/funds", params = {"newfunds"})
     public ResponseEntity<User> addFundsToUser(@RequestHeader("Authorization") String auth,
                                                @RequestParam double newfunds){
         String value = ControllerUtils.getUserFromAuth(auth);
@@ -75,7 +75,7 @@ public class UserInfoController {
         }
     }
 
-    @PutMapping("/user")
+    @PutMapping("/private/user")
     public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String auth,
                                            @RequestBody UserUpdatePOJO userUpdatePOJO){
         String value = ControllerUtils.getUserFromAuth(auth);

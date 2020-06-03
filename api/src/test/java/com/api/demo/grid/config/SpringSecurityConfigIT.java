@@ -75,7 +75,7 @@ class SpringSecurityConfigIT {
     @SneakyThrows
     void whenAccessOpenUrlWithoutLoggedIn_accessIsNotUnauthorized() {
 
-        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
+        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_AUTH_WHITELIST");
 
         verifyEndpointsAreAuthorized(authWhitelist, false);
     }
@@ -84,9 +84,9 @@ class SpringSecurityConfigIT {
     @SneakyThrows
     void whenAccessClosedUrlWithoutLoggedIn_accessIsUnauthorized() {
 
-        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
+        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_ADMIN_WHITELIST");
 
-        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
+        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_USER_WHITELIST");
 
         // verify for admin endpoints
         verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, false, false);
@@ -109,8 +109,8 @@ class SpringSecurityConfigIT {
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.admin", is(false)));
 
-        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
-        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
+        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_AUTH_WHITELIST");
+        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_USER_WHITELIST");
 
         // verify for open endpoints
         verifyEndpointsAreAuthorized(authWhitelist, true);
@@ -129,7 +129,7 @@ class SpringSecurityConfigIT {
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.admin", is(false)));
 
-        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
+        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_ADMIN_WHITELIST");
 
         // verify for admin endpoints
         verifyEndpointsAreUnauthorizedOrForbidden(adminWhitelist, true, true);
@@ -151,9 +151,9 @@ class SpringSecurityConfigIT {
         mMvc.perform(request).andExpect(status().isOk())
                 .andExpect(jsonPath("$.admin", is(true)));
 
-        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "AUTH_WHITELIST");
-        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "USER_WHITELIST");
-        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "ADMIN_WHITELIST");
+        String[] authWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_AUTH_WHITELIST");
+        String[] userWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_USER_WHITELIST");
+        String[] adminWhitelist = (String[]) ReflectionTestUtils.getField(mSpringSecurityConfig, "POST_ADMIN_WHITELIST");
 
         // verify for open endpoints
         verifyEndpointsAreAuthorized(authWhitelist, true);
