@@ -83,7 +83,8 @@ class SearchPageTest {
         controller.clickButton("confirm");
 
         controller.waitForLoad("processing");
-        controller.waitSeconds(2);
+        controller.waitForLoad("firstLoad");
+        controller.waitSeconds(10);
 
         controller.scrollToTop();
         assertTrue(controller.checkText("numberOfProducts", noProducts));
