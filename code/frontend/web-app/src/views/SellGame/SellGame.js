@@ -390,7 +390,7 @@ class SellGame extends Component {
                 body: JSON.stringify(body)
             })
                 .then(response => {
-                    if (response.status === 401) {
+                    if (response.status === 401 || response.status === 409) {
                         return response
                     } else if (response.status === 200) {
                         return response.json()
@@ -398,12 +398,20 @@ class SellGame extends Component {
                     else throw new Error(response.status);
                 })
                 .then(data => {
-                    console.log(data)
                     if (data.status === 401) { // Wrong token
                         localStorage.setItem('loggedUser', null);
                         global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
                         redirectLogin = true
+                    }else if (data.status === 409) { // Wrong token
+                        toast.error('Sorry, that key has already been registered!', {
+                            position: "top-center",
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            toastId: "errorToasts"
+                        });
                     } else {
                         successAddingKey = true
 
@@ -486,15 +494,12 @@ class SellGame extends Component {
                     var body2 = {
                         "gameKey": key,
                         "price": price,
-                        "auctioneer": global.user.id,
+                        "auctioneer": global.user.username,
                         "endDate": endDate
                     }
 
-                    console.log(body2);
-                    console.log(login_info)
-
                     // Create selling
-                    fetch(baseURL + "grid/create-auction", {
+                    await fetch(baseURL + "grid/create-auction", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -503,7 +508,6 @@ class SellGame extends Component {
                         body: JSON.stringify(body2)
                     })
                         .then(response => {
-                            console.log(response)
                             if (response.status === 401) {
                                 return response
                             } else if (response.status === 200) {
@@ -520,7 +524,9 @@ class SellGame extends Component {
 
 
                             } else {
+                                console.log(data)
                                 success = true
+                                console.log(success)
                             }
 
                         })
@@ -539,6 +545,7 @@ class SellGame extends Component {
 
             }
 
+            console.log(success)
             await this.setState({ redirectLogin: redirectLogin, redirectProfile: success, doneLoading: true, })
         }
     }
@@ -636,7 +643,7 @@ class SellGame extends Component {
                 }
 
                 // Create selling
-                fetch(baseURL + "grid/add-sell-listing", {
+                await fetch(baseURL + "grid/add-sell-listing", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -686,7 +693,7 @@ class SellGame extends Component {
                 }
 
                 // Create selling
-                fetch(baseURL + "grid/create-auction", {
+                await fetch(baseURL + "grid/create-auction", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
