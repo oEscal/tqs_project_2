@@ -4,6 +4,7 @@ from requests.auth import HTTPBasicAuth
 import pymysql
 import random
 import string
+from datetime import datetime, timedelta
 
 
 def random_string(length):
@@ -34,7 +35,7 @@ try:
 except:
    print ("Error: unable to fetch data")
 
-
+"""
 for game_id in games:
     data = {
         "comment": random_string(50),
@@ -44,4 +45,40 @@ for game_id in games:
     }
 
     status = requests.post(grid_url+"add-game-review",data=json.dumps(data),headers=headers,auth=authentication).status_code
-    
+
+"""
+
+# Insert game keys
+"""
+for _ in range(10):
+    data = {
+        "key" : random_string(50),
+        "gameId" : 1,
+        "retailer" : random_string(10),
+        "platform" : random_string(10)         
+    }
+
+    status = requests.post(grid_url + "gamekey", data = json.dumps(data), headers=headers, auth = authentication).status_code
+    print(status)
+"""
+
+keys_sql = "select realKey from GameKey where game_id=1;"
+keys = []
+try:
+
+   cursor.execute(keys_sql)
+   keys = [i[0] for i in cursor.fetchall()]
+   
+except:
+   print ("Error: unable to fetch data")
+
+for key in keys:
+    data = {
+        "auctioneer" : "admin",
+        "gameKey": key,
+        "endDate" : "4/6/2020",
+        "price": random.randint(1,20)
+    }
+
+    status = requests.post(grid_url + "create-auction", data = json.dumps(data), headers=headers, auth = authentication).status_code
+    print(status)

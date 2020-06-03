@@ -1,61 +1,84 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
-import com.api.demo.grid.pojos.AuctionPOJO;
+import com.api.demo.grid.exception.ExceptionDetails;
+import com.api.demo.grid.service.AuctionService;
+import com.api.demo.grid.service.GridService;
+import com.api.demo.grid.service.UserService;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 
-import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes= DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+import java.text.ParseException;
+import java.util.List;
+
+@SpringBootTest(classes = DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ListAuctionsSteps {
     private final int port = 3000;
     WebAppPageObject controller;
 
 
+    @Autowired
+    private UserService mUserService;
+
+    @Autowired
+    private GridService mGridService;
+
+    @Autowired
+    private AuctionService mAuctionService;
+
+    private static int id = 0;
+
     @Given("The web application is launched")
     public void startController() {
+
+        controller = new WebAppPageObject();
+
         controller.login(port);
 
         controller.waitForLoad("processing");
-        controller.navigate("http://localhost:" + port + "/sell-game");
+        controller.navigate("http://localhost:" + port + "/games/info/" + ListAuctionsSteps.id);
         controller.waitForLoad("firstLoad");
     }
 
-    @Given("There are <auctions> related to game with id {int}")
-    public void addAuctionsToGame(String auctions, int id) {
-        AuctionPOJO auctionPOJO = new AuctionPOJO("auctioneer",ListAuctionsSteps.randomString(10), 10, new Date());
+    @Given("There are {int} auctions related to game {int}")
+    public void addAuctionsToGame(int auctions_size, int id) throws ParseException, ExceptionDetails {
+        ListAuctionsSteps.id +=1;
+
+        if (ListAuctionsSteps.id == 1){
+            ServiceInterface.addUser(mUserService);
+            ServiceInterface.addGames(mGridService, 3);
+            List<String> keys = ServiceInterface.addGameKeys(mGridService, id, auctions_size);
+            ServiceInterface.addAuctions(mAuctionService, keys, "admin");
+        }
     }
 
-    static String randomString(int n)
-    {
+    @Then("Related auctions should be {int}")
+    public void checkAuctionsListCounter(int auctions_size) {
+        assertTrue(controller.checkText("auctionsCounter", auctions_size + " Auctions"));
+    }
 
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
+    @Then("Related auctions table should be displayed")
+    public void checkAuctionsListTableExists() {
+        assertTrue(controller.checkExistance("auctionsTable"));
+    }
 
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
+    @Then("Related auctions table should not be displayed")
+    public void checkAuctionsListTableNotExists() {
+        assertFalse(controller.checkExistance("auctionsTable"));
+    }
 
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
+    @Then("Extra message should appear")
+    public void checkNoAuctionMessage() {
+        assertTrue(controller.checkText("emptyAuctionsMessage","It seems like no auctions exists related to this game at the moment :("));
     }
 
 }

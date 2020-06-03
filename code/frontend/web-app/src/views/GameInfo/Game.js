@@ -101,6 +101,7 @@ class Game extends Component {
         loadingReviews: false,
 
         sellListings: [],
+        auctionsListings: [],
         listingsPage: 1,
         noListingPages: 1,
         noSells: 0,
@@ -201,6 +202,55 @@ class Game extends Component {
             });
 
     }
+    async getAuctionListings() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ loadingAuctions : true });
+
+        await fetch(baseURL + "grid/auctions?gameId=" + this.props.match.params.game,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        }).then(response => {
+            if (response.status === 401) {
+                return response
+            } else if (response.status === 200) {
+                return response.json()
+            }
+            else throw new Error(response.status);
+        }).then(data => {
+            if (data.status === 401) { // Wrong token
+                localStorage.setItem('loggedUser', null);
+                global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                this.setState({
+                    redirectLogin: true
+                })
+
+            } else {
+                this.setState({auctionsListings : data});
+            }
+        }).catch(error => {
+            console.log(error)
+            toast.error('Sorry, an unexpected error has occurred while loading the sales for this game!', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+        });
+
+
+        await this.setState({ loadingAuctions : false });
+    }
+
 
     async getGameListings() {
         var login_info = null
@@ -534,6 +584,7 @@ class Game extends Component {
         await this.getGameInfo()
         await this.getGameListings()
         await this.getGameReviews()
+        await this.getAuctionListings();
         this.setState({ doneLoading: true })
     }
 
@@ -608,54 +659,52 @@ class Game extends Component {
                 </div>
             )
         } else {
-            const rows2 = [
-                {
-                    "seller": "Jonas_PP",
-                    "gridScore": <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                        4 <i class="far fa-star"></i>
-                    </span>,
-
-                    "price": <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
-                        0,99€
-                        </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Steam
-                    </span>,
-                    "date": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        00:00:03:00
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-gavel"></i> Make a Bidding
-                    </Button>
-                }
-            ];
-
             var auctionListings = <div></div>
-            if (true) {
-                auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                    <TableContainer component={Paper}>
-                        <Table style={{ width: "100%" }} aria-label="simple table">
-                            <TableBody>
-                                {rows2.map((row) => (
-                                    <TableRow hover key={row.name}>
-                                        <TableCell align="left">{row.seller}</TableCell>
-                                        <TableCell align="left">{row.gridScore}</TableCell>
-                                        <TableCell align="left">{row.type}</TableCell>
-                                        <TableCell align="left">{row.date}</TableCell>
-                                        <TableCell align="right">{row.price}</TableCell>
-                                        <TableCell align="right">{row.buy}</TableCell>
+            if (!this.state.loadingAuctions) {
+                if(this.state.auctionsListings === null || this.state.auctionsListings.length === 0) {
+                    auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <div style={{ textAlign: "left" }}>
+                            <h3 style={{ color: "#999" }} id="emptyAuctionsMessage">
+                                It seems like no auctions exists related to this game at the moment :(
+                            </h3>
+                        </div>
+                    </GridItem>
+                }
+                else {
+                    auctionListings = <GridItem xs={12} sm={12} md={12} style={{marginTop: "10px"}}>
+                        <TableContainer component={Paper}>
+                            <Table style={{width: "100%"}} aria-label="simple table" id="auctionsTable">
+                                <TableBody>
+                                    <TableRow hover key="header">
+                                        <TableCell align="center"><b>Auctioneer</b></TableCell>
+                                        <TableCell align="center"><b>End Date</b></TableCell>
+                                        <TableCell align="center"><b>Actual Price</b></TableCell>
+                                        <TableCell align="center"> <b>Make a bidding </b></TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </GridItem>
+                                    {this.state.auctionsListings.map((row) => (
+
+                                      <TableRow hover key={row.id}>
+                                          <TableCell align="center">{row.auctioneer}</TableCell>
+                                          <TableCell align="center">{row.endDate}</TableCell>
+                                          <TableCell align="center">{row.price}</TableCell>
+                                          <TableCell align="center">
+                                              <Button
+                                                    size="md"
+                                                    id={row.id}
+                                                    style={{ backgroundColor: "#4ec884" }}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    >
+                                                    <i class="fas fa-gavel"></i> Make a Bidding
+                                                </Button>
+                                          </TableCell>
+                                      </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </GridItem>
+                }
             } else {
                 auctionListings = <div
                     className="animated fadeOut animated"
@@ -1346,13 +1395,13 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <span>
-                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>1 Auctions
+                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }} id="auctionsCounter"> {this.state.auctionsListings === null ? 0 : this.state.auctionsListings.length} Auctions
                                             </h2>
                                         </span>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={3}>
-                                        <div style={{ color: "#000", padding: "12px 0", width: "100%" }}>
-                                            <Select
+                                        {/*<div style={{ color: "#000", padding: "12px 0", width: "100%" }}>
+                                             <Select
                                                 className="basic-single"
                                                 classNamePrefix="select"
                                                 isSearchable={false}
@@ -1360,14 +1409,14 @@ class Game extends Component {
                                                 defaultValue={{ "value": "PRICE", "label": "Sort by Price" }}
                                                 options={[{ "value": "PRICE", "label": "Sort by Price" }, { "value": "DATE", "label": "Sort by Ending Date" }, { "value": "RATING", "label": "Sort by Seller Rating" }]}
                                             />
-                                        </div>
+                                        </div>*/}
                                     </GridItem>
                                     {auctionListings}
-                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
+                                    {/*<GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
                                         <div style={{ margin: "auto", width: "40%" }}>
                                             <Pagination count={1} variant="outlined" shape="rounded" />
                                         </div>
-                                    </GridItem>
+                                    </GridItem>*/}
                                 </GridContainer>
                             </div>
 

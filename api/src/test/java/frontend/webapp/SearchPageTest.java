@@ -1,6 +1,7 @@
 package frontend.webapp;
 
 import com.api.demo.DemoApplication;
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.text.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,7 +33,7 @@ class SearchPageTest {
 
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws ParseException, ExceptionDetails {
         controller = new WebAppPageObject(mUserService, mGridService);
         controller.navigate("http://localhost:" + port + "/games");
     }
