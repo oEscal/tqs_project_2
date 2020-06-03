@@ -78,7 +78,7 @@ class WalletPageTest {
         controller.writeInput("123", "cardCVC");
         controller.writeInput("", "fundsAmount");
 
-        controller.writeInput("fundsAmount", "-5");
+        controller.writeInput("-5", "fundsAmount");
 
         controller.clickButton("buyWithNewCard");
 

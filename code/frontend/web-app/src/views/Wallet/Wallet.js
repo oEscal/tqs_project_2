@@ -217,7 +217,7 @@ class Wallet extends Component {
         }
 
         if (!error) {
-            this.addFunds()
+            await this.addFunds()
         }
     }
 
@@ -258,8 +258,10 @@ class Wallet extends Component {
         }
 
         if (!error) {
-            this.addFunds()
+            await this.addFunds()
         }
+
+
 
     }
 
@@ -267,9 +269,7 @@ class Wallet extends Component {
         var amount = document.getElementById("fundsAmount").value
         var error = false
 
-        this.setState({
-            doneLoading: false
-        })
+
 
         if (amount == '' || amount == null) {
             toast.error('Oops, you have to specify how much money you want to add to your wallet!', {
@@ -298,10 +298,14 @@ class Wallet extends Component {
         }
 
         if (!error) {
+            await this.setState({
+                doneLoading: false
+            })
+
             var login_info = null
             if (global.user != null) {
                 login_info = global.user.token
-
+                console.log(amount)
                 await fetch(baseURL + "grid/funds?newfunds=" + amount, {
                     method: "PUT",
                     headers: {
@@ -337,6 +341,7 @@ class Wallet extends Component {
                         }
                     })
                     .catch(error => {
+                        console.log(error)
                         toast.error('Sorry, an unexpected error has occurred!', {
                             position: "top-center",
                             hideProgressBar: false,
@@ -360,7 +365,6 @@ class Wallet extends Component {
                 })
             }
         }
-
     }
 
     async componentDidMount() {
@@ -370,7 +374,7 @@ class Wallet extends Component {
     }
 
     renderRedirectLogin = () => {
-        if (this.state.redirectLogin) {
+        if (this.state.redirectLogin || global.user == null || this.state.info == null) {
             return <Redirect to='/login-page' />
         }
     }
@@ -380,7 +384,7 @@ class Wallet extends Component {
     render() {
         const { classes } = this.props;
 
-        if (this.state.redirectLogin) {
+        if (this.state.redirectLogin || global.user == null || (this.state.doneLoading && this.state.info == null)) {
             return (<div>{this.renderRedirectLogin()}</div>)
         }
 
