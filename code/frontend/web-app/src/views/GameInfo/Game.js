@@ -120,7 +120,7 @@ class Game extends Component {
         await this.setState({ gamesLoaded: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/game?id=" + this.props.match.params.game, {
+        await fetch(baseURL + "grid/games/game?id=" + this.props.match.params.game, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -350,7 +350,7 @@ class Game extends Component {
         await this.setState({ loadingReviews: true })
 
         // Get All Games
-        await fetch(baseURL + "grid/game-review?game_id=" + this.props.match.params.game + "&page=" + (this.state.reviewsPage - 1), {
+        await fetch(baseURL + "grid/reviews/game?game_id=" + this.props.match.params.game + "&page=" + (this.state.reviewsPage - 1), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -435,7 +435,7 @@ class Game extends Component {
         await this.setState({ doneLoading: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
+        await fetch(baseURL + "grid/wishlist?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

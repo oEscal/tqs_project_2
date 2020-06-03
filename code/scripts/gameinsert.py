@@ -18,7 +18,7 @@ while count < 100 and url:
 	print(url)
 	response = requests.get(url).json()
 	for dev in response["results"]:
-		requests.post(f"{grid_url}add-developer",
+		requests.post(f"{grid_url}games/developer",
 		              data=json.dumps({"name": dev["name"]}),
 		              headers=headers,
 		              auth=authentication)
@@ -33,7 +33,7 @@ while count < 50 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		genre_info = requests.get(base_url + "genres/" + str(genre["id"])).json()
-		requests.post(f"{grid_url}add-genre",
+		requests.post(f"{grid_url}games/genre",
 		              data=json.dumps({"name": genre_info["name"], "description": genre_info["description"][:100]}),
 		              headers=headers,
 		              auth=authentication)
@@ -48,7 +48,7 @@ while count < 100 and url:
 	response = requests.get(url).json()
 	for genre in response["results"]:
 		pub_info = requests.get(base_url + "publishers/" + str(genre["id"])).json()
-		requests.post(f"{grid_url}add-publisher",
+		requests.post(f"{grid_url}games/publisher",
 		              data=json.dumps({"name": pub_info["name"], "description": pub_info["description"][:100]}),
 		              headers=headers,
 		              auth=authentication)
@@ -67,7 +67,7 @@ while count < 30000:
 		if len(game_info["publishers"]) != 0:
 			publisher = game_info["publishers"][0]["name"]
 		try:
-			requests.post(f"{grid_url}add-game", data=json.dumps({
+			requests.post(f"{grid_url}games/game", data=json.dumps({
 				"name": game_info["name"],
 				"description": game_info["description"],
 				"releaseDate": game_info["released"],

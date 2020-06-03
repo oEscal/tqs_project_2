@@ -284,7 +284,7 @@ class ProfilePage extends Component {
                 })
 
             }
-            await fetch(baseURL + "grid/user", {
+            await fetch(baseURL + "grid/private/user", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

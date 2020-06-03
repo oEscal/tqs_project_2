@@ -104,7 +104,7 @@ class ProfilePage extends Component {
             login_info = global.user.token
         }
 
-        await fetch(baseURL + "grid/private/user-info?username=" + this.props.match.params.user, {
+        await fetch(baseURL + "grid/private/user?username=" + this.props.match.params.user, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -153,7 +153,7 @@ class ProfilePage extends Component {
         }
 
         // Get All Games
-        await fetch(baseURL + "grid/public/user-info?username=" + this.props.match.params.user, {
+        await fetch(baseURL + "grid/public/user?username=" + this.props.match.params.user, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

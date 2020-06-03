@@ -114,7 +114,7 @@ class UserReview extends Component {
         if (global.user != null) {
             login_info = global.user.token
 
-            await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+            await fetch(baseURL + "grid/private/user?username=" + global.user.username, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -207,7 +207,7 @@ class UserReview extends Component {
 
                 await this.setState({ doneLoading: false })
 
-                await fetch(baseURL + "grid/add-user-review", {
+                await fetch(baseURL + "grid/reviews/user", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
