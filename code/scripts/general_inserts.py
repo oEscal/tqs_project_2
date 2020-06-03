@@ -53,7 +53,7 @@ for game_id in games:
 for _ in range(10):
     data = {
         "key" : random_string(50),
-        "gameId" : 1,
+        "gameId" : 2,
         "retailer" : random_string(10),
         "platform" : random_string(10)         
     }
@@ -61,8 +61,7 @@ for _ in range(10):
     status = requests.post(grid_url + "gamekey", data = json.dumps(data), headers=headers, auth = authentication).status_code
     print(status)
 """
-
-keys_sql = "select realKey from GameKey where game_id=1;"
+keys_sql = "select realKey from GameKey where game_id=2;"
 keys = []
 try:
 
@@ -74,7 +73,7 @@ except:
 
 for key in keys:
     data = {
-        "auctioneer" : "admin",
+        "auctioneer" : "admin2",
         "gameKey": key,
         "endDate" : "4/6/2020",
         "price": random.randint(1,20)
