@@ -66,7 +66,8 @@ def main(branch, update_seconds):
 			# branch info
 			text = font.render(f"Branch: {branch}", True, WHITE)
 			screen.blit(text, (10, 10))
-			text = font.render(f"Commit message: {last_commit.commit.message}", True, WHITE)
+			text = font.render(f"Commit message: {last_commit.commit.message.encode('ascii', 'ignore').decode('ascii')}",
+			                   True, WHITE)
 			screen.blit(text, (10, 10 + TEXT_SIZE))
 			text = font.render(f"Commit author: {last_commit.commit.author.name}", True, WHITE)
 			screen.blit(text, (10, 10 + TEXT_SIZE*2))
