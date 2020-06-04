@@ -23,7 +23,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String USER = "USER";
     private static final String ADMIN = "ADMIN";
-    private static final String SELL_ENDPOINT = "/grid/sell-listing",
+    private static final String SELL_ENDPOINT = "/grid/sell-listing";
 
     private static final String[] GET_AUTH_WHITELIST = {
             "/grid/logout",
