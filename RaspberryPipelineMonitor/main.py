@@ -13,7 +13,7 @@ GREEN = (100, 212, 104)
 GRAY = (144, 164, 174)
 WHITE = (255, 255, 255)
 
-WINDOW_SIZE = (1300, 700)
+WINDOW_SIZE = (1900, 700)
 CIRCLE_RADIUS = 50
 TEXT_SIZE = 30
 
@@ -21,13 +21,10 @@ TEXT_SIZE = 30
 TOKEN = os.environ.get('TOKEN', '9050')
 
 
-def main(branch, update_seconds):
-	# update_seconds = 5
-	# branch = "feature/raspberry/pipeline_integration"
-
+def main(full_name_or_id, branch, update_seconds):
 	# github info
 	github = Github(TOKEN)
-	repository = github.get_repo(full_name_or_id=261307973)
+	repository = github.get_repo(full_name_or_id=full_name_or_id)
 	MyRepository.convert_super_to_sub(repository)
 
 	clock = pygame.time.Clock()
@@ -90,6 +87,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--branch', type=str, default="master")
 	parser.add_argument('--update_seconds', type=int, default=5)
+	parser.add_argument('--full_name_or_id', type=str, default=261307973)
 	args = parser.parse_args()
 
-	main(args.branch, args.update_seconds)
+	main(args.full_name_or_id, args.branch, args.update_seconds)
