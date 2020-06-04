@@ -1,0 +1,4 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1591280472665,4395,Get All Games ,200,,Thread Group 1-1,text,true,,29345,181,1,1,http://192.168.160.56:8080/grid/games/all?page=1,4242,0,40
+1591280477123,5044,Get Specific Game,200,,Thread Group 1-1,text,true,,1997,181,1,1,http://192.168.160.56:8080/grid/games/game?id=20,5030,0,0
+1591280482169,252,Get Private User Info,200,,Thread Group 1-1,text,true,,1088,191,1,1,http://192.168.160.56:8080/grid/private/user?username=joao,252,0,0
