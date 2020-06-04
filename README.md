@@ -58,7 +58,7 @@ $ npm test
 ## Backend
 ### Install MySQL
 [Install MySQL in Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04)
-## Setup MySQL database in development
+### Setup MySQL database in development
 
 ```sql
  # sudo mysql -u root
@@ -86,8 +86,8 @@ Or reduce the password validation strength with:
  $ docker run --env-file ~/env_vars/watchtower.env -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock -v ~/.docker/config.json:/config.json containrrr/watchtower              # run the watchtower container for continuous deployment
 ```
 
-
-### Python script to pipeline monitoring
+## Raspberry Pipeline Monitoring
+### Python script for pipeline monitoring
  - For this application to run it is necessary to have a GitHub token, since with that is possible to make much more requests to the GitHub API. This token is necessary to be exported as an environment variable on the execution environment:
  ```bash
  $ export TOKEN=<github token>
