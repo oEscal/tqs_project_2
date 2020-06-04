@@ -1,6 +1,7 @@
 package com.api.demo.grid.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
@@ -49,10 +50,12 @@ public class Auction {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "auctioneer_user_id", nullable = false)
+    @JsonIgnore
     private User auctioneer;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "auction_buyer_user_id")
+    @JsonIgnore
     private User buyer;
 
     @OneToOne(cascade = CascadeType.MERGE)
@@ -104,6 +107,27 @@ public class Auction {
         return null;
     }
 
+    public String getAuctioneerName() {
+        if (auctioneer != null) {
+            return auctioneer.getUsername();
+        }
+        return null;
+    }
+
+    public long getAuctioneerId() {
+        if (auctioneer != null) {
+            return auctioneer.getId();
+        }
+        return -1;
+    }
+
+    public double getAuctioneerScore() {
+        if (auctioneer != null) {
+            return auctioneer.getScore();
+        }
+        return -1;
+    }
+
     @Transactional
     public void setAuctioneer(User auctioneer) {
         if (Objects.equals(this.auctioneer, auctioneer)) return;
@@ -113,6 +137,20 @@ public class Auction {
         if (auctioneer != null) {
             auctioneer.addAuctionCreated(this);
         }
+    }
+
+    public String getBuyerName() {
+        if (buyer != null) {
+            return buyer.getUsername();
+        }
+        return null;
+    }
+
+    public long getBuyerId() {
+        if (buyer != null) {
+            return buyer.getId();
+        }
+        return -1;
     }
 
     @Transactional

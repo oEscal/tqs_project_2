@@ -644,30 +644,15 @@ class ProfilePage extends Component {
                                                             <TableBody>
                                                                 {this.state.info.auctionsCreated.map((row) => (
                                                                     <TableRow hover key={row.name}>
-                                                                        <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.platform}</TableCell>
+                                                                        <TableCell align="left" style={{ fontWeight: "bold" }}>{row.gameKey.gameName}</TableCell>
                                                                         <TableCell align="left">{row.gameKey.platform}</TableCell>
-                                                                        <TableCell align="left">{row.gameKey.rkey}</TableCell>
                                                                         <TableCell align="left">{row.price}€</TableCell>
-                                                                        <TableCell align="left">Started {row.date}</TableCell>
-                                                                        <TableCell align="left">Ends {row.date}</TableCell>
+                                                                        <TableCell align="left">Started {row.startDate}</TableCell>
+                                                                        <TableCell align="left">Ends {row.endDate}</TableCell>
                                                                         {row.purchased ?
                                                                             <TableCell align="left" style={{ color: "#4ec884", fontWeight: "bold" }}>SOLD</TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>NOT SOLD</TableCell>
-                                                                        }
-                                                                        {row.purchased ?
-                                                                            null :
-                                                                            <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-                                                                                <Button
-                                                                                    size="md"
-                                                                                    style={{ backgroundColor: "#ff3ea0" }}
-                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                                                                                    target="_blank"
-                                                                                    rel="noopener noreferrer"
-                                                                                >
-                                                                                    <i class="fas fa-times"></i> Cancel Auction
-                                                                        </Button>
-                                                                            </TableCell>
-                                                                        }
+                                                                        }                                                                      
                                                                     </TableRow>
                                                                 ))}
                                                             </TableBody>
