@@ -3,8 +3,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 base_url = "https://api.rawg.io/api/"
-# grid_url = "http://localhost:8080/grid/"
-grid_url = "http://192.168.160.56:8080/grid/"
+grid_url = "http://localhost:8080/grid/"
+# grid_url = "http://192.168.160.56:8080/grid/"
 
 headers = {'Content-type': 'application/json'}
 authentication = HTTPBasicAuth('admin', 'admin')
@@ -57,7 +57,7 @@ while count < 1000 and url:
 	url = response["next"]
 
 # Insert games
-url = base_url + "games?page=800"
+url = base_url + "games"
 count = 0
 while count < 30000:
 	print(url)
