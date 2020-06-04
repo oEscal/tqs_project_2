@@ -1,25 +1,59 @@
 # Grid Marketplace - TQS Project 2
 
-# Frontend - Web App
-## Install
+## Idea
+
+The Grid Marketplace serves as a storefront for the quick selling and purchasing of digital video game keys. It offers features such as the ability to create auctions, alongside normal sell listings, review games, review users, purchase multiple games utilizing a shopping cart, amongst others. It also contains real informations on hundereds of games from the RAWG API.
+  
+## Main roles (Contributors)
+
+* **Team Leader:** [Diogo Silva](https://github.com/HerouFenix)
+* **Developer:** [Pedro Oliveira](https://github.com/DrPunpun)
+* **DevOps Master and QA Engineer:** [Pedro Escaleira](https://github.com/oEscal)
+* **Product Owner:** [Rafael Simões](https://github.com/Rafaelyot)
+
+## Access Links
+* **Server IP:** 192.168.160.56
+* **Web App:** 192.168.160.56:80
+* **Backend:** 192.168.160.56:8080
+* **Backend Swagger:** 192.168.160.56:8080/swagger-ui.html
+* **Mobile App:** Check the APK on the MobileGrid project
+
+
+## Account Credentials
+The following Grid user can be utilized to mess around with and test out our service
+* **Username:** admin
+* **Password:** admin
+
+
+## Frontend - Web App
+### Install
 ```
 $ npm install
-$ npm i serialize-javascript
-$ npm i react-select
-$ npm i @material-ui/util
-$ npm i @material-ui/lab
-$ npm i react-lottie
-$ npm i react-fade-in
-$ npm i react-toastify
 ```
 
-## Start
+### Start
 ```
 $ npm start
 ```
 
-# Backend
-## Install MySQL
+## Frontend - Mobile App
+### Install
+```
+$ npm install
+```
+
+### Start
+```
+$ expo start
+```
+
+### Run Tests
+```
+$ npm test
+```
+
+## Backend
+### Install MySQL
 [Install MySQL in Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04)
 ## Setup MySQL database in development
 
@@ -39,7 +73,7 @@ Or reduce the password validation strength with:
 > set global validate_password_policy=0
 ```
 
-## Server Deploy
+### Server Deploy
  - First, it's necessary to make a pull request to github with the tag `deploy` with the code we want to deploy next to the server. This will trigger the deploy workflow, that will create new images of the code to be deployed.
  - The first time, it's necessary to have all containers pre-created on the server. So, on the server terminal, run:
  ```bash
