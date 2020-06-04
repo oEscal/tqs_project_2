@@ -849,7 +849,7 @@ describe('Fetching Data', () => {
                 'Portal 2 is a first-person puzzle game developed by Valve Corporation and released on April 19, 2011 on Steam, PS3 and Xbox 360. It was published by Valve Corporation in digital form and by Electronic Arts in physical form. \n\nIts plot directly follows the first game\'s, taking place in the Half-Life universe. Yo...',
             allDevelopers: 'Valve Software',
             allGenres: 'Puzzle, Shooter',
-            allPlatforms: ''
+            allPlatforms: 'Steam'
         };
 
         fetchMock.get(url, mockResponse);

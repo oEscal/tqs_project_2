@@ -336,6 +336,18 @@ export default class GameInfoScreen extends React.Component {
   renderInfo = () => {
     const imageStyles = [styles.image, styles.fullImage];
 
+    var score;
+    if (this.state.game.score == -1) {
+      score = <Text color="#999" >UNRATED</Text>
+    }
+    else if (this.state.game.score > 0 && this.state.game.score <= 1) {
+      score = <Text color="red">{this.state.game.score}</Text>
+    } else if (this.state.game.score < 4) {
+      score = <Text color="#fc926e">{this.state.game.score}</Text>
+    } else if (this.state.game.score <= 5) {
+      score = <Text color="#4ec884">{this.state.game.score}</Text>
+    }
+
     return (
       <View>
         <Block flex style={[styles.imageContainer, styles.shadow]}>
@@ -354,7 +366,7 @@ export default class GameInfoScreen extends React.Component {
 
         <Block flex left style={[styles.gameTitle2]}>
           <Text size={20} style={[styles.gameTitle2, styles.description]}>
-            <Image source={require('../assets/img/favicon.png')} style={styles.smallImg} /> Grid Score: <Text>5</Text>
+            <Image source={require('../assets/img/favicon.png')} style={styles.smallImg} /> Grid Score: {score}
           </Text>
         </Block>
       </View>
@@ -387,7 +399,7 @@ export default class GameInfoScreen extends React.Component {
         )
 
         try {
-          if(this.state.sellListings.length > i+1)
+          if (this.state.sellListings.length > i + 1)
             tempBlock.push(<ProductKey product={this.state.sellListings[i + 1]} />
             )
         } catch (e) {
