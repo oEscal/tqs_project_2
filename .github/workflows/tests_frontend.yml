@@ -12,9 +12,9 @@ jobs:
         java-version: '11'
     - name: Install Google Chrome
       run: |
-       chmod +x ./scripts/install_chrome.sh
-        ./scripts/install_chrome.sh
+       chmod +x ./Scripts/install_chrome.sh
+        ./Scripts/install_chrome.sh
     - name: Run react
       run: npm install --prefix GridWebApp; npm start --prefix GridWebApp &
     - name: Run maven selenium tests
-      run: mvn -f api '-Dtest=frontend.webapp.*' test
+      run: mvn -f GridBackend '-Dtest=frontend.webapp.*' test
