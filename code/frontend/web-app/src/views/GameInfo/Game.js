@@ -984,7 +984,8 @@ class Game extends Component {
         } else {
             var auctionListings = <div></div>
             if (!this.state.loadingAuctions) {
-              if (this.state.auctionsListings === null || this.state.auctionsListings.length === 0) {
+                console.log(this.state.auctionsListings)
+              if (this.state.auctionsListings === null || this.state.auctionsListings.length === 0 || Object.keys(this.state.auctionsListings).length == 0) {
                 auctionListings = <GridItem xs={12} sm={12} md={12} style={{marginTop: "10px"}}>
                   <div style={{textAlign: "left"}}>
                     <h3 style={{color: "#999"}} id="emptyAuctionsMessage">
@@ -997,13 +998,6 @@ class Game extends Component {
                   <TableContainer component={Paper}>
                     <Table style={{width: "100%"}} aria-label="simple table" id="auctionsTable">
                       <TableBody>
-                        <TableRow hover key="header">
-                          <TableCell align="center"><b>Auctioneer</b></TableCell>
-                          <TableCell align="center"><b>Actual Winner</b></TableCell>
-                          <TableCell align="center"><b>End Date</b></TableCell>
-                          <TableCell align="center"><b>Actual Price</b></TableCell>
-                          <TableCell align="center"> <b>Make a bidding </b></TableCell>
-                        </TableRow>
                         {Object.keys(this.state.auctionsListings).map((id) => (
       
                           <TableRow hover key={id}>
@@ -1723,28 +1717,11 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <span>
-                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>1 Auctions
+                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>{this.state.auctionsListings != null ? Object.keys(this.state.auctionsListings).length : 0} Auctions
                                             </h2>
                                         </span>
                                     </GridItem>
-                                    <GridItem xs={12} sm={12} md={3}>
-                                        <div style={{ color: "#000", padding: "12px 0", width: "100%" }}>
-                                            <Select
-                                                className="basic-single"
-                                                classNamePrefix="select"
-                                                isSearchable={false}
-                                                name="color"
-                                                defaultValue={{ "value": "PRICE", "label": "Sort by Price" }}
-                                                options={[{ "value": "PRICE", "label": "Sort by Price" }, { "value": "DATE", "label": "Sort by Ending Date" }, { "value": "RATING", "label": "Sort by Seller Rating" }]}
-                                            />
-                                        </div>
-                                    </GridItem>
                                     {auctionListings}
-                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
-                                        <div style={{ margin: "auto", width: "40%" }}>
-                                            <Pagination count={1} variant="outlined" shape="rounded" />
-                                        </div>
-                                    </GridItem>
                                 </GridContainer>
                             </div>
 
