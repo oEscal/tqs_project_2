@@ -3,7 +3,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 base_url = "https://api.rawg.io/api/"
-grid_url = "http://localhost:8080/grid/"
+# grid_url = "http://localhost:8080/grid/"
+grid_url = "http://192.168.160.56:8080/grid/"
 
 headers = {'Content-type': 'application/json'}
 authentication = HTTPBasicAuth('admin', 'admin')
@@ -14,7 +15,7 @@ requests.post(f"{grid_url}login", headers=headers, auth=authentication)
 
 url = base_url + "developers"
 count = 0
-while count < 100 and url:
+while count < 1000 and url:
 	print(url)
 	response = requests.get(url).json()
 	for dev in response["results"]:
@@ -28,7 +29,7 @@ while count < 100 and url:
 ## Insert genres
 url = base_url + "genres"
 count = 0
-while count < 50 and url:
+while count < 1000 and url:
 	print(url)
 	response = requests.get(url).json()
 	for genre in response["results"]:
@@ -43,7 +44,7 @@ while count < 50 and url:
 ## Insert publishers
 url = base_url + "publishers"
 count = 0
-while count < 100 and url:
+while count < 1000 and url:
 	print(url)
 	response = requests.get(url).json()
 	for genre in response["results"]:
@@ -56,7 +57,7 @@ while count < 100 and url:
 	url = response["next"]
 
 # Insert games
-url = base_url + "games"
+url = base_url + "games?page=468"
 count = 0
 while count < 30000:
 	print(url)
