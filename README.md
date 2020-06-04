@@ -110,3 +110,5 @@ Or reduce the password validation strength with:
  ```bash
  $ python main.py --branch <branch name> --update_seconds <time interval to check for new updates> --full_name_or_id <repository name or id>
  ```
+
+ - You can see the script behavior on the [video](https://drive.google.com/file/d/16Excjh7k0iB3FzppBCLL4JAgOr91Dz42/view?usp=sharing).
