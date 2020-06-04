@@ -57,7 +57,7 @@ while count < 1000 and url:
 	url = response["next"]
 
 # Insert games
-url = base_url + "games?page=468"
+url = base_url + "games?page=800"
 count = 0
 while count < 30000:
 	print(url)
