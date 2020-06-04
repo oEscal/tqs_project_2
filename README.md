@@ -50,6 +50,9 @@ $ npm install
 $ expo start
 ```
 
+Two Android APKs are also available. One which connects to a localhost REST API that should be started on the a device running on the same LAN as the phone. Another which connects directly to our deployed REST API which will only work if the phone is connected to the UA VPN 
+
+
 ### Run Tests
 ```
 $ npm test
