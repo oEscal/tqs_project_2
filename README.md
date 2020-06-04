@@ -86,3 +86,27 @@ Or reduce the password validation strength with:
  $ docker run --env-file ~/env_vars/watchtower.env -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock -v ~/.docker/config.json:/config.json containrrr/watchtower              # run the watchtower container for continuous deployment
 ```
 
+
+### Python script to pipeline monitoring
+ - For this application to run it is necessary to have a GitHub token, since with that is possible to make much more requests to the GitHub API. This token is necessary to be exported as an environment variable on the execution environment:
+ ```bash
+ $ export TOKEN=<github token>
+ ```
+
+ - Then, to run the application, its necessary to setup a virtual environment and to install all the dependencies:
+ ```bash
+ $ cd RaspberryPipelineMonitor
+ $ virtualenv venv
+ $ source venv/bin/activate
+ $ pip install -r requirements.txt
+ ```
+
+ - To run, the default behavior is to monitor this repository, on the branch master and to check for branch updates every 5 seconds:
+ ```
+ $ python main.py
+ ```
+
+ - To change the current behavior, we can run the script with the following arguments:
+ ```bash
+ $ python main.py --branch <branch name> --update_seconds <time interval to check for new updates> --full_name_or_id <repository name or id>
+ ```
