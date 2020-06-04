@@ -31,6 +31,8 @@ public class AuctionProxy {
 
     private double price;
 
+    private double score;
+
 
     public AuctionProxy(Auction auction) {
         this.id = auction.getId();
@@ -40,6 +42,7 @@ public class AuctionProxy {
         this.startDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getStartDate());
         this.endDate = new SimpleDateFormat("dd/MM/yyyy").format(auction.getEndDate());
         this.price = auction.getPrice();
+        this.score = auction.getAuctioneerScore();
     }
 
     public AuctionProxy(Auction auction, boolean createBidding) {

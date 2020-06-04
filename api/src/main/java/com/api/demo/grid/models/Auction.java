@@ -121,6 +121,12 @@ public class Auction {
         return -1;
     }
 
+    public double getAuctioneerScore() {
+        if (auctioneer != null) {
+            return auctioneer.getScore();
+        }
+        return -1;
+    }
 
     @Transactional
     public void setAuctioneer(User auctioneer) {
