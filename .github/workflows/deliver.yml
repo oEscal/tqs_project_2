@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: deploy/backend/Dockerfile
-          context: api/
+          context: GridBackend/
           tags: "latest"
 
   frontend:
@@ -38,5 +38,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
           dockerfile: deploy/frontend/Dockerfile
-          context: code/frontend/web-app
+          context: GridWebApp
           tags: "latest"

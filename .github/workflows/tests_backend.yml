@@ -12,4 +12,4 @@ jobs:
         java-version: '11'
     - name: Run tests
       run: |
-        cd api; mvn test
+        cd GridBackend; mvn test
