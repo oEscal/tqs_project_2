@@ -17,4 +17,4 @@ jobs:
     - name: Run react
       run: npm install --prefix GridWebApp; npm start --prefix GridWebApp &
     - name: Run maven selenium tests
-      run: mvn -f api '-Dtest=frontend.webapp.*' test
+      run: mvn -f GridBackend '-Dtest=frontend.webapp.*' test
