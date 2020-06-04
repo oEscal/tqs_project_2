@@ -23,7 +23,7 @@ describe('Fetching Data', () => {
         const instance = wrapper.instance();
 
         // Mocking
-        const url = baseURL + "grid/game?id=" + route.params.game.id
+        const url = baseURL + "grid/games/game?id=" + route.params.game.id
         const mockResponse = {
             "id": 2,
             "name": "Portal 2",
@@ -849,7 +849,7 @@ describe('Fetching Data', () => {
                 'Portal 2 is a first-person puzzle game developed by Valve Corporation and released on April 19, 2011 on Steam, PS3 and Xbox 360. It was published by Valve Corporation in digital form and by Electronic Arts in physical form. \n\nIts plot directly follows the first game\'s, taking place in the Half-Life universe. Yo...',
             allDevelopers: 'Valve Software',
             allGenres: 'Puzzle, Shooter',
-            allPlatforms: ''
+            allPlatforms: 'Steam'
         };
 
         fetchMock.get(url, mockResponse);
@@ -1194,7 +1194,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/add-wish-list?game_id=" + route.params.game.id + "&user_id=1"
+        const url = baseURL + "grid/wishlist?game_id=" + route.params.game.id + "&user_id=1"
         fetchMock.post(url, 200);
 
         // Call method
@@ -1212,7 +1212,7 @@ describe('Fetching Data', () => {
         const instance = wrapper.instance();
 
         // Mocking
-        const url = baseURL + "grid/game?id=" + route.params.game.id
+        const url = baseURL + "grid/games/game?id=" + route.params.game.id
         const mockResponse = 401
 
         fetchMock.get(url, mockResponse);
@@ -1330,7 +1330,7 @@ describe('Fetching Data', () => {
         await wrapper.setState({ user: user });
 
         // Mocking
-        const url = baseURL + "grid/add-wish-list?game_id=" + route.params.game.id + "&user_id=1"
+        const url = baseURL + "grid/wishlist?game_id=" + route.params.game.id + "&user_id=1"
         const mockResponse = 401
 
         fetchMock.post(url, mockResponse);

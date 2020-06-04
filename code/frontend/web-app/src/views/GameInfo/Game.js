@@ -79,6 +79,22 @@ import {
     Link,
     Redirect
 } from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
+import Close from "@material-ui/icons/Close";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import stylesjs from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
+import stylesbasic from "assets/jss/material-kit-react/views/componentsSections/basicsStyle.js";
+import Slide from "@material-ui/core/Slide";
+import EuroSymbolIcon from '@material-ui/icons/EuroSymbol';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
+Transition.displayName = "Transition";
 
 class Game extends Component {
     constructor() {
@@ -101,6 +117,9 @@ class Game extends Component {
         loadingReviews: false,
 
         sellListings: [],
+        auctionsListings: [],
+        currentBiding: null,
+        auctionBidModal: false,
         listingsPage: 1,
         noListingPages: 1,
         noSells: 0,
@@ -120,7 +139,7 @@ class Game extends Component {
         await this.setState({ gamesLoaded: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/game?id=" + this.props.match.params.game, {
+        await fetch(baseURL + "grid/games/game?id=" + this.props.match.params.game, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -201,6 +220,84 @@ class Game extends Component {
             });
 
     }
+
+    async getAuctionListings() {
+      var login_info = null
+      if (global.user != null) {
+        login_info = global.user.token
+      }
+  
+      await this.setState({loadingAuctions: true});
+  
+      await fetch(baseURL + "grid/auction?gameId=" + this.props.match.params.game, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: login_info
+        }
+      }).then(response => {
+        if (response.status === 401) {
+          return response
+        } else if (response.status === 200) {
+          return response.json()
+        } else throw new Error(response.status);
+      }).then(data => {
+        if (data.status === 401) { // Wrong token
+          localStorage.setItem('loggedUser', null);
+          global.user = JSON.parse(localStorage.getItem('loggedUser'))
+  
+          this.setState({
+            redirectLogin: true
+          })
+  
+        } else {
+  
+          let new_data = {};
+          for (let i = 0; i < data.length; i++) {
+            const entry = data[i];
+  
+            let buyerColor = "#fcdf03";
+  
+            let buyer = "None";
+            if (entry.buyer !== null) {
+              buyer = entry.buyer;
+              if (buyer === global.user.username)
+                buyerColor = "#0ffc03";
+              else
+                buyerColor = "#fc0303";
+            }
+  
+            new_data[entry.id] = {
+              "auctioneer": entry.auctioneer,
+              "buyer": entry.buyer,
+              "buyerTxt": buyer,
+              "endDate": entry.endDate,
+              "gameKey": entry.gameKey,
+              "price": entry.price,
+              "startDate": entry.startDate,
+              "buyerColor": buyerColor
+            }
+  
+          }
+          this.setState({auctionsListings: new_data});
+        }
+      }).catch(error => {
+        console.log(error)
+        toast.error('Sorry, an unexpected error has occurred while loading the sales for this game!', {
+          position: "top-center",
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          toastId: "errorToast"
+        });
+      });
+  
+  
+      await this.setState({loadingAuctions: false});
+    }
+
+
 
     async getGameListings() {
         var login_info = null
@@ -350,7 +447,7 @@ class Game extends Component {
         await this.setState({ loadingReviews: true })
 
         // Get All Games
-        await fetch(baseURL + "grid/game-review?game_id=" + this.props.match.params.game + "&page=" + (this.state.reviewsPage - 1), {
+        await fetch(baseURL + "grid/reviews/game?game_id=" + this.props.match.params.game + "&page=" + (this.state.reviewsPage - 1), {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -435,7 +532,7 @@ class Game extends Component {
         await this.setState({ doneLoading: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/add-wish-list?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
+        await fetch(baseURL + "grid/wishlist?game_id=" + this.state.game.id + "&user_id=" + global.user.id, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -505,6 +602,15 @@ class Game extends Component {
 
         await this.getGameListings()
 
+        toast.success('Sale successfully added to shopping cart!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "addToCartToast"
+        });
+
         this.setState({ doneLoading: true })
     }
 
@@ -526,6 +632,15 @@ class Game extends Component {
 
         await this.getGameListings()
 
+        toast.success('Sale successfully removed to shopping cart!', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "removeFromCartToast"
+        });
+
         this.setState({ doneLoading: true })
     }
 
@@ -534,6 +649,7 @@ class Game extends Component {
         await this.getGameInfo()
         await this.getGameListings()
         await this.getGameReviews()
+        await this.getAuctionListings();
         this.setState({ doneLoading: true })
     }
 
@@ -580,6 +696,264 @@ class Game extends Component {
     }
 
 
+  setClassicModal = (status, event) => {
+    const {auctionBidModal} = this.state;
+    this.setState({
+      auctionBidModal: !auctionBidModal
+    });
+    if (event === undefined) return;
+
+    if (status) {
+      const id = parseInt(event.currentTarget.id);
+      const currentBiding = this.state.auctionsListings[id];
+      currentBiding["id"] = id;
+      this.setState({
+        currentBiding: currentBiding
+      });
+    } else {
+      this.setState({
+        currentBiding: null
+      });
+    }
+  };
+
+
+  submitBid = async (event) => {
+    const {currentBiding} = this.state;
+    if (currentBiding === null) return;
+    const id = parseInt(event.currentTarget.id);
+    const newPrice = parseFloat(document.getElementById("bid" + id).value);
+
+    if (isNaN(newPrice)) {
+      toast.error('You should insert a valid number!', {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorToast"
+      });
+      return;
+    }
+    if (newPrice <= currentBiding.price) {
+      toast.error('Bid price should be greater than actual price!', {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorToast"
+      });
+      return;
+    }
+
+    if (newPrice > global.user.funds) {
+      toast.error('Not enough money! :(', {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorToast"
+      });
+      return;
+    }
+
+    let errorStatus = false;
+    const data = {
+      "user": global.user.username,
+      "gameKey": currentBiding.gameKey,
+      "price": newPrice
+    };
+
+    console.log(data);
+    let login_info = null;
+
+    if (global.user != null) {
+      login_info = global.user.token
+    }
+
+    await fetch(baseURL + "grid/bidding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: login_info
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+      if (response.status === 401) {
+        return response
+      } else if (response.status === 200) {
+        return response.json()
+      } else throw new Error(response.status);
+    }).then(data => {
+      if (data.status === 401) { // Wrong token
+        localStorage.setItem('loggedUser', null);
+        global.user = JSON.parse(localStorage.getItem('loggedUser'));
+
+        this.setState({
+          redirectLogin: true
+        })
+
+      }
+    }).catch(error => {
+      toast.error('Sorry, an unexpected error has occurred when adding a bid!', {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        toastId: "errorToast"
+      });
+      errorStatus = true;
+      console.log(error);
+    });
+
+    this.setClassicModal(false);
+    this.setState({
+      currentBiding: null
+    });
+
+    if(errorStatus) return;
+
+    toast.success('Bid added with success', {
+      position: "top-center",
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      toastId: "success"
+    });
+
+
+
+    await this.getAuctionListings();
+
+  };
+
+
+  renderModal() {
+    const {classes} = this.props;
+
+    const {currentBiding} = this.state;
+    if (currentBiding === null) return;
+
+    let hiddenKey = "";
+    for (let i = 0; i < currentBiding.gameKey.length; i++)
+      hiddenKey += "*";
+
+    let buyerColor = "#fcdf03";
+
+    let buyer = "None";
+    if (currentBiding.buyer !== null) {
+      buyer = currentBiding.buyer;
+      if (buyer === global.user.username)
+        buyerColor = "#0ffc03";
+      else
+        buyerColor = "#fc0303";
+    }
+
+
+    return (
+      <Dialog
+        classes={{
+          root: classes.center,
+          paper: classes.modal
+        }}
+        open={this.state.auctionBidModal}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => this.setClassicModal(false)}
+        aria-labelledby="classic-modal-slide-title"
+        aria-describedby="classic-modal-slide-description"
+      >
+        <DialogTitle
+          id="classic-modal-slide-title"
+          disableTypography
+          className={classes.modalHeader}
+        >
+          <IconButton
+            className={classes.modalCloseButton}
+            key="close"
+            aria-label="Close"
+            color="inherit"
+            onClick={() => this.setClassicModal(false)}
+          >
+            <Close className={classes.modalClose}/>
+          </IconButton>
+
+        </DialogTitle>
+        <DialogContent
+          id="classic-modal-slide-description"
+          className={classes.modalBody}
+        >
+
+          <GridContainer>
+
+            <GridItem xs={12} sm={12} md={12}>
+              <div style={{textAlign: "left"}}>
+                <h3 style={{color: "#3b3e48", fontWeight: "bolder"}}><b
+                  style={{color: "#3b3e48"}}>{this.state.game.name}</b></h3>
+                <hr style={{color: "#999"}}></hr>
+              </div>
+              <div style={{textAlign: "left", marginTop: "30px"}}>
+                              <span style={{color: "#999", fontSize: "20px", "align-items": "center"}}>
+                                  <b>GameKey:</b> <span
+                                style={{color: "#3b3e48"}}> {hiddenKey}</span>
+                              </span>
+              </div>
+              <div style={{textAlign: "left", marginTop: "30px"}}>
+                              <span style={{color: "#999", fontSize: "20px", "align-items": "center"}}>
+                                  <b>Current Price:</b> <span
+                                style={{color: "#3b3e48"}}> {currentBiding.price} €</span>
+                              </span>
+              </div>
+              <div style={{textAlign: "left", marginTop: "30px"}}>
+                              <span style={{color: "#999", fontSize: "20px", "align-items": "center"}}>
+                                  <b>Actual Winner:</b> <span
+                                style={{color: buyerColor}}> <b>{buyer}</b></span>
+                              </span>
+              </div>
+            </GridItem>
+
+
+          </GridContainer>
+
+
+        </DialogContent>
+        <DialogActions className={classes.modalFooter}>
+
+          <CustomInput
+            labelText="Price..."
+            id={"bid" + currentBiding.id}
+
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <EuroSymbolIcon/>
+                </InputAdornment>
+              )
+            }}
+          />&nbsp;
+          <Button
+            size="md"
+            style={{backgroundColor: "#4ec884"}}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={this.submitBid}
+            id={currentBiding.id}
+          >
+            <i class="fas fa-gavel"></i> Make a Bidding
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+
 
     render() {
         const { classes } = this.props;
@@ -608,67 +982,70 @@ class Game extends Component {
                 </div>
             )
         } else {
-            const rows2 = [
-                {
-                    "seller": "Jonas_PP",
-                    "gridScore": <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                        4 <i class="far fa-star"></i>
-                    </span>,
-
-                    "price": <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
-                        0,99€
-                        </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Steam
-                    </span>,
-                    "date": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        00:00:03:00
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-gavel"></i> Make a Bidding
-                    </Button>
-                }
-            ];
-
             var auctionListings = <div></div>
-            if (true) {
-                auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                    <TableContainer component={Paper}>
-                        <Table style={{ width: "100%" }} aria-label="simple table">
-                            <TableBody>
-                                {rows2.map((row) => (
-                                    <TableRow hover key={row.name}>
-                                        <TableCell align="left">{row.seller}</TableCell>
-                                        <TableCell align="left">{row.gridScore}</TableCell>
-                                        <TableCell align="left">{row.type}</TableCell>
-                                        <TableCell align="left">{row.date}</TableCell>
-                                        <TableCell align="right">{row.price}</TableCell>
-                                        <TableCell align="right">{row.buy}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+            if (!this.state.loadingAuctions) {
+              if (this.state.auctionsListings === null || this.state.auctionsListings.length === 0) {
+                auctionListings = <GridItem xs={12} sm={12} md={12} style={{marginTop: "10px"}}>
+                  <div style={{textAlign: "left"}}>
+                    <h3 style={{color: "#999"}} id="emptyAuctionsMessage">
+                      It seems like no auctions exists related to this game at the moment :(
+                    </h3>
+                  </div>
                 </GridItem>
+              } else {
+                auctionListings = <GridItem xs={12} sm={12} md={12} style={{marginTop: "10px"}}>
+                  <TableContainer component={Paper}>
+                    <Table style={{width: "100%"}} aria-label="simple table" id="auctionsTable">
+                      <TableBody>
+                        <TableRow hover key="header">
+                          <TableCell align="center"><b>Auctioneer</b></TableCell>
+                          <TableCell align="center"><b>Actual Winner</b></TableCell>
+                          <TableCell align="center"><b>End Date</b></TableCell>
+                          <TableCell align="center"><b>Actual Price</b></TableCell>
+                          <TableCell align="center"> <b>Make a bidding </b></TableCell>
+                        </TableRow>
+                        {Object.keys(this.state.auctionsListings).map((id) => (
+      
+                          <TableRow hover key={id}>
+                            <TableCell align="center">{this.state.auctionsListings[id].auctioneer}</TableCell>
+                            <TableCell align="center"><span
+                              style={{color: this.state.auctionsListings[id].buyerColor}}>{this.state.auctionsListings[id].buyerTxt}</span></TableCell>
+                            <TableCell align="center">{this.state.auctionsListings[id].endDate}</TableCell>
+                            <TableCell align="center">{this.state.auctionsListings[id].price}</TableCell>
+                            <TableCell align="center">
+                              <Button
+                                size="md"
+                                id={id}
+                                style={{backgroundColor: "#4ec884"}}
+                                onClick={(e) => {
+                                  this.setClassicModal(true, e);
+                                }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <i class="fas fa-gavel"></i> Make a Bidding
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </GridItem>
+              }
             } else {
-                auctionListings = <div
-                    className="animated fadeOut animated"
-                    id="loadingSales"
-                    style={{
-                        top: "50%",
-                        left: "50%",
-                        display: ""
-                    }}>
-                    <FadeIn>
-                        <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
-                    </FadeIn>
-                </div>
+              auctionListings = <div
+                className="animated fadeOut animated"
+                id="loadingSales"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  display: ""
+                }}>
+                <FadeIn>
+                  <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"}/>
+                </FadeIn>
+              </div>
             }
 
             var sellListings = <div></div>
@@ -676,7 +1053,7 @@ class Game extends Component {
                 if (this.state.sellListings == null || this.state.sellListings.length == 0) {
                     sellListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                         <div style={{ textAlign: "left" }}>
-                            <h3 style={{ color: "#999" }}>
+                            <h3 style={{ color: "#999" }} id="noSell">
                                 It seems like no one's selling this game at the moment :(
                         </h3>
                         </div>
@@ -736,7 +1113,7 @@ class Game extends Component {
                 if (this.state.reviewListings == null || this.state.reviewListings.length == 0) {
                     reviewListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
                         <div style={{ textAlign: "left" }}>
-                            <h3 style={{ color: "#999" }}>
+                            <h3 style={{ color: "#999" }} id="noReviews">
                                 It seems like no one's reviewed this game yet :(
                         </h3>
                         </div>
@@ -754,7 +1131,7 @@ class Game extends Component {
                                                 </Link>
                                             </TableCell>
                                             <TableCell align="left"><b>{row.score}</b></TableCell>
-                                            <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                            <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                             <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                         </TableRow>
                                     ))}
@@ -922,7 +1299,7 @@ class Game extends Component {
 
                 bestPrice = <GridItem xs={12} sm={12} md={2}>
                     <div style={{ textAlign: "left", marginTop: "30px" }}>
-                        <span style={{ color: "#999", fontSize: "12px" }}>
+                        <span style={{ color: "#999", fontSize: "12px" }} id="bestOfferSign">
                             BEST OFFER
                             </span>
                     </div>
@@ -956,7 +1333,7 @@ class Game extends Component {
                             </span>
                     </div>
                     <div style={{ textAlign: "left" }}>
-                        <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }}>
+                        <span style={{ color: "#f44336", fontSize: "40px", fontWeight: "bolder" }} id="bestOfferPrice">
                             {this.state.game.bestSell.price}€
                             </span>
 
@@ -1005,12 +1382,12 @@ class Game extends Component {
 
                         <GridItem xs={12} sm={12} md={5}>
                             <div style={{ textAlign: "left" }}>
-                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>{this.state.game.name}</b></h3>
+                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }} id="gameNameHeader">{this.state.game.name}</b></h3>
                                 <hr style={{ color: "#999" }}></hr>
                             </div>
                             <div style={{ textAlign: "left", marginTop: "30px" }}>
                                 <span style={{ color: "#999", fontSize: "15px" }}>
-                                    <b>Description:</b> <span style={{ color: "#3b3e48" }}> {this.state.game.minimizedDescription}</span>
+                                    <b>Description:</b> <span style={{ color: "#3b3e48" }} id="descriptionHeader"> {this.state.game.minimizedDescription}</span>
                                 </span>
                             </div>
                             <div style={{ textAlign: "left", marginTop: "30px" }}>
@@ -1044,7 +1421,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullName">
                                             {this.state.game.name}
                                         </div>
                                     </GridItem>
@@ -1062,7 +1439,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullReleaseDate">
                                             {this.state.game.releaseDate}
                                         </div>
                                     </GridItem>
@@ -1080,7 +1457,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "15px" }}>
+                                        <div style={{ color: "black", fontSize: "15px" }} id="fullDescription">
                                             {this.state.game.description}
                                         </div>
                                     </GridItem>
@@ -1098,7 +1475,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullGenres">
                                             {this.state.game.allGenres}
                                         </div>
                                     </GridItem>
@@ -1116,8 +1493,8 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allPlatforms}
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullPlatforms">
+                                            {this.state.game.allPlatforms == "" ? <span style={{ color: "#999" }}><i>This game isn't currently available on any platforms</i></span> : <span>{this.state.game.allPlatforms}</span>}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -1134,7 +1511,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullDevelopers">
                                             {this.state.game.allDevelopers}
                                         </div>
                                     </GridItem>
@@ -1152,7 +1529,7 @@ class Game extends Component {
                                     <GridItem xs={12} sm={12} md={1} style={{ marginTop: "10px", height: "100%" }}>
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
-                                        <div style={{ color: "black", fontSize: "18px" }}>
+                                        <div style={{ color: "black", fontSize: "18px" }} id="fullPublisher">
                                             {this.state.game.publisher.name}
                                         </div>
                                     </GridItem>
@@ -1256,7 +1633,7 @@ class Game extends Component {
                                     </GridItem>
                                     <GridItem xs={12} sm={12} md={9} style={{ marginTop: "10px" }}>
                                         <div style={{ color: "black", fontSize: "18px" }}>
-                                            {this.state.game.allGenres}
+                                            {this.state.game.allPlatforms == "" ? <span style={{ color: "#999" }}><i>This game isn't currently available on any platforms</i></span> : <span>{this.state.game.allPlatforms}</span>}
                                         </div>
                                     </GridItem>
                                 </GridContainer>
@@ -1390,6 +1767,7 @@ class Game extends Component {
                         <Footer rawg={true} />
 
                     </div>
+                    {this.renderModal()}
                 </div>
             )
         }
@@ -1398,4 +1776,4 @@ class Game extends Component {
     }
 }
 
-export default withStyles(styles)(Game);
+export default withStyles(Object.assign({}, stylesbasic, Object.assign({}, styles, stylesjs)))(Game);

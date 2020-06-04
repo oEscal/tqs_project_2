@@ -1,11 +1,8 @@
 package frontend.webapp;
 
-import com.api.demo.DemoApplication;
-import com.api.demo.grid.dtos.UserDTO;
-import com.api.demo.grid.pojos.DeveloperPOJO;
-import com.api.demo.grid.pojos.GameGenrePOJO;
-import com.api.demo.grid.pojos.GamePOJO;
-import com.api.demo.grid.pojos.PublisherPOJO;
+
+import com.api.demo.grid.exception.ExceptionDetails;
+
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -23,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.lang.Nullable;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +33,7 @@ class WebAppPageObject {
     JavascriptExecutor js;
 
 
-    @SneakyThrows
-    WebAppPageObject(UserService userService, GridService gridService) {
-
-        // Chrome headless Driver
+    WebAppPageObject() {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
@@ -46,6 +41,7 @@ class WebAppPageObject {
         options.addArguments("--headless");
 
         driver = new ChromeDriver(options);
+
 
         // Chrome Driver
         /*
@@ -62,34 +58,47 @@ class WebAppPageObject {
         js = (JavascriptExecutor) driver;
         vars = new HashMap<String, Object>();
 
-        driver.manage().window().setSize(new Dimension(1920,1080));
+        driver.manage().window().setSize(new Dimension(1920, 1080));
+        driver.manage().timeouts().implicitlyWait(120, TimeUnit.MILLISECONDS);
+    }
+
+    @SneakyThrows
+    WebAppPageObject(UserService userService, GridService gridService) throws ParseException, ExceptionDetails {
+
+
+        // Chrome headless Driver
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+
+        driver = new ChromeDriver(options);
+
+        // Chrome Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new ChromeDriver();
+         */
+
+
+        // Firefox Driver
+        /*
+        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); //Linux Style
+        driver = new FirefoxDriver();
+        */
+
+        js = (JavascriptExecutor) driver;
+        vars = new HashMap<String, Object>();
+
+        driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().timeouts().implicitlyWait(120, TimeUnit.MILLISECONDS);
 
 
         // set user
-        UserDTO mSimpleUserDTO = new UserDTO("admin", "admin", "ola@adeus.com", "hm", "admin",
-                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
-        userService.saveUser(mSimpleUserDTO);
-
+        ServiceInterface.addUser(userService);
         // set games
-        for (int id = 0; id < 10; id++) {
-            GamePOJO gamePOJO = new GamePOJO("game" + id, "", null, null, null,
-                    null, "");
-
-            GameGenrePOJO gameGenrePOJO = new GameGenrePOJO("genre" + id, "");
-            gridService.saveGameGenre(gameGenrePOJO);
-
-            PublisherPOJO publisherPOJO = new PublisherPOJO("publisher" + id, "");
-            gridService.savePublisher(publisherPOJO);
-
-            DeveloperPOJO developerPOJO = new DeveloperPOJO("developer" + id);
-            gridService.saveDeveloper(developerPOJO);
-
-            gamePOJO.setDevelopers(new HashSet<>(Arrays.asList("developer" + id)));
-            gamePOJO.setGameGenres(new HashSet<>(Arrays.asList("genre" + id)));
-            gamePOJO.setPublisher("publisher" + id);
-            gridService.saveGame(gamePOJO);
-        }
+        ServiceInterface.addGames(gridService, 10);
     }
 
     void tear() {
@@ -198,9 +207,18 @@ class WebAppPageObject {
     }
 
     //Somewhy the platform select refused to behave soooo...
-    void clickPlatform(){
+    void clickPlatform() {
         driver.findElement(By.cssSelector(".select__value-container")).click();
         driver.findElement(By.id("react-select-3-option-0")).click();
+    }
+
+    void clickStars(){
+        driver.findElement(By.className("star-container")).click();
+    }
+
+    void waitForVisibility(String id){
+        driver.findElement(By.cssSelector(".ProfilePage-main-4")).click();
+
     }
 
     void login(int port){
@@ -208,11 +226,22 @@ class WebAppPageObject {
         this.navigate("http://localhost:" + port + "/login-page");
         String username = "admin";
         String password = "admin";
+        this.writeInput(username, "username");
+        this.writeInput(password, "password");
+
+        this.clickButton("confirm");
+        this.waitForLoad("processing");
+    }
+
+    void loginAlt(int port){
+        //Login
+        this.navigate("http://localhost:" + port + "/login-page");
+        String username = "oof";
+        String password = "oof";
         this.writeInput(username,"username");
         this.writeInput(password,"password");
 
         this.clickButton("confirm");
         this.waitForLoad("processing");
-
     }
 }

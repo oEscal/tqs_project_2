@@ -59,7 +59,7 @@ export default class Profile extends React.Component {
       await this.setState({ gamesLoaded: false })
 
       // Get All Games
-      await fetch(baseURL + "grid/private/user-info?username=" + this.state.user.username, {
+      await fetch(baseURL + "grid/private/user?username=" + this.state.user.username, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

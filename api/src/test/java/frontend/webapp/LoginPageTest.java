@@ -2,6 +2,7 @@ package frontend.webapp;
 
 import com.api.demo.DemoApplication;
 import com.api.demo.grid.dtos.UserDTO;
+import com.api.demo.grid.exception.ExceptionDetails;
 import com.api.demo.grid.repository.UserRepository;
 import com.api.demo.grid.service.GridService;
 import com.api.demo.grid.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +37,7 @@ class LoginPageTest {
 
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws ParseException, ExceptionDetails {
         controller = new WebAppPageObject(mUserService, mGridService);
         controller.navigate("http://localhost:" + port + "/login-page");
     }

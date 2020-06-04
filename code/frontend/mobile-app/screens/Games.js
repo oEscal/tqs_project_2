@@ -57,7 +57,7 @@ export default class GamesScreen extends React.Component {
       await this.setState({ gamesLoaded: false })
 
       // Get All Games
-      await fetch(baseURL + "grid/name?name=" + this.state.searchParam, {
+      await fetch(baseURL + "grid/games/name?name=" + this.state.searchParam, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -108,7 +108,7 @@ export default class GamesScreen extends React.Component {
     await this.setState({ gamesLoaded: false })
 
     // Get All Games
-    await fetch(baseURL + "grid/all?page=" + (this.state.curPage - 1), {
+    await fetch(baseURL + "grid/games/all?page=" + (this.state.curPage - 1), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -53,6 +53,7 @@ class LoginPage extends Component {
   }
 
   state = {
+    doneLoading: false,
     processing: false,
     animationOptions: {
       loop: true, autoplay: true, animationData: loadingAnim.default, rendererSettings: {
@@ -63,13 +64,16 @@ class LoginPage extends Component {
     redirect: false
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.setState({doneLoading: false})
     //Reset prior info
-    localStorage.setItem('loggedUser', null);
+    await localStorage.setItem('loggedUser', null);
     global.user = null;
 
-    localStorage.setItem('cart', null);
+    await localStorage.setItem('cart', null);
     global.cart = null
+
+    this.setState({doneLoading: true})
   }
 
   // Methods ///////////////////////////////
@@ -179,6 +183,18 @@ class LoginPage extends Component {
 
   render() {
     const { classes } = this.props;
+
+    if (!this.state.doneLoading) {
+      return (
+          <div>
+              <div className="animated fadeOut animated" id="firstLoad" style={{ width: "100%", marginTop: "15%" }}>
+                  <FadeIn>
+                      <Lottie options={this.state.animationOptions} height={"20%"} width={"20%"} />
+                  </FadeIn>
+              </div>
+          </div>
+      )
+    }
 
     var processing = null
     //Overlay for when processing a login request

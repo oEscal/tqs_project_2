@@ -104,7 +104,7 @@ class ProfilePage extends Component {
             login_info = global.user.token
         }
 
-        await fetch(baseURL + "grid/private/user-info?username=" + this.props.match.params.user, {
+        await fetch(baseURL + "grid/private/user?username=" + this.props.match.params.user, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -153,7 +153,7 @@ class ProfilePage extends Component {
         }
 
         // Get All Games
-        await fetch(baseURL + "grid/public/user-info?username=" + this.props.match.params.user, {
+        await fetch(baseURL + "grid/public/user?username=" + this.props.match.params.user, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -207,6 +207,21 @@ class ProfilePage extends Component {
 
 
     //METHODS////////////////////////////////////
+    async componentWillReceiveProps(nextProps) {
+        if (this.props.match.params.user !== nextProps.match.params.user) {
+            this.setState({ doneLoading: false })
+
+            this.props = nextProps
+            if (global.user != null && global.user.username == this.props.match.params.user) {
+                await this.getPrivateUserInfo()
+            } else {
+                await this.getPublicUserInfo()
+            }
+    
+            this.setState({ doneLoading: true })
+        }
+    }
+
     renderRedirectLogin = () => {
         if (this.state.redirectLogin) {
             return <Redirect to='/login-page' />
@@ -221,6 +236,67 @@ class ProfilePage extends Component {
         await this.setState({ "userReview": game })
     }
 
+
+    deleteListing = async (listing) => {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        this.setState({ doneLoading: false })
+
+        await fetch(baseURL + "grid/sell-listing?id=" + listing, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    return response
+                } else if (response.status === 200) {
+                    return response.json()
+                }
+                else throw new Error(response.status);
+            })
+            .then(data => {
+                if (data.status === 401) { // Wrong token
+                    localStorage.setItem('loggedUser', null);
+                    global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                    this.setState({
+                        redirectLogin: true
+                    })
+
+                    this.setState({ doneLoading: true })
+
+                } else {
+                    toast.success('Sale successfuly canceled!', {
+                        position: "top-center",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        toastId: "errorToast"
+                    });
+
+                    window.location.reload(false);
+                }
+            })
+            .catch(error => {
+                console.log(error)
+                toast.error('Sorry, an unexpected error has occurred!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+                this.setState({ error: true })
+            });
+    }
     ////////////////////////////////////////////
 
 
@@ -262,7 +338,7 @@ class ProfilePage extends Component {
                             <GridContainer xs={12} sm={12} md={11}>
                                 <GridItem xs={12} sm={12} md={12}>
                                     <div style={{ textAlign: "center" }}>
-                                        <h3 style={{ color: "#999" }}>
+                                        <h3 style={{ color: "#999" }} id="errorMessage">
                                             Sorry, there was an error retrieving this user's information...
                                         </h3>
                                     </div>
@@ -286,7 +362,7 @@ class ProfilePage extends Component {
                                     tabButton: "Reviews",
                                     tabIcon: "far fa-comment-alt",
                                     tabContent: (
-                                        <div>
+                                        <div id="reviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
@@ -314,7 +390,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left">{row.score}</TableCell>
-                                                                        <TableCell align="left">{row.comment}</TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -331,7 +407,7 @@ class ProfilePage extends Component {
                                     tabButton: "Game Reviews",
                                     tabIcon: "fas fa-gamepad",
                                     tabContent: (
-                                        <div>
+                                        <div id="gameReviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Game Reviews
@@ -357,7 +433,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -374,7 +450,7 @@ class ProfilePage extends Component {
                                     tabButton: "User Reviews",
                                     tabIcon: "fas fa-users",
                                     tabContent: (
-                                        <div>
+                                        <div id="userReviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My User Reviews
@@ -400,7 +476,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -416,7 +492,7 @@ class ProfilePage extends Component {
                                     tabButton: "Library",
                                     tabIcon: "fas fa-key",
                                     tabContent: (
-                                        <div>
+                                        <div id="library">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Games
@@ -449,14 +525,7 @@ class ProfilePage extends Component {
                                                                                 WebkitBackgroundClip: "text",
                                                                                 WebkitTextFillColor: "transparent",
                                                                             }}><i class="fas fa-key"></i> </span><span style={{ marginLeft: "5px" }}><b>{row.gamerKey}</b></span></TableCell>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
                                                                         <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
->>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
-=======
-                                                                        <TableCell align="left">Sold by <b>{row.sellerName}</b></TableCell>
->>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
                                                                         <TableCell align="left">Bought on <b>{row.date}</b></TableCell>
                                                                         <TableCell align="right">
                                                                             <Button
@@ -464,7 +533,7 @@ class ProfilePage extends Component {
                                                                                 style={{ backgroundColor: "#fc8f6f" }}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
-                                                                                id={"reviewButton" + row.gameId}
+                                                                                id={"reviewGameButton" + row.gameId}
                                                                                 onClick={() => this.renderRedirectGameReview({ gameName: row.gameName, gameId: row.gameId })}
                                                                             >
                                                                                 <i class="far fa-star"></i> Review Game
@@ -476,7 +545,7 @@ class ProfilePage extends Component {
                                                                                 style={{ backgroundColor: "#ff3ea0" }}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
-                                                                                id={"reviewButton" + row.sellerId}
+                                                                                id={"reviewUserButton" + row.sellerId}
                                                                                 onClick={() => this.renderRedirectUserReview({ sellerName: row.sellerName, sellerId: row.sellerId })}
                                                                             >
                                                                                 <i class="far fa-star"></i> Review Seller
@@ -496,7 +565,7 @@ class ProfilePage extends Component {
                                     tabButton: "Sales",
                                     tabIcon: "fas fa-money-bill-wave",
                                     tabContent: (
-                                        <div>
+                                        <div id="sales">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
@@ -527,20 +596,13 @@ class ProfilePage extends Component {
                                                                         }
                                                                         {row.purchased ?
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                                                                
-=======
-
->>>>>>> 18ee9e6300b5b398b08b96595beceaf6628389a7
-=======
->>>>>>> a2f161283b22cfe5d4a2d129a2bfd1834a50b1e7
                                                                             </TableCell> :
                                                                             <TableCell align="left" style={{ color: "red", fontWeight: "bold" }}>
                                                                                 <Button
                                                                                     size="sm"
                                                                                     style={{ backgroundColor: "#ff3ea0" }}
-                                                                                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
+                                                                                    id={"deleteSell" + row.id}
+                                                                                    onClick={() => this.deleteListing(row.id)}
                                                                                     target="_blank"
                                                                                     rel="noopener noreferrer"
                                                                                 >
@@ -562,7 +624,7 @@ class ProfilePage extends Component {
                                     tabButton: "Auctions",
                                     tabIcon: "fas fa-gavel",
                                     tabContent: (
-                                        <div>
+                                        <div id="auctions">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Auctions
@@ -620,7 +682,7 @@ class ProfilePage extends Component {
                                     tabButton: "Payment Info",
                                     tabIcon: "fas fa-credit-card",
                                     tabContent: (
-                                        <div>
+                                        <div id="card">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Credit Card
@@ -655,13 +717,14 @@ class ProfilePage extends Component {
                 } else {
                     info = <GridItem xs={12} sm={12} md={12}>
                         <NavPills
+                            id="tabContents"
                             color="rose"
                             tabs={[
                                 {
                                     tabButton: "Reviews",
                                     tabIcon: "far fa-comment-alt",
                                     tabContent: (
-                                        <div>
+                                        <div id="reviews">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>User Reviews
@@ -687,7 +750,7 @@ class ProfilePage extends Component {
                                                                             </Link>
                                                                         </TableCell>
                                                                         <TableCell align="left"><b>{row.score}  <i class="far fa-star"></i></b></TableCell>
-                                                                        <TableCell align="left"><b>"{row.comment}"</b></TableCell>
+                                                                        <TableCell align="left"><b>{row.comment == "" ? <span style={{ color: "#999" }}><i>No Comment</i></span> : <span>"{row.comment}"</span>}</b></TableCell>
                                                                         <TableCell align="left">{row.date.split("T")[0]}</TableCell>
                                                                     </TableRow>
                                                                 ))}
@@ -704,7 +767,7 @@ class ProfilePage extends Component {
                                     tabButton: "Sales",
                                     tabIcon: "fas fa-money-bill-wave",
                                     tabContent: (
-                                        <div>
+                                        <div id="sales">
                                             <div>
                                                 <span>
                                                     <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "10px", padding: "0 0" }}>My Sales
@@ -815,12 +878,12 @@ class ProfilePage extends Component {
 
                                     <GridItem xs={12} sm={12} md={7}>
                                         <div style={{ textAlign: "left" }}>
-                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }}>{this.state.info.username}</b> <span style={{ color: "#999" }}>({this.state.info.name})</span></h3>
+                                            <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b style={{ color: "#3b3e48" }} id="username">{this.state.info.username}</b> <span style={{ color: "#999" }} id="name">({this.state.info.name})</span></h3>
                                             <hr style={{ color: "#999" }}></hr>
                                         </div>
                                         <div style={{ textAlign: "left", marginTop: "30px", minHeight: "110px" }}>
-                                            <span style={{ color: "#999", fontSize: "15px" }}>
-                                                <b>Description:</b> <span style={{ color: "#3b3e48" }}> {this.state.info.description != null ? this.state.info.description : "This user hasn't written a description yet!"}</span>
+                                            <span style={{ color: "#999", fontSize: "15px" }} >
+                                                <b>Description:</b> <span style={{ color: "#3b3e48" }} id="description"> {this.state.info.description != null ? this.state.info.description : "This user hasn't written a description yet!"}</span>
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left", marginTop: "30px" }}>
@@ -837,7 +900,7 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="country">
                                                 {this.state.info.country}
                                             </span>
                                         </div>
@@ -848,7 +911,7 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="birthday">
                                                 {this.state.info.birthDate}
                                             </span>
                                         </div>
@@ -859,19 +922,20 @@ class ProfilePage extends Component {
                                             </span>
                                         </div>
                                         <div style={{ textAlign: "left" }}>
-                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
+                                            <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }} id="startday">
                                                 {this.state.info.startDate}
                                             </span>
                                         </div>
 
                                         {!this.state.public ? <div style={{ marginTop: "20px" }}>
-                                            <Link to={"/user/" + "Jonas_PP" + "/edit"} style={{ color: "inherit" }}>
+                                            <Link to={"/user/" + global.user.username + "/edit"} style={{ color: "inherit" }}>
                                                 <Button
                                                     color="danger"
                                                     size="md"
                                                     style={{ backgroundColor: "#ff3ea0" }}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
+                                                    id="editButton"
                                                 >
                                                     <i class="fas fa-pencil-alt"></i> Edit Profile
                                                 </Button>

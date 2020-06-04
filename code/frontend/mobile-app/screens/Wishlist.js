@@ -55,7 +55,7 @@ export default class WishlistScreen extends React.Component {
     await this.setState({ gamesLoaded: false })
 
     // Get All Games
-    await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+    await fetch(baseURL + "grid/private/user?username=" + global.user.username, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
