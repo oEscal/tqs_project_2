@@ -55,4 +55,5 @@ venv/
 # deploy credentials
 */database/docker-compose.yml
 *.env
-1
+*logstash.yml
+*logstash.conf
