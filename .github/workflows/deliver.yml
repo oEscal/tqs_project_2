@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: 11
       - name: Build SpringBoot app
-        run: mvn -f api clean package spring-boot:repackage
+        run: mvn -f GridBackend clean package spring-boot:repackage
       - name: Build Docker image
         uses: elgohr/Publish-Docker-Github-Action@master 
         with:
