@@ -21,6 +21,10 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 @EnableJpaRepositories(basePackageClasses = UserRepository.class)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String USER = "USER";
+    private static final String ADMIN = "ADMIN";
+    private static final String SELL_ENDPOINT = "/grid/sell-listing",
+
     private static final String[] GET_AUTH_WHITELIST = {
             "/grid/logout",
             "/grid/games/all",
@@ -29,7 +33,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/games/developer",
             "/grid/games/publisher",
             "/grid/games/game",
-            "/grid/sell-listing",
+           SELL_ENDPOINT,
             "/grid/public/user",
             "/grid/reviews/user",
             "/grid/reviews/game",
@@ -42,7 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             "/grid/login",
             "/grid/games/search",
             "/grid/gamekey",
-            "/grid/sell-listing",
+           SELL_ENDPOINT,
             "/grid/buy-listing",
             "/grid/wishlist",
             "/grid/reviews/game",
@@ -51,7 +55,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] DELETE_USER_WHITELIST = {
             "/grid/user",
-            "/grid/sell-listing"
+           SELL_ENDPOINT
     };
 
     private static final String[] POST_USER_WHITELIST = {
@@ -106,17 +110,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, GET_AUTH_WHITELIST)
                 .permitAll()
                 .antMatchers(HttpMethod.GET, GET_USER_WHITELIST)
-                .hasAnyAuthority("USER", "ADMIN")
+                .hasAnyAuthority(USER, ADMIN)
                 .antMatchers(HttpMethod.POST, POST_AUTH_WHITELIST)
                 .permitAll()
                 .antMatchers(HttpMethod.POST, POST_USER_WHITELIST)
-                .hasAnyAuthority("USER", "ADMIN")
+                .hasAnyAuthority(USER, ADMIN)
                 .antMatchers(HttpMethod.POST, POST_ADMIN_WHITELIST)
-                .hasAuthority("ADMIN")
+                .hasAuthority(ADMIN)
                 .antMatchers(HttpMethod.PUT, PUT_USER_WHITELIST)
-                .hasAnyAuthority("USER", "ADMIN")
+                .hasAnyAuthority(USER, ADMIN)
                 .antMatchers(HttpMethod.DELETE, DELETE_USER_WHITELIST)
-                .hasAnyAuthority("USER", "ADMIN")
+                .hasAnyAuthority(USER, ADMIN)
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .authenticationEntryPoint(mAuthEntryPoint)
