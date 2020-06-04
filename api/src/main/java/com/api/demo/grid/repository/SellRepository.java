@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -18,5 +19,7 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
     @Query("Select s from Sell s where s.gameKey.game.id = ?1 and s.purchased IS NULL")
     Page<Sell> findAllByGames(Long game, Pageable pageable);
 
-    Sell findByGameKey_RealKey(String rKey);
+    List<Sell> findAllByGameKey_RealKey(String rKey);
+    @Query("select s from Sell s where s.gameKey.realKey = ?1 and s.purchased is null")
+    Sell findUnsoldGameKey(String rKey);
 }

@@ -142,7 +142,7 @@ class AuctionServiceTest {
         given(mGameKeyRepository.findByRealKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock sell repository
-        given(mSellRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(null);
+        given(mSellRepository.findAllByGameKey_RealKey(mGameKeyRKey)).willReturn(new ArrayList<>());
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);
@@ -161,7 +161,7 @@ class AuctionServiceTest {
         given(mGameKeyRepository.findByRealKey(mGameKeyRKey)).willReturn(java.util.Optional.ofNullable(mGameKey));
 
         // mock sell repository
-        given(mSellRepository.findByGameKey_RealKey(mGameKeyRKey)).willReturn(null);
+        given(mSellRepository.findAllByGameKey_RealKey(mGameKeyRKey)).willReturn(new ArrayList<>());
 
         // mock auction repository
         given(mAuctionRepository.save(mAuction)).willReturn(mAuction);

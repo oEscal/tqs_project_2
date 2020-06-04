@@ -67,6 +67,8 @@ public class Sell {
     @Temporal(TemporalType.DATE)
     private Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
 
+    @JsonIgnore
+    private boolean resale;
 
     @Transactional
     public void setUser(User user) {
@@ -115,5 +117,9 @@ public class Sell {
     public long getUserId() {
         if (user == null) return -1L;
         return this.user.getId();
+    }
+
+    public boolean getResale() {
+        return resale;
     }
 }
