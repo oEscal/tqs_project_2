@@ -986,14 +986,14 @@ class GridServiceTest {
         String comment = mReviewGame.getComment();
         int score = mReviewGame.getScore();
         Date date = mReviewGame.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mGame));
 
 
         id = mReviewUser.getId();
         comment = mReviewUser.getComment();
         score = mReviewUser.getScore();
         date = mReviewUser.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mUser2));
 
         Page<ReviewJoiner> expected = mGridService.getUserReviews(userID, 0);
 
@@ -1061,13 +1061,13 @@ class GridServiceTest {
         String comment = mReviewGame.getComment();
         int score = mReviewGame.getScore();
         Date date = mReviewGame.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mGame));
 
         id = mReviewUser.getId();
         comment = mReviewUser.getComment();
         score = mReviewUser.getScore();
         date = mReviewUser.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mUser2));
 
         Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
 
@@ -1101,13 +1101,13 @@ class GridServiceTest {
         String comment = mReviewGame.getComment();
         int score = mReviewGame.getScore();
         Date date = mReviewGame.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mGame));
 
         id = mReviewUser.getId();
         comment = mReviewUser.getComment();
         score = mReviewUser.getScore();
         date = mReviewUser.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mUser2));
 
         Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "score");
 
@@ -1144,7 +1144,7 @@ class GridServiceTest {
         String comment = mReviewGame.getComment();
         int score = mReviewGame.getScore();
         Date date = mReviewGame.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mGame));
 
         mReviewUser.setAuthor(mUser2);
         mReviewUser.setTarget(mUser);
@@ -1152,7 +1152,7 @@ class GridServiceTest {
         comment = mReviewUser.getComment();
         score = mReviewUser.getScore();
         date = mReviewUser.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser2, mUser));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser2, mUser));
 
         Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "user");
 
@@ -1190,14 +1190,14 @@ class GridServiceTest {
         String comment = mReviewGame.getComment();
         int score = mReviewGame.getScore();
         Date date = mReviewGame.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mGame));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mGame));
 
         mReviewUser.setDate(new GregorianCalendar(2018, Calendar.JANUARY, 1).getTime());
         id = mReviewUser.getId();
         comment = mReviewUser.getComment();
         score = mReviewUser.getScore();
         date = mReviewUser.getDate();
-        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, null, mUser, mUser2));
+        reviewsJoiner.add(new ReviewJoiner(id, comment, score, date, mUser, mUser2));
 
         Page<ReviewJoiner> expected = mGridService.getAllReviews(0, "date");
 

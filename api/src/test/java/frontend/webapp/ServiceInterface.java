@@ -18,7 +18,9 @@ public class ServiceInterface {
     public static void addUser(UserService userService) throws ParseException, ExceptionDetails {
         UserDTO mSimpleUserDTO = new UserDTO("admin", "admin", "ola@adeus.com", "hm", "admin",
                 new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
-
+        userService.saveUser(mSimpleUserDTO);
+        mSimpleUserDTO = new UserDTO("oof", "oof", "oof@adeus.com", "hmm", "oof",
+                new SimpleDateFormat("dd/MM/yyyy").parse("10/10/2019"));
         userService.saveUser(mSimpleUserDTO);
     }
 

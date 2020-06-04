@@ -27,6 +27,7 @@ import Cart from "views/Cart/Cart.js";
 import Wallet from "views/Wallet/Wallet.js";
 import GameReview from "views/Review/GameReview.js";
 import UserReview from "views/Review/UserReview.js";
+
 import Receipt from "views/Cart/Receipt.js";
 import WishList from "views/WishList/WishList.js";
 

@@ -601,6 +601,10 @@ class Signup extends Component {
       return current.isAfter(today);
     };
 
+    var valid2 = function (current) {
+      return current.isBefore(today);
+    };
+
     return (
       <div>
         <LoggedHeader user={global.user} cart={global.cart} heightChange={true} height={200} />
@@ -697,6 +701,7 @@ class Signup extends Component {
                           <Datetime
                             timeFormat={false}
                             inputProps={{ placeholder: "Birthday*", id: "birthday" }}
+                            isValidDate={valid2}
                           />
                         </FormControl>
                       </div>

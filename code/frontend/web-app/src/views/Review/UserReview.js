@@ -114,7 +114,7 @@ class UserReview extends Component {
         if (global.user != null) {
             login_info = global.user.token
 
-            await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+            await fetch(baseURL + "grid/private/user?username=" + global.user.username, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -207,7 +207,7 @@ class UserReview extends Component {
 
                 await this.setState({ doneLoading: false })
 
-                await fetch(baseURL + "grid/add-user-review", {
+                await fetch(baseURL + "grid/reviews/user", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -234,7 +234,7 @@ class UserReview extends Component {
                             })
                         }
                         else if (data.status === 400) {
-                            toast.error('You can\'t review yourself, silly', {
+                            toast.error('You can\'t review yourself, or the same user more than once, silly!', {
                                 position: "top-center",
                                 autoClose: 5000,
                                 hideProgressBar: false,
@@ -277,7 +277,7 @@ class UserReview extends Component {
     async componentDidMount() {
         window.scrollTo(0, 0)
 
-        if (this.props.location.state.user == null) {
+        if (this.props == null || this.props.location == null || this.props.location.state == null || this.props.location.state.user == null) {
             await this.setState({ redirectGames: true })
         } else {
             await this.setState({ user: this.props.location.state.user })

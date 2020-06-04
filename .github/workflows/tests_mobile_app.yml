@@ -1,0 +1,12 @@
+on: push
+name: Tests mobile app workflow
+jobs:
+  tests: 
+    runs-on: ubuntu-latest
+    name: npm tests
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install npm dependencies
+      run: npm install --prefix code/frontend/mobile-app
+    - name: Run npm tests
+      run: npm test --prefix code/frontend/mobile-app

@@ -70,7 +70,7 @@ class HomePage extends Component {
         }
 
         // Get All Games
-        await fetch(baseURL + "grid/all?page=" + 1, {
+        await fetch(baseURL + "grid/games/all?page=" + 1, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

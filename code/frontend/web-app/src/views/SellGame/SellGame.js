@@ -107,7 +107,7 @@ class SellGame extends Component {
 
         var arr = []
 
-        await fetch(baseURL + "grid/name?name=" + inputVal, {
+        await fetch(baseURL + "grid/games/name?name=" + inputVal, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -154,7 +154,7 @@ class SellGame extends Component {
         var arr = []
 
         // Get All Games
-        await fetch(baseURL + "grid/all?page=0", {
+        await fetch(baseURL + "grid/games/all?page=0", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -207,7 +207,7 @@ class SellGame extends Component {
         await this.setState({ gamesLoaded: false })
 
         // Get All Games
-        await fetch(baseURL + "grid/private/user-info?username=" + global.user.username, {
+        await fetch(baseURL + "grid/private/user?username=" + global.user.username, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -397,7 +397,7 @@ class SellGame extends Component {
                     "date": d.toISOString()
                 }
                 // Create selling
-                await fetch(baseURL + "grid/add-sell-listing", {
+                await fetch(baseURL + "grid/sell-listing", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -510,7 +510,7 @@ class SellGame extends Component {
 
             console.log(body2)
             // Create selling
-            fetch(baseURL + "grid/add-sell-listing", {
+            fetch(baseURL + "grid/sell-listing", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

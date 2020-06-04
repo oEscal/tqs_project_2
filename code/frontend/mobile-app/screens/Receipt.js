@@ -60,7 +60,7 @@ export default class ReceiptScreen extends React.Component {
       </Block>
     } else {
       games.push(<Block flex left style={[styles.gameTitle3]}>
-        <Text size={25} style={styles.hr}>Here's your games. <Text color="#f44336">GLHF</Text></Text>
+        <Text size={25} style={styles.hr}>Huzzah, new games! <Text color="#f44336">GLHF</Text></Text>
       </Block>
       )
 

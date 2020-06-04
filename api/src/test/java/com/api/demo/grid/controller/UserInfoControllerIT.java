@@ -132,7 +132,7 @@ class UserInfoControllerIT {
         mSellRepository.save(mSell);
         mUserRepo.save(mUser);
 
-        mMockMvc.perform(get("/grid/public/user-info")
+        mMockMvc.perform(get("/grid/public/user")
                 .param("username", mUsername1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -151,7 +151,7 @@ class UserInfoControllerIT {
     @SneakyThrows
     void whenSearchingForInvalidUsername_getException(){
 
-        mMockMvc.perform(get("/grid/public/user-info")
+        mMockMvc.perform(get("/grid/public/user")
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -165,7 +165,7 @@ class UserInfoControllerIT {
     void whenSearchingForValidUsername_andIsOwner_getValidPrivateInfo() throws Exception {
         mUserRepo.save(mUser);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("username", mUsername1)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -191,7 +191,7 @@ class UserInfoControllerIT {
         mUser2.setAdmin(true);
         mUserRepo.save(mUser2);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "username1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -211,7 +211,7 @@ class UserInfoControllerIT {
     void whenSearchingForValidUsername_andIsNotOwnerNorAdmin_getException(){
         mUserRepo.save(mUser2);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -227,7 +227,7 @@ class UserInfoControllerIT {
         mUser2.setAdmin(true);
         mUserRepo.save(mUser2);
 
-        mMockMvc.perform(get("/grid/private/user-info")
+        mMockMvc.perform(get("/grid/private/user")
                 .with(httpBasic("spring", mPassword1))
                 .param("username", "user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -242,7 +242,7 @@ class UserInfoControllerIT {
         mUser.setFunds(5);
         mUserRepo.save(mUser);
 
-        mMockMvc.perform(put("/grid/funds")
+        mMockMvc.perform(put("/grid/private/funds")
                 .with(httpBasic(mUsername1, mPassword1))
                 .param("newfunds", "5")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -259,7 +259,7 @@ class UserInfoControllerIT {
         String name = "newName";
         mUserUpdatePOJO.setName(name);
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -274,7 +274,7 @@ class UserInfoControllerIT {
         mUserRepo.save(mUser);
         mUserUpdatePOJO.setEmail(mUser.getEmail());
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -289,7 +289,7 @@ class UserInfoControllerIT {
         mUserRepo.save(mUser);
         mUserUpdatePOJO.setEmail("name");
 
-        mMockMvc.perform(put("/grid/user")
+        mMockMvc.perform(put("/grid/private/user")
                 .with(httpBasic(mUsername1, mPassword1))
                 .content(asJsonString(mUserUpdatePOJO))
                 .contentType(MediaType.APPLICATION_JSON))

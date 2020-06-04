@@ -59,6 +59,7 @@ export default function NavPills(props) {
             label={prop.tabButton}
             key={key}
             {...icon}
+            id={key}
             classes={{
               root: pillsClasses,
               selected: classes[color],
