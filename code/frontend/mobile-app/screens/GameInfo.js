@@ -338,7 +338,7 @@ export default class GameInfoScreen extends React.Component {
 
     var score;
     if (this.state.game.score == -1) {
-      score = <span style={{ color: "#999" }}>UNRATED</span>
+      score = <Text color="#999" >UNRATED</Text>
     }
     else if (this.state.game.score > 0 && this.state.game.score <= 1) {
       score = <Text color="red">{this.state.game.score}</Text>
