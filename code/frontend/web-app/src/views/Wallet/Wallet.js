@@ -337,7 +337,10 @@ class Wallet extends Component {
                             localStorage.setItem('loggedUser', JSON.stringify(data));
                             global.user = JSON.parse(localStorage.getItem('loggedUser'))
 
-                            window.location.reload(false);
+                            this.getPrivateUserInfo()
+                            this.setState({
+                                doneLoading: true
+                            })
                         }
                     })
                     .catch(error => {
