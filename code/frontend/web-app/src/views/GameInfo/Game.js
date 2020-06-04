@@ -79,6 +79,22 @@ import {
     Link,
     Redirect
 } from "react-router-dom";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
+import Close from "@material-ui/icons/Close";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import stylesjs from "assets/jss/material-kit-react/views/componentsSections/javascriptStyles.js";
+import stylesbasic from "assets/jss/material-kit-react/views/componentsSections/basicsStyle.js";
+import Slide from "@material-ui/core/Slide";
+import EuroSymbolIcon from '@material-ui/icons/EuroSymbol';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="down" ref={ref} {...props} />;
+});
+
+Transition.displayName = "Transition";
 
 class Game extends Component {
     constructor() {
@@ -101,6 +117,9 @@ class Game extends Component {
         loadingReviews: false,
 
         sellListings: [],
+        auctionsListings: [],
+        currentBiding: null,
+        auctionBidModal: false,
         listingsPage: 1,
         noListingPages: 1,
         noSells: 0,
@@ -201,6 +220,84 @@ class Game extends Component {
             });
 
     }
+
+    async getAuctionListings() {
+        var login_info = null
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await this.setState({ loadingAuctions: true });
+
+        await fetch(baseURL + "grid/auction?gameId=" + this.props.match.params.game, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            }
+        }).then(response => {
+            if (response.status === 401) {
+                return response
+            } else if (response.status === 200) {
+                return response.json()
+            } else throw new Error(response.status);
+        }).then(data => {
+            if (data.status === 401) { // Wrong token
+                localStorage.setItem('loggedUser', null);
+                global.user = JSON.parse(localStorage.getItem('loggedUser'))
+
+                this.setState({
+                    redirectLogin: true
+                })
+
+            } else {
+
+                let new_data = {};
+                for (let i = 0; i < data.length; i++) {
+                    const entry = data[i];
+
+                    let buyerColor = "#fcdf03";
+
+                    let buyer = "None";
+                    if (entry.buyer !== null) {
+                        buyer = entry.buyer;
+                        if (buyer === global.user.username)
+                            buyerColor = "#0ffc03";
+                        else
+                            buyerColor = "#fc0303";
+                    }
+
+                    new_data[entry.id] = {
+                        "auctioneer": entry.auctioneer,
+                        "buyer": entry.buyer,
+                        "buyerTxt": buyer,
+                        "endDate": entry.endDate,
+                        "gameKey": entry.gameKey,
+                        "price": entry.price,
+                        "startDate": entry.startDate,
+                        "buyerColor": buyerColor
+                    }
+
+                }
+                this.setState({ auctionsListings: new_data });
+            }
+        }).catch(error => {
+            console.log(error)
+            toast.error('Sorry, an unexpected error has occurred while loading the sales for this game!', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+        });
+
+
+        await this.setState({ loadingAuctions: false });
+    }
+
+
 
     async getGameListings() {
         var login_info = null
@@ -552,6 +649,7 @@ class Game extends Component {
         await this.getGameInfo()
         await this.getGameListings()
         await this.getGameReviews()
+        await this.getAuctionListings();
         this.setState({ doneLoading: true })
     }
 
@@ -598,6 +696,274 @@ class Game extends Component {
     }
 
 
+    setClassicModal = (status, event) => {
+        const { auctionBidModal } = this.state;
+        this.setState({
+            auctionBidModal: !auctionBidModal
+        });
+        if (event === undefined) return;
+
+        if (status) {
+            const id = parseInt(event.currentTarget.id);
+            const currentBiding = this.state.auctionsListings[id];
+            currentBiding["id"] = id;
+            this.setState({
+                currentBiding: currentBiding
+            });
+        } else {
+            this.setState({
+                currentBiding: null
+            });
+        }
+    };
+
+
+    submitBid = async (event) => {
+        const { currentBiding } = this.state;
+        if (currentBiding === null) return;
+        const id = parseInt(event.currentTarget.id);
+        const newPrice = parseFloat(document.getElementById("bid" + id).value);
+
+        if (isNaN(newPrice)) {
+            toast.error('You should insert a valid number!', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+            return;
+        }
+        if (newPrice <= currentBiding.price) {
+            toast.error('Bid price should be greater than actual price!', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+            return;
+        }
+
+        if (newPrice > global.user.funds) {
+            toast.error('Not enough money! :(', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+            return;
+        }
+
+        let errorStatus = false;
+        const data = {
+            "user": global.user.username,
+            "gameKey": currentBiding.gameKey,
+            "price": newPrice
+        };
+
+        console.log(data);
+        let login_info = null;
+
+        if (global.user != null) {
+            login_info = global.user.token
+        }
+
+        await fetch(baseURL + "grid/bidding", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: login_info
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status === 401 || response.status === 400) {
+                return response
+            } else if (response.status === 200) {
+                return response.json()
+            } else throw new Error(response.status);
+        }).then(data => {
+            if (data.status === 401) { // Wrong token
+                localStorage.setItem('loggedUser', null);
+                global.user = JSON.parse(localStorage.getItem('loggedUser'));
+
+                this.setState({
+                    redirectLogin: true
+                })
+            }
+            else if (data.status === 400) { // Wrong token
+                toast.error('Oops, you can\'t participate on your own auction silly!!', {
+                    position: "top-center",
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    toastId: "errorToast"
+                });
+                errorStatus = true;
+            }
+        }).catch(error => {
+            toast.error('Sorry, an unexpected error has occurred when adding a bid!', {
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                toastId: "errorToast"
+            });
+            errorStatus = true;
+            console.log(error);
+        });
+
+        this.setClassicModal(false);
+        this.setState({
+            currentBiding: null
+        });
+
+        if (errorStatus) return;
+
+        toast.success('Bid added with success', {
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            toastId: "success"
+        });
+
+
+
+        await this.getAuctionListings();
+
+    };
+
+
+    renderModal() {
+        const { classes } = this.props;
+
+        const { currentBiding } = this.state;
+        if (currentBiding === null) return;
+
+        let hiddenKey = "";
+        for (let i = 0; i < currentBiding.gameKey.length; i++)
+            hiddenKey += "*";
+
+        let buyerColor = "#fcdf03";
+
+        let buyer = "None";
+        if (currentBiding.buyer !== null) {
+            buyer = currentBiding.buyer;
+            if (buyer === global.user.username)
+                buyerColor = "#0ffc03";
+            else
+                buyerColor = "#fc0303";
+        }
+
+
+        return (
+            <Dialog
+                classes={{
+                    root: classes.center,
+                    paper: classes.modal
+                }}
+                open={this.state.auctionBidModal}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => this.setClassicModal(false)}
+                aria-labelledby="classic-modal-slide-title"
+                aria-describedby="classic-modal-slide-description"
+            >
+                <DialogTitle
+                    id="classic-modal-slide-title"
+                    disableTypography
+                    className={classes.modalHeader}
+                >
+                    <IconButton
+                        className={classes.modalCloseButton}
+                        key="close"
+                        aria-label="Close"
+                        color="inherit"
+                        onClick={() => this.setClassicModal(false)}
+                    >
+                        <Close className={classes.modalClose} />
+                    </IconButton>
+
+                </DialogTitle>
+                <DialogContent
+                    id="classic-modal-slide-description"
+                    className={classes.modalBody}
+                >
+
+                    <GridContainer>
+
+                        <GridItem xs={12} sm={12} md={12}>
+                            <div style={{ textAlign: "left" }}>
+                                <h3 style={{ color: "#3b3e48", fontWeight: "bolder" }}><b
+                                    style={{ color: "#3b3e48" }}>{this.state.game.name}</b></h3>
+                                <hr style={{ color: "#999" }}></hr>
+                            </div>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "20px", "align-items": "center" }}>
+                                    <b>GameKey:</b> <span
+                                        style={{ color: "#3b3e48" }}> {hiddenKey}</span>
+                                </span>
+                            </div>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "20px", "align-items": "center" }}>
+                                    <b>Current Price:</b> <span
+                                        style={{ color: "#3b3e48" }}> {currentBiding.price} €</span>
+                                </span>
+                            </div>
+                            <div style={{ textAlign: "left", marginTop: "30px" }}>
+                                <span style={{ color: "#999", fontSize: "20px", "align-items": "center" }}>
+                                    <b>Actual Winner:</b> <span
+                                        style={{ color: buyerColor }}> <b>{buyer}</b></span>
+                                </span>
+                            </div>
+                        </GridItem>
+
+
+                    </GridContainer>
+
+
+                </DialogContent>
+                <DialogActions className={classes.modalFooter}>
+
+                    <CustomInput
+                        labelText="Price..."
+                        id={"bid" + currentBiding.id}
+
+                        formControlProps={{
+                            fullWidth: true
+                        }}
+                        inputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <EuroSymbolIcon />
+                                </InputAdornment>
+                            )
+                        }}
+                    />&nbsp;
+          <Button
+                        size="md"
+                        style={{ backgroundColor: "#4ec884" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={this.submitBid}
+                        id={currentBiding.id}
+                    >
+                        <i class="fas fa-gavel"></i> Make a Bidding
+          </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+
 
     render() {
         const { classes } = this.props;
@@ -626,54 +992,60 @@ class Game extends Component {
                 </div>
             )
         } else {
-            const rows2 = [
-                {
-                    "seller": "Jonas_PP",
-                    "gridScore": <span style={{ color: "#4ec884", fontSize: "15px", fontWeight: "bolder" }}>
-                        4 <i class="far fa-star"></i>
-                    </span>,
-
-                    "price": <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
-                        0,99€
-                        </span>,
-                    "type": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        Steam
-                    </span>,
-                    "date": <span style={{ color: "#3b3e48", fontSize: "15px", fontWeight: "bolder" }}>
-                        00:00:03:00
-                    </span>,
-                    "buy": <Button
-                        size="md"
-                        style={{ backgroundColor: "#4ec884" }}
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-gavel"></i> Make a Bidding
-                    </Button>
-                }
-            ];
-
             var auctionListings = <div></div>
-            if (true) {
-                auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
-                    <TableContainer component={Paper}>
-                        <Table style={{ width: "100%" }} aria-label="simple table">
-                            <TableBody>
-                                {rows2.map((row) => (
-                                    <TableRow hover key={row.name}>
-                                        <TableCell align="left">{row.seller}</TableCell>
-                                        <TableCell align="left">{row.gridScore}</TableCell>
-                                        <TableCell align="left">{row.type}</TableCell>
-                                        <TableCell align="left">{row.date}</TableCell>
-                                        <TableCell align="right">{row.price}</TableCell>
-                                        <TableCell align="right">{row.buy}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </GridItem>
+            if (!this.state.loadingAuctions) {
+                console.log(this.state.auctionsListings)
+                if (this.state.auctionsListings === null || this.state.auctionsListings.length === 0 || Object.keys(this.state.auctionsListings).length == 0) {
+                    auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <div style={{ textAlign: "left" }}>
+                            <h3 style={{ color: "#999" }} id="emptyAuctionsMessage">
+                                It seems like no auctions exists related to this game at the moment :(
+                    </h3>
+                        </div>
+                    </GridItem>
+                } else {
+                    auctionListings = <GridItem xs={12} sm={12} md={12} style={{ marginTop: "10px" }}>
+                        <TableContainer component={Paper}>
+                            <Table style={{ width: "100%" }} aria-label="simple table" id="auctionsTable">
+                                <TableBody>
+                                    {Object.keys(this.state.auctionsListings).map((id) => (
+                                        console.log(this.state.auctionsListings[id]),
+                                        <TableRow hover key={id}>
+                                            <TableCell align="left">
+                                                <Link to={"/user/" + this.state.auctionsListings[id].auctioneer} style={{ color: "#ff3ea0" }} >
+                                                    <b><i class="far fa-user"></i> {this.state.auctionsListings[id].auctioneer}</b>
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell align="left">{this.state.auctionsListings[id].score == -1 || this.state.auctionsListings[id].score == null ? "UNRATED" : <b>{this.state.auctionsListings[id].score}</b>} <b><i class="far fa-star"></i></b></TableCell>
+                                            <TableCell align="center">Ends {this.state.auctionsListings[id].endDate}</TableCell>
+                                            <TableCell align="center"><span
+                                                style={{ color: "#ff3ea0"}}>Highest bidder {this.state.auctionsListings[id].buyerTxt}</span></TableCell>
+                                            <TableCell align="right">
+                                                <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
+                                                    {this.state.auctionsListings[id].price}€
+                                                </span>
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <Button
+                                                    size="md"
+                                                    id={id}
+                                                    style={{ backgroundColor: "#4ec884" }}
+                                                    onClick={(e) => {
+                                                        this.setClassicModal(true, e);
+                                                    }}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <i class="fas fa-gavel"></i> Make a Bidding
+                              </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </GridItem>
+                }
             } else {
                 auctionListings = <div
                     className="animated fadeOut animated"
@@ -711,7 +1083,7 @@ class Game extends Component {
                                                     <b><i class="far fa-user"></i> {row.gameKey.retailer}</b>
                                                 </Link>
                                             </TableCell>
-                                            <TableCell align="left">{row.score == -1 || row.score == null ? "UNRATED" : <b>row.score</b>} <b><i class="far fa-star"></i></b></TableCell>
+                                            <TableCell align="left">{row.score == -1 || row.score == null ? "UNRATED" : <b>{row.score}</b>} <b><i class="far fa-star"></i></b></TableCell>
                                             <TableCell align="left"><b>{row.gameKey.platform}</b></TableCell>
                                             <TableCell align="right">
                                                 <span style={{ color: "#f44336", fontSize: "25px", fontWeight: "bolder" }}>
@@ -1364,28 +1736,11 @@ class Game extends Component {
                                 <GridContainer>
                                     <GridItem xs={12} sm={12} md={12}>
                                         <span>
-                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>1 Auctions
+                                            <h2 style={{ color: "#999", fontWeight: "bolder", marginTop: "0px", padding: "0 0" }}>{this.state.auctionsListings != null ? Object.keys(this.state.auctionsListings).length : 0} Auctions
                                             </h2>
                                         </span>
                                     </GridItem>
-                                    <GridItem xs={12} sm={12} md={3}>
-                                        <div style={{ color: "#000", padding: "12px 0", width: "100%" }}>
-                                            <Select
-                                                className="basic-single"
-                                                classNamePrefix="select"
-                                                isSearchable={false}
-                                                name="color"
-                                                defaultValue={{ "value": "PRICE", "label": "Sort by Price" }}
-                                                options={[{ "value": "PRICE", "label": "Sort by Price" }, { "value": "DATE", "label": "Sort by Ending Date" }, { "value": "RATING", "label": "Sort by Seller Rating" }]}
-                                            />
-                                        </div>
-                                    </GridItem>
                                     {auctionListings}
-                                    <GridItem xs={12} sm={12} md={12} style={{ marginTop: "20px" }}>
-                                        <div style={{ margin: "auto", width: "40%" }}>
-                                            <Pagination count={1} variant="outlined" shape="rounded" />
-                                        </div>
-                                    </GridItem>
                                 </GridContainer>
                             </div>
 
@@ -1408,6 +1763,7 @@ class Game extends Component {
                         <Footer rawg={true} />
 
                     </div>
+                    {this.renderModal()}
                 </div>
             )
         }
@@ -1416,4 +1772,4 @@ class Game extends Component {
     }
 }
 
-export default withStyles(styles)(Game);
+export default withStyles(Object.assign({}, stylesbasic, Object.assign({}, styles, stylesjs)))(Game);
