@@ -50,6 +50,9 @@ $ npm install
 $ expo start
 ```
 
+Two Android APKs are also available. One which connects to a localhost REST API that should be started on the a device running on the same LAN as the phone. Another which connects directly to our deployed REST API which will only work if the phone is connected to the UA VPN 
+
+
 ### Run Tests
 ```
 $ npm test
@@ -58,7 +61,7 @@ $ npm test
 ## Backend
 ### Install MySQL
 [Install MySQL in Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04)
-## Setup MySQL database in development
+### Setup MySQL database in development
 
 ```sql
  # sudo mysql -u root
@@ -78,9 +81,37 @@ Or reduce the password validation strength with:
 
 ### Server Deploy
  - First, it's necessary to make a pull request to github with the tag `deploy` with the code we want to deploy next to the server. This will trigger the deploy workflow, that will create new images of the code to be deployed.
- - The first time, it's necessary to have all containers pre-created on the server. So, on the server terminal, run:
+ - The first time, it's necessary to have all containers pre-created on the server. The files necessary to deploy the database are on the [drive folder](https://drive.google.com/drive/folders/1vFA4bkDRcnIPeB7-68J1umuGZ8dowvKG?usp=sharing). So, on the server terminal, run:
  ```bash
- $ docker container run --env-file ~/env_vars/rest_api.env --publish 8080:8080 --detach --name rest docker.pkg.github.com/oescal/tqs_project_2/api                # run the rest container
+ $ docker-compose up -d                # run the rest container
  $ docker container run --env-file ~/env_vars/frontend.env --publish 80:80 --detach --name web-app docker.pkg.github.com/oescal/tqs_project_2/web-app              # run the web-app container
 
  $ docker run --env-file ~/env_vars/watchtower.env -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock -v ~/.docker/config.json:/config.json containrrr/watchtower              # run the watchtower container for continuous deployment
+```
+
+## Raspberry Pipeline Monitoring
+### Python script for pipeline monitoring
+ - For this application to run it is necessary to have a GitHub token, since with that is possible to make much more requests to the GitHub API. This token is necessary to be exported as an environment variable on the execution environment:
+ ```bash
+ $ export TOKEN=<github token>
+ ```
+
+ - Then, to run the application, its necessary to setup a virtual environment and to install all the dependencies:
+ ```bash
+ $ cd RaspberryPipelineMonitor
+ $ virtualenv venv
+ $ source venv/bin/activate
+ $ pip install -r requirements.txt
+ ```
+
+ - To run, the default behavior is to monitor this repository, on the branch master and to check for branch updates every 5 seconds:
+ ```
+ $ python main.py
+ ```
+
+ - To change the current behavior, we can run the script with the following arguments:
+ ```bash
+ $ python main.py --branch <branch name> --update_seconds <time interval to check for new updates> --full_name_or_id <repository name or id>
+ ```
+
+ - You can see the script behavior on the [video](https://drive.google.com/file/d/16Excjh7k0iB3FzppBCLL4JAgOr91Dz42/view?usp=sharing).
