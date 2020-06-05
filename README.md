@@ -21,7 +21,6 @@ The Grid Marketplace serves as a storefront for the quick selling and purchasing
 * **Project Drive:** https://drive.google.com/drive/folders/1L-cahcNo5ZVX6p64ijbs-W31lpjKoJRE?usp=sharing (Contains other assets such as meetings, showcase videos and image resources)
 
 
-
 ## Account Credentials
 The following Grid user can be utilized to mess around with and test out our service
 * **Username:** admin
