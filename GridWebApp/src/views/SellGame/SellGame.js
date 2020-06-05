@@ -107,7 +107,7 @@ class SellGame extends Component {
 
         var arr = []
 
-        await fetch(baseURL + "grid/name?name=" + inputVal, {
+        await fetch(baseURL + "grid/games/name?name=" + inputVal, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
